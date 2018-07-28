@@ -1,0 +1,14 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace ServerCore.DataModel
+{
+    public class PuzzleAuthors
+    {
+        // Many to many table in db
+        public Puzzle Puzzle { get; set; }
+        public User Author { get; set; }
+    }
+}
