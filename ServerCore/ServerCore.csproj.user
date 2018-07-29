@@ -5,5 +5,6 @@
     <_SelectedScaffolderCategoryPath>root/Common/RazorPage</_SelectedScaffolderCategoryPath>
     <WebStackScaffolding_ViewDialogWidth>600</WebStackScaffolding_ViewDialogWidth>
     <WebStackScaffolding_DbContextDialogWidth>600</WebStackScaffolding_DbContextDialogWidth>
+    <WebStackScaffolding_LayoutPageFile>~/Pages/_Layout.cshtml</WebStackScaffolding_LayoutPageFile>
   </PropertyGroup>
 </Project>

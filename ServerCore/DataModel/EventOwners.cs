@@ -7,6 +7,9 @@ namespace ServerCore.DataModel
 {
     public class EventOwners
     {
+        // ID for row
+        public int ID { get; set; }
+
         // Foreign Key Event table
         public int EventID { get; set; }
 
