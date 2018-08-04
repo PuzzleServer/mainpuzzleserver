@@ -16,6 +16,5 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\" />
-    <Folder Include="Pages\Puzzles\" />
   </ItemGroup>
 </Project>

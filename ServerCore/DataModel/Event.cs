@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -9,7 +11,17 @@ namespace ServerCore.DataModel
     {
         public int ID { get; set; }
         public string Name { get; set; }
-        public Uri URL { get; set; }
+
+        [DataType(DataType.Url)]
+        public string UrlString { get; set; }
+
+        [NotMapped]
+        public Uri URL
+        {
+            get { return new Uri(UrlString); }
+            set { UrlString = value.ToString(); }
+        }
+
         public int MaxNumberOfTeams { get; set; }
         public int MaxTeamSize { get; set; }
         public int MaxExternalsPerTeam { get; set; }

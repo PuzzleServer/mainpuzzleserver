@@ -1,0 +1,79 @@
+﻿@page
+@model ServerCore.Pages.Puzzles.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Puzzle</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Puzzle.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Puzzle.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Puzzle.IsPuzzle)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Puzzle.IsPuzzle)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Puzzle.IsMetaPuzzle)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Puzzle.IsMetaPuzzle)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Puzzle.IsFinalPuzzle)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Puzzle.IsFinalPuzzle)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Puzzle.FirstSolveValue)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Puzzle.FirstSolveValue)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Puzzle.MinValue)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Puzzle.MinValue)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Puzzle.PerSolvePenalty)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Puzzle.PerSolvePenalty)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Puzzle.PuzzleUrlString)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Puzzle.PuzzleUrlString)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Puzzle.AnswerUrlString)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Puzzle.AnswerUrlString)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Puzzle.MaterialsUrlString)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Puzzle.MaterialsUrlString)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.Puzzle.ID">Edit</a> |
+    <a asp-page="./Index">Back to List</a>
+</div>
