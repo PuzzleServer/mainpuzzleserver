@@ -6,6 +6,7 @@ namespace ServerCore.DataModel
 {
     public class Puzzle
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
         public Event Event { get; set; }
         public string Name { get; set; }

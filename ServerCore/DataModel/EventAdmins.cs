@@ -1,15 +1,23 @@
-﻿namespace ServerCore.DataModel
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace ServerCore.DataModel
 {
     public class EventAdmins
     {
-        // ID for row
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
-        // Foreign key event table
-        public int EventID { get; set; }
+        /// <summary>
+        /// Foreign key - event table
+        /// </summary
+        [ForeignKey("Event.ID")]
+        public EventOwners Event { get; set; }
 
-        // Foreign key user table
-        public int UserID { get; set; }
+        /// <summary>
+        /// Foreign key - user table
+        /// </summary>
+        [ForeignKey("User.ID")]
+        public User Admin { get; set; }
 
     }
 }

@@ -1,19 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace ServerCore.DataModel
 {
+    /// <summary>
+    /// The authors who have written for this event
+    /// </summary>
     public class EventAuthors
     {
         // ID for row
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
-        // Foreign Key Event table
-        public int EventID { get; set; }
+        /// <summary>
+        /// Foreign Key - event table
+        /// </summary>
+        [ForeignKey("Event.ID")]
+        public Event Event { get; set; }
 
-        // Foreign Key User table
-        public int UserID { get; set; }
+        /// <summary>
+        /// Foreign Key - user table (author)
+        /// </summary>
+        [ForeignKey("User.ID")]
+        public User Author { get; set; }
     }
 }
