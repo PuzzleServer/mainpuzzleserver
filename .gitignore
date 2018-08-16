@@ -3,3 +3,10 @@
 ################################################################################
 
 /.vs
+/ServerCore/bin
+/ServerCore/obj
+bin
+obj
+packages
+*.suo
+*.user

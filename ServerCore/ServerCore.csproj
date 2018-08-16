@@ -3,6 +3,16 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="DataModel\**" />
+    <Compile Remove="Data\**" />
+    <Content Remove="DataModel\**" />
+    <Content Remove="Data\**" />
+    <EmbeddedResource Remove="DataModel\**" />
+    <EmbeddedResource Remove="Data\**" />
+    <None Remove="DataModel\**" />
+    <None Remove="Data\**" />
+  </ItemGroup>
+  <ItemGroup>
     <None Remove="Content\nipd.png" />
     <None Remove="Content\puzzleday.png" />
     <None Remove="Content\puzzlehunt.png" />
@@ -16,5 +26,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Data\Data.csproj" />
   </ItemGroup>
 </Project>
