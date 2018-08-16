@@ -11,8 +11,8 @@ using System;
 namespace Data.Migrations
 {
     [DbContext(typeof(PuzzleServerContext))]
-    [Migration("20180816010659_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20180816033058_CreateDb")]
+    partial class CreateDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

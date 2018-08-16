@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.Internal;
 using ServerCore.Models;
 using System;
 
-namespace Database.Migrations
+namespace Data.Migrations
 {
     [DbContext(typeof(PuzzleServerContext))]
     partial class PuzzleServerContextModelSnapshot : ModelSnapshot
