@@ -9,3 +9,6 @@ C:\Users\asyas\Source\Repos\PuzzleServer\ServerCore\obj\Debug\netcoreapp2.0\Serv
 C:\Users\asyas\Source\Repos\PuzzleServer\ServerCore\obj\Debug\netcoreapp2.0\ServerCore.AssemblyInfo.cs
 C:\Users\asyas\Source\Repos\PuzzleServer\ServerCore\obj\Debug\netcoreapp2.0\ServerCore.dll
 C:\Users\asyas\Source\Repos\PuzzleServer\ServerCore\obj\Debug\netcoreapp2.0\ServerCore.pdb
+C:\Users\asyas\Source\Repos\PuzzleServer\ServerCore\obj\Debug\netcoreapp2.0\ServerCore.csproj.CopyComplete
+C:\Users\asyas\Source\Repos\PuzzleServer\ServerCore\bin\Debug\netcoreapp2.0\Data.dll
+C:\Users\asyas\Source\Repos\PuzzleServer\ServerCore\bin\Debug\netcoreapp2.0\Data.pdb

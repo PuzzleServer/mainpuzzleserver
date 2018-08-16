@@ -3,3 +3,10 @@
 ################################################################################
 
 /.vs/PuzzleServer/v15
+/ServerCore/bin
+/ServerCore/obj
+bin
+obj
+packages
+*.suo
+*.user
