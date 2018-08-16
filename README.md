@@ -28,13 +28,13 @@ Now running `git remote -v` should show the upstream repository also
 ```
 > git remote -v
 
-     origin  https://github.com/johndoe/office-ui-fabric-react.git (fetch)
+     origin  https://github.com/johndoe/mainpuzzleserver.git (fetch)
 
-     origin  https://github.com/johndoe/office-ui-fabric-react.git (push)
+     origin  https://github.com/johndoe/mainpuzzleserver.git (push)
 
-     upstream        https://github.com/OfficeDev/office-ui-fabric-react.git (fetch)
+     upstream        https://github.com/PuzzleServer/mainpuzzleserver.git (fetch)
 
-     upstream        https://github.com/OfficeDev/office-ui-fabric-react.git (push)
+     upstream        https://github.com/PuzzleServer/mainpuzzleserver.git (push)
 ```
 At this point you are ready to start branching and contributing back changes!
 
