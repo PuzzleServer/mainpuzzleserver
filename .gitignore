@@ -2,7 +2,7 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/.vs/PuzzleServer/v15
+/.vs
 /ServerCore/bin
 /ServerCore/obj
 bin
