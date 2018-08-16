@@ -1,0 +1,11 @@
+C:\Users\asyas\Source\Repos\PuzzleServer\ServerCore\bin\Debug\netcoreapp2.0\ServerCore.deps.json
+C:\Users\asyas\Source\Repos\PuzzleServer\ServerCore\bin\Debug\netcoreapp2.0\ServerCore.runtimeconfig.json
+C:\Users\asyas\Source\Repos\PuzzleServer\ServerCore\bin\Debug\netcoreapp2.0\ServerCore.runtimeconfig.dev.json
+C:\Users\asyas\Source\Repos\PuzzleServer\ServerCore\bin\Debug\netcoreapp2.0\ServerCore.dll
+C:\Users\asyas\Source\Repos\PuzzleServer\ServerCore\bin\Debug\netcoreapp2.0\ServerCore.pdb
+C:\Users\asyas\Source\Repos\PuzzleServer\ServerCore\obj\Debug\netcoreapp2.0\ServerCore.csprojAssemblyReference.cache
+C:\Users\asyas\Source\Repos\PuzzleServer\ServerCore\obj\Debug\netcoreapp2.0\ServerCore.csproj.CoreCompileInputs.cache
+C:\Users\asyas\Source\Repos\PuzzleServer\ServerCore\obj\Debug\netcoreapp2.0\ServerCore.AssemblyInfoInputs.cache
+C:\Users\asyas\Source\Repos\PuzzleServer\ServerCore\obj\Debug\netcoreapp2.0\ServerCore.AssemblyInfo.cs
+C:\Users\asyas\Source\Repos\PuzzleServer\ServerCore\obj\Debug\netcoreapp2.0\ServerCore.dll
+C:\Users\asyas\Source\Repos\PuzzleServer\ServerCore\obj\Debug\netcoreapp2.0\ServerCore.pdb
