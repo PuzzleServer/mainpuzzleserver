@@ -47,7 +47,7 @@ git pull upstream master
 git push
 ```
 ## Merging upstream master into your current branch
-From time to time, your current branch will get out of sync with the upstream remote. Use the following commands to get your branch up upto date.
+From time to time, your current branch will get out of sync with the upstream remote. Use the following commands to get your branch up to date.
 ```
 git fetch upstream
 git pull upstream master
