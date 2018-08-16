@@ -4,7 +4,7 @@
 If you wish to contribute changes back to the `mainpuzzleserver` repository, start by creating your own fork of the repository. This is essential. This will keep the number of branches on the main repository to a small count. This will also prevent mistakes in pushing upstream to the `mainpuzzleserver` repository. In your own fork, you can create as many branches as you like.
 
 - Navigate to Github with a browser and login to your github account. For the sake of this document, lets assume your account is johndoe.
-- Navigate to Office-ui-fabric-react repository in the same browser session.
+- Navigate to `mainpuzzleserver` repository in the same browser session.
 - Click on the fork button at the top right corner of the page.
 - Create the fork on your user name. Your github profile should now show mainpuzzleserver as one of your repositories.
 - Create a folder on your device and clone your fork of the mainpuzzleserver repository. e.g. https://github.com/**johndoe**/mainpuzzleserver.git. Notice how your github user name is in the repository location.
