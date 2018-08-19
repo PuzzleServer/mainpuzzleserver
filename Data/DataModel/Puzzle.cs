@@ -23,8 +23,8 @@ namespace ServerCore.DataModel
         [NotMapped]
         public Uri PuzzleUrl
         {
-            get { return new Uri(PuzzleUrlString); }
-            set { PuzzleUrlString = value.ToString(); }
+            get { Uri.TryCreate(PuzzleUrlString, UriKind.RelativeOrAbsolute, out Uri result); return result; }
+            set { PuzzleUrlString = value?.ToString(); }
         }
 
         [DataType(DataType.Url)]
@@ -33,8 +33,8 @@ namespace ServerCore.DataModel
         [NotMapped]
         public Uri AnswerUrl
         {
-            get { return new Uri(AnswerUrlString); }
-            set { AnswerUrlString = value.ToString(); }
+            get { Uri.TryCreate(AnswerUrlString, UriKind.RelativeOrAbsolute, out Uri result); return result; }
+            set { AnswerUrlString = value?.ToString(); }
         }
 
         [DataType(DataType.Url)]
@@ -43,8 +43,8 @@ namespace ServerCore.DataModel
         [NotMapped]
         public Uri MaterialsUrl
         {
-            get { return new Uri(MaterialsUrlString); }
-            set { MaterialsUrlString = value.ToString(); }
+            get { Uri.TryCreate(MaterialsUrlString, UriKind.RelativeOrAbsolute, out Uri result); return result; }
+            set { MaterialsUrlString = value?.ToString(); }
         }
 
         // TODO: Whatever we need to allow unlocking
