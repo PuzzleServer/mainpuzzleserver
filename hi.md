@@ -7,6 +7,6 @@ Hi everyone!
 - Kenny: Hi
 - Elizabeth:
 - Lambert:
-- Jessica:
+- Jessica: Hello
 - Phil:
 - Asia: ahoy!
