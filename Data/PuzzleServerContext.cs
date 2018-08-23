@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ServerCore.Models
 {
@@ -14,6 +8,7 @@ namespace ServerCore.Models
         public PuzzleServerContext(DbContextOptions<PuzzleServerContext> options)
             : base(options)
         {
+            this.Database.Migrate();
         }
 
         // These are the objects that EF uses to create/update tables
