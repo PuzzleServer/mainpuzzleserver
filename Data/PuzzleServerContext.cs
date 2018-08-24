@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using ServerCore.DataModel;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ServerCore.Models
 {
@@ -34,5 +30,19 @@ namespace ServerCore.Models
         public DbSet<Team> Teams { get; set; }
         public DbSet<TeamMembers> TeamMembers { get; set; }
         public DbSet<User> Users { get; set; }
+
+        public static void UpdateDatabase(IApplicationBuilder app)
+        {
+            var appService = app.ApplicationServices
+                .GetRequiredService<IServiceScopeFactory>();
+
+            using (var serviceScope = appService.CreateScope())
+            {
+                using (var context = serviceScope.ServiceProvider.GetService<PuzzleServerContext>())
+                {
+                    context.Database.Migrate();
+                }
+            }
+        }
     }
 }
