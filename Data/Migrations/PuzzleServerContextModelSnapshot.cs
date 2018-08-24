@@ -205,9 +205,11 @@ namespace Data.Migrations
 
                     b.Property<int?>("EventID");
 
-                    b.Property<int>("FirstSolveValue");
+                    b.Property<string>("Group");
 
                     b.Property<bool>("IsFinalPuzzle");
+
+                    b.Property<bool>("IsGloballyVisiblePrerequisite");
 
                     b.Property<bool>("IsMetaPuzzle");
 
@@ -215,13 +217,17 @@ namespace Data.Migrations
 
                     b.Property<string>("MaterialsUrlString");
 
-                    b.Property<int>("MinValue");
+                    b.Property<int>("MinPrerequisiteCount");
 
                     b.Property<string>("Name");
 
-                    b.Property<int>("PerSolvePenalty");
+                    b.Property<int>("OrderInGroup");
 
                     b.Property<string>("PuzzleUrlString");
+
+                    b.Property<int>("SolveValue");
+
+                    b.Property<string>("Token");
 
                     b.HasKey("ID");
 
