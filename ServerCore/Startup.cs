@@ -38,7 +38,7 @@ namespace ServerCore
                 app.UseDeveloperExceptionPage();
 
 #if DEBUG
-                PuzzleServerContext.UpdateDatebase(app);
+                PuzzleServerContext.UpdateDatabase(app);
 #endif
             }
             else

@@ -2,10 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ServerCore.DataModel;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Diagnostics;
-using System.Linq;
 
 namespace ServerCore.Models
 {
@@ -35,11 +31,12 @@ namespace ServerCore.Models
         public DbSet<TeamMembers> TeamMembers { get; set; }
         public DbSet<User> Users { get; set; }
 
-        public static void UpdateDatebase(IApplicationBuilder app)
+        public static void UpdateDatabase(IApplicationBuilder app)
         {
-            using (var serviceScope = app.ApplicationServices
-                .GetRequiredService<IServiceScopeFactory>()
-                .CreateScope())
+            var appService = app.ApplicationServices
+                .GetRequiredService<IServiceScopeFactory>();
+
+            using (var serviceScope = appService.CreateScope())
             {
                 using (var context = serviceScope.ServiceProvider.GetService<PuzzleServerContext>())
                 {
