@@ -13,9 +13,35 @@ namespace ServerCore.DataModel
         public bool IsPuzzle { get; set; } = false;
         public bool IsMetaPuzzle { get; set; } = false;
         public bool IsFinalPuzzle { get; set; } = false;
-        public int FirstSolveValue { get; set; } = 0;
-        public int MinValue { get; set; } = 0;
-        public int PerSolvePenalty { get; set; } = 0;
+        public int SolveValue { get; set; } = 0;
+
+        /// <summary>
+        /// Reward if solved: Sometimes displayed publicly, sometimes used internally by meta engine
+        /// </summary>
+        public string Token { get; set; }
+
+        /// <summary>
+        /// Grouping key.
+        /// Likely Puzzlehunt usage: name of the puzzle's module
+        /// Likely Puzzleday usage: "Pregame" or blank
+        /// </summary>
+        public string Group { get; set; }
+
+        /// <summary>
+        /// Order within group
+        /// </summary>
+        public int OrderInGroup { get; set; } = 0;
+
+        /// <summary>
+        /// If true, all authors can see this puzzle when picking prerequisites
+        /// </summary>
+        public bool IsGloballyVisiblePrerequisite { get; set; } = false;
+
+        /// <summary>
+        /// Minimum number of prerequisites that must be satisfied.
+        /// TODO: When the system is mature, set the default to 1 so new puzzles are not accidentally displayed.
+        /// </summary>
+        public int MinPrerequisiteCount { get; set; } = 0;
 
         [DataType(DataType.Url)]
         public string PuzzleUrlString { get; set; }
@@ -46,7 +72,5 @@ namespace ServerCore.DataModel
             get { Uri.TryCreate(MaterialsUrlString, UriKind.RelativeOrAbsolute, out Uri result); return result; }
             set { MaterialsUrlString = value?.ToString(); }
         }
-
-        // TODO: Whatever we need to allow unlocking
     }
 }
