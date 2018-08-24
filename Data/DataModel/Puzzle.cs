@@ -21,8 +21,9 @@ namespace ServerCore.DataModel
         public string Token { get; set; }
 
         /// <summary>
-        /// Puzzlehunt: module
-        /// Puzzleday: pregame
+        /// Grouping key.
+        /// Likely Puzzlehunt usage: name of the puzzle's module
+        /// Likely Puzzleday usage: "Pregame" or blank
         /// </summary>
         public string Group { get; set; }
 
