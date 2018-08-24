@@ -1,5 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using ServerCore.DataModel;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Diagnostics;
+using System.Linq;
 
 namespace ServerCore.Models
 {
@@ -8,7 +14,6 @@ namespace ServerCore.Models
         public PuzzleServerContext(DbContextOptions<PuzzleServerContext> options)
             : base(options)
         {
-            this.Database.Migrate();
         }
 
         // These are the objects that EF uses to create/update tables
@@ -29,5 +34,30 @@ namespace ServerCore.Models
         public DbSet<Team> Teams { get; set; }
         public DbSet<TeamMembers> TeamMembers { get; set; }
         public DbSet<User> Users { get; set; }
+
+        public static void UpdateDatebase(IApplicationBuilder app)
+        {
+            using (var serviceScope = app.ApplicationServices
+                .GetRequiredService<IServiceScopeFactory>()
+                .CreateScope())
+            {
+                using (var context = serviceScope.ServiceProvider.GetService<PuzzleServerContext>())
+                {
+                    List<string> pendingMigrations = new List<string>(context.Database.GetPendingMigrations());
+                    if (context.Database.GetPendingMigrations().Any())
+                    {
+                        try
+                        {
+                            context.Database.Migrate();
+                        }
+                        catch (SqlException ex)
+                        {
+                            // Run empty migration
+                            Debug.WriteLine(ex.Message);
+                        }
+                    }
+                }
+            }
+        }
     }
 }
