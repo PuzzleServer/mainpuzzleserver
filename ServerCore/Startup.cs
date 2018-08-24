@@ -36,7 +36,10 @@ namespace ServerCore
             {
                 app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
+
+#if DEBUG
                 PuzzleServerContext.UpdateDatebase(app);
+#endif
             }
             else
             {

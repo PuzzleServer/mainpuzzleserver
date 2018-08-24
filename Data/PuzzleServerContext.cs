@@ -43,19 +43,7 @@ namespace ServerCore.Models
             {
                 using (var context = serviceScope.ServiceProvider.GetService<PuzzleServerContext>())
                 {
-                    List<string> pendingMigrations = new List<string>(context.Database.GetPendingMigrations());
-                    if (context.Database.GetPendingMigrations().Any())
-                    {
-                        try
-                        {
-                            context.Database.Migrate();
-                        }
-                        catch (SqlException ex)
-                        {
-                            // Run empty migration
-                            Debug.WriteLine(ex.Message);
-                        }
-                    }
+                    context.Database.Migrate();
                 }
             }
         }
