@@ -6,7 +6,7 @@ Hi everyone!
 - Megan:
 - Kenny: Hi
 - Elizabeth:
-- Lambert:
+- Lambert: Hi
 - Jessica: Hello
 - Phil:
 - Asia: ahoy!

@@ -13,36 +13,45 @@
 <table class="table">
     <thead>
         <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Puzzle[0].Name)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Puzzle[0].IsPuzzle)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Puzzle[0].IsMetaPuzzle)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Puzzle[0].IsFinalPuzzle)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Puzzle[0].FirstSolveValue)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Puzzle[0].MinValue)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Puzzle[0].PerSolvePenalty)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Puzzle[0].PuzzleUrlString)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Puzzle[0].AnswerUrlString)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Puzzle[0].MaterialsUrlString)
-                </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Puzzle[0].Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Puzzle[0].IsPuzzle)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Puzzle[0].IsMetaPuzzle)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Puzzle[0].IsFinalPuzzle)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Puzzle[0].SolveValue)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Puzzle[0].Token)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Puzzle[0].Group)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Puzzle[0].OrderInGroup)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Puzzle[0].IsGloballyVisiblePrerequisite)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Puzzle[0].MinPrerequisiteCount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Puzzle[0].PuzzleUrlString)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Puzzle[0].AnswerUrlString)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Puzzle[0].MaterialsUrlString)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -62,13 +71,22 @@
                 @Html.DisplayFor(modelItem => item.IsFinalPuzzle)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.FirstSolveValue)
+                @Html.DisplayFor(modelItem => item.SolveValue)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.MinValue)
+                @Html.DisplayFor(modelItem => item.Token)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.PerSolvePenalty)
+                @Html.DisplayFor(modelItem => item.Group)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OrderInGroup)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsGloballyVisiblePrerequisite)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MinPrerequisiteCount)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.PuzzleUrlString)

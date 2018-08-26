@@ -41,19 +41,36 @@
                 </div>
             </div>
             <div class="form-group">
-                <label asp-for="Puzzle.FirstSolveValue" class="control-label"></label>
-                <input asp-for="Puzzle.FirstSolveValue" class="form-control" />
-                <span asp-validation-for="Puzzle.FirstSolveValue" class="text-danger"></span>
+                <label asp-for="Puzzle.SolveValue" class="control-label"></label>
+                <input asp-for="Puzzle.SolveValue" class="form-control" />
+                <span asp-validation-for="Puzzle.SolveValue" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Puzzle.MinValue" class="control-label"></label>
-                <input asp-for="Puzzle.MinValue" class="form-control" />
-                <span asp-validation-for="Puzzle.MinValue" class="text-danger"></span>
+                <label asp-for="Puzzle.Token" class="control-label"></label>
+                <input asp-for="Puzzle.Token" class="form-control" />
+                <span asp-validation-for="Puzzle.Token" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Puzzle.PerSolvePenalty" class="control-label"></label>
-                <input asp-for="Puzzle.PerSolvePenalty" class="form-control" />
-                <span asp-validation-for="Puzzle.PerSolvePenalty" class="text-danger"></span>
+                <label asp-for="Puzzle.Group" class="control-label"></label>
+                <input asp-for="Puzzle.Group" class="form-control" />
+                <span asp-validation-for="Puzzle.Group" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Puzzle.OrderInGroup" class="control-label"></label>
+                <input asp-for="Puzzle.OrderInGroup" class="form-control" />
+                <span asp-validation-for="Puzzle.OrderInGroup" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="Puzzle.IsGloballyVisiblePrerequisite" /> @Html.DisplayNameFor(model => model.Puzzle.IsGloballyVisiblePrerequisite)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Puzzle.MinPrerequisiteCount" class="control-label"></label>
+                <input asp-for="Puzzle.MinPrerequisiteCount" class="form-control" />
+                <span asp-validation-for="Puzzle.MinPrerequisiteCount" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Puzzle.PuzzleUrlString" class="control-label"></label>
