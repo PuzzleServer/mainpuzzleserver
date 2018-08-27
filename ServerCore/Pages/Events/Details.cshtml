@@ -1,0 +1,133 @@
+﻿@page
+@model ServerCore.Pages.Events.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Event</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Event.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Event.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Event.UrlString)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Event.UrlString)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Event.MaxNumberOfTeams)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Event.MaxNumberOfTeams)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Event.MaxTeamSize)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Event.MaxTeamSize)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Event.MaxExternalsPerTeam)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Event.MaxExternalsPerTeam)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Event.IsInternEvent)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Event.IsInternEvent)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Event.TeamRegistrationBegin)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Event.TeamRegistrationBegin)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Event.TeamRegistrationEnd)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Event.TeamRegistrationEnd)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Event.TeamNameChangeEnd)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Event.TeamNameChangeEnd)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Event.TeamMembershipChangeEnd)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Event.TeamMembershipChangeEnd)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Event.TeamMiscDataChangeEnd)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Event.TeamMiscDataChangeEnd)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Event.TeamDeleteEnd)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Event.TeamDeleteEnd)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Event.EventBegin)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Event.EventBegin)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Event.AnswerSubmissionEnd)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Event.AnswerSubmissionEnd)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Event.AnswersAvailableBegin)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Event.AnswersAvailableBegin)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Event.StandingsAvailableBegin)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Event.StandingsAvailableBegin)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Event.StandingsOverride)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Event.StandingsOverride)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Event.ShowFastestSolves)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Event.ShowFastestSolves)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Event.AllowFeedback)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Event.AllowFeedback)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.Event.ID">Edit</a> |
+    <a asp-page="./Index">Back to List</a>
+</div>

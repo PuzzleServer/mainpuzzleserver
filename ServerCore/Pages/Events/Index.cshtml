@@ -1,0 +1,144 @@
+﻿@page
+@model ServerCore.Pages.Events.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Event[0].Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Event[0].UrlString)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Event[0].MaxNumberOfTeams)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Event[0].MaxTeamSize)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Event[0].MaxExternalsPerTeam)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Event[0].IsInternEvent)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Event[0].TeamRegistrationBegin)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Event[0].TeamRegistrationEnd)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Event[0].TeamNameChangeEnd)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Event[0].TeamMembershipChangeEnd)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Event[0].TeamMiscDataChangeEnd)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Event[0].TeamDeleteEnd)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Event[0].EventBegin)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Event[0].AnswerSubmissionEnd)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Event[0].AnswersAvailableBegin)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Event[0].StandingsAvailableBegin)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Event[0].StandingsOverride)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Event[0].ShowFastestSolves)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Event[0].AllowFeedback)
+                </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Event) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UrlString)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MaxNumberOfTeams)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MaxTeamSize)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MaxExternalsPerTeam)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsInternEvent)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TeamRegistrationBegin)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TeamRegistrationEnd)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TeamNameChangeEnd)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TeamMembershipChangeEnd)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TeamMiscDataChangeEnd)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TeamDeleteEnd)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EventBegin)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AnswerSubmissionEnd)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AnswersAvailableBegin)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StandingsAvailableBegin)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StandingsOverride)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ShowFastestSolves)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AllowFeedback)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.ID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.ID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
