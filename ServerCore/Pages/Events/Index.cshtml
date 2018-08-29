@@ -19,6 +19,7 @@
                 <th>
                     @Html.DisplayNameFor(model => model.Event[0].UrlString)
                 </th>
+            <!--
                 <th>
                     @Html.DisplayNameFor(model => model.Event[0].MaxNumberOfTeams)
                 </th>
@@ -28,9 +29,11 @@
                 <th>
                     @Html.DisplayNameFor(model => model.Event[0].MaxExternalsPerTeam)
                 </th>
+            -->
                 <th>
                     @Html.DisplayNameFor(model => model.Event[0].IsInternEvent)
                 </th>
+            <!--
                 <th>
                     @Html.DisplayNameFor(model => model.Event[0].TeamRegistrationBegin)
                 </th>
@@ -70,6 +73,7 @@
                 <th>
                     @Html.DisplayNameFor(model => model.Event[0].AllowFeedback)
                 </th>
+            -->
             <th></th>
         </tr>
     </thead>
@@ -82,6 +86,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.UrlString)
             </td>
+        <!--
             <td>
                 @Html.DisplayFor(modelItem => item.MaxNumberOfTeams)
             </td>
@@ -91,9 +96,11 @@
             <td>
                 @Html.DisplayFor(modelItem => item.MaxExternalsPerTeam)
             </td>
+        -->
             <td>
                 @Html.DisplayFor(modelItem => item.IsInternEvent)
             </td>
+        <!--
             <td>
                 @Html.DisplayFor(modelItem => item.TeamRegistrationBegin)
             </td>
@@ -133,10 +140,12 @@
             <td>
                 @Html.DisplayFor(modelItem => item.AllowFeedback)
             </td>
+        -->
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |
                 <a asp-page="./Details" asp-route-id="@item.ID">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.ID">Delete</a>
+                <a asp-page="./Delete" asp-route-id="@item.ID">Delete</a> |
+                <a asp-page="/Puzzles/Index" asp-route-eventid="@item.ID">Puzzles</a>
             </td>
         </tr>
 }

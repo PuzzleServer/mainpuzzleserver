@@ -29,7 +29,7 @@ namespace ServerCore.Pages.Puzzles
                 return NotFound();
             }
 
-            Puzzle = await _context.Puzzle.SingleOrDefaultAsync(m => m.ID == id);
+            Puzzle = await _context.Puzzle.Where(m => m.ID == id).Include(p => p.Event).FirstOrDefaultAsync();
 
             if (Puzzle == null)
             {
@@ -45,7 +45,7 @@ namespace ServerCore.Pages.Puzzles
                 return NotFound();
             }
 
-            Puzzle = await _context.Puzzle.FindAsync(id);
+            Puzzle = await _context.Puzzle.Where(m => m.ID == id).Include(p => p.Event).FirstOrDefaultAsync();
 
             if (Puzzle != null)
             {
@@ -53,7 +53,7 @@ namespace ServerCore.Pages.Puzzles
                 await _context.SaveChangesAsync();
             }
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("./Index", new { eventid = Puzzle.Event?.ID });
         }
     }
 }
