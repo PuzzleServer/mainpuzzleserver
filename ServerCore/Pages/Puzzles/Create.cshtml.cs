@@ -28,17 +28,15 @@ namespace ServerCore.Pages.Puzzles
         [BindProperty]
         public Puzzle Puzzle { get; set; }
 
-        public async Task<IActionResult> OnPostAsync(int? eventid)
+        public async Task<IActionResult> OnPostAsync(int eventid)
         {
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            if (eventid != null)
-            {
-                Puzzle.Event = await _context.Event.SingleOrDefaultAsync(m => m.ID == eventid);
-            }
+            Puzzle.Event = await _context.Event.SingleOrDefaultAsync(m => m.ID == eventid);
+
             _context.Puzzle.Add(Puzzle);
             await _context.SaveChangesAsync();
 
