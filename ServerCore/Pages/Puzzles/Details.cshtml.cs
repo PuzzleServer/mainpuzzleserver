@@ -28,7 +28,7 @@ namespace ServerCore.Pages.Puzzles
                 return NotFound();
             }
 
-            Puzzle = await _context.Puzzle.SingleOrDefaultAsync(m => m.ID == id);
+            Puzzle = await _context.Puzzle.Where(m => m.ID == id).Include(p => p.Event).FirstOrDefaultAsync();
 
             if (Puzzle == null)
             {
