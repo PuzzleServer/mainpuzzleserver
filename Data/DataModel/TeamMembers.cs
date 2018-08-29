@@ -15,12 +15,12 @@ namespace ServerCore.DataModel
         /// Foreign Key - Team table 
         /// </summary>
         [ForeignKey("Team.ID")]
-        public Team Team { get; set; }
+        public virtual Team Team { get; set; }
 
         /// <summary>
         /// Foreign Key - User table
         /// </summary>
         [ForeignKey("User.ID")]
-        public User Member { get; set; }
+        public virtual User Member { get; set; }
     }
 }

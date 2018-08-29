@@ -25,8 +25,9 @@ namespace ServerCore
         {
             services.AddMvc();
 
-            services.AddDbContext<PuzzleServerContext>(options =>
-                    options.UseSqlServer(Configuration.GetConnectionString("PuzzleServerContext")));
+            services.AddDbContext<PuzzleServerContext>
+                (options => options.UseLazyLoadingProxies()
+                    .UseSqlServer(Configuration.GetConnectionString("PuzzleServerContext")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -36,10 +37,7 @@ namespace ServerCore
             {
                 app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
-
-#if DEBUG
                 PuzzleServerContext.UpdateDatabase(app);
-#endif
             }
             else
             {

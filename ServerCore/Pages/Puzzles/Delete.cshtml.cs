@@ -29,12 +29,13 @@ namespace ServerCore.Pages.Puzzles
                 return NotFound();
             }
 
-            Puzzle = await _context.Puzzle.Where(m => m.ID == id).Include(p => p.Event).FirstOrDefaultAsync();
+            Puzzle = await _context.Puzzle.Where(m => m.ID == id).FirstOrDefaultAsync();
 
             if (Puzzle == null)
             {
                 return NotFound();
             }
+
             return Page();
         }
 
@@ -45,7 +46,7 @@ namespace ServerCore.Pages.Puzzles
                 return NotFound();
             }
 
-            Puzzle = await _context.Puzzle.Where(m => m.ID == id).Include(p => p.Event).FirstOrDefaultAsync();
+            Puzzle = await _context.Puzzle.Where(m => m.ID == id).FirstOrDefaultAsync();
 
             if (Puzzle != null)
             {

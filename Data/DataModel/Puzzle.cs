@@ -8,7 +8,7 @@ namespace ServerCore.DataModel
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
-        public Event Event { get; set; }
+        public virtual Event Event { get; set; }
         public string Name { get; set; }
         public bool IsPuzzle { get; set; } = false;
         public bool IsMetaPuzzle { get; set; } = false;

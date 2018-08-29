@@ -58,8 +58,8 @@ namespace ServerCore.DataModel
         public bool AllowFeedback { get; set; }
 
         // TODO: These might need to be collections that aren't a db column - check on the EF documentation for referencing join tables where it's a one to many
-        public EventTeams Teams { get; set; }
-        public EventAuthors Authors { get; set; }
-        public EventAdmins Admins { get; set; }
+        public virtual EventTeams Teams { get; set; }
+        public virtual EventAuthors Authors { get; set; }
+        public virtual EventAdmins Admins { get; set; }
     }
 }
