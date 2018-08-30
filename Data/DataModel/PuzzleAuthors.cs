@@ -13,9 +13,9 @@ namespace ServerCore.DataModel
         public int ID { get; set; }
 
         [ForeignKey("Puzzle.ID")]
-        public Puzzle Puzzle { get; set; }
+        public virtual Puzzle Puzzle { get; set; }
 
         [ForeignKey("User.ID")]
-        public User Author { get; set; }
+        public virtual User Author { get; set; }
     }
 }

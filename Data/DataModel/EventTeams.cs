@@ -15,12 +15,12 @@ namespace ServerCore.DataModel
         /// Foreign Key - event table
         /// </summary>
         [ForeignKey("Event.ID")]
-        public Event Event { get; set; }
+        public virtual Event Event { get; set; }
 
         /// <summary>
         /// Foreign Key - teams table
         /// </summary>
         [ForeignKey("Teams.ID")]
-        public Team Team { get; set; }
+        public virtual Team Team { get; set; }
     }
 }

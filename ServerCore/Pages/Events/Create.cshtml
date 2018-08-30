@@ -1,0 +1,132 @@
+﻿@page
+@model ServerCore.Pages.Events.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h2>Create</h2>
+
+<h4>Event</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Event.Name" class="control-label"></label>
+                <input asp-for="Event.Name" class="form-control" />
+                <span asp-validation-for="Event.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Event.UrlString" class="control-label"></label>
+                <input asp-for="Event.UrlString" class="form-control" />
+                <span asp-validation-for="Event.UrlString" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Event.MaxNumberOfTeams" class="control-label"></label>
+                <input asp-for="Event.MaxNumberOfTeams" class="form-control" />
+                <span asp-validation-for="Event.MaxNumberOfTeams" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Event.MaxTeamSize" class="control-label"></label>
+                <input asp-for="Event.MaxTeamSize" class="form-control" />
+                <span asp-validation-for="Event.MaxTeamSize" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Event.MaxExternalsPerTeam" class="control-label"></label>
+                <input asp-for="Event.MaxExternalsPerTeam" class="form-control" />
+                <span asp-validation-for="Event.MaxExternalsPerTeam" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="Event.IsInternEvent" /> @Html.DisplayNameFor(model => model.Event.IsInternEvent)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Event.TeamRegistrationBegin" class="control-label"></label>
+                <input asp-for="Event.TeamRegistrationBegin" class="form-control" />
+                <span asp-validation-for="Event.TeamRegistrationBegin" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Event.TeamRegistrationEnd" class="control-label"></label>
+                <input asp-for="Event.TeamRegistrationEnd" class="form-control" />
+                <span asp-validation-for="Event.TeamRegistrationEnd" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Event.TeamNameChangeEnd" class="control-label"></label>
+                <input asp-for="Event.TeamNameChangeEnd" class="form-control" />
+                <span asp-validation-for="Event.TeamNameChangeEnd" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Event.TeamMembershipChangeEnd" class="control-label"></label>
+                <input asp-for="Event.TeamMembershipChangeEnd" class="form-control" />
+                <span asp-validation-for="Event.TeamMembershipChangeEnd" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Event.TeamMiscDataChangeEnd" class="control-label"></label>
+                <input asp-for="Event.TeamMiscDataChangeEnd" class="form-control" />
+                <span asp-validation-for="Event.TeamMiscDataChangeEnd" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Event.TeamDeleteEnd" class="control-label"></label>
+                <input asp-for="Event.TeamDeleteEnd" class="form-control" />
+                <span asp-validation-for="Event.TeamDeleteEnd" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Event.EventBegin" class="control-label"></label>
+                <input asp-for="Event.EventBegin" class="form-control" />
+                <span asp-validation-for="Event.EventBegin" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Event.AnswerSubmissionEnd" class="control-label"></label>
+                <input asp-for="Event.AnswerSubmissionEnd" class="form-control" />
+                <span asp-validation-for="Event.AnswerSubmissionEnd" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Event.AnswersAvailableBegin" class="control-label"></label>
+                <input asp-for="Event.AnswersAvailableBegin" class="form-control" />
+                <span asp-validation-for="Event.AnswersAvailableBegin" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Event.StandingsAvailableBegin" class="control-label"></label>
+                <input asp-for="Event.StandingsAvailableBegin" class="form-control" />
+                <span asp-validation-for="Event.StandingsAvailableBegin" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="Event.StandingsOverride" /> @Html.DisplayNameFor(model => model.Event.StandingsOverride)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="Event.ShowFastestSolves" /> @Html.DisplayNameFor(model => model.Event.ShowFastestSolves)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="Event.AllowFeedback" /> @Html.DisplayNameFor(model => model.Event.AllowFeedback)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

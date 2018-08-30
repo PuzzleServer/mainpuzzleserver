@@ -14,9 +14,9 @@ namespace ServerCore.DataModel
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
-        public Puzzle Puzzle { get; set; }
-        public Team Team { get; set; }
-        public State State { get; set; }
+        public virtual Puzzle Puzzle { get; set; }
+        public virtual Team Team { get; set; }
+        public virtual State State { get; set; }
         public DateTime StateChanged { get; set; }
     }
 }

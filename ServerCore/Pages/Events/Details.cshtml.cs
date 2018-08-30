@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 using ServerCore.Models;
 
-namespace ServerCore.Pages.Puzzles
+namespace ServerCore.Pages.Events
 {
     public class DetailsModel : PageModel
     {
@@ -19,7 +19,7 @@ namespace ServerCore.Pages.Puzzles
             _context = context;
         }
 
-        public Puzzle Puzzle { get; set; }
+        public Event Event { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -28,9 +28,9 @@ namespace ServerCore.Pages.Puzzles
                 return NotFound();
             }
 
-            Puzzle = await _context.Puzzle.Where(m => m.ID == id).FirstOrDefaultAsync();
+            Event = await _context.Event.SingleOrDefaultAsync(m => m.ID == id);
 
-            if (Puzzle == null)
+            if (Event == null)
             {
                 return NotFound();
             }

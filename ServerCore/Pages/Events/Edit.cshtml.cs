@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 using ServerCore.Models;
 
-namespace ServerCore.Pages.Puzzles
+namespace ServerCore.Pages.Events
 {
     public class EditModel : PageModel
     {
@@ -21,7 +21,7 @@ namespace ServerCore.Pages.Puzzles
         }
 
         [BindProperty]
-        public Puzzle Puzzle { get; set; }
+        public Event Event { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -30,9 +30,9 @@ namespace ServerCore.Pages.Puzzles
                 return NotFound();
             }
 
-            Puzzle = await _context.Puzzle.Where(m => m.ID == id).FirstOrDefaultAsync();
+            Event = await _context.Event.SingleOrDefaultAsync(m => m.ID == id);
 
-            if (Puzzle == null)
+            if (Event == null)
             {
                 return NotFound();
             }
@@ -46,7 +46,7 @@ namespace ServerCore.Pages.Puzzles
                 return Page();
             }
 
-            _context.Attach(Puzzle).State = EntityState.Modified;
+            _context.Attach(Event).State = EntityState.Modified;
 
             try
             {
@@ -54,7 +54,7 @@ namespace ServerCore.Pages.Puzzles
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!PuzzleExists(Puzzle.ID))
+                if (!EventExists(Event.ID))
                 {
                     return NotFound();
                 }
@@ -64,12 +64,12 @@ namespace ServerCore.Pages.Puzzles
                 }
             }
 
-            return RedirectToPage("./Index", new { eventid = Puzzle.Event?.ID });
+            return RedirectToPage("./Index");
         }
 
-        private bool PuzzleExists(int id)
+        private bool EventExists(int id)
         {
-            return _context.Puzzle.Any(e => e.ID == id);
+            return _context.Event.Any(e => e.ID == id);
         }
     }
 }

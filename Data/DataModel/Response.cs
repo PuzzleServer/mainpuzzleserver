@@ -10,7 +10,7 @@ namespace ServerCore.DataModel
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
-        public Puzzle Puzzle {get; set;}
+        public virtual Puzzle Puzzle {get; set;}
         public bool IsSolution { get; set; }
         public string SubmittedText { get; set; }
         public string Note { get; set; }
