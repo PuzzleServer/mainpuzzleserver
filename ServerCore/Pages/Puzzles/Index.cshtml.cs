@@ -19,7 +19,7 @@ namespace ServerCore.Pages.Puzzles
             _context = context;
         }
 
-        public IList<Puzzle> Puzzle { get; set; }
+        public IList<Puzzle> Puzzles { get; set; }
 
         public int? EventId { get; set; }
 
@@ -27,12 +27,12 @@ namespace ServerCore.Pages.Puzzles
         {
             if (eventid != null)
             {
-                Puzzle = await _context.Puzzle.Where((p) => p.Event != null && p.Event.ID == eventid).ToListAsync();
+                Puzzles = await _context.Puzzles.Where((p) => p.Event != null && p.Event.ID == eventid).ToListAsync();
                 EventId = eventid;
             }
             else
             {
-                Puzzle = await _context.Puzzle.ToListAsync();
+                Puzzles = await _context.Puzzles.ToListAsync();
             }
         }
     }

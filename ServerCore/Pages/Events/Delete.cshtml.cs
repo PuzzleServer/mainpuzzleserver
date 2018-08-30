@@ -29,7 +29,7 @@ namespace ServerCore.Pages.Events
                 return NotFound();
             }
 
-            Event = await _context.Event.SingleOrDefaultAsync(m => m.ID == id);
+            Event = await _context.Events.SingleOrDefaultAsync(m => m.ID == id);
 
             if (Event == null)
             {
@@ -45,11 +45,11 @@ namespace ServerCore.Pages.Events
                 return NotFound();
             }
 
-            Event = await _context.Event.FindAsync(id);
+            Event = await _context.Events.FindAsync(id);
 
             if (Event != null)
             {
-                _context.Event.Remove(Event);
+                _context.Events.Remove(Event);
                 await _context.SaveChangesAsync();
             }
 
