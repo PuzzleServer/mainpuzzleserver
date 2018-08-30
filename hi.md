@@ -8,5 +8,5 @@ Hi everyone!
 - Elizabeth:
 - Lambert: Hi
 - Jessica: Hello
-- Phil:
+- Phil: 👋
 - Asia: ahoy!
