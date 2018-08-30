@@ -29,7 +29,7 @@ namespace ServerCore.Pages.Puzzles
                 return NotFound();
             }
 
-            Puzzle = await _context.Puzzle.Where(m => m.ID == id).FirstOrDefaultAsync();
+            Puzzle = await _context.Puzzles.Where(m => m.ID == id).FirstOrDefaultAsync();
 
             if (Puzzle == null)
             {
@@ -46,11 +46,11 @@ namespace ServerCore.Pages.Puzzles
                 return NotFound();
             }
 
-            Puzzle = await _context.Puzzle.Where(m => m.ID == id).FirstOrDefaultAsync();
+            Puzzle = await _context.Puzzles.Where(m => m.ID == id).FirstOrDefaultAsync();
 
             if (Puzzle != null)
             {
-                _context.Puzzle.Remove(Puzzle);
+                _context.Puzzles.Remove(Puzzle);
                 await _context.SaveChangesAsync();
             }
 
