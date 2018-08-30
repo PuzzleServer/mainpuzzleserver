@@ -4,15 +4,46 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ServerCore.DataModel
 {
+    /// <summary>
+    /// A Puzzle is the record of a solvable puzzle in the database
+    /// Sometimes a Puzzle is used as a workaround for things like time prerequisites
+    /// </summary>
     public class Puzzle
     {
+        /// <summary>
+        /// The ID
+        /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
+
+        /// <summary>
+        /// The event the puzzle is a part of
+        /// </summary>
         public virtual Event Event { get; set; }
+
+        /// <summary>
+        /// The name of the puzzle
+        /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// True only if not a "fake" puzzle like "READ THIS INSTRUCTION PAGE" or "START THE EVENT"
+        /// </summary>
         public bool IsPuzzle { get; set; } = false;
+
+        /// <summary>
+        /// True if this is a meta puzzle
+        /// </summary>
         public bool IsMetaPuzzle { get; set; } = false;
+
+        /// <summary>
+        /// True if this is the final puzzle that would lock a team's rank in the standings
+        /// </summary>
         public bool IsFinalPuzzle { get; set; } = false;
+
+        /// <summary>
+        /// The solve value
+        /// </summary>
         public int SolveValue { get; set; } = 0;
 
         /// <summary>
@@ -28,7 +59,7 @@ namespace ServerCore.DataModel
         public string Group { get; set; }
 
         /// <summary>
-        /// Order within group
+        /// The order in the group (commonly used for the intended release order of the puzzle)
         /// </summary>
         public int OrderInGroup { get; set; } = 0;
 
@@ -38,14 +69,20 @@ namespace ServerCore.DataModel
         public bool IsGloballyVisiblePrerequisite { get; set; } = false;
 
         /// <summary>
-        /// Minimum number of prerequisites that must be satisfied.
+        /// Minimum number of <see cref="Prerequisites.cs"/> that must be satisfied
         /// TODO: When the system is mature, set the default to 1 so new puzzles are not accidentally displayed.
         /// </summary>
         public int MinPrerequisiteCount { get; set; } = 0;
 
+        /// <summary>
+        /// The link to the actual puzzle
+        /// </summary>
         [DataType(DataType.Url)]
         public string PuzzleUrlString { get; set; }
 
+        /// <summary>
+        /// The URI version of the puzzleUrlString
+        /// </summary>
         [NotMapped]
         public Uri PuzzleUrl
         {
@@ -53,19 +90,31 @@ namespace ServerCore.DataModel
             set { PuzzleUrlString = value?.ToString(); }
         }
 
+        /// <summary>
+        /// The link to the puzzle answer
+        /// </summary>
         [DataType(DataType.Url)]
         public string AnswerUrlString { get; set; }
 
+        /// <summary>
+        /// The URI version of the AnswerUrlString
+        /// </summary>
         [NotMapped]
         public Uri AnswerUrl
         {
             get { Uri.TryCreate(AnswerUrlString, UriKind.RelativeOrAbsolute, out Uri result); return result; }
             set { AnswerUrlString = value?.ToString(); }
         }
-
+        
+        /// <summary>
+        /// A legacy link that is currently not being used for anything
+        /// </summary>
         [DataType(DataType.Url)]
         public string MaterialsUrlString { get; set; }
 
+        /// <summary>
+        /// A legacy link that is currently not being used for anything
+        /// </summary>
         [NotMapped]
         public Uri MaterialsUrl
         {
