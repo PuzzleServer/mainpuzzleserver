@@ -10,11 +10,11 @@ namespace ServerCore.DataModel
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
-        public Puzzle Puzzle { get; set; }
-        public Team Team { get; set; }
-        public User Submitter { get; set; }
+        public virtual Puzzle Puzzle { get; set; }
+        public virtual Team Team { get; set; }
+        public virtual User Submitter { get; set; }
         public DateTime TimeSubmitted { get; set; }
         public string SubmissionText { get; set; }
-        public Response Response { get; set; }
+        public virtual Response Response { get; set; }
     }
 }

@@ -19,12 +19,12 @@ namespace ServerCore.DataModel
         /// Foreign Key - event table
         /// </summary>
         [ForeignKey("Event.ID")]
-        public Event Event { get; set; }
+        public virtual Event Event { get; set; }
 
         /// <summary>
         /// Foreign Key - user table (author)
         /// </summary>
         [ForeignKey("User.ID")]
-        public User Author { get; set; }
+        public virtual User Author { get; set; }
     }
 }
