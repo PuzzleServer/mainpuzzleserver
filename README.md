@@ -50,7 +50,9 @@ When you run `git remote -v`, you should see only your fork in the output list
      origin  https://github.com/johndoe/mainpuzzleserver.git (push)
 ```
 Map the primary `mainpuzzleserver` repository as the upstream remote
->git remote add upstream https://github.com/PuzzleServer/mainpuzzleserver.git
+```
+> git remote add upstream https://github.com/PuzzleServer/mainpuzzleserver.git
+```
 Now running `git remote -v` should show the upstream repository also
 ```
 > git remote -v
