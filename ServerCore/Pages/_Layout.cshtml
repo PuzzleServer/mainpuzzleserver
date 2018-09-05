@@ -18,10 +18,13 @@
 
     <!-- TODO: Remove when menus are implemented -->
     <style>
-        .nav * i { color: gray; font-size: 10px; }
+        .nav i { color: gray; font-size: 10px; }
     </style>
 </head>
 <body>
+    @{ 
+        var Event = ViewData["Event"] as ServerCore.DataModel.Event;
+    }
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -31,12 +34,14 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a asp-page="/Index" class="navbar-brand">EVENT NAME</a>
+                <a asp-page="/Index" class="navbar-brand">@(Event?.Name ?? "Microsoft Puzzles")</a>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li><a asp-page="/Index">Home</a></li>
 
+                    @if (Event != null)
+                    {
                     <li class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                             Puzzles
@@ -82,6 +87,7 @@
                             <li><a href="#">Admins <i>(if author; editable if admin)</i></a></li>
                         </ul>
                     </li>
+                    }
 
                     <li class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
@@ -89,13 +95,19 @@
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
+                            @if (Event != null)
+                            {
                             <li><a href="#">FAQ</a></li>
                             <li><a href="#">Rules</a></li>
+                            }
                             <li><a href="#">Encodings</a></li>
                             <li><a href="#">Tools</a></li>
                             <li class="divider"></li>
                             <li><a href="#">My Events</a></li>
+                            @if (Event != null)
+                            {
                             <li><a href="#">Event Properties <i>(if admin)</i></a></li>
+                            }
                             <li><a href="#">Events Dashboard <i>(if admin)</i></a></li>
                             <li class="divider"></li>
                             <li><a asp-page="/About">About</a></li>

@@ -29,6 +29,7 @@ namespace ServerCore.Pages.Puzzles
             {
                 Puzzles = await _context.Puzzles.Where((p) => p.Event != null && p.Event.ID == eventid).ToListAsync();
                 EventId = eventid;
+                ViewData["Event"] = await _context.Events.Where(e => e.ID == eventid).FirstAsync();
             }
             else
             {
