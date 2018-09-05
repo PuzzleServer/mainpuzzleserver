@@ -28,7 +28,7 @@ namespace ServerCore.Pages.Events
                 return NotFound();
             }
 
-            Event = await _context.Event.SingleOrDefaultAsync(m => m.ID == id);
+            Event = await _context.Events.SingleOrDefaultAsync(m => m.ID == id);
 
             if (Event == null)
             {

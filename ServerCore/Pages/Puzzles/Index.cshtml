@@ -14,49 +14,49 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Puzzle[0].Name)
+                @Html.DisplayNameFor(model => model.Puzzles[0].Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Puzzle[0].IsPuzzle)
+                @Html.DisplayNameFor(model => model.Puzzles[0].IsPuzzle)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Puzzle[0].IsMetaPuzzle)
+                @Html.DisplayNameFor(model => model.Puzzles[0].IsMetaPuzzle)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Puzzle[0].IsFinalPuzzle)
+                @Html.DisplayNameFor(model => model.Puzzles[0].IsFinalPuzzle)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Puzzle[0].SolveValue)
+                @Html.DisplayNameFor(model => model.Puzzles[0].SolveValue)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Puzzle[0].Token)
+                @Html.DisplayNameFor(model => model.Puzzles[0].Token)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Puzzle[0].Group)
+                @Html.DisplayNameFor(model => model.Puzzles[0].Group)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Puzzle[0].OrderInGroup)
+                @Html.DisplayNameFor(model => model.Puzzles[0].OrderInGroup)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Puzzle[0].IsGloballyVisiblePrerequisite)
+                @Html.DisplayNameFor(model => model.Puzzles[0].IsGloballyVisiblePrerequisite)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Puzzle[0].MinPrerequisiteCount)
+                @Html.DisplayNameFor(model => model.Puzzles[0].MinPrerequisiteCount)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Puzzle[0].PuzzleUrlString)
+                @Html.DisplayNameFor(model => model.Puzzles[0].PuzzleUrlString)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Puzzle[0].AnswerUrlString)
+                @Html.DisplayNameFor(model => model.Puzzles[0].AnswerUrlString)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Puzzle[0].MaterialsUrlString)
+                @Html.DisplayNameFor(model => model.Puzzles[0].MaterialsUrlString)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.Puzzle) {
+@foreach (var item in Model.Puzzles) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)

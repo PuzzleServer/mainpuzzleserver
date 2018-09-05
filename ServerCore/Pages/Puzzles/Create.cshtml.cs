@@ -35,9 +35,9 @@ namespace ServerCore.Pages.Puzzles
                 return Page();
             }
 
-            Puzzle.Event = await _context.Event.SingleOrDefaultAsync(m => m.ID == eventid);
+            Puzzle.Event = await _context.Events.SingleOrDefaultAsync(m => m.ID == eventid);
 
-            _context.Puzzle.Add(Puzzle);
+            _context.Puzzles.Add(Puzzle);
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index", new { eventid = eventid });

@@ -30,7 +30,7 @@ namespace ServerCore.Pages.Events
                 return NotFound();
             }
 
-            Event = await _context.Event.SingleOrDefaultAsync(m => m.ID == id);
+            Event = await _context.Events.SingleOrDefaultAsync(m => m.ID == id);
 
             if (Event == null)
             {
@@ -69,7 +69,7 @@ namespace ServerCore.Pages.Events
 
         private bool EventExists(int id)
         {
-            return _context.Event.Any(e => e.ID == id);
+            return _context.Events.Any(e => e.ID == id);
         }
     }
 }
