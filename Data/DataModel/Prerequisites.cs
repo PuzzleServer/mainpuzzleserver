@@ -19,13 +19,11 @@ namespace ServerCore.DataModel
         /// <summary>
         /// The puzzle that depends on others.
         /// </summary>
-        [ForeignKey("Puzzle.ID")]
         public virtual Puzzle Puzzle { get; set; }
 
         /// <summary>
         /// A potential prerequisite of the puzzle named in Puzzle, which may need to be solved before Puzzle will be unlocked.
         /// </summary>
-        [ForeignKey("Puzzle.ID")]
         public virtual Puzzle Prerequisite { get; set; }
     }
 }

@@ -14,19 +14,19 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Event[0].Name)
+                @Html.DisplayNameFor(model => model.Events[0].Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Event[0].UrlString)
+                @Html.DisplayNameFor(model => model.Events[0].UrlString)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Event[0].IsInternEvent)
+                @Html.DisplayNameFor(model => model.Events[0].IsInternEvent)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.Event) {
+@foreach (var item in Model.Events) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)

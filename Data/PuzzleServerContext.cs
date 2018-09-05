@@ -14,14 +14,15 @@ namespace ServerCore.Models
 
         // These are the objects that EF uses to create/update tables
         // In general these won't be used directly
-        public DbSet<Event> Event { get; set; }
+        public DbSet<Event> Events { get; set; }
         public DbSet<EventAdmins> EventAdmins { get; set; }
         public DbSet<EventAuthors> EventAuthors { get; set; }
         public DbSet<EventOwners> EventOwners { get; set; }
         public DbSet<EventTeams> EventTeams { get; set; }
         public DbSet<Feedback> Feedback { get; set; }
         public DbSet<Invitation> Invitations { get; set; }
-        public DbSet<Puzzle> Puzzle { get; set; }
+        public DbSet<Prerequisites> Prerequisites { get; set; }
+        public DbSet<Puzzle> Puzzles { get; set; }
         public DbSet<PuzzleAuthors> PuzzleAuthors { get; set; }
         public DbSet<PuzzleStatePerTeam> PuzzleStatePerTeam { get; set; }
         public DbSet<Response> Responses { get; set; }

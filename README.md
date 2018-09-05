@@ -50,7 +50,9 @@ When you run `git remote -v`, you should see only your fork in the output list
      origin  https://github.com/johndoe/mainpuzzleserver.git (push)
 ```
 Map the primary `mainpuzzleserver` repository as the upstream remote
->git remote add upstream https://github.com/PuzzleServer/mainpuzzleserver.git
+```
+> git remote add upstream https://github.com/PuzzleServer/mainpuzzleserver.git
+```
 Now running `git remote -v` should show the upstream repository also
 ```
 > git remote -v
@@ -73,7 +75,7 @@ git checkout master
 git pull upstream master
 git push
 ```
-## Merging upstream master into your current branch
+### Merging upstream master into your current branch
 From time to time, your current branch will get out of sync with the upstream remote. Use the following commands to get your branch up to date.
 ```
 git fetch upstream
