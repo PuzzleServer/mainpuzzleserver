@@ -20,13 +20,17 @@ namespace ServerCore.Pages.Puzzles
             _context = context;
         }
 
-        public IActionResult OnGet()
+        public async Task<IActionResult> OnGetAsync(int eventid)
         {
+            Event = await _context.Events.SingleOrDefaultAsync(m => m.ID == eventid);
+            ViewData["Event"] = Event;
             return Page();
         }
 
         [BindProperty]
         public Puzzle Puzzle { get; set; }
+
+        public Event Event { get; set; }
 
         public async Task<IActionResult> OnPostAsync(int eventid)
         {
@@ -35,7 +39,9 @@ namespace ServerCore.Pages.Puzzles
                 return Page();
             }
 
-            Puzzle.Event = await _context.Events.SingleOrDefaultAsync(m => m.ID == eventid);
+            Event = await _context.Events.SingleOrDefaultAsync(m => m.ID == eventid);
+            Puzzle.Event = Event;
+            ViewData["Event"] = Event;
 
             _context.Puzzles.Add(Puzzle);
             await _context.SaveChangesAsync();
