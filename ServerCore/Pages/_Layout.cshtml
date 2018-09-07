@@ -23,7 +23,7 @@
 </head>
 <body>
     @{ 
-        var Event = ViewData["Event"] as ServerCore.DataModel.Event;
+        var Event = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Event;
     }
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">

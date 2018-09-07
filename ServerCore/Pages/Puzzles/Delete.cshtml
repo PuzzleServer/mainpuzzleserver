@@ -1,4 +1,4 @@
-﻿@page
+﻿@page  "/{eventId}/Puzzles/Delete/{id}"
 @model ServerCore.Pages.Puzzles.DeleteModel
 
 @{
@@ -91,10 +91,10 @@
             @Html.DisplayFor(model => model.Puzzle.MaterialsUrlString)
         </dd>
     </dl>
-    
+
     <form method="post">
         <input type="hidden" asp-for="Puzzle.ID" />
         <input type="submit" value="Delete" class="btn btn-default" /> |
-        <a asp-page="./Index" asp-route-eventid="@Model.Puzzle.Event?.ID">Back to List</a>
+        <a asp-page="./Index">Back to List</a>
     </form>
 </div>

@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
-using ServerCore.Models;
+using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Puzzles
 {
-    public class EditModel : PageModel
+    public class EditModel : EventSpecificPageModel
     {
         private readonly ServerCore.Models.PuzzleServerContext _context;
 
@@ -23,15 +19,9 @@ namespace ServerCore.Pages.Puzzles
         [BindProperty]
         public Puzzle Puzzle { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task<IActionResult> OnGetAsync(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             Puzzle = await _context.Puzzles.Where(m => m.ID == id).FirstOrDefaultAsync();
-            ViewData["Event"] = Puzzle?.Event;
 
             if (Puzzle == null)
             {
@@ -65,7 +55,7 @@ namespace ServerCore.Pages.Puzzles
                 }
             }
 
-            return RedirectToPage("./Index", new { eventid = Puzzle.Event?.ID });
+            return RedirectToPage("./Index");
         }
 
         private bool PuzzleExists(int id)
