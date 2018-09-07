@@ -1,4 +1,4 @@
-﻿@page
+﻿@page "/{eventId}/Puzzles"
 @model ServerCore.Pages.Puzzles.IndexModel
 
 @{
@@ -8,7 +8,7 @@
 <h2>Index</h2>
 
 <p>
-    <a asp-page="Create" asp-route-eventid="@Model.EventId">Create New</a>
+    <a asp-page="Create">Create New</a>
 </p>
 <table class="table">
     <thead>
@@ -98,9 +98,9 @@
                 @Html.DisplayFor(modelItem => item.MaterialsUrlString)
             </td>
             <td>
-                <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.ID">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.ID">Delete</a>
+                <a asp-Page="./Edit" asp-route-id="@item.ID">Edit</a> |
+                <a asp-Page="./Details" asp-route-id="@item.ID">Details</a> |
+                <a asp-Page="./Delete" asp-route-id="@item.ID">Delete</a>
             </td>
         </tr>
 }
