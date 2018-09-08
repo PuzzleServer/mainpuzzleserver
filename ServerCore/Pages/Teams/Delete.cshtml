@@ -1,0 +1,64 @@
+﻿@page "{eventId}/Teams/Delete"
+@model ServerCore.Pages.Teams.DeleteModel
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>Team</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Team.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Team.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Team.Password)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Team.Password)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Team.RoomID)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Team.RoomID)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Team.CustomRoom)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Team.CustomRoom)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Team.PrimaryContactEmail)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Team.PrimaryContactEmail)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Team.PrimaryPhoneNumber)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Team.PrimaryPhoneNumber)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Team.SecondaryPhoneNumber)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Team.SecondaryPhoneNumber)
+        </dd>
+    </dl>
+    
+    <form method="post">
+        <input type="hidden" asp-for="Team.ID" />
+        <input type="submit" value="Delete" class="btn btn-default" /> |
+        <a asp-page="./Index">Back to List</a>
+    </form>
+</div>

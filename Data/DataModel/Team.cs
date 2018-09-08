@@ -10,7 +10,7 @@ namespace ServerCore.DataModel
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
-        public int EventID { get; set; }
+        public virtual Event Event { get; set; }
         public string Name { get; set; }
         public string Password { get; set; }
 

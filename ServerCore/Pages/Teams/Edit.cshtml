@@ -1,0 +1,64 @@
+﻿@page "{eventId}/Teams/Create"
+@model ServerCore.Pages.Teams.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h2>Edit</h2>
+
+<h4>Team</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Team.Name" class="control-label"></label>
+                <input asp-for="Team.Name" class="form-control" />
+                <span asp-validation-for="Team.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Team.Password" class="control-label"></label>
+                <input asp-for="Team.Password" class="form-control" />
+                <span asp-validation-for="Team.Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Team.RoomID" class="control-label"></label>
+                <input asp-for="Team.RoomID" class="form-control" />
+                <span asp-validation-for="Team.RoomID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Team.CustomRoom" class="control-label"></label>
+                <input asp-for="Team.CustomRoom" class="form-control" />
+                <span asp-validation-for="Team.CustomRoom" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Team.PrimaryContactEmail" class="control-label"></label>
+                <input asp-for="Team.PrimaryContactEmail" class="form-control" />
+                <span asp-validation-for="Team.PrimaryContactEmail" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Team.PrimaryPhoneNumber" class="control-label"></label>
+                <input asp-for="Team.PrimaryPhoneNumber" class="form-control" />
+                <span asp-validation-for="Team.PrimaryPhoneNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Team.SecondaryPhoneNumber" class="control-label"></label>
+                <input asp-for="Team.SecondaryPhoneNumber" class="form-control" />
+                <span asp-validation-for="Team.SecondaryPhoneNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
