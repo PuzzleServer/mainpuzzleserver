@@ -24,6 +24,7 @@ namespace ServerCore.Models
         public DbSet<Prerequisites> Prerequisites { get; set; }
         public DbSet<Puzzle> Puzzles { get; set; }
         public DbSet<PuzzleAuthors> PuzzleAuthors { get; set; }
+        public DbSet<PuzzleFile> PuzzleFiles { get; set; }
         public DbSet<PuzzleStatePerTeam> PuzzleStatePerTeam { get; set; }
         public DbSet<Response> Responses { get; set; }
         public DbSet<Submission> Submissions { get; set; }
