@@ -19,13 +19,8 @@ namespace ServerCore.Pages.Teams
         [BindProperty]
         public Team Team { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task<IActionResult> OnGetAsync(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             Team = await _context.Teams.FirstOrDefaultAsync(m => m.ID == id);
 
             if (Team == null)
