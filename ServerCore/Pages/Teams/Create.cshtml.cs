@@ -31,7 +31,6 @@ namespace ServerCore.Pages.Teams
             }
 
             Team.Event = Event;
-            Team.PuzzleCacheLastUpdated = DateTime.UtcNow;
 
             _context.Teams.Add(Team);
             await _context.SaveChangesAsync();
