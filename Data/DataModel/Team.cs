@@ -10,14 +10,13 @@ namespace ServerCore.DataModel
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
-        public int EventID { get; set; }
+        public virtual Event Event { get; set; }
         public string Name { get; set; }
-        public string Password { get; set; }
 
         /// <summary>
         /// Cross reference for pre-reserved rooms (PD only)
         /// </summary>
-        public int RoomID { get; set; }
+        public int? RoomID { get; set; }
 
         /// <summary>
         /// String formatted rooms for events that don't pre-reserve rooms
@@ -30,8 +29,5 @@ namespace ServerCore.DataModel
         public string PrimaryContactEmail { get; set; }
         public string PrimaryPhoneNumber { get; set; }
         public string SecondaryPhoneNumber { get; set; }
-
-        // TODO: Not sure if we're going to use this
-        public DateTime PuzzleCacheLastUpdated { get; set; }
     }
 }

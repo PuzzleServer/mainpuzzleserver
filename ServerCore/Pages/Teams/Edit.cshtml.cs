@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
-using ServerCore.Models;
+using ServerCore.ModelBases;
 
-namespace ServerCore.Pages.Events
+namespace ServerCore.Pages.Teams
 {
-    public class EditModel : PageModel
+    public class EditModel : EventSpecificPageModel
     {
         private readonly ServerCore.Models.PuzzleServerContext _context;
 
@@ -21,13 +17,13 @@ namespace ServerCore.Pages.Events
         }
 
         [BindProperty]
-        public Event Event { get; set; }
+        public Team Team { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            Event = await _context.Events.SingleOrDefaultAsync(m => m.ID == id);
+            Team = await _context.Teams.FirstOrDefaultAsync(m => m.ID == id);
 
-            if (Event == null)
+            if (Team == null)
             {
                 return NotFound();
             }
@@ -41,7 +37,7 @@ namespace ServerCore.Pages.Events
                 return Page();
             }
 
-            _context.Attach(Event).State = EntityState.Modified;
+            _context.Attach(Team).State = EntityState.Modified;
 
             try
             {
@@ -49,7 +45,7 @@ namespace ServerCore.Pages.Events
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!EventExists(Event.ID))
+                if (!TeamExists(Team.ID))
                 {
                     return NotFound();
                 }
@@ -62,9 +58,9 @@ namespace ServerCore.Pages.Events
             return RedirectToPage("./Index");
         }
 
-        private bool EventExists(int id)
+        private bool TeamExists(int id)
         {
-            return _context.Events.Any(e => e.ID == id);
+            return _context.Teams.Any(e => e.ID == id);
         }
     }
 }
