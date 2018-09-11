@@ -4,18 +4,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
-using ServerCore.Models;
 
 namespace ServerCore.Pages.Submissions
 {
-    public class CreateModel : PageModel
+    public class IndexModel : PageModel
     {
         private readonly ServerCore.Models.PuzzleServerContext _context;
 
-        public CreateModel(ServerCore.Models.PuzzleServerContext context)
+        public IndexModel(ServerCore.Models.PuzzleServerContext context)
         {
             _context = context;
         }
@@ -45,7 +43,7 @@ namespace ServerCore.Pages.Submissions
             _context.Submissions.Add(Submission);
             await _context.SaveChangesAsync();
 
-            return RedirectToPage("./Create", new { puzzleid = puzzleId, eventid = Submission.Puzzle.Event.ID });
+            return RedirectToPage("./Index", new { puzzleid = puzzleId, eventid = Submission.Puzzle.Event.ID });
         }
 
         public async Task OnGetAsync(int? puzzleId, int? eventId)
