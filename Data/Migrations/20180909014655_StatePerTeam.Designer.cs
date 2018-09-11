@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ServerCore.Models;
 
 namespace Data.Migrations
 {
     [DbContext(typeof(PuzzleServerContext))]
-    partial class PuzzleServerContextModelSnapshot : ModelSnapshot
+    [Migration("20180909014655_StatePerTeam")]
+    partial class StatePerTeam
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -372,11 +374,15 @@ namespace Data.Migrations
 
                     b.Property<string>("Name");
 
+                    b.Property<string>("Password");
+
                     b.Property<string>("PrimaryContactEmail");
 
                     b.Property<string>("PrimaryPhoneNumber");
 
-                    b.Property<int?>("RoomID");
+                    b.Property<DateTime>("PuzzleCacheLastUpdated");
+
+                    b.Property<int>("RoomID");
 
                     b.Property<string>("SecondaryPhoneNumber");
 

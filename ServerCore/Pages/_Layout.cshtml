@@ -15,8 +15,16 @@
               asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
     </environment>
+
+    <!-- TODO: Remove when menus are implemented -->
+    <style>
+        .nav i { color: gray; font-size: 10px; }
+    </style>
 </head>
 <body>
+    @{ 
+        var Event = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Event;
+    }
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -26,15 +34,91 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a asp-page="/Index" class="navbar-brand">ServerCore</a>
+                <a asp-page="/Index" class="navbar-brand">@(Event?.Name ?? "Microsoft Puzzles")</a>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li><a asp-page="/Index">Home</a></li>
-                    <li><a asp-page="/Puzzleday/Index">Puzzleday</a></li>
-                    <li><a asp-page="/Puzzlehunt/Index">Puzzlehunt</a></li>
-                    <li><a asp-page="/About">About</a></li>
-                    <li><a asp-page="/Contact">Contact</a></li>
+
+                    @if (Event != null)
+                    {
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            Puzzles
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">Unsolved Puzzles <i>(if event active)</i></a></li>
+                            <li><a href="#">Solved Puzzles <i>(if event active)</i></a></li>
+                            <li><a href="#">All Puzzles <i>(if event active/over)</i></a></li>
+                            <li class="divider"></li>
+                            <li><a href="#">Administer Puzzles <i>(if author/admin)</i></a></li>
+                            <li><a href="#">Import Puzzle Data <i>(if author/admin; P2)</i></a></li>
+                        </ul>
+                    </li>
+
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            Results
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">Standings <i>(if event active/over)</i></a></li>
+                            <li><a href="#">Fastest Solves <i>(if event active/over)</i></a></li>
+                            <li class="divider"></li>
+                            <li><a href="#">Puzzle State Map <i>(if author/admin)</i></a></li>
+                            <li><a href="#">Submissions <i>(if author/admin)</i></a></li>
+                            <li><a href="#">Puzzles in Lockout <i>(if author/admin)</i></a></li>
+                        </ul>
+                    </li>
+
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            Registration
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">MY TEAM NAME <i>(if member)</i></a></li>
+                            <li><a href="#">Matchmaking Zone <i>(if available)</i></a></li>
+                            <li><a href="#">Teams</a></li>
+                            <li><a href="#">Players <i>(everybody if author/admin)</i></a></li>
+                            <li class="divider"></li>
+                            <li><a href="#">Authors <i>(if author; editable if admin)</i></a></li>
+                            <li><a href="#">Admins <i>(if author; editable if admin)</i></a></li>
+                        </ul>
+                    </li>
+                    }
+
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            Resources
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            @if (Event != null)
+                            {
+                            <li><a href="#">FAQ</a></li>
+                            <li><a href="#">Rules</a></li>
+                            }
+                            <li><a href="#">Encodings</a></li>
+                            <li><a href="#">Tools</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#">My Events</a></li>
+                            @if (Event != null)
+                            {
+                            <li><a href="#">Event Properties <i>(if admin)</i></a></li>
+                            }
+                            <li><a href="#">Events Dashboard <i>(if admin)</i></a></li>
+                            <li class="divider"></li>
+                            <li><a asp-page="/About">About</a></li>
+                            <li><a asp-page="/Contact">Contact</a></li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+                    <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login/out</a></li>
                 </ul>
             </div>
         </div>
@@ -43,7 +127,7 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; 2017 - ServerCore</p>
+            <p>&copy; 2018 - ServerCore</p>
         </footer>
     </div>
 

@@ -17,7 +17,6 @@ namespace ServerCore.Models
         DbSet<PuzzleAuthors> PuzzleAuthors { get; set; }
         DbSet<PuzzleStatePerTeam> PuzzleStatePerTeam { get; set; }
         DbSet<Response> Responses { get; set; }
-        DbSet<State> States { get; set; }
         DbSet<Submission> Submissions { get; set; }
         DbSet<TeamMembers> TeamMembers { get; set; }
         DbSet<Team> Teams { get; set; }

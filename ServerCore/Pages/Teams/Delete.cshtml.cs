@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
-using ServerCore.Models;
+using ServerCore.ModelBases;
 
-namespace ServerCore.Pages.Events
+namespace ServerCore.Pages.Teams
 {
-    public class DeleteModel : PageModel
+    public class DeleteModel : EventSpecificPageModel
     {
         private readonly ServerCore.Models.PuzzleServerContext _context;
 
@@ -20,13 +16,13 @@ namespace ServerCore.Pages.Events
         }
 
         [BindProperty]
-        public Event Event { get; set; }
+        public Team Team { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            Event = await _context.Events.SingleOrDefaultAsync(m => m.ID == id);
+            Team = await _context.Teams.FirstOrDefaultAsync(m => m.ID == id);
 
-            if (Event == null)
+            if (Team == null)
             {
                 return NotFound();
             }
@@ -35,11 +31,11 @@ namespace ServerCore.Pages.Events
 
         public async Task<IActionResult> OnPostAsync(int id)
         {
-            Event = await _context.Events.FindAsync(id);
+            Team = await _context.Teams.FindAsync(id);
 
-            if (Event != null)
+            if (Team != null)
             {
-                _context.Events.Remove(Event);
+                _context.Teams.Remove(Team);
                 await _context.SaveChangesAsync();
             }
 
