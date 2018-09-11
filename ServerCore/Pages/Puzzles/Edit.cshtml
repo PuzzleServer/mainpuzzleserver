@@ -1,4 +1,4 @@
-﻿@page
+﻿@page  "/{eventId}/Puzzles/Edit/{id}"
 @model ServerCore.Pages.Puzzles.EditModel
 
 @{
@@ -95,7 +95,7 @@
 </div>
 
 <div>
-    <a asp-page="./Index" asp-route-eventid="@Model.Puzzle.Event?.ID">Back to List</a>
+    <a asp-page="./Index">Back to List</a>
 </div>
 
 @section Scripts {

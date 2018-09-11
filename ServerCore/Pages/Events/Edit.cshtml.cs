@@ -23,13 +23,8 @@ namespace ServerCore.Pages.Events
         [BindProperty]
         public Event Event { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task<IActionResult> OnGetAsync(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             Event = await _context.Events.SingleOrDefaultAsync(m => m.ID == id);
 
             if (Event == null)

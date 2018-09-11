@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
-using ServerCore.Models;
+using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Puzzles
 {
-    public class DetailsModel : PageModel
+    public class DetailsModel : EventSpecificPageModel
     {
         private readonly ServerCore.Models.PuzzleServerContext _context;
 
@@ -21,13 +18,8 @@ namespace ServerCore.Pages.Puzzles
 
         public Puzzle Puzzle { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task<IActionResult> OnGetAsync(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             Puzzle = await _context.Puzzles.Where(m => m.ID == id).FirstOrDefaultAsync();
 
             if (Puzzle == null)

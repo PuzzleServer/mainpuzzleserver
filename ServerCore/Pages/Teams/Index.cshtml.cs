@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 using ServerCore.ModelBases;
 
-namespace ServerCore.Pages.Puzzles
+namespace ServerCore.Pages.Teams
 {
     public class IndexModel : EventSpecificPageModel
     {
@@ -16,18 +16,11 @@ namespace ServerCore.Pages.Puzzles
             _context = context;
         }
 
-        public IList<Puzzle> Puzzles { get; set; }
+        public IList<Team> Team { get;set; }
 
         public async Task OnGetAsync()
         {
-            if (Event != null)
-            {
-                Puzzles = await _context.Puzzles.Where((p) => p.Event != null && p.Event == Event).ToListAsync();
-            }
-            else
-            {
-                Puzzles = await _context.Puzzles.ToListAsync();
-            }
+            Team = await _context.Teams.Where(team => team.Event == Event).ToListAsync();
         }
     }
 }

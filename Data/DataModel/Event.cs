@@ -19,8 +19,8 @@ namespace ServerCore.DataModel
         [NotMapped]
         public Uri URL
         {
-            get { return string.IsNullOrEmpty(this.UrlString) ? null : new Uri(UrlString); }
-            set { UrlString = value.ToString(); }
+            get { Uri.TryCreate(UrlString, UriKind.RelativeOrAbsolute, out Uri result); return result; }
+            set { UrlString = value?.ToString(); }
         }
 
         public int MaxNumberOfTeams { get; set; }

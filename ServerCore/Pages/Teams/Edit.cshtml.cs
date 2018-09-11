@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 using ServerCore.ModelBases;
 
-namespace ServerCore.Pages.Puzzles
+namespace ServerCore.Pages.Teams
 {
     public class EditModel : EventSpecificPageModel
     {
@@ -17,13 +17,13 @@ namespace ServerCore.Pages.Puzzles
         }
 
         [BindProperty]
-        public Puzzle Puzzle { get; set; }
+        public Team Team { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            Puzzle = await _context.Puzzles.Where(m => m.ID == id).FirstOrDefaultAsync();
+            Team = await _context.Teams.FirstOrDefaultAsync(m => m.ID == id);
 
-            if (Puzzle == null)
+            if (Team == null)
             {
                 return NotFound();
             }
@@ -37,7 +37,7 @@ namespace ServerCore.Pages.Puzzles
                 return Page();
             }
 
-            _context.Attach(Puzzle).State = EntityState.Modified;
+            _context.Attach(Team).State = EntityState.Modified;
 
             try
             {
@@ -45,7 +45,7 @@ namespace ServerCore.Pages.Puzzles
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!PuzzleExists(Puzzle.ID))
+                if (!TeamExists(Team.ID))
                 {
                     return NotFound();
                 }
@@ -58,9 +58,9 @@ namespace ServerCore.Pages.Puzzles
             return RedirectToPage("./Index");
         }
 
-        private bool PuzzleExists(int id)
+        private bool TeamExists(int id)
         {
-            return _context.Puzzles.Any(e => e.ID == id);
+            return _context.Teams.Any(e => e.ID == id);
         }
     }
 }

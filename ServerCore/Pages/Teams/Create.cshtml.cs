@@ -1,9 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ServerCore.DataModel;
 using ServerCore.ModelBases;
 
-namespace ServerCore.Pages.Puzzles
+namespace ServerCore.Pages.Teams
 {
     public class CreateModel : EventSpecificPageModel
     {
@@ -20,7 +21,7 @@ namespace ServerCore.Pages.Puzzles
         }
 
         [BindProperty]
-        public Puzzle Puzzle { get; set; }
+        public Team Team { get; set; }
 
         public async Task<IActionResult> OnPostAsync()
         {
@@ -29,9 +30,9 @@ namespace ServerCore.Pages.Puzzles
                 return Page();
             }
 
-            Puzzle.Event = Event;
+            Team.Event = Event;
 
-            _context.Puzzles.Add(Puzzle);
+            _context.Teams.Add(Team);
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");
