@@ -1,0 +1,72 @@
+﻿@page
+@model ServerCore.Pages.Submissions.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h2>Submissions</h2>
+<hr />
+<div>
+    <a asp-page="/Puzzles/Index" asp-route-eventid="@Model.EventId">Back to Puzzle List</a>
+</div>
+<br />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Submission.SubmissionText" class="control-label">Answer</label>
+                <input asp-for="Submission.SubmissionText" class="form-control" />
+                <span asp-validation-for="Submission.SubmissionText" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Submit" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Submissions[0].TimeSubmitted)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Submissions[0].SubmissionText)
+                </th>
+                <th>
+                    Response
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Submissions)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TimeSubmitted)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SubmissionText)
+                    </td>
+                    <td>
+                        @(item.Response != null ? item.Response.Note : "Incorrect")
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+<div>
+    <a asp-page="/Puzzles/Index" asp-route-eventid="@Model.EventId">Back to Puzzle List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

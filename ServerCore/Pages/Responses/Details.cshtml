@@ -1,0 +1,37 @@
+﻿@page
+@model ServerCore.Pages.Responses.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Response</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Response.IsSolution)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Response.IsSolution)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Response.SubmittedText)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Response.SubmittedText)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Response.Note)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Response.Note)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.Response.ID">Edit</a> |
+    <a asp-page="./Index">Back to List</a>
+</div>

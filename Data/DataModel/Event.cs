@@ -19,7 +19,7 @@ namespace ServerCore.DataModel
         [NotMapped]
         public Uri URL
         {
-            get { return new Uri(UrlString); }
+            get { return string.IsNullOrEmpty(this.UrlString) ? null : new Uri(UrlString); }
             set { UrlString = value.ToString(); }
         }
 
