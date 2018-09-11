@@ -27,6 +27,8 @@ namespace ServerCore.Pages.Submissions
 
         public int? EventId { get; set; }
 
+        public string AnswerToken { get; set; }
+
         public async Task<IActionResult> OnPostAsync(int puzzleId)
         {
             if (!ModelState.IsValid)
@@ -52,6 +54,16 @@ namespace ServerCore.Pages.Submissions
             {
                 this.Submissions = await _context.Submissions.Where((s) => s.Puzzle != null && s.Puzzle.ID == puzzleId).ToListAsync();
                 this.PuzzleId = puzzleId;
+
+                Submission lastSubmission = this.Submissions.LastOrDefault();
+                if (lastSubmission != null && lastSubmission.Response != null && lastSubmission.Response.IsSolution)
+                {
+                    this.AnswerToken = lastSubmission.SubmissionText;
+                }
+            }
+            else if (eventId != null)
+            {
+                this.Submissions = await _context.Submissions.Where((s) => s.Puzzle != null && s.Puzzle.Event.ID == eventId).ToListAsync();
             }
             else
             {
