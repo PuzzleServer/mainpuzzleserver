@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
-using ServerCore.Models;
+using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Responses
 {
-    public class EditModel : PageModel
+    public class EditModel : EventSpecificPageModel
     {
         private readonly ServerCore.Models.PuzzleServerContext _context;
 
@@ -21,32 +17,26 @@ namespace ServerCore.Pages.Responses
         }
 
         [BindProperty]
-        public Response Response { get; set; }
+        public Response PuzzleResponse { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public int PuzzleId { get; set; }
+
+        public async Task<IActionResult> OnGetAsync(int id, int puzzleId)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            PuzzleResponse = await _context.Responses.FirstOrDefaultAsync(m => m.ID == id);
+            this.PuzzleId = puzzleId;
 
-            Response = await _context.Responses.FirstOrDefaultAsync(m => m.ID == id);
-
-            if (Response == null)
+            if (PuzzleResponse == null)
             {
                 return NotFound();
             }
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(int puzzleId)
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
-            _context.Attach(Response).State = EntityState.Modified;
+            _context.Attach(PuzzleResponse).State = EntityState.Modified;
+            this.PuzzleId = puzzleId;
 
             try
             {
@@ -54,7 +44,7 @@ namespace ServerCore.Pages.Responses
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ResponseExists(Response.ID))
+                if (!ResponseExists(PuzzleResponse.ID))
                 {
                     return NotFound();
                 }
@@ -64,7 +54,7 @@ namespace ServerCore.Pages.Responses
                 }
             }
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("./Index", new { puzzleId = puzzleId });
         }
 
         private bool ResponseExists(int id)

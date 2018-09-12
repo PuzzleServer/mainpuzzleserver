@@ -1,4 +1,4 @@
-﻿@page
+﻿@page "/{eventId}/Responses/Details"
 @model ServerCore.Pages.Responses.DetailsModel
 
 @{
@@ -12,26 +12,26 @@
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.Response.IsSolution)
+            @Html.DisplayNameFor(model => model.PuzzleResponse.IsSolution)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Response.IsSolution)
+            @Html.DisplayFor(model => model.PuzzleResponse.IsSolution)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Response.SubmittedText)
+            @Html.DisplayNameFor(model => model.PuzzleResponse.SubmittedText)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Response.SubmittedText)
+            @Html.DisplayFor(model => model.PuzzleResponse.SubmittedText)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Response.Note)
+            @Html.DisplayNameFor(model => model.PuzzleResponse.Note)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Response.Note)
+            @Html.DisplayFor(model => model.PuzzleResponse.Note)
         </dd>
     </dl>
 </div>
 <div>
-    <a asp-page="./Edit" asp-route-id="@Model.Response.ID">Edit</a> |
-    <a asp-page="./Index">Back to List</a>
+    <a asp-page="./Edit" asp-route-id="@Model.PuzzleResponse.ID" asp-route-puzzleid="@Model.PuzzleId">Edit</a> |
+    <a asp-page="./Index" asp-route-puzzleid="@Model.PuzzleId">Back to List</a>
 </div>

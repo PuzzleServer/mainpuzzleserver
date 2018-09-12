@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
-using ServerCore.Models;
+using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Responses
 {
-    public class IndexModel : PageModel
+    public class IndexModel : EventSpecificPageModel
     {
         private readonly ServerCore.Models.PuzzleServerContext _context;
 
@@ -21,26 +19,12 @@ namespace ServerCore.Pages.Responses
 
         public IList<Response> Responses { get;set; }
         
-        public int? PuzzleId { get; set; }
+        public int PuzzleId { get; set; }
 
-        public int? EventId { get; set; }
-
-        public async Task OnGetAsync(int? puzzleId, int? eventId)
+        public async Task OnGetAsync(int puzzleId)
         {
-            if (puzzleId != null)
-            {
-                this.Responses = await _context.Responses.Where((r) => r.Puzzle != null && r.Puzzle.ID == puzzleId).ToListAsync();
-                this.PuzzleId = puzzleId;
-            }
-            else
-            {
-                this.Responses = await _context.Responses.ToListAsync();
-            }
-
-            if (eventId != null)
-            {
-                this.EventId = eventId;
-            }
+            this.Responses = await _context.Responses.Where((r) => r.Puzzle != null && r.Puzzle.ID == puzzleId).ToListAsync();
+            this.PuzzleId = puzzleId;
         }
     }
 }

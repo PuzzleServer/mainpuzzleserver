@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
-using ServerCore.Models;
+using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Responses
 {
-    public class DeleteModel : PageModel
+    public class DeleteModel : EventSpecificPageModel
     {
         private readonly ServerCore.Models.PuzzleServerContext _context;
 
@@ -21,15 +17,13 @@ namespace ServerCore.Pages.Responses
 
         [BindProperty]
         public Response PuzzleResponse { get; set; }
+        
+        public int PuzzleId { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task<IActionResult> OnGetAsync(int id, int puzzleId)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             PuzzleResponse = await _context.Responses.FirstOrDefaultAsync(m => m.ID == id);
+            this.PuzzleId = puzzleId;
 
             if (Response == null)
             {
@@ -38,13 +32,8 @@ namespace ServerCore.Pages.Responses
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(int? id)
+        public async Task<IActionResult> OnPostAsync(int id, int puzzleId)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             PuzzleResponse = await _context.Responses.FindAsync(id);
 
             if (Response != null)
@@ -53,7 +42,7 @@ namespace ServerCore.Pages.Responses
                 await _context.SaveChangesAsync();
             }
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("./Index", new { puzzleId = puzzleId });
         }
     }
 }

@@ -47,7 +47,7 @@ namespace ServerCore.DataModel
         /// <returns>The formatted submission</returns>
         public static string FormatSubmission(string submission)
         {
-            return Regex.Replace(submission, @"\s+", string.Empty).ToUpper();
+            return Regex.Replace(submission, @"[^a-zA-Z\d]", string.Empty).ToUpper();
         }
     }
 }

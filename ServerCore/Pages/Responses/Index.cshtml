@@ -1,4 +1,4 @@
-﻿@page
+﻿@page "/{eventId}/Responses"
 @model ServerCore.Pages.Responses.IndexModel
 
 @{
@@ -8,7 +8,7 @@
 <h2>Index</h2>
 
 <p>
-    <a asp-page="Create" asp-route-puzzleId="@Model.PuzzleId" asp-route-eventId="@Model.EventId">Create New</a>
+    <a asp-page="Create" asp-route-puzzleId="@Model.PuzzleId">Create New</a>
 </p>
 <table class="table">
     <thead>
@@ -26,27 +26,28 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.Responses) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsSolution)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SubmittedText)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Note)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.ID">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.ID">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model.Responses)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IsSolution)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SubmittedText)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Note)
+                </td>
+                <td>
+                    <a asp-page="./Edit" asp-route-id="@item.ID" asp-route-puzzleId="@Model.PuzzleId">Edit</a> |
+                    <a asp-page="./Details" asp-route-id="@item.ID" asp-route-puzzleId="@Model.PuzzleId">Details</a> |
+                    <a asp-page="./Delete" asp-route-id="@item.ID" asp-route-puzzleId="@Model.PuzzleId">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
 
 <div>
-    <a asp-page="/Puzzles/Index" asp-route-eventid="@Model.EventId">Back to Puzzle List</a>
+    <a asp-page="/Puzzles/Index">Back to Puzzle List</a>
 </div>

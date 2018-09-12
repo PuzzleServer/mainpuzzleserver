@@ -1,4 +1,4 @@
-﻿@page
+﻿@page "/{eventId}/Responses/Edit"
 @model ServerCore.Pages.Responses.EditModel
 
 @{
@@ -13,23 +13,23 @@
     <div class="col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Response.ID" />
+            <input type="hidden" asp-for="PuzzleResponse.ID" />
             <div class="form-group">
                 <div class="checkbox">
                     <label>
-                        <input asp-for="Response.IsSolution" /> @Html.DisplayNameFor(model => model.Response.IsSolution)
+                        <input asp-for="PuzzleResponse.IsSolution" /> @Html.DisplayNameFor(model => model.PuzzleResponse.IsSolution)
                     </label>
                 </div>
             </div>
             <div class="form-group">
-                <label asp-for="Response.SubmittedText" class="control-label"></label>
-                <input asp-for="Response.SubmittedText" class="form-control" />
-                <span asp-validation-for="Response.SubmittedText" class="text-danger"></span>
+                <label asp-for="PuzzleResponse.SubmittedText" class="control-label"></label>
+                <input asp-for="PuzzleResponse.SubmittedText" class="form-control" />
+                <span asp-validation-for="PuzzleResponse.SubmittedText" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Response.Note" class="control-label"></label>
-                <input asp-for="Response.Note" class="form-control" />
-                <span asp-validation-for="Response.Note" class="text-danger"></span>
+                <label asp-for="PuzzleResponse.Note" class="control-label"></label>
+                <input asp-for="PuzzleResponse.Note" class="form-control" />
+                <span asp-validation-for="PuzzleResponse.Note" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-default" />
@@ -39,7 +39,7 @@
 </div>
 
 <div>
-    <a asp-page="./Index">Back to List</a>
+    <a asp-page="./Index" asp-route-puzzleid="@Model.PuzzleId">Back to List</a>
 </div>
 
 @section Scripts {

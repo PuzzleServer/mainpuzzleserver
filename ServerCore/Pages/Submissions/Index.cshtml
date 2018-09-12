@@ -1,4 +1,4 @@
-﻿@page
+﻿@page "/{eventId}/Submissions"
 @model ServerCore.Pages.Submissions.IndexModel
 
 @{
@@ -8,7 +8,7 @@
 <h2>Submissions</h2>
 <hr />
 <div>
-    <a asp-page="/Puzzles/Index" asp-route-eventid="@Model.EventId">Back to Puzzle List</a>
+    <a asp-page="/Puzzles/Index">Back to Puzzle List</a>
 </div>
 <br />
 <div class="row">
@@ -76,7 +76,7 @@
 
 
 <div>
-    <a asp-page="/Puzzles/Index" asp-route-eventid="@Model.EventId">Back to Puzzle List</a>
+    <a asp-page="/Puzzles/Index">Back to Puzzle List</a>
 </div>
 
 @section Scripts {

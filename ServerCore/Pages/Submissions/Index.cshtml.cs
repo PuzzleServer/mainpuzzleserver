@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
+using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Submissions
 {
-    public class IndexModel : PageModel
+    public class IndexModel : EventSpecificPageModel
     {
         private readonly ServerCore.Models.PuzzleServerContext _context;
 
@@ -23,19 +23,12 @@ namespace ServerCore.Pages.Submissions
 
         public IList<Submission> Submissions { get; set; }
 
-        public int? PuzzleId { get; set; }
-
-        public int? EventId { get; set; }
+        public int PuzzleId { get; set; }
 
         public string AnswerToken { get; set; }
 
         public async Task<IActionResult> OnPostAsync(int puzzleId)
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
             Submission.TimeSubmitted = DateTime.Now;
             Submission.Puzzle = await _context.Puzzles.SingleOrDefaultAsync(p => p.ID == puzzleId);
 
@@ -45,34 +38,18 @@ namespace ServerCore.Pages.Submissions
             _context.Submissions.Add(Submission);
             await _context.SaveChangesAsync();
 
-            return RedirectToPage("./Index", new { puzzleid = puzzleId, eventid = Submission.Puzzle.Event.ID });
+            return RedirectToPage("./Index", new { puzzleid = puzzleId });
         }
 
-        public async Task OnGetAsync(int? puzzleId, int? eventId)
+        public async Task OnGetAsync(int puzzleId)
         {
-            if (puzzleId != null)
-            {
-                this.Submissions = await _context.Submissions.Where((s) => s.Puzzle != null && s.Puzzle.ID == puzzleId).ToListAsync();
-                this.PuzzleId = puzzleId;
+            this.Submissions = await _context.Submissions.Where((s) => s.Puzzle != null && s.Puzzle.ID == puzzleId).ToListAsync();
+            this.PuzzleId = puzzleId;
 
-                Submission lastSubmission = this.Submissions.LastOrDefault();
-                if (lastSubmission != null && lastSubmission.Response != null && lastSubmission.Response.IsSolution)
-                {
-                    this.AnswerToken = lastSubmission.SubmissionText;
-                }
-            }
-            else if (eventId != null)
+            Submission lastSubmission = this.Submissions.LastOrDefault();
+            if (lastSubmission != null && lastSubmission.Response != null && lastSubmission.Response.IsSolution)
             {
-                this.Submissions = await _context.Submissions.Where((s) => s.Puzzle != null && s.Puzzle.Event.ID == eventId).ToListAsync();
-            }
-            else
-            {
-                this.Submissions = await _context.Submissions.ToListAsync();
-            }
-
-            if (eventId != null)
-            {
-                this.EventId = eventId;
+                this.AnswerToken = lastSubmission.SubmissionText;
             }
         }
     }

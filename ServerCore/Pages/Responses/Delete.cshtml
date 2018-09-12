@@ -1,4 +1,4 @@
-﻿@page
+﻿@page "/{eventId}/Responses/Delete"
 @model ServerCore.Pages.Responses.DeleteModel
 
 @{
@@ -31,10 +31,10 @@
             @Html.DisplayFor(model => model.PuzzleResponse.Note)
         </dd>
     </dl>
-    
+
     <form method="post">
         <input type="hidden" asp-for="PuzzleResponse.ID" />
         <input type="submit" value="Delete" class="btn btn-default" /> |
-        <a asp-page="./Index">Back to List</a>
+        <a asp-page="./Index">Back to Puzzle List</a>
     </form>
 </div>

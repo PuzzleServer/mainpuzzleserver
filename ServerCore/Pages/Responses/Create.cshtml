@@ -1,4 +1,4 @@
-﻿@page
+﻿@page "/{eventId}/Responses/Create"
 @model ServerCore.Pages.Responses.CreateModel
 
 @{
@@ -38,7 +38,7 @@
 </div>
 
 <div>
-    <a asp-page="Index" asp-route-puzzleid="@Model.PuzzleId" asp-route-eventid="@Model.EventId">Back to Response List</a>
+    <a asp-page="Index" asp-route-puzzleid="@Model.PuzzleId">Back to Response List</a>
 </div>
 
 @section Scripts {
