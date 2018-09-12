@@ -15,7 +15,7 @@ namespace Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.2-rtm-30932")
+                .HasAnnotation("ProductVersion", "2.1.1-rtm-30846")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -281,30 +281,6 @@ namespace Data.Migrations
                     b.ToTable("PuzzleAuthors");
                 });
 
-            modelBuilder.Entity("ServerCore.DataModel.PuzzleFile", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<bool>("IsAnswer");
-
-                    b.Property<int?>("UnlocksWithPuzzleID");
-
-                    b.Property<int?>("UnlocksWithSolveID");
-
-                    b.Property<string>("UrlString")
-                        .IsRequired();
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("UnlocksWithPuzzleID");
-
-                    b.HasIndex("UnlocksWithSolveID");
-
-                    b.ToTable("PuzzleFiles");
-                });
-
             modelBuilder.Entity("ServerCore.DataModel.PuzzleStatePerTeam", b =>
                 {
                     b.Property<int>("ID")
@@ -551,17 +527,6 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.User", "Author")
                         .WithMany()
                         .HasForeignKey("User.ID");
-                });
-
-            modelBuilder.Entity("ServerCore.DataModel.PuzzleFile", b =>
-                {
-                    b.HasOne("ServerCore.DataModel.Puzzle", "UnlocksWithPuzzle")
-                        .WithMany()
-                        .HasForeignKey("UnlocksWithPuzzleID");
-
-                    b.HasOne("ServerCore.DataModel.Puzzle", "UnlocksWithSolve")
-                        .WithMany()
-                        .HasForeignKey("UnlocksWithSolveID");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.PuzzleStatePerTeam", b =>
