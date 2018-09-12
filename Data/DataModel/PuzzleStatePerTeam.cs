@@ -24,7 +24,13 @@ namespace ServerCore.DataModel
         public bool IsUnlocked
         {
             get { return UnlockedTime != null; }
-            set { UnlockedTime = value ? (DateTime?)DateTime.UtcNow : null; }
+            set
+            {
+                if (IsUnlocked != value)
+                {
+                    UnlockedTime = value ? (DateTime?)DateTime.UtcNow : null;
+                }
+            }
         }
 
         /// <summary>
@@ -34,7 +40,13 @@ namespace ServerCore.DataModel
         public bool IsSolved
         {
             get { return SolvedTime != null; }
-            set { SolvedTime = value ? (DateTime?)DateTime.UtcNow : null; }
+            set
+            {
+                if (IsSolved != value)
+                {
+                    SolvedTime = value ? (DateTime?)DateTime.UtcNow : null;
+                }
+            }
         }
 
         /// <summary>
