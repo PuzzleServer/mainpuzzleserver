@@ -1,4 +1,4 @@
-Hi everyone!
+﻿Hi everyone!
 
 - Jenna:
 - Jay:
@@ -10,3 +10,4 @@ Hi everyone!
 - Jessica: Hello
 - Phil: 👋
 - Asia: ahoy!
+- Jeremy: Hi!
