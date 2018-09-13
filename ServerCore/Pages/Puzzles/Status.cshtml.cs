@@ -72,7 +72,7 @@ namespace ServerCore.Pages.Puzzles
 
             if (teamId.HasValue)
             {
-                stateQ = stateQ.Where(s => s.Puzzle.ID == teamId.Value);
+                stateQ = stateQ.Where(s => s.Team.ID == teamId.Value);
             }
 
             return stateQ.ToListAsync();
