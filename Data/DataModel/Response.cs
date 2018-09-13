@@ -8,6 +8,7 @@ namespace ServerCore.DataModel
     /// </summary>
     public class Response
     {
+        [NotMapped]
         private string submittedText = string.Empty;
 
         /// <summary>
@@ -34,6 +35,11 @@ namespace ServerCore.DataModel
             get { return this.submittedText; }
             set { this.submittedText = FormatSubmission(value); }
         }
+
+        /// <summary>
+        /// The response text
+        /// </summary>
+        public string ResponseText { get; set; }
 
         /// <summary>
         /// Any additional notes from the author
