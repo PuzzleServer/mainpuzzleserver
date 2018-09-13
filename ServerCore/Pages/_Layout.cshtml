@@ -48,10 +48,18 @@
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="#">Unsolved Puzzles <i>(if event active)</i></a></li>
-                            <li><a href="#">Solved Puzzles <i>(if event active)</i></a></li>
-                            <li><a href="#">All Puzzles <i>(if event active/over)</i></a></li>
-                            <li class="divider"></li>
+                            @if (Event.IsEventStarted())
+                            {
+                                if (Event.IsAnswerSubmissionActive())
+                                {
+                                    <li><a href="#">Unsolved Puzzles</a></li>
+                                    <li><a href="#">Solved Puzzles</a></li>
+                                }
+                                <li><a asp-page="/Puzzles/Index" asp-route-eventId="@Event.ID">
+                                    All Puzzles
+                                </a></li>
+                                <li class="divider"></li>
+                            }
                             <li><a href="#">Administer Puzzles <i>(if author/admin)</i></a></li>
                             <li><a href="#">Import Puzzle Data <i>(if author/admin; P2)</i></a></li>
                         </ul>
@@ -63,9 +71,12 @@
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="#">Standings <i>(if event active/over)</i></a></li>
-                            <li><a href="#">Fastest Solves <i>(if event active/over)</i></a></li>
-                            <li class="divider"></li>
+                            @if (Event.IsStandingsAvailableNow())
+                            {
+                                <li><a href="#">Standings</a></li>
+                                <li><a href="#">Fastest Solves</a></li>
+                                <li class="divider"></li>
+                            }
                             <li><a href="#">Puzzle State Map <i>(if author/admin)</i></a></li>
                             <li><a href="#">Submissions <i>(if author/admin)</i></a></li>
                             <li><a href="#">Puzzles in Lockout <i>(if author/admin)</i></a></li>
@@ -80,7 +91,7 @@
                         <ul class="dropdown-menu">
                             <li><a href="#">MY TEAM NAME <i>(if member)</i></a></li>
                             <li><a href="#">Matchmaking Zone <i>(if available)</i></a></li>
-                            <li><a href="#">Teams</a></li>
+                            <li><a asp-page="/Teams/Index" asp-route-eventId="@Event.ID">Teams</a></li>
                             <li><a href="#">Players <i>(everybody if author/admin)</i></a></li>
                             <li class="divider"></li>
                             <li><a href="#">Authors <i>(if author; editable if admin)</i></a></li>
