@@ -35,6 +35,7 @@ namespace ServerCore.Pages.Teams
 
             if (Team != null)
             {
+                await PuzzleStatePerTeam.RemoveStateForTeamAsync(_context, Event.ID, Team.ID, saveChanges: false);
                 _context.Teams.Remove(Team);
                 await _context.SaveChangesAsync();
             }

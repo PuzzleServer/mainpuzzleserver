@@ -30,8 +30,6 @@ namespace ServerCore.Pages.Teams
                 return NotFound();
             }
 
-            await EnsurePuzzleStateForTeamAsync();
-
             PuzzleStatePerTeam = await _context.PuzzleStatePerTeam.Where(state => state.Team == Team).ToListAsync();
             return Page();
         }
@@ -76,28 +74,6 @@ namespace ServerCore.Pages.Teams
             }
 
             return stateQ.ToListAsync();
-        }
-
-        private async Task EnsurePuzzleStateForTeamAsync()
-        {
-            // TODO: Surely there is some magic join here that works, but despite reading and rereading, I do not understand how join syntax works. At all.
-            // I am looking for all Puzzles in this event for which this team has no PuzzleStatePerTeam.
-            //
-            // If there is an efficient way to validate full PuzzleStatePerTeam integrity across all puzzles/teams in an event,
-            // we could run that at app start, puzzle add/delete, and team add/delete.
-            var puzzlesQ = _context.Puzzles.Where(puzzle => puzzle.Event == Event);
-            var puzzleStatePuzzlesQ = _context.PuzzleStatePerTeam.Where(state => state.Team == Team).Select(state => state.Puzzle);
-            var puzzlesWithoutState = await puzzlesQ.Except(puzzleStatePuzzlesQ).ToListAsync();
-
-            if (puzzlesWithoutState.Count > 0)
-            {
-                for (int i = 0; i < puzzlesWithoutState.Count; i++)
-                {
-                    _context.PuzzleStatePerTeam.Add(new DataModel.PuzzleStatePerTeam() { Puzzle = puzzlesWithoutState[i], Team = Team });
-                }
-
-                await _context.SaveChangesAsync();
-            }
         }
     }
 }
