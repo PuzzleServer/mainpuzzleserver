@@ -34,7 +34,6 @@ namespace ServerCore.Pages.Teams
             return Page();
         }
 
-        // TODO: Not entirely sure this should be a Get but I can't figure out how to have an anchor tag do a post.
         public async Task<IActionResult> OnGetUnlockStateAsync(int id, int? puzzleId, bool value)
         {
             var states = await this.GetStates(id, puzzleId);
@@ -45,11 +44,10 @@ namespace ServerCore.Pages.Teams
             }
             await _context.SaveChangesAsync();
 
-            // TODO: Is there a cleaner way to do this part?
-            return await OnGetAsync(id);
+            // redirect without the unlock info to keep the URL clean
+            return RedirectToPage(new { id });
         }
 
-        // TODO: Not entirely sure this should be a Get but I can't figure out how to have an anchor tag do a post.
         public async Task<IActionResult> OnGetSolveStateAsync(int id, int? puzzleId, bool value)
         {
             var states = await this.GetStates(id, puzzleId);
@@ -60,8 +58,8 @@ namespace ServerCore.Pages.Teams
             }
             await _context.SaveChangesAsync();
 
-            // TODO: Is there a cleaner way to do this part?
-            return await OnGetAsync(id);
+            // redirect without the solve info to keep the URL clean
+            return RedirectToPage(new { id });
         }
 
         private Task<List<PuzzleStatePerTeam>> GetStates(int teamId, int? puzzleId)
