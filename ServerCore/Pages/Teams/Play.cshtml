@@ -11,10 +11,14 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.PuzzlesWithState[0].Puzzle.Name)
+                <a asp-page="./Play" asp-route-id="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink("puzzle"))">
+                    @Html.DisplayNameFor(model => model.PuzzlesWithState[0].Puzzle.Name)
+                </a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.PuzzlesWithState[0].Puzzle.Group)
+                <a asp-page="./Play" asp-route-id="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink("group"))">
+                    @Html.DisplayNameFor(model => model.PuzzlesWithState[0].Puzzle.Group)
+                </a>
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.PuzzlesWithState[0].Puzzle.OrderInGroup)
@@ -26,7 +30,9 @@
                 @Html.DisplayNameFor(model => model.PuzzlesWithState[0].Puzzle.AnswerUrl)
             </th>
             <th>
-                Solve
+                <a asp-page="./Play" asp-route-id="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink("solve"))">
+                    Solve
+                </a>
             </th>
         </tr>
     </thead>

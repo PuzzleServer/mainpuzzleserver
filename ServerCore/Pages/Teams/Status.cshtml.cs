@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
@@ -8,70 +6,43 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Teams
 {
-    public class StatusModel : EventSpecificPageModel
+    public class StatusModel : PuzzleStatePerTeamPageModel
     {
-        private readonly ServerCore.Models.PuzzleServerContext _context;
-
-        public StatusModel(ServerCore.Models.PuzzleServerContext context)
+        public StatusModel(ServerCore.Models.PuzzleServerContext context) : base(context)
         {
-            _context = context;
         }
 
         public Team Team { get; set; }
 
-        public IList<PuzzleStatePerTeam> PuzzleStatePerTeam { get;set; }
+        protected override string DefaultSort => "puzzle";
 
-        public async Task<IActionResult> OnGetAsync(int id)
+        public async Task<IActionResult> OnGetAsync(int id, string sort)
         {
-            Team = await _context.Teams.FirstOrDefaultAsync(m => m.ID == id);
+            Team = await Context.Teams.FirstOrDefaultAsync(m => m.ID == id);
 
             if (Team == null)
             {
                 return NotFound();
             }
 
-            PuzzleStatePerTeam = await _context.PuzzleStatePerTeam.Where(state => state.Team == Team).ToListAsync();
+            await InitializeModelAsync(puzzleId: null, teamId: id, sort: sort);
             return Page();
         }
 
-        public async Task<IActionResult> OnGetUnlockStateAsync(int id, int? puzzleId, bool value)
+        public async Task<IActionResult> OnGetUnlockStateAsync(int id, int? puzzleId, bool value, string sort)
         {
-            var states = await this.GetStates(id, puzzleId);
-
-            for (int i = 0; i < states.Count; i++)
-            {
-                states[i].IsUnlocked = value;
-            }
-            await _context.SaveChangesAsync();
+            await SetUnlockStateAsync(puzzleId: puzzleId, teamId: id, value: value);
 
             // redirect without the unlock info to keep the URL clean
-            return RedirectToPage(new { id });
+            return RedirectToPage(new { id, sort });
         }
 
-        public async Task<IActionResult> OnGetSolveStateAsync(int id, int? puzzleId, bool value)
+        public async Task<IActionResult> OnGetSolveStateAsync(int id, int? puzzleId, bool value, string sort)
         {
-            var states = await this.GetStates(id, puzzleId);
-
-            for (int i = 0; i < states.Count; i++)
-            {
-                states[i].IsSolved = value;
-            }
-            await _context.SaveChangesAsync();
+            await SetSolveStateAsync(puzzleId: puzzleId, teamId: id, value: value);
 
             // redirect without the solve info to keep the URL clean
-            return RedirectToPage(new { id });
-        }
-
-        private Task<List<PuzzleStatePerTeam>> GetStates(int teamId, int? puzzleId)
-        {
-            var stateQ = _context.PuzzleStatePerTeam.Where(s => s.Team.ID == teamId);
-
-            if (puzzleId.HasValue)
-            {
-                stateQ = stateQ.Where(s => s.Puzzle.ID == puzzleId.Value);
-            }
-
-            return stateQ.ToListAsync();
+            return RedirectToPage(new { id, sort });
         }
     }
 }
