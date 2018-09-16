@@ -1,0 +1,67 @@
+﻿@page "/{eventId}/Teams/Play"
+@model ServerCore.Pages.Teams.PlayModel
+
+@{
+    ViewData["Title"] = "Play";
+}
+
+<h2>Play</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.PuzzlesWithState[0].Puzzle.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PuzzlesWithState[0].Puzzle.Group)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PuzzlesWithState[0].Puzzle.OrderInGroup)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PuzzlesWithState[0].Puzzle.PuzzleUrl)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PuzzlesWithState[0].Puzzle.AnswerUrl)
+            </th>
+            <th>
+                Solve
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.PuzzlesWithState) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Puzzle.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Puzzle.Group)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Puzzle.OrderInGroup)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Puzzle.PuzzleUrl)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Puzzle.AnswerUrl)
+            </td>
+            <td>
+                @* TODO: link to Jessica's answer submission page here *@
+                <a asp-page="./Play" asp-route-id="@item.Puzzle.ID">
+                    @if (item.State.IsSolved)
+                    {
+                        <text>Solved at </text>@item.State.SolvedTime
+                    }
+                    else
+                    {
+                        <text>Submit Answer</text>
+                    }
+                </a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
