@@ -50,7 +50,7 @@
 @foreach (var item in Model.Puzzles) {
         <tr>
             <td>
-                <a href="@Html.DisplayFor(modelItem => item.PuzzlePDF.Url)">
+                <a href="@Html.DisplayFor(modelItem => item.PuzzleFile.Url)">
                     @Html.DisplayFor(modelItem => item.Name)
                 </a>
             </td>

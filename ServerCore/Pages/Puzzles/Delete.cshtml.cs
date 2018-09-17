@@ -37,6 +37,11 @@ namespace ServerCore.Pages.Puzzles
 
             if (Puzzle != null)
             {
+                foreach (ContentFile content in Puzzle.Contents)
+                {
+                    await FileManager.DeleteBlobAsync(content.Url);
+                }
+
                 _context.Puzzles.Remove(Puzzle);
                 await _context.SaveChangesAsync();
             }

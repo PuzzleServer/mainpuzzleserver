@@ -22,7 +22,7 @@ namespace ServerCore.Pages.Puzzles
         public Puzzle Puzzle { get; set; }
 
         [BindProperty]
-        public IFormFile PuzzlePDF { get; set; }
+        public IFormFile PuzzleFile { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
@@ -44,10 +44,10 @@ namespace ServerCore.Pages.Puzzles
 
             _context.Attach(Puzzle).State = EntityState.Modified;
 
-            if (PuzzlePDF != null)
+            if (PuzzleFile != null)
             {
                 ContentFile file = new ContentFile();
-                string fileName = WebUtility.UrlEncode(PuzzlePDF.FileName);
+                string fileName = WebUtility.UrlEncode(PuzzleFile.FileName);
 
                 file.ShortName = fileName;
                 file.Puzzle = Puzzle;
@@ -65,7 +65,7 @@ namespace ServerCore.Pages.Puzzles
                     _context.ContentFiles.Remove(oldFile);
                 }
 
-                file.Url = await FileManager.UploadBlobAsync(fileName, Event.ID, PuzzlePDF.OpenReadStream());
+                file.Url = await FileManager.UploadBlobAsync(fileName, Event.ID, PuzzleFile.OpenReadStream());
 
                 _context.ContentFiles.Add(file);
             }

@@ -55,15 +55,15 @@ namespace ServerCore.DataModel
         /// File for the main puzzle (typically a PDF containing the puzzle)
         /// </summary>
         [NotMapped]
-        public ContentFile PuzzlePDF
+        public ContentFile PuzzleFile
         {
             get
             {
-                var puzzlePDFs = from contentFile in Contents ?? Enumerable.Empty<ContentFile>()
+                var PuzzleFiles = from contentFile in Contents ?? Enumerable.Empty<ContentFile>()
                                  where contentFile.FileType == ContentFileType.Puzzle
                                  select contentFile;
-                Debug.Assert(puzzlePDFs.Count() <= 1);
-                return puzzlePDFs.FirstOrDefault();
+                Debug.Assert(PuzzleFiles.Count() <= 1);
+                return PuzzleFiles.FirstOrDefault();
             }
         }
 
@@ -71,7 +71,7 @@ namespace ServerCore.DataModel
         /// File for the main answer (typically a PDF containing the answer)
         /// </summary>
         [NotMapped]
-        public ContentFile AnswerPDF
+        public ContentFile AnswerFile
         {
             get
             {
@@ -102,12 +102,12 @@ namespace ServerCore.DataModel
         /// Files unlocked by solving this puzzle, often for metapuzzles
         /// </summary>
         [NotMapped]
-        public IEnumerable<ContentFile> SolveTokens
+        public IEnumerable<ContentFile> SolveTokenFiles
         {
             get
             {
                 return from contentFile in Contents ?? Enumerable.Empty<ContentFile>()
-                       where contentFile.FileType == ContentFileType.PuzzleMaterial
+                       where contentFile.FileType == ContentFileType.SolveToken
                        select contentFile;
             }
         }        

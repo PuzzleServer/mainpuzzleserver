@@ -17,11 +17,11 @@ namespace ServerCore.Pages
             _context = context;
         }
 
-        [Route("{eventID}/Files/{filename}")]
-        public IActionResult Index(int eventID, string filename)
+        [Route("{eventId}/Files/{filename}")]
+        public IActionResult Index(int eventId, string filename)
         {
             ContentFile content = (from contentFile in _context.ContentFiles
-                                   where contentFile.EventID == eventID &&
+                                   where contentFile.EventID == eventId &&
                                    contentFile.ShortName == filename
                                    select contentFile).SingleOrDefault();
             if (content == null)
