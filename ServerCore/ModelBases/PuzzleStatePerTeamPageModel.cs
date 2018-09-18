@@ -110,18 +110,6 @@ namespace ServerCore.ModelBases
             await Context.SaveChangesAsync();
         }
 
-        public enum SortOrder
-        {
-            PuzzleAscending,
-            PuzzleDescending,
-            TeamAscending,
-            TeamDescending,
-            UnlockAscending,
-            UnlockDescending,
-            SolveAscending,
-            SolveDescending
-        }
-
         private IQueryable<PuzzleStatePerTeam> GetPuzzleStatePerTeamQuery(int? puzzleId, int? teamId)
         {
             if (!puzzleId.HasValue && !teamId.HasValue)
@@ -175,6 +163,18 @@ namespace ServerCore.ModelBases
 
                 await this.Context.SaveChangesAsync();
             }
+        }
+
+        public enum SortOrder
+        {
+            PuzzleAscending,
+            PuzzleDescending,
+            TeamAscending,
+            TeamDescending,
+            UnlockAscending,
+            UnlockDescending,
+            SolveAscending,
+            SolveDescending
         }
     }
 }
