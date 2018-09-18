@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ServerCore.DataModel
 {
@@ -14,7 +11,10 @@ namespace ServerCore.DataModel
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
+        public int PuzzleID { get; set; }
         public virtual Puzzle Puzzle { get; set; }
+
+        public int TeamID { get; set; }
         public virtual Team Team { get; set; }
 
         /// <summary>
