@@ -3,6 +3,8 @@
 
 @{
     ViewData["Title"] = "Play";
+
+    bool showAnswers = Model.Event.AnswersAvailableBegin >= DateTime.UtcNow;
 }
 
 <h2>Play</h2>
@@ -11,12 +13,12 @@
     <thead>
         <tr>
             <th>
-                <a asp-page="./Play" asp-route-id="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink("puzzle"))">
+                <a asp-page="./Play" asp-route-id="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(PlayModel.SortOrder.PuzzleAscending, PlayModel.SortOrder.PuzzleDescending))">
                     @Html.DisplayNameFor(model => model.PuzzlesWithState[0].Puzzle.Name)
                 </a>
             </th>
             <th>
-                <a asp-page="./Play" asp-route-id="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink("group"))">
+                <a asp-page="./Play" asp-route-id="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(PlayModel.SortOrder.GroupAscending, PlayModel.SortOrder.GroupDescending))">
                     @Html.DisplayNameFor(model => model.PuzzlesWithState[0].Puzzle.Group)
                 </a>
             </th>
@@ -26,11 +28,13 @@
             <th>
                 @Html.DisplayNameFor(model => model.PuzzlesWithState[0].Puzzle.PuzzleUrl)
             </th>
+@if (showAnswers) {
             <th>
                 @Html.DisplayNameFor(model => model.PuzzlesWithState[0].Puzzle.AnswerUrl)
             </th>
+}
             <th>
-                <a asp-page="./Play" asp-route-id="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink("solve"))">
+                <a asp-page="./Play" asp-route-id="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(PlayModel.SortOrder.SolveAscending, PlayModel.SortOrder.SolveDescending))">
                     Solve
                 </a>
             </th>
@@ -51,9 +55,11 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Puzzle.PuzzleUrl)
             </td>
+    @if (showAnswers) {
             <td>
                 @Html.DisplayFor(modelItem => item.Puzzle.AnswerUrl)
             </td>
+    }
             <td>
                 @* TODO: link to Jessica's answer submission page here *@
                 <a asp-page="./Play" asp-route-id="@item.Puzzle.ID">

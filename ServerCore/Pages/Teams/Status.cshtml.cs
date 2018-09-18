@@ -6,6 +6,11 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Teams
 {
+    /// <summary>
+    /// Model for author/admin's team-centric Status page.
+    /// /used for tracking what each team's progress is and altering that progress manually if needed.
+    /// An author's view should be filtered to puzzles where they are an author (NYI so far though).
+    /// </summary>
     public class StatusModel : PuzzleStatePerTeamPageModel
     {
         public StatusModel(ServerCore.Models.PuzzleServerContext context) : base(context)
@@ -14,9 +19,9 @@ namespace ServerCore.Pages.Teams
 
         public Team Team { get; set; }
 
-        protected override string DefaultSort => "puzzle";
+        protected override SortOrder DefaultSort => SortOrder.PuzzleAscending;
 
-        public async Task<IActionResult> OnGetAsync(int id, string sort)
+        public async Task<IActionResult> OnGetAsync(int id, SortOrder? sort)
         {
             Team = await Context.Teams.FirstOrDefaultAsync(m => m.ID == id);
 

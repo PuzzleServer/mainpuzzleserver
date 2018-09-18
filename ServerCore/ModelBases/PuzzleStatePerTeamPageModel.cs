@@ -12,7 +12,7 @@ namespace ServerCore.ModelBases
     {
         protected PuzzleServerContext Context { get; }
 
-        public string Sort { get; set; }
+        public SortOrder? Sort { get; set; }
 
         public PuzzleStatePerTeamPageModel(ServerCore.Models.PuzzleServerContext context)
         {
@@ -21,9 +21,9 @@ namespace ServerCore.ModelBases
 
         public IList<PuzzleStatePerTeam> PuzzleStatePerTeam { get; set; }
 
-        protected abstract string DefaultSort { get; }
+        protected abstract SortOrder DefaultSort { get; }
 
-        public async Task InitializeModelAsync(int? puzzleId, int? teamId, string sort)
+        public async Task InitializeModelAsync(int? puzzleId, int? teamId, SortOrder? sort)
         {
             if (puzzleId.HasValue)
             {
@@ -40,28 +40,28 @@ namespace ServerCore.ModelBases
 
             switch(sort ?? this.DefaultSort)
             {
-                case "puzzle":
+                case SortOrder.PuzzleAscending:
                     statesQ = statesQ.OrderBy(state => state.Puzzle.Name);
                     break;
-                case "puzzle_desc":
+                case SortOrder.PuzzleDescending:
                     statesQ = statesQ.OrderByDescending(state => state.Puzzle.Name);
                     break;
-                case "team":
+                case SortOrder.TeamAscending:
                     statesQ = statesQ.OrderBy(state => state.Team.Name);
                     break;
-                case "team_desc":
+                case SortOrder.TeamDescending:
                     statesQ = statesQ.OrderByDescending(state => state.Team.Name);
                     break;
-                case "unlock":
+                case SortOrder.UnlockAscending:
                     statesQ = statesQ.OrderBy(state => state.UnlockedTime ?? DateTime.MaxValue);
                     break;
-                case "unlock_desc":
+                case SortOrder.UnlockDescending:
                     statesQ = statesQ.OrderByDescending(state => state.UnlockedTime ?? DateTime.MaxValue);
                     break;
-                case "solve":
+                case SortOrder.SolveAscending:
                     statesQ = statesQ.OrderBy(state => state.SolvedTime ?? DateTime.MaxValue);
                     break;
-                case "solve_desc":
+                case SortOrder.SolveDescending:
                     statesQ = statesQ.OrderByDescending(state => state.SolvedTime ?? DateTime.MaxValue);
                     break;
                 default:
@@ -71,16 +71,16 @@ namespace ServerCore.ModelBases
             PuzzleStatePerTeam = await statesQ.ToListAsync();
         }
 
-        public string SortForColumnLink(string column)
+        public SortOrder? SortForColumnLink(SortOrder ascendingSort, SortOrder descendingSort)
         {
-            string result = column;
+            SortOrder result = ascendingSort;
 
-            if (result == (this.Sort ?? this.DefaultSort))
+            if (result == (this.Sort ?? DefaultSort))
             {
-                result += "_desc";
+                result = descendingSort;
             }
 
-            if (result == this.DefaultSort)
+            if (result == DefaultSort)
             {
                 return null;
             }
@@ -108,6 +108,18 @@ namespace ServerCore.ModelBases
                 states[i].IsSolved = value;
             }
             await Context.SaveChangesAsync();
+        }
+
+        public enum SortOrder
+        {
+            PuzzleAscending,
+            PuzzleDescending,
+            TeamAscending,
+            TeamDescending,
+            UnlockAscending,
+            UnlockDescending,
+            SolveAscending,
+            SolveDescending
         }
 
         private IQueryable<PuzzleStatePerTeam> GetPuzzleStatePerTeamQuery(int? puzzleId, int? teamId)

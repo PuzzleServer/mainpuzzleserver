@@ -8,6 +8,9 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Teams
 {
+    /// <summary>
+    /// Model for the player's "Puzzles" page. Shows a list of the team's unsolved puzzles, with sorting options.
+    /// </summary>
     public class PlayModel : EventSpecificPageModel
     {
         // see https://docs.microsoft.com/en-us/aspnet/core/data/ef-rp/sort-filter-page?view=aspnetcore-2.1 to make this sortable!
@@ -23,11 +26,11 @@ namespace ServerCore.Pages.Teams
 
         public int TeamID { get; set; }
 
-        public string Sort { get; set; }
+        public SortOrder? Sort { get; set; }
 
-        private const string DefaultSort = "puzzle";
+        private const SortOrder DefaultSort = SortOrder.PuzzleAscending;
 
-        public async Task OnGetAsync(int id, string sort)
+        public async Task OnGetAsync(int id, SortOrder? sort)
         {
             this.TeamID = id;
             this.Sort = sort;
@@ -36,6 +39,7 @@ namespace ServerCore.Pages.Teams
             var puzzlesInEventQ = _context.Puzzles.Where(puzzle => puzzle.Event.ID == this.Event.ID && puzzle.IsPuzzle);
 
             // all puzzle states for this team that are unlocked (note: IsUnlocked bool is going to harm perf, just null check the time here)
+            // Note that it's OK if some puzzles do not yet have a state record; those puzzles are clearly still locked and hence invisible.
             var stateForTeamQ = _context.PuzzleStatePerTeam.Where(state => state.TeamID == id && state.UnlockedTime != null);
 
             // join 'em (note: just getting all properties for max flexibility, can pick and choose columns for perf later)
@@ -43,22 +47,22 @@ namespace ServerCore.Pages.Teams
 
             switch (sort ?? DefaultSort)
             {
-                case "puzzle":
+                case SortOrder.PuzzleAscending:
                     visiblePuzzlesQ = visiblePuzzlesQ.OrderBy(puzzleWithState => puzzleWithState.Puzzle.Name);
                     break;
-                case "puzzle_desc":
+                case SortOrder.PuzzleDescending:
                     visiblePuzzlesQ = visiblePuzzlesQ.OrderByDescending(puzzleWithState => puzzleWithState.Puzzle.Name);
                     break;
-                case "group":
+                case SortOrder.GroupAscending:
                     visiblePuzzlesQ = visiblePuzzlesQ.OrderBy(puzzleWithState => puzzleWithState.Puzzle.Group).ThenBy(puzzleWithState => puzzleWithState.Puzzle.OrderInGroup);
                     break;
-                case "group_desc":
+                case SortOrder.GroupDescending:
                     visiblePuzzlesQ = visiblePuzzlesQ.OrderByDescending(puzzleWithState => puzzleWithState.Puzzle.Group).ThenByDescending(puzzleWithState => puzzleWithState.Puzzle.OrderInGroup);
                     break;
-                case "solve":
+                case SortOrder.SolveAscending:
                     visiblePuzzlesQ = visiblePuzzlesQ.OrderBy(puzzleWithState => puzzleWithState.State.SolvedTime ?? DateTime.MaxValue);
                     break;
-                case "solve_desc":
+                case SortOrder.SolveDescending:
                     visiblePuzzlesQ = visiblePuzzlesQ.OrderByDescending(puzzleWithState => puzzleWithState.State.SolvedTime ?? DateTime.MaxValue);
                     break;
                 default:
@@ -68,13 +72,13 @@ namespace ServerCore.Pages.Teams
             PuzzlesWithState = await visiblePuzzlesQ.ToListAsync();
         }
 
-        public string SortForColumnLink(string column)
+        public SortOrder? SortForColumnLink(SortOrder ascendingSort, SortOrder descendingSort)
         {
-            string result = column;
+            SortOrder result = ascendingSort;
 
             if (result == (this.Sort ?? DefaultSort))
             {
-                result += "_desc";
+                result = descendingSort;
             }
 
             if (result == DefaultSort)
@@ -95,6 +99,16 @@ namespace ServerCore.Pages.Teams
                 this.Puzzle = puzzle;
                 this.State = state;
             }
+        }
+
+        public enum SortOrder
+        {
+            PuzzleAscending,
+            PuzzleDescending,
+            GroupAscending,
+            GroupDescending,
+            SolveAscending,
+            SolveDescending
         }
     }
 }

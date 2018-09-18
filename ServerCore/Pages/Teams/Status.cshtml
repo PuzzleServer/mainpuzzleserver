@@ -11,17 +11,17 @@
     <thead>
         <tr>
             <th>
-                <a asp-page="./Status" asp-route-id="@Model.Team.ID" asp-route-sort="@(Model.SortForColumnLink("puzzle"))">
+                <a asp-page="./Status" asp-route-id="@Model.Team.ID" asp-route-sort="@(Model.SortForColumnLink(StatusModel.SortOrder.PuzzleAscending, StatusModel.SortOrder.PuzzleDescending))">
                     @Html.DisplayNameFor(model => model.PuzzleStatePerTeam[0].Puzzle) @Html.DisplayNameFor(model => model.PuzzleStatePerTeam[0].Puzzle.Name)
                 </a>
             </th>
             <th>
-                <a asp-page="./Status" asp-route-id="@Model.Team.ID" asp-route-sort="@(Model.SortForColumnLink("unlock"))">
+                <a asp-page="./Status" asp-route-id="@Model.Team.ID" asp-route-sort="@(Model.SortForColumnLink(StatusModel.SortOrder.UnlockAscending, StatusModel.SortOrder.UnlockDescending))">
                     @Html.DisplayNameFor(model => model.PuzzleStatePerTeam[0].UnlockedTime)
                 </a>
             </th>
             <th>
-                <a asp-page="./Status" asp-route-id="@Model.Team.ID" asp-route-sort="@(Model.SortForColumnLink("solve"))">
+                <a asp-page="./Status" asp-route-id="@Model.Team.ID" asp-route-sort="@(Model.SortForColumnLink(StatusModel.SortOrder.SolveAscending, StatusModel.SortOrder.SolveDescending))">
                     @Html.DisplayNameFor(model => model.PuzzleStatePerTeam[0].SolvedTime)
                 </a>
             </th>

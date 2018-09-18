@@ -6,6 +6,10 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Puzzles
 {
+    /// <summary>
+    /// Model for author/admin's puzzle-centric Status page.
+    /// /used for tracking what each team's progress is and altering that progress manually if needed.
+    /// </summary>
     public class StatusModel : PuzzleStatePerTeamPageModel
     {
         public StatusModel(ServerCore.Models.PuzzleServerContext context) : base(context)
@@ -14,9 +18,9 @@ namespace ServerCore.Pages.Puzzles
 
         public Puzzle Puzzle { get; set; }
 
-        protected override string DefaultSort => "team";
+        protected override SortOrder DefaultSort => SortOrder.TeamAscending;
 
-        public async Task<IActionResult> OnGetAsync(int id, string sort)
+        public async Task<IActionResult> OnGetAsync(int id, SortOrder? sort)
         {
             Puzzle = await Context.Puzzles.FirstOrDefaultAsync(m => m.ID == id);
 
