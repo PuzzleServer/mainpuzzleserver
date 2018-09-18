@@ -39,7 +39,6 @@ namespace ServerCore.Pages.Events
 
             if (Event != null)
             {
-                await PuzzleStatePerTeam.RemoveStateForEventAsync(_context, Event.ID, saveChanges: false);
                 _context.Events.Remove(Event);
                 await _context.SaveChangesAsync();
             }

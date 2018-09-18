@@ -33,7 +33,6 @@ namespace ServerCore.Pages.Teams
             Team.Event = Event;
 
             _context.Teams.Add(Team);
-            await PuzzleStatePerTeam.EnsureStateForTeamAsync(_context, Event.ID, Team.ID, saveChanges: false);
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");

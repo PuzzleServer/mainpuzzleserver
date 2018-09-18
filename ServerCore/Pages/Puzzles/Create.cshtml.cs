@@ -32,7 +32,6 @@ namespace ServerCore.Pages.Puzzles
             Puzzle.Event = Event;
 
             _context.Puzzles.Add(Puzzle);
-            await PuzzleStatePerTeam.EnsureStateForPuzzleAsync(_context, Event.ID, Puzzle.ID, saveChanges: false);
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");

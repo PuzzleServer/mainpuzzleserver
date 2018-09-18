@@ -41,9 +41,6 @@ namespace ServerCore.Models
                 using (var context = serviceScope.ServiceProvider.GetService<PuzzleServerContext>())
                 {
                     context.Database.Migrate();
-
-                    // TODO this is only here to help transition. Delete once everyone has valid puzzle state.
-                    ServerCore.DataModel.PuzzleStatePerTeam.EnsureStateForAllEventsAsync(context, true).Wait();
                 }
             }
         }

@@ -25,6 +25,16 @@ namespace ServerCore.ModelBases
 
         public async Task InitializeModelAsync(int? puzzleId, int? teamId, string sort)
         {
+            if (puzzleId.HasValue)
+            {
+                await this.EnsureStateForPuzzleAsync(puzzleId.Value);
+            }
+
+            if (teamId.HasValue)
+            {
+                await this.EnsureStateForTeamAsync(teamId.Value);
+            }
+
             var statesQ = this.GetPuzzleStatePerTeamQuery(puzzleId, teamId);
             this.Sort = sort;
 
@@ -119,6 +129,40 @@ namespace ServerCore.ModelBases
             }
 
             return puzzleStatePerTeamQ;
+        }
+
+        private async Task EnsureStateForPuzzleAsync(int puzzleId)
+        {
+            var teamsQ = this.Context.Teams.Where(team => team.Event == this.Event).Select(team => team.ID);
+            var puzzleStateTeamsQ = this.Context.PuzzleStatePerTeam.Where(state => state.PuzzleID == puzzleId).Select(state => state.TeamID);
+            var teamsWithoutState = await teamsQ.Except(puzzleStateTeamsQ).ToListAsync();
+
+            if (teamsWithoutState.Count > 0)
+            {
+                for (int i = 0; i < teamsWithoutState.Count; i++)
+                {
+                    this.Context.PuzzleStatePerTeam.Add(new DataModel.PuzzleStatePerTeam() { PuzzleID = puzzleId, TeamID = teamsWithoutState[i] });
+                }
+
+                await this.Context.SaveChangesAsync();
+            }
+        }
+
+        private async Task EnsureStateForTeamAsync(int teamId)
+        {
+            var puzzlesQ = this.Context.Puzzles.Where(puzzle => puzzle.Event == this.Event).Select(puzzle => puzzle.ID);
+            var puzzleStatePuzzlesQ = this.Context.PuzzleStatePerTeam.Where(state => state.TeamID == teamId).Select(state => state.PuzzleID);
+            var puzzlesWithoutState = await puzzlesQ.Except(puzzleStatePuzzlesQ).ToListAsync();
+
+            if (puzzlesWithoutState.Count > 0)
+            {
+                for (int i = 0; i < puzzlesWithoutState.Count; i++)
+                {
+                    this.Context.PuzzleStatePerTeam.Add(new DataModel.PuzzleStatePerTeam() { TeamID = teamId, PuzzleID = puzzlesWithoutState[i] });
+                }
+
+                await this.Context.SaveChangesAsync();
+            }
         }
     }
 }
