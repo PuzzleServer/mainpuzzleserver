@@ -18,7 +18,7 @@ namespace ServerCore
         /// <param name="puzzle">The puzzle; if null, get all puzzles in the event.</param>
         /// <param name="team">The team; if null, get all the teams in the event.</param>
         /// <returns>A query of PuzzleStatePerTeam objects that can be sorted and instantiated, but you can't edit the results.</returns>
-        public static IQueryable<PuzzleStatePerTeam> GetReadOnlyQuery(PuzzleServerContext context, Event eventObj, Puzzle puzzle, Team team)
+        public static IQueryable<PuzzleStatePerTeam> GetFullReadOnlyQuery(PuzzleServerContext context, Event eventObj, Puzzle puzzle, Team team)
         {
             if (context == null)
             {
@@ -85,7 +85,45 @@ namespace ServerCore
                        };
             }
 
-            throw new NotImplementedException("Full event query is NYI but needed for puzzle state map");
+            throw new NotImplementedException("Full event query is NYI and may never be needed; use the sparse one");
+        }
+
+        /// <summary>
+        /// Get a read-write query of puzzle state without any missing values. This is the most performant query, but its data is incomplete. Use with caution!
+        /// </summary>
+        /// <param name="context">The puzzle DB context</param>
+        /// <param name="eventObj">The event we are querying from</param>
+        /// <param name="puzzle">The puzzle; if null, get all puzzles in the event.</param>
+        /// <param name="team">The team; if null, get all the teams in the event.</param>
+        /// <returns>A query of PuzzleStatePerTeam objects that currently exist in the table.</returns>
+        public static IQueryable<PuzzleStatePerTeam> GetSparseQuery(PuzzleServerContext context, Event eventObj, Puzzle puzzle, Team team)
+        {
+            if (context == null)
+            {
+                throw new ArgumentNullException("Context required.");
+            }
+
+            if (eventObj == null)
+            {
+                throw new ArgumentNullException("Event required.");
+            }
+
+            if (puzzle != null && team != null)
+            {
+                return context.PuzzleStatePerTeam.Where(state => state.Puzzle == puzzle && state.Team == team);
+            }
+
+            if (puzzle != null)
+            {
+                return context.PuzzleStatePerTeam.Where(state => state.Puzzle == puzzle);
+            }
+
+            if (team != null)
+            {
+                return context.PuzzleStatePerTeam.Where(state => state.Team == team);
+            }
+
+            return context.PuzzleStatePerTeam.Where(state => state.Puzzle.Event == eventObj);
         }
 
         /// <summary>
@@ -96,7 +134,7 @@ namespace ServerCore
         /// <param name="puzzle">The puzzle; if null, get all puzzles in the event.</param>
         /// <param name="team">The team; if null, get all the teams in the event.</param>
         /// <returns>A query of PuzzleStatePerTeam objects that can be sorted and instantiated, but you can't edit the results.</returns>
-        public static async Task<IQueryable<PuzzleStatePerTeam>> GetReadWriteQueryAsync(PuzzleServerContext context, Event eventObj, Puzzle puzzle, Team team)
+        public static async Task<IQueryable<PuzzleStatePerTeam>> GetFullReadWriteQueryAsync(PuzzleServerContext context, Event eventObj, Puzzle puzzle, Team team)
         {
             if (context == null)
             {
@@ -114,10 +152,7 @@ namespace ServerCore
                 if (state == null)
                 {
                     context.PuzzleStatePerTeam.Add(new DataModel.PuzzleStatePerTeam() { Puzzle = puzzle, Team = team });
-                    await context.SaveChangesAsync(); // query below will not return this unless we save
                 }
-
-                return context.PuzzleStatePerTeam.Where(s => s.Puzzle == puzzle && s.Team == team);
             }
 
             if (puzzle != null)
@@ -132,10 +167,7 @@ namespace ServerCore
                     {
                         context.PuzzleStatePerTeam.Add(new DataModel.PuzzleStatePerTeam() { Puzzle = puzzle, TeamID = teamIdsWithoutState[i] });
                     }
-                    await context.SaveChangesAsync(); // query below will not return these unless we save
                 }
-
-                return context.PuzzleStatePerTeam.Where(state => state.Puzzle == puzzle);
             }
 
             if (team != null)
@@ -150,13 +182,18 @@ namespace ServerCore
                     {
                         context.PuzzleStatePerTeam.Add(new DataModel.PuzzleStatePerTeam() { Team = team, PuzzleID = puzzleIdsWithoutState[i] });
                     }
-                    await context.SaveChangesAsync(); // query below will not return these unless we save
                 }
-
-                return context.PuzzleStatePerTeam.Where(state => state.Team == team);
             }
 
-            throw new NotImplementedException("Full event query is NYI and may never be needed");
+            if (puzzle == null && team == null)
+            {
+                throw new NotImplementedException("Full event query is NYI and may never be needed");
+            }
+
+            await context.SaveChangesAsync(); // query below will not return these unless we save
+
+            // now this query is no longer sparse because we just filled it all out!
+            return GetSparseQuery(context, eventObj, puzzle, team);
         }
     }
 }
