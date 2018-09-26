@@ -73,16 +73,6 @@
                 <span asp-validation-for="Puzzle.MinPrerequisiteCount" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label class="control-label">Puzzle PDF</label>
-                <div>
-                    <a href="@Html.DisplayFor(model => model.Puzzle.PuzzleFile.Url)">
-                        @Html.DisplayFor(model => model.Puzzle.PuzzleFile.Url)
-                    </a>
-                </div>
-                <input asp-for="PuzzleFile" class="form-control" style="height:auto" />
-                <span asp-validation-for="PuzzleFile" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-default" />
             </div>
         </form>
