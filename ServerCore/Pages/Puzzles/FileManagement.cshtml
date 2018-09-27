@@ -33,6 +33,7 @@
             </div>
             <input asp-for="PuzzleFile" class="form-control" style="height:auto" />
             <span asp-validation-for="PuzzleFile" class="text-danger"></span>
+            <hr />
 
             <label class="control-label">Answer File</label>
             <div>
@@ -44,6 +45,7 @@
             </div>
             <input asp-for="AnswerFile" class="form-control" style="height:auto" />
             <span asp-validation-for="AnswerFile" class="text-danger"></span>
+            <hr />
 
             <label class="control-label">Materials</label>
             @foreach (var puzzleFile in Model.Puzzle.Materials)
@@ -55,6 +57,7 @@
             }
             <input asp-for="PuzzleMaterialFiles" class="form-control" style="height:auto" />
             <span asp-validation-for="PuzzleMaterialFiles" class="text-danger"></span>
+            <hr />
 
             <label class="control-label">Solve Token Files</label>
             @foreach (var solveFile in Model.Puzzle.SolveTokenFiles)
