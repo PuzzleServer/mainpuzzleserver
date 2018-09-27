@@ -43,7 +43,8 @@ namespace ServerCore.Pages.Teams
             var stateForTeamQ = _context.PuzzleStatePerTeam.Where(state => state.TeamID == id && state.UnlockedTime != null);
 
             // join 'em (note: just getting all properties for max flexibility, can pick and choose columns for perf later)
-            var visiblePuzzlesQ = puzzlesInEventQ.Join(stateForTeamQ, (puzzle => puzzle.ID), (state => state.PuzzleID), (puzzle, state) => new PuzzleWithState(puzzle, state));
+            // Note: EF gotcha is that you have to join into anonymous types in order to not lose valuable stuff
+            var visiblePuzzlesQ = puzzlesInEventQ.Join(stateForTeamQ, (puzzle => puzzle.ID), (state => state.PuzzleID), (Puzzle, State) => new { Puzzle, State });
 
             switch (sort ?? DefaultSort)
             {
@@ -69,7 +70,7 @@ namespace ServerCore.Pages.Teams
                     throw new ArgumentException($"unknown sort: {sort}");
             }
 
-            PuzzlesWithState = await visiblePuzzlesQ.ToListAsync();
+            PuzzlesWithState = (await visiblePuzzlesQ.ToListAsync()).Select(x => new PuzzleWithState(x.Puzzle, x.State)).ToList();
         }
 
         public SortOrder? SortForColumnLink(SortOrder ascendingSort, SortOrder descendingSort)
