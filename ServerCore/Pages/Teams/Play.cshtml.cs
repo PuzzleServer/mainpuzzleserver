@@ -36,7 +36,7 @@ namespace ServerCore.Pages.Teams
             this.Sort = sort;
 
             // all puzzles for this event that are real puzzles
-            var puzzlesInEventQ = _context.Puzzles.Where(puzzle => puzzle.Event.ID == this.Event.ID && puzzle.IsPuzzle);
+            var puzzlesInEventQ = _context.Puzzles.Include(puzzle => puzzle.Contents).Where(puzzle => puzzle.Event.ID == this.Event.ID && puzzle.IsPuzzle);
 
             // all puzzle states for this team that are unlocked (note: IsUnlocked bool is going to harm perf, just null check the time here)
             // Note that it's OK if some puzzles do not yet have a state record; those puzzles are clearly still locked and hence invisible.
