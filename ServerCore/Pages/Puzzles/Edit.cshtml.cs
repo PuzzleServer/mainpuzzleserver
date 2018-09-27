@@ -1,5 +1,7 @@
 ﻿using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
@@ -18,6 +20,9 @@ namespace ServerCore.Pages.Puzzles
 
         [BindProperty]
         public Puzzle Puzzle { get; set; }
+
+        [BindProperty]
+        public IFormFile PuzzleFile { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
@@ -38,6 +43,32 @@ namespace ServerCore.Pages.Puzzles
             }
 
             _context.Attach(Puzzle).State = EntityState.Modified;
+
+            if (PuzzleFile != null)
+            {
+                ContentFile file = new ContentFile();
+                string fileName = WebUtility.UrlEncode(PuzzleFile.FileName);
+
+                file.ShortName = fileName;
+                file.Puzzle = Puzzle;
+                file.Event = Event;
+                file.FileType = ContentFileType.Puzzle;
+
+                // Remove previous puzzle files
+                var oldFiles = from oldFile in _context.ContentFiles
+                               where oldFile.Puzzle == Puzzle &&
+                               oldFile.FileType == ContentFileType.Puzzle
+                               select oldFile;
+                foreach(ContentFile oldFile in oldFiles)
+                {
+                    await FileManager.DeleteBlobAsync(oldFile.Url);
+                    _context.ContentFiles.Remove(oldFile);
+                }
+
+                file.Url = await FileManager.UploadBlobAsync(fileName, Event.ID, PuzzleFile.OpenReadStream());
+
+                _context.ContentFiles.Add(file);
+            }
 
             try
             {

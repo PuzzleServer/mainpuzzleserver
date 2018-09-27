@@ -1,6 +1,6 @@
 ﻿Hi everyone!
 
-- Jenna:
+- Jenna: Hello :D
 - Jay:
 - Morgan:
 - Megan:

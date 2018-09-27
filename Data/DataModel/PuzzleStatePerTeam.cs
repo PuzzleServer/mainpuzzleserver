@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ServerCore.DataModel
 {
@@ -14,7 +11,10 @@ namespace ServerCore.DataModel
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
+        public int PuzzleID { get; set; }
         public virtual Puzzle Puzzle { get; set; }
+
+        public int TeamID { get; set; }
         public virtual Team Team { get; set; }
 
         /// <summary>
@@ -24,7 +24,13 @@ namespace ServerCore.DataModel
         public bool IsUnlocked
         {
             get { return UnlockedTime != null; }
-            set { UnlockedTime = value ? (DateTime?)DateTime.UtcNow : null; }
+            set
+            {
+                if (IsUnlocked != value)
+                {
+                    UnlockedTime = value ? (DateTime?)DateTime.UtcNow : null;
+                }
+            }
         }
 
         /// <summary>
@@ -34,7 +40,13 @@ namespace ServerCore.DataModel
         public bool IsSolved
         {
             get { return SolvedTime != null; }
-            set { SolvedTime = value ? (DateTime?)DateTime.UtcNow : null; }
+            set
+            {
+                if (IsSolved != value)
+                {
+                    SolvedTime = value ? (DateTime?)DateTime.UtcNow : null;
+                }
+            }
         }
 
         /// <summary>
