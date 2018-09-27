@@ -1,0 +1,56 @@
+@page  "/{eventId}/Puzzles/Feedback/{id}"
+@model ServerCore.Pages.Puzzles.FeedbackModel
+
+@{
+    ViewData["Title"] = "Feedback";
+    var id = ViewContext.RouteData.Values["id"];
+}
+
+<h2>Feedback for @Html.DisplayFor(model => model.Puzzle.Name)</h2>
+
+<p>
+    <a asp-page="SubmitFeedback" asp-route-id=@id>New Feedback</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Feedbacks[0].Submitter)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Feedbacks[0].SubmissionTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Feedbacks[0].WrittenFeedback)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Feedbacks[0].Difficulty)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Feedbacks[0].Fun)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Feedbacks) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Submitter.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SubmissionTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.WrittenFeedback)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Difficulty)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Fun)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

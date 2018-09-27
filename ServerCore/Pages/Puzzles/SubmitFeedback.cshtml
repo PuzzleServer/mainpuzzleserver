@@ -1,0 +1,60 @@
+@page "/{eventId}/Puzzles/SubmitFeedback/{id}"
+@model ServerCore.Pages.Puzzles.SubmitFeedbackModel
+
+@{
+    ViewData["Title"] = "Submit Feedback";
+    var id = ViewContext.RouteData.Values["id"];
+}
+
+<h2>Submit Feedback for @Html.DisplayFor(model => model.Puzzle.Name)</h2> 
+<!-- 
+    This part isn't quite working yet...
+    The puzzle name is (null) when this populates 
+    even though it gets set in OnGet()
+-->
+
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Feedback.WrittenFeedback" class="control-label"></label>
+                <input asp-for="Feedback.WrittenFeedback" class="form-control" />
+                <span asp-validation-for="Feedback.WrittenFeedback" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Feedback.Difficulty" class="control-label"></label>
+                <select asp-for="Feedback.Difficulty" class="form-control">
+                    <option>0</option>
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                    <option>5</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Feedback.Fun" class="control-label"></label>
+                <select asp-for="Feedback.Fun" class="form-control">
+                    <option>0</option>
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                    <option>5</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Feedback" asp-route-id=@id>Back to Puzzle</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
