@@ -1,0 +1,83 @@
+﻿@page "/{eventId}/Events/Map"
+@model ServerCore.Pages.Events.MapModel
+
+@{
+    ViewData["Title"] = "Puzzle State Map";
+}
+
+<h2>Puzzle State Map</h2>
+
+<table class="table table-condensed ph-statemap">
+            <thead>
+                <tr>
+                    <th>
+                        Rank
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Teams[0].Team.Name)
+                    </th>
+                    <th>
+                        Puzzles
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Teams[0].Score)
+                    </th>
+                    @foreach (var puzzle in Model.Puzzles)
+                    {
+                        <th>
+                            <a asp-page="/Puzzles/Status" asp-route-id="@puzzle.Puzzle.ID">@(puzzle.Puzzle.Name) (@puzzle.SolveCount)</a>
+                        </th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+        @for (int y = 0; y < Model.Teams.Count; y++) {
+            var team = Model.Teams[y];
+                <tr>
+                    <td>
+                        @(team.SortOrder + 1)
+                    </td>
+                    <td>
+                        <a asp-page="/Teams/Status" asp-route-id="@team.Team.ID">@(team.Team.Name)</a>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => team.SolveCount)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => team.Score)
+                    </td>
+            @for (int x = 0; x < Model.Puzzles.Count; x++)
+            {
+                var teamState = Model.StateMap[x, y] ?? MapModel.StateStats.Default;
+                char text;
+                int hue;
+                int lightness;
+
+                if (teamState.SolvedTime != null)
+                {
+                    int minutes = (int)((DateTime.UtcNow - teamState.SolvedTime.Value).TotalMinutes);
+                    text = 'C';
+                    hue = 120;
+                    lightness = 75 - (Math.Min(minutes, 236) >> 2);
+                }
+                else if (teamState.UnlockedTime != null)
+                {
+                    int minutes = (int)((DateTime.UtcNow - teamState.UnlockedTime.Value).TotalMinutes);
+                    text = 'U';
+                    hue = 60;
+                    lightness = 75 - (Math.Min(minutes, 236) >> 2);
+                }
+                else
+                {
+                    text = 'L';
+                    hue = 0;
+                    lightness = 100;
+                }
+                    <td @if(lightness < 30) { <text> class= "dark"</text> }  style="background-color: hsl(@hue, 100%, @lightness%)">
+                        <a href="">@text</a>
+                    </td>
+            }
+                </tr>
+        }
+            </tbody>
+</table>
