@@ -154,8 +154,7 @@ namespace ServerCore
                     context.PuzzleStatePerTeam.Add(new DataModel.PuzzleStatePerTeam() { Puzzle = puzzle, Team = team });
                 }
             }
-
-            if (puzzle != null)
+            else if (puzzle != null)
             {
                 var teamIdsQ = context.Teams.Where(p => p.Event == eventObj).Select(p => p.ID);
                 var puzzleStateTeamIdsQ = context.PuzzleStatePerTeam.Where(s => s.Puzzle == puzzle).Select(s => s.TeamID);
@@ -169,8 +168,7 @@ namespace ServerCore
                     }
                 }
             }
-
-            if (team != null)
+            else if (team != null)
             {
                 var puzzleIdsQ = context.Puzzles.Where(p => p.Event == eventObj).Select(p => p.ID);
                 var puzzleStatePuzzleIdsQ = context.PuzzleStatePerTeam.Where(s => s.Team == team).Select(s => s.PuzzleID);
@@ -184,8 +182,7 @@ namespace ServerCore
                     }
                 }
             }
-
-            if (puzzle == null && team == null)
+            else if (puzzle == null && team == null)
             {
                 throw new NotImplementedException("Full event query is NYI and may never be needed");
             }
