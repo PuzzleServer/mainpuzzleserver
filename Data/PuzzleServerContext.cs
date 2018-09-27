@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using ServerCore.DataModel;
 
@@ -14,6 +15,7 @@ namespace ServerCore.Models
 
         // These are the objects that EF uses to create/update tables
         // In general these won't be used directly
+        public DbSet<ContentFile> ContentFiles { get; set; }
         public DbSet<Event> Events { get; set; }
         public DbSet<EventAdmins> EventAdmins { get; set; }
         public DbSet<EventAuthors> EventAuthors { get; set; }
@@ -43,6 +45,18 @@ namespace ServerCore.Models
                     context.Database.Migrate();
                 }
             }
+        }
+
+        /// <summary>
+        /// Customizations to database creation that cannot be done with attributes
+        /// </summary>
+        /// <param name="modelBuilder"></param>
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ContentFile>().HasIndex(contentFile => new { contentFile.EventID, contentFile.ShortName }).IsUnique();
+            modelBuilder.Entity<PuzzleStatePerTeam>().HasKey(state => new { state.PuzzleID, state.TeamID });
+
+            base.OnModelCreating(modelBuilder);
         }
     }
 }

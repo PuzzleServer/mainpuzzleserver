@@ -3,19 +3,21 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ServerCore.Models;
 
 namespace Data.Migrations
 {
     [DbContext(typeof(PuzzleServerContext))]
-    partial class PuzzleServerContextModelSnapshot : ModelSnapshot
+    [Migration("20180912123934_ContentFiles")]
+    partial class ContentFiles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.1-rtm-30846")
+                .HasAnnotation("ProductVersion", "2.1.2-rtm-30932")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -306,19 +308,25 @@ namespace Data.Migrations
 
             modelBuilder.Entity("ServerCore.DataModel.PuzzleStatePerTeam", b =>
                 {
-                    b.Property<int>("PuzzleID");
-
-                    b.Property<int>("TeamID");
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Notes");
 
                     b.Property<bool>("Printed");
 
+                    b.Property<int?>("PuzzleID");
+
                     b.Property<DateTime?>("SolvedTime");
+
+                    b.Property<int?>("TeamID");
 
                     b.Property<DateTime?>("UnlockedTime");
 
-                    b.HasKey("PuzzleID", "TeamID");
+                    b.HasKey("ID");
+
+                    b.HasIndex("PuzzleID");
 
                     b.HasIndex("TeamID");
 
@@ -563,13 +571,11 @@ namespace Data.Migrations
                 {
                     b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
                         .WithMany()
-                        .HasForeignKey("PuzzleID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("PuzzleID");
 
                     b.HasOne("ServerCore.DataModel.Team", "Team")
                         .WithMany()
-                        .HasForeignKey("TeamID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("TeamID");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Response", b =>
