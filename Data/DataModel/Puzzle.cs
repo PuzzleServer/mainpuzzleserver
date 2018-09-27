@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics;
+using System.Linq;
 
 namespace ServerCore.DataModel
 {
@@ -43,34 +46,70 @@ namespace ServerCore.DataModel
         /// </summary>
         public int MinPrerequisiteCount { get; set; } = 0;
 
-        [DataType(DataType.Url)]
-        public string PuzzleUrlString { get; set; }
+        /// <summary>
+        /// All of the content files associated with this puzzle
+        /// </summary>
+        public virtual ICollection<ContentFile> Contents { get; set; }
 
+        /// <summary>
+        /// File for the main puzzle (typically a PDF containing the puzzle)
+        /// </summary>
         [NotMapped]
-        public Uri PuzzleUrl
+        public ContentFile PuzzleFile
         {
-            get { Uri.TryCreate(PuzzleUrlString, UriKind.RelativeOrAbsolute, out Uri result); return result; }
-            set { PuzzleUrlString = value?.ToString(); }
+            get
+            {
+                var PuzzleFiles = from contentFile in Contents ?? Enumerable.Empty<ContentFile>()
+                                 where contentFile.FileType == ContentFileType.Puzzle
+                                 select contentFile;
+                Debug.Assert(PuzzleFiles.Count() <= 1);
+                return PuzzleFiles.FirstOrDefault();
+            }
         }
 
-        [DataType(DataType.Url)]
-        public string AnswerUrlString { get; set; }
-
+        /// <summary>
+        /// File for the main answer (typically a PDF containing the answer)
+        /// </summary>
         [NotMapped]
-        public Uri AnswerUrl
+        public ContentFile AnswerFile
         {
-            get { Uri.TryCreate(AnswerUrlString, UriKind.RelativeOrAbsolute, out Uri result); return result; }
-            set { AnswerUrlString = value?.ToString(); }
+            get
+            {
+                var answerPDFs = from contentFile in Contents ?? Enumerable.Empty<ContentFile>()
+                                 where contentFile.FileType == ContentFileType.Answer
+                                 select contentFile;
+                Debug.Assert(answerPDFs.Count() <= 1);
+                return answerPDFs.FirstOrDefault();
+            }
         }
 
-        [DataType(DataType.Url)]
-        public string MaterialsUrlString { get; set; }
 
+        /// <summary>
+        /// Files associated with the puzzle, such as media
+        /// </summary>
         [NotMapped]
-        public Uri MaterialsUrl
+        public IEnumerable<ContentFile> Materials
         {
-            get { Uri.TryCreate(MaterialsUrlString, UriKind.RelativeOrAbsolute, out Uri result); return result; }
-            set { MaterialsUrlString = value?.ToString(); }
+            get
+            {
+                return from contentFile in Contents ?? Enumerable.Empty<ContentFile>()
+                       where contentFile.FileType == ContentFileType.PuzzleMaterial
+                       select contentFile;
+            }
         }
+
+        /// <summary>
+        /// Files unlocked by solving this puzzle, often for metapuzzles
+        /// </summary>
+        [NotMapped]
+        public IEnumerable<ContentFile> SolveTokenFiles
+        {
+            get
+            {
+                return from contentFile in Contents ?? Enumerable.Empty<ContentFile>()
+                       where contentFile.FileType == ContentFileType.SolveToken
+                       select contentFile;
+            }
+        }        
     }
 }

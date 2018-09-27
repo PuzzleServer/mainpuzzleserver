@@ -43,15 +43,6 @@
             <th>
                 @Html.DisplayNameFor(model => model.Puzzles[0].MinPrerequisiteCount)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Puzzles[0].PuzzleUrlString)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Puzzles[0].AnswerUrlString)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Puzzles[0].MaterialsUrlString)
-            </th>
             <th></th>
         </tr>
     </thead>
@@ -59,7 +50,9 @@
 @foreach (var item in Model.Puzzles) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Name)
+                <a href="@Html.DisplayFor(modelItem => item.PuzzleFile.Url)">
+                    @Html.DisplayFor(modelItem => item.Name)
+                </a>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.IsPuzzle)
@@ -89,18 +82,10 @@
                 @Html.DisplayFor(modelItem => item.MinPrerequisiteCount)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.PuzzleUrlString)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AnswerUrlString)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MaterialsUrlString)
-            </td>
-            <td>
                 <a asp-Page="./Edit" asp-route-id="@item.ID">Edit</a> |
                 <a asp-Page="./Details" asp-route-id="@item.ID">Details</a> |
-                <a asp-Page="./Delete" asp-route-id="@item.ID">Delete</a>
+                <a asp-Page="./Delete" asp-route-id="@item.ID">Delete</a> |
+                <a asp-page="./Status" asp-route-id="@item.ID">Status</a>
             </td>
         </tr>
 }
