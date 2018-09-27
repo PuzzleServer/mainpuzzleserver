@@ -19,25 +19,33 @@
             </div>
             <div class="form-group">
                 <label asp-for="Feedback.Difficulty" class="control-label"></label>
-                <select asp-for="Feedback.Difficulty" class="form-control">
-                    <option>0</option>
-                    <option>1</option>
-                    <option>2</option>
-                    <option>3</option>
-                    <option>4</option>
-                    <option>5</option>
-                </select>
+                <input asp-for="Feedback.Difficulty" type="range" min="0" max="5" value="2.5" step=".5" class="slider" id="difficultySlider">
+                <label id="difficultyLabel">NULL</label>
+                <script>
+                    var diffslider = document.getElementById("difficultySlider");
+                    var diffoutput = document.getElementById("difficultyLabel");
+                    diffoutput.innerHTML = diffslider.value; // Display the default slider value
+
+                    // Update the current slider value (each time you drag the slider handle)
+                    diffslider.oninput = function() {
+                        diffoutput.innerHTML = this.value;
+                    }
+                </script>
             </div>
             <div class="form-group">
                 <label asp-for="Feedback.Fun" class="control-label"></label>
-                <select asp-for="Feedback.Fun" class="form-control">
-                    <option>0</option>
-                    <option>1</option>
-                    <option>2</option>
-                    <option>3</option>
-                    <option>4</option>
-                    <option>5</option>
-                </select>
+                <input asp-for="Feedback.Fun" type="range" min="0" max="5" value="2.5" step=".5" class="slider" id="funSlider">
+                <label id="funLabel">NULL</label>
+                <script>
+                    var funslider = document.getElementById("funSlider");
+                    var funoutput = document.getElementById("funLabel");
+                    funoutput.innerHTML = funslider.value; // Display the default slider value
+
+                    // Update the current slider value (each time you drag the slider handle)
+                    funslider.oninput = function() {
+                        funoutput.innerHTML = this.value;
+                    }
+                </script>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-default" />
