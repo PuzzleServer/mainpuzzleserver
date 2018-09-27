@@ -36,14 +36,15 @@ namespace ServerCore.Pages.Teams
             this.Sort = sort;
 
             // all puzzles for this event that are real puzzles
-            var puzzlesInEventQ = _context.Puzzles.Include(puzzle => puzzle.Contents).Where(puzzle => puzzle.Event.ID == this.Event.ID && puzzle.IsPuzzle);
+            var puzzlesInEventQ = _context.Puzzles.Where(puzzle => puzzle.Event.ID == this.Event.ID && puzzle.IsPuzzle);
 
             // all puzzle states for this team that are unlocked (note: IsUnlocked bool is going to harm perf, just null check the time here)
             // Note that it's OK if some puzzles do not yet have a state record; those puzzles are clearly still locked and hence invisible.
             var stateForTeamQ = _context.PuzzleStatePerTeam.Where(state => state.TeamID == id && state.UnlockedTime != null);
 
             // join 'em (note: just getting all properties for max flexibility, can pick and choose columns for perf later)
-            var visiblePuzzlesQ = puzzlesInEventQ.Join(stateForTeamQ, (puzzle => puzzle.ID), (state => state.PuzzleID), (puzzle, state) => new PuzzleWithState(puzzle, state));
+            // Note: EF gotcha is that you have to join into anonymous types in order to not lose valuable stuff
+            var visiblePuzzlesQ = puzzlesInEventQ.Join(stateForTeamQ, (puzzle => puzzle.ID), (state => state.PuzzleID), (Puzzle, State) => new { Puzzle, State });
 
             switch (sort ?? DefaultSort)
             {
@@ -69,7 +70,7 @@ namespace ServerCore.Pages.Teams
                     throw new ArgumentException($"unknown sort: {sort}");
             }
 
-            PuzzlesWithState = await visiblePuzzlesQ.ToListAsync();
+            PuzzlesWithState = (await visiblePuzzlesQ.ToListAsync()).Select(x => new PuzzleWithState(x.Puzzle, x.State)).ToList();
         }
 
         public SortOrder? SortForColumnLink(SortOrder ascendingSort, SortOrder descendingSort)
