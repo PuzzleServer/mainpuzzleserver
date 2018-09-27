@@ -1,12 +1,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Puzzles
 {
+    /// <summary>
+    /// Model for the author/admin's view of the feedback items for a specific puzzle
+    /// /used for viewing and aggregating feedback for a specific puzzle
+    /// </summary>
     public class FeedbackModel : EventSpecificPageModel
     {
         private readonly ServerCore.Models.PuzzleServerContext _context;
@@ -19,10 +24,20 @@ namespace ServerCore.Pages.Puzzles
         public IList<Feedback> Feedbacks { get; set; }
         public Puzzle Puzzle { get; set; }
 
-        public async Task OnGetAsync(int id)
+        /// <summary>
+        /// Gets the feedback and puzzle associated with the given ID
+        /// </summary>
+        public async Task<IActionResult> OnGetAsync(int id)
         {
             Feedbacks = await _context.Feedback.Where((f) => f.Puzzle.ID == id).ToListAsync();
             Puzzle = await _context.Puzzles.Where((p) => p.ID == id).FirstOrDefaultAsync();
+
+            if (Puzzle == null) 
+            { 
+                return NotFound(); 
+            } 
+
+            return Page();
         }
     }
 }

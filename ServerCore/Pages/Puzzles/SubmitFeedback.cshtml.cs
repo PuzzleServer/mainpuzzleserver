@@ -21,6 +21,9 @@ namespace ServerCore.Pages.Puzzles
         public Feedback Feedback { get; set; }  
         public Puzzle Puzzle { get; set; }
 
+        /// <summary>
+        /// Gets the submit feedback page for a puzzle
+        /// </summary>
         public async Task<IActionResult> OnGetAsync(int id)
         {       
             Puzzle = await _context.Puzzles.Where(m => m.ID == id).FirstOrDefaultAsync();
@@ -32,7 +35,10 @@ namespace ServerCore.Pages.Puzzles
 
             return Page();
         }
-
+        
+        /// <summary>
+        /// Takes the filled out items and adds it to the database as a new piece of feedback.
+        /// </summary>
         public async Task<IActionResult> OnPostAsync(int id)
         {
             if (!ModelState.IsValid)
