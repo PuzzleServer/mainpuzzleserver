@@ -23,19 +23,9 @@ namespace ServerCore.ModelBases
 
         protected abstract SortOrder DefaultSort { get; }
 
-        public async Task InitializeModelAsync(int? puzzleId, int? teamId, SortOrder? sort)
+        public async Task InitializeModelAsync(Puzzle puzzle, Team team, SortOrder? sort)
         {
-            if (puzzleId.HasValue)
-            {
-                await this.EnsureStateForPuzzleAsync(puzzleId.Value);
-            }
-
-            if (teamId.HasValue)
-            {
-                await this.EnsureStateForTeamAsync(teamId.Value);
-            }
-
-            var statesQ = this.GetPuzzleStatePerTeamQuery(puzzleId, teamId);
+            IQueryable<PuzzleStatePerTeam> statesQ = PuzzleStateHelper.GetFullReadOnlyQuery(this.Context, this.Event, puzzle, team);
             this.Sort = sort;
 
             switch(sort ?? this.DefaultSort)
@@ -88,9 +78,10 @@ namespace ServerCore.ModelBases
             return result;
         }
 
-        public async Task SetUnlockStateAsync(int? puzzleId, int? teamId, bool value)
+        public async Task SetUnlockStateAsync(Puzzle puzzle, Team team, bool value)
         {
-            var states = await this.GetPuzzleStatePerTeamQuery(puzzleId, teamId).ToListAsync();
+            var statesQ = await PuzzleStateHelper.GetFullReadWriteQueryAsync(this.Context, this.Event, puzzle, team);
+            var states = await statesQ.ToListAsync();
 
             for (int i = 0; i < states.Count; i++)
             {
@@ -99,70 +90,16 @@ namespace ServerCore.ModelBases
             await Context.SaveChangesAsync();
         }
 
-        public async Task SetSolveStateAsync(int? puzzleId, int? teamId, bool value)
+        public async Task SetSolveStateAsync(Puzzle puzzle, Team team, bool value)
         {
-            var states = await this.GetPuzzleStatePerTeamQuery(puzzleId, teamId).ToListAsync();
+            var statesQ = await PuzzleStateHelper.GetFullReadWriteQueryAsync(this.Context, this.Event, puzzle, team);
+            var states = await statesQ.ToListAsync();
 
             for (int i = 0; i < states.Count; i++)
             {
                 states[i].IsSolved = value;
             }
             await Context.SaveChangesAsync();
-        }
-
-        private IQueryable<PuzzleStatePerTeam> GetPuzzleStatePerTeamQuery(int? puzzleId, int? teamId)
-        {
-            if (!puzzleId.HasValue && !teamId.HasValue)
-            {
-                throw new ArgumentException("Should never query all states across all events");
-            }
-
-            IQueryable<PuzzleStatePerTeam> puzzleStatePerTeamQ = Context.PuzzleStatePerTeam;
-
-            if (puzzleId.HasValue)
-            {
-                puzzleStatePerTeamQ = puzzleStatePerTeamQ.Where(state => state.PuzzleID == puzzleId.Value);
-            }
-            if (teamId.HasValue)
-            {
-                puzzleStatePerTeamQ = puzzleStatePerTeamQ.Where(state => state.TeamID == teamId.Value);
-            }
-
-            return puzzleStatePerTeamQ;
-        }
-
-        private async Task EnsureStateForPuzzleAsync(int puzzleId)
-        {
-            var teamsQ = this.Context.Teams.Where(team => team.Event == this.Event).Select(team => team.ID);
-            var puzzleStateTeamsQ = this.Context.PuzzleStatePerTeam.Where(state => state.PuzzleID == puzzleId).Select(state => state.TeamID);
-            var teamsWithoutState = await teamsQ.Except(puzzleStateTeamsQ).ToListAsync();
-
-            if (teamsWithoutState.Count > 0)
-            {
-                for (int i = 0; i < teamsWithoutState.Count; i++)
-                {
-                    this.Context.PuzzleStatePerTeam.Add(new DataModel.PuzzleStatePerTeam() { PuzzleID = puzzleId, TeamID = teamsWithoutState[i] });
-                }
-
-                await this.Context.SaveChangesAsync();
-            }
-        }
-
-        private async Task EnsureStateForTeamAsync(int teamId)
-        {
-            var puzzlesQ = this.Context.Puzzles.Where(puzzle => puzzle.Event == this.Event).Select(puzzle => puzzle.ID);
-            var puzzleStatePuzzlesQ = this.Context.PuzzleStatePerTeam.Where(state => state.TeamID == teamId).Select(state => state.PuzzleID);
-            var puzzlesWithoutState = await puzzlesQ.Except(puzzleStatePuzzlesQ).ToListAsync();
-
-            if (puzzlesWithoutState.Count > 0)
-            {
-                for (int i = 0; i < puzzlesWithoutState.Count; i++)
-                {
-                    this.Context.PuzzleStatePerTeam.Add(new DataModel.PuzzleStatePerTeam() { TeamID = teamId, PuzzleID = puzzlesWithoutState[i] });
-                }
-
-                await this.Context.SaveChangesAsync();
-            }
         }
 
         public enum SortOrder

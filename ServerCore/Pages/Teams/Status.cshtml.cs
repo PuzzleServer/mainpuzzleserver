@@ -8,7 +8,7 @@ namespace ServerCore.Pages.Teams
 {
     /// <summary>
     /// Model for author/admin's team-centric Status page.
-    /// /used for tracking what each team's progress is and altering that progress manually if needed.
+    /// used for tracking what each team's progress is and altering that progress manually if needed.
     /// An author's view should be filtered to puzzles where they are an author (NYI so far though).
     /// </summary>
     public class StatusModel : PuzzleStatePerTeamPageModel
@@ -30,13 +30,16 @@ namespace ServerCore.Pages.Teams
                 return NotFound();
             }
 
-            await InitializeModelAsync(puzzleId: null, teamId: id, sort: sort);
+            await InitializeModelAsync(null, Team, sort: sort);
             return Page();
         }
 
         public async Task<IActionResult> OnGetUnlockStateAsync(int id, int? puzzleId, bool value, string sort)
         {
-            await SetUnlockStateAsync(puzzleId: puzzleId, teamId: id, value: value);
+            var puzzle = puzzleId == null ? null : await Context.Puzzles.FirstAsync(m => m.ID == puzzleId.Value);
+            var team = await Context.Teams.FirstAsync(m => m.ID == id);
+
+            await SetUnlockStateAsync(puzzle, team, value);
 
             // redirect without the unlock info to keep the URL clean
             return RedirectToPage(new { id, sort });
@@ -44,7 +47,10 @@ namespace ServerCore.Pages.Teams
 
         public async Task<IActionResult> OnGetSolveStateAsync(int id, int? puzzleId, bool value, string sort)
         {
-            await SetSolveStateAsync(puzzleId: puzzleId, teamId: id, value: value);
+            var puzzle = puzzleId == null ? null : await Context.Puzzles.FirstAsync(m => m.ID == puzzleId.Value);
+            var team = await Context.Teams.FirstAsync(m => m.ID == id);
+
+            await SetSolveStateAsync(puzzle, team, value);
 
             // redirect without the solve info to keep the URL clean
             return RedirectToPage(new { id, sort });
