@@ -48,9 +48,9 @@
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
-                            @if (Event.IsEventStarted())
+                            @if (Event.EventHasStarted)
                             {
-                                if (Event.IsAnswerSubmissionActive())
+                                if (Event.IsAnswerSubmissionActive)
                                 {
                                     <li><a href="#">Unsolved Puzzles</a></li>
                                     <li><a href="#">Solved Puzzles</a></li>
@@ -71,7 +71,7 @@
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
-                            @if (Event.IsStandingsAvailableNow())
+                            @if (Event.AreStandingsAvailableNow)
                             {
                                 <li><a href="#">Standings</a></li>
                                 <li><a href="#">Fastest Solves</a></li>

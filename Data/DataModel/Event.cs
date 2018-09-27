@@ -34,6 +34,7 @@ namespace ServerCore.DataModel
         /// Returns whether or not team registration is active.
         /// </summary>
         /// <returns>True if the current date is between the team registration begin and end times.</returns>
+        [NotMapped]
         public bool IsTeamRegistrationActive
         {
             get
@@ -54,6 +55,7 @@ namespace ServerCore.DataModel
         /// is currently active.
         /// </summary>
         /// <returns>True if the current date is after the EventBegin time</returns>
+        [NotMapped]
         public bool EventHasStarted
         {
             get { return DateTime.UtcNow.CompareTo(EventBegin) > 0; }
@@ -65,6 +67,7 @@ namespace ServerCore.DataModel
         /// Returns whether or not answer submission is active.
         /// </summary>
         /// <returns>True if the current date is after the event start and before the answer submission end times.</returns>
+        [NotMapped]
         public bool IsAnswerSubmissionActive
         {
             get
@@ -80,6 +83,7 @@ namespace ServerCore.DataModel
         /// Returns whether or not the puzzle answers should be available now.
         /// </summary>
         /// <returns>True if the current date is after the AnswersAvailableBegin time</returns>
+        [NotMapped]
         public bool AreAnswersAvailableNow
         {
             get { return DateTime.UtcNow.CompareTo(AnswersAvailableBegin) > 0; }
@@ -94,7 +98,8 @@ namespace ServerCore.DataModel
         /// Returns whether or not the standings page should be available now.
         /// </summary>
         /// <returns>True if the current date is after the StandingsAvailableBegin time</returns>
-        public bool IsStandingsAvailableNow
+        [NotMapped]
+        public bool AreStandingsAvailableNow
         {
             get { return DateTime.UtcNow.CompareTo(StandingsAvailableBegin) > 0; }
         }
