@@ -72,22 +72,12 @@
             @Html.DisplayFor(model => model.Puzzle.MinPrerequisiteCount)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Puzzle.PuzzleUrlString)
+            @Html.DisplayNameFor(model => model.Puzzle.PuzzleFile)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Puzzle.PuzzleUrlString)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Puzzle.AnswerUrlString)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Puzzle.AnswerUrlString)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Puzzle.MaterialsUrlString)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Puzzle.MaterialsUrlString)
+            <a href="@Html.DisplayFor(model => model.Puzzle.PuzzleFile.Url)">
+                @Html.DisplayFor(model => model.Puzzle.PuzzleFile.Url)
+            </a>
         </dd>
     </dl>
 </div>
