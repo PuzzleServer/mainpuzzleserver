@@ -45,7 +45,7 @@ namespace ServerCore.Pages.Puzzles
             _context.Feedback.Add(Feedback);
             await _context.SaveChangesAsync();
 
-            return RedirectToPage("./Feedback", new {id = Feedback.Puzzle.ID});
+            return RedirectToPage("./Index");
         }
     }
 }

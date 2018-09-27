@@ -8,10 +8,6 @@
 
 <h2>Feedback for @Html.DisplayFor(model => model.Puzzle.Name)</h2>
 
-<p>
-    <a asp-page="SubmitFeedback" asp-route-id=@id>New Feedback</a>
-</p>
-
 <table class="table">
     <thead>
         <tr>
@@ -54,3 +50,7 @@
 }
     </tbody>
 </table>
+
+<div>
+    <a asp-page="./Index">Back to Puzzles</a>
+</div>
