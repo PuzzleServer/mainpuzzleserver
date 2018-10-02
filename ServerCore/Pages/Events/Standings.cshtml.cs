@@ -19,44 +19,25 @@ namespace ServerCore.Pages.Events
             _context = context;
         }
 
-        // TODO: This bears striking similarities to the puzzle state map and maybe key logic could be shared. But I am also trying to keep things efficient, so maybe not.
-        // This one might also be writable in a far shorter query by someone who knows what they are doing (not me).
         public async Task OnGetAsync()
         {
-            // get the puzzles and teams
-            var puzzles = await _context.Puzzles.Where(p => p.Event == this.Event).ToListAsync();
-            var teams = await _context.Teams.Where(t => t.Event == this.Event).Select(t => new TeamStats() { Team = t }).ToListAsync();
+            var teamsData = await PuzzleStateHelper.GetSparseQuery(_context, this.Event, null, null)
+                .Where(s => s.SolvedTime != null)
+                .GroupBy(state => state.Team)
+                .Select(g => new {
+                    Team = g.Key,
+                    SolveCount = g.Count(),
+                    Score = g.Sum(s => s.Puzzle.SolveValue),
+                    FinalMetaSolveTime = g.Where(s => s.Puzzle.IsFinalPuzzle).Select(s => s.SolvedTime).FirstOrDefault()
+                })
+                .OrderBy(t => t.FinalMetaSolveTime).ThenByDescending(t => t.Score).ThenByDescending(t => t.SolveCount).ThenBy(t => t.Team.Name)
+                .ToListAsync();
 
-            // build an ID-based lookup for teams
-            var puzzleLookup = new Dictionary<int, Puzzle>();
-            puzzles.ForEach(p => puzzleLookup[p.ID] = p);
-
-            var teamLookup = new Dictionary<int, TeamStats>();
-            teams.ForEach(t => teamLookup[t.Team.ID] = t);
-
-            // tabulate team scores. Unlike the state map, prefilter to solves only as that's all we need.
-            var states = await PuzzleStateHelper.GetSparseQuery(_context, this.Event, null, null).Where(s => s.SolvedTime != null).ToListAsync();
-            foreach (var state in states)
+            var teams = new List<TeamStats>(teamsData.Count);
+            for (int i = 0; i < teamsData.Count; i++)
             {
-                if (!puzzleLookup.TryGetValue(state.PuzzleID, out Puzzle puzzle) || !teamLookup.TryGetValue(state.TeamID, out TeamStats team))
-                {
-                    continue;
-                }
-
-                team.SolveCount++;
-                team.Score += puzzle.SolveValue;
-
-                if (puzzle.IsFinalPuzzle)
-                {
-                    team.FinalMetaSolveTime = state.SolvedTime.Value;
-                }
-            }
-
-            // sort teams by metameta/score/solves, add the sort index to the lookup
-            teams = teams.OrderBy(t => t.FinalMetaSolveTime).ThenByDescending(t => t.Score).ThenByDescending(t => t.SolveCount).ThenBy(t => t.Team.Name).ToList();
-            for (int i = 0; i < teams.Count; i++)
-            {
-                teams[i].SortOrder = i;
+                var data = teamsData[i];
+                teams.Add(new TeamStats() { Team = data.Team, SolveCount = data.SolveCount, Score = data.Score, SortOrder = i, FinalMetaSolveTime = data.FinalMetaSolveTime ?? DateTime.MaxValue });
             }
 
             this.Teams = teams;

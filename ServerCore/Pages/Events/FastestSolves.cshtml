@@ -7,7 +7,7 @@
 
 <h2>Fastest Solves</h2>
 
-<table class="table table-condensed ph-statemap">
+<table class="table table-condensed">
             <thead>
                 <tr>
                     <th>
@@ -20,7 +20,13 @@
                         Teams
                     </th>
                     <th>
-                        Fastest Solve
+                        First
+                    </th>
+                    <th>
+                        Second
+                    </th>
+                    <th>
+                        Third
                     </th>
                 </tr>
             </thead>
@@ -37,10 +43,23 @@
                     <td>
                         @(puzzle.SolveCount)
                     </td>
+                    @* TODO: Highlight the cell if this is your team's ID  Same for second and third place. *@
                     <td>
-                        @if (puzzle.FastestSolve != null)
+                        @if (puzzle.FirstID != null)
                         {
-                        <text>@puzzle.FastestTeam @puzzle.FastestSolve</text>
+                            <text>@puzzle.FirstName (@puzzle.FirstTime)</text>
+                        }
+                    </td>
+                    <td>
+                        @if (puzzle.SecondID != null)
+                        {
+                            <text>@puzzle.SecondName (@puzzle.SecondTime)</text>
+                        }
+                    </td>
+                    <td>
+                        @if (puzzle.ThirdID != null)
+                        {
+                            <text>@puzzle.ThirdName (@puzzle.ThirdTime)</text>
                         }
                     </td>
                 </tr>

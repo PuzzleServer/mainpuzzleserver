@@ -22,50 +22,51 @@ namespace ServerCore.Pages.Events
             _context = context;
         }
 
-        // TODO: This bears striking similarities to the puzzle state map and maybe key logic could be shared. But I am also trying to keep things efficient, so maybe not.
-        // This one might also be writable in a far shorter query by someone who knows what they are doing (not me).
         public async Task OnGetAsync()
         {
-            // get the puzzles and teams
-            // Unlike other cases, filter to just real puzzles
-            var puzzles = await _context.Puzzles.Where(p => p.Event == this.Event && p.IsPuzzle).Select(p => new PuzzleStats() { Puzzle = p }).ToListAsync();
-            var teams = await _context.Teams.Where(t => t.Event == this.Event).ToListAsync();
+            var puzzlesData = await PuzzleStateHelper.GetSparseQuery(_context, this.Event, null, null)
+                .Where(s => s.SolvedTime != null && s.Puzzle.IsPuzzle)
+                .GroupBy(state => state.Puzzle)
+                .Select(g => new {
+                    Puzzle = g.Key,
+                    SolveCount = g.Count(),
+                    Fastest = g.OrderBy(s => s.SolvedTime - s.UnlockedTime).Take(3).Select(s => new { s.Team.ID, s.Team.Name, Time = s.SolvedTime - s.UnlockedTime})
+                })
+                .OrderByDescending(p => p.SolveCount).ThenBy(p => p.Puzzle.Name)
+                .ToListAsync();
 
-            // build an ID-based lookup for puzzles and teams
-            var puzzleLookup = new Dictionary<int, PuzzleStats>();
-            puzzles.ForEach(p => puzzleLookup[p.Puzzle.ID] = p);
-
-            var teamLookup = new Dictionary<int, Team>();
-            teams.ForEach(t => teamLookup[t.ID] = t);
-
-            // tabulate solve counts and fastest solves. Unlike the state map, prefilter to solves only as that's all we need.
-            var states = await PuzzleStateHelper.GetSparseQuery(_context, this.Event, null, null).Where(s => s.SolvedTime != null).ToListAsync();
-            foreach (var state in states)
+            var puzzles = new List<PuzzleStats>(puzzlesData.Count);
+            for (int i = 0; i < puzzlesData.Count; i++)
             {
-                // TODO: Is it more performant to prefilter the states if an author, or is this sufficient?
-                if (!puzzleLookup.TryGetValue(state.PuzzleID, out PuzzleStats puzzle) || !teamLookup.TryGetValue(state.TeamID, out Team team))
+                var data = puzzlesData[i];
+                var stats = new PuzzleStats()
                 {
-                    continue;
+                    Puzzle = data.Puzzle,
+                    SolveCount = data.SolveCount,
+                    SortOrder = i
+                };
+
+                var fastEnum = data.Fastest.GetEnumerator();
+                if (fastEnum.MoveNext())
+                {
+                    stats.FirstID = fastEnum.Current.ID;
+                    stats.FirstName = fastEnum.Current.Name;
+                    stats.FirstTime = fastEnum.Current.Time;
+                }
+                if (fastEnum.MoveNext())
+                {
+                    stats.SecondID = fastEnum.Current.ID;
+                    stats.SecondName = fastEnum.Current.Name;
+                    stats.SecondTime = fastEnum.Current.Time;
+                }
+                if (fastEnum.MoveNext())
+                {
+                    stats.ThirdID = fastEnum.Current.ID;
+                    stats.ThirdName = fastEnum.Current.Name;
+                    stats.ThirdTime = fastEnum.Current.Time;
                 }
 
-                puzzle.SolveCount++;
-
-                if (state.IsUnlocked)
-                {
-                    TimeSpan solveTime = state.SolvedTime.Value - state.UnlockedTime.Value;
-                    if (puzzle.FastestSolve == null || solveTime < puzzle.FastestSolve)
-                    {
-                        puzzle.FastestSolve = solveTime;
-                        puzzle.FastestTeam = team.Name;
-                    }
-                }
-            }
-
-            // sort puzzles by solve count, add the sort index to the lookup
-            puzzles = puzzles.OrderByDescending(p => p.SolveCount).ThenBy(p => p.Puzzle.Name).ToList();
-            for (int i = 0; i < puzzles.Count; i++)
-            {
-                puzzles[i].SortOrder = i;
+                puzzles.Add(stats);
             }
 
             this.Puzzles = puzzles;
@@ -76,8 +77,15 @@ namespace ServerCore.Pages.Events
             public Puzzle Puzzle;
             public int SolveCount;
             public int SortOrder;
-            public string FastestTeam;
-            public TimeSpan? FastestSolve;
+            public int? FirstID;
+            public string FirstName;
+            public TimeSpan? FirstTime;
+            public int? SecondID;
+            public string SecondName;
+            public TimeSpan? SecondTime;
+            public int? ThirdID;
+            public string ThirdName;
+            public TimeSpan? ThirdTime;
         }
     }
 }
