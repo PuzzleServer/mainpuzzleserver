@@ -8,9 +8,9 @@ namespace ServerCore.Pages.Events
 {
     public class DetailsModel : PageModel
     {
-        private readonly ServerCore.Models.PuzzleServerContext _context;
+        private readonly PuzzleServerContext _context;
 
-        public DetailsModel(ServerCore.Models.PuzzleServerContext context)
+        public DetailsModel(PuzzleServerContext context)
         {
             _context = context;
         }

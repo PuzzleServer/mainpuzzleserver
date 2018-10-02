@@ -7,9 +7,9 @@ namespace ServerCore.Pages.Events
 {
     public class CreateModel : PageModel
     {
-        private readonly ServerCore.Models.PuzzleServerContext _context;
+        private readonly PuzzleServerContext _context;
 
-        public CreateModel(ServerCore.Models.PuzzleServerContext context)
+        public CreateModel(PuzzleServerContext context)
         {
             _context = context;
         }
