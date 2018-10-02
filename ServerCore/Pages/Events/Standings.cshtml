@@ -1,0 +1,46 @@
+﻿@page "/{eventId}/Events/Standings"
+@model ServerCore.Pages.Events.StandingsModel
+
+@{
+    ViewData["Title"] = "Standings";
+}
+
+<h2>Standings</h2>
+
+<table class="table table-condensed ph-statemap">
+            <thead>
+                <tr>
+                    <th>
+                        Rank
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Teams[0].Team.Name)
+                    </th>
+                    <th>
+                        Puzzles
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Teams[0].Score)
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+        @for (int y = 0; y < Model.Teams.Count; y++) {
+            var team = Model.Teams[y];
+                <tr>
+                    <td>
+                        @(team.SortOrder + 1)
+                    </td>
+                    <td>
+                        @(team.Team.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => team.SolveCount)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => team.Score)
+                    </td>
+                </tr>
+        }
+            </tbody>
+</table>

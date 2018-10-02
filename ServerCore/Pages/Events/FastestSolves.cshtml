@@ -1,0 +1,49 @@
+﻿@page "/{eventId}/Events/FastestSolves"
+@model ServerCore.Pages.Events.FastestSolvesModel
+
+@{
+    ViewData["Title"] = "Fastest Solves";
+}
+
+<h2>Fastest Solves</h2>
+
+<table class="table table-condensed ph-statemap">
+            <thead>
+                <tr>
+                    <th>
+                        Rank
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Puzzles[0].Puzzle.Name)
+                    </th>
+                    <th>
+                        Teams
+                    </th>
+                    <th>
+                        Fastest Solve
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+        @for (int y = 0; y < Model.Puzzles.Count; y++) {
+            var puzzle = Model.Puzzles[y];
+                <tr>
+                    <td>
+                        @(puzzle.SortOrder + 1)
+                    </td>
+                    <td>
+                        @(puzzle.Puzzle.Name)
+                    </td>
+                    <td>
+                        @(puzzle.SolveCount)
+                    </td>
+                    <td>
+                        @if (puzzle.FastestSolve != null)
+                        {
+                        <text>@puzzle.FastestTeam @puzzle.FastestSolve</text>
+                        }
+                    </td>
+                </tr>
+        }
+            </tbody>
+</table>
