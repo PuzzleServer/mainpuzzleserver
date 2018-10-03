@@ -35,7 +35,7 @@
             var team = Model.Teams[y];
                 <tr>
                     <td>
-                        @(team.SortOrder + 1)
+                        @(team.Rank)
                     </td>
                     <td>
                         <a asp-page="/Teams/Status" asp-route-id="@team.Team.ID">@(team.Team.Name)</a>

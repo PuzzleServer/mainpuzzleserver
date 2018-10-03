@@ -30,14 +30,29 @@ namespace ServerCore.Pages.Events
                     Score = g.Sum(s => s.Puzzle.SolveValue),
                     FinalMetaSolveTime = g.Where(s => s.Puzzle.IsFinalPuzzle).Select(s => s.SolvedTime).FirstOrDefault()
                 })
-                .OrderBy(t => t.FinalMetaSolveTime).ThenByDescending(t => t.Score).ThenByDescending(t => t.SolveCount).ThenBy(t => t.Team.Name)
+                .OrderBy(t => t.FinalMetaSolveTime).ThenByDescending(t => t.Score).ThenBy(t => t.Team.Name)
                 .ToListAsync();
 
             var teams = new List<TeamStats>(teamsData.Count);
+            TeamStats prevStats = null;
             for (int i = 0; i < teamsData.Count; i++)
             {
                 var data = teamsData[i];
-                teams.Add(new TeamStats() { Team = data.Team, SolveCount = data.SolveCount, Score = data.Score, SortOrder = i, FinalMetaSolveTime = data.FinalMetaSolveTime ?? DateTime.MaxValue });
+                var stats = new TeamStats()
+                {
+                    Team = data.Team,
+                    SolveCount = data.SolveCount,
+                    Score = data.Score,
+                    FinalMetaSolveTime = data.FinalMetaSolveTime ?? DateTime.MaxValue
+                };
+
+                if (prevStats == null || stats.FinalMetaSolveTime != prevStats.FinalMetaSolveTime || stats.Score != prevStats.Score)
+                {
+                    stats.Rank = i + 1;
+                }
+
+                teams.Add(stats);
+                prevStats = stats;
             }
 
             this.Teams = teams;
@@ -48,7 +63,7 @@ namespace ServerCore.Pages.Events
             public Team Team;
             public int SolveCount;
             public int Score;
-            public int SortOrder;
+            public int? Rank;
             public DateTime FinalMetaSolveTime = DateTime.MaxValue;
         }
     }

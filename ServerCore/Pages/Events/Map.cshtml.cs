@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 using ServerCore.ModelBases;
-using ServerCore.Models;
 
 namespace ServerCore.Pages.Events
 {
@@ -73,10 +70,15 @@ namespace ServerCore.Pages.Events
                 puzzles[i].SortOrder = i;
             }
 
-            // sort teams by metameta/score/solves, add the sort index to the lookup
-            teams = teams.OrderBy(t => t.FinalMetaSolveTime).ThenByDescending(t => t.Score).ThenByDescending(t => t.SolveCount).ThenBy(t => t.Team.Name).ToList();
+            // sort teams by metameta/score, add the sort index to the lookup
+            teams = teams.OrderBy(t => t.FinalMetaSolveTime).ThenByDescending(t => t.Score).ThenBy(t => t.Team.Name).ToList();
             for (int i = 0; i < teams.Count; i++)
             {
+                if (i == 0 || teams[i].FinalMetaSolveTime != teams[i - 1].FinalMetaSolveTime || teams[i].Score != teams[i - 1].Score)
+                {
+                    teams[i].Rank = i + 1;
+                }
+
                 teams[i].SortOrder = i;
             }
 
@@ -102,6 +104,7 @@ namespace ServerCore.Pages.Events
             public int SolveCount;
             public int Score;
             public int SortOrder;
+            public int? Rank;
             public DateTime FinalMetaSolveTime = DateTime.MaxValue;
         }
 
