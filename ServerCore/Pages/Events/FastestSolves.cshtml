@@ -1,0 +1,68 @@
+﻿@page "/{eventId}/Events/FastestSolves"
+@model ServerCore.Pages.Events.FastestSolvesModel
+
+@{
+    ViewData["Title"] = "Fastest Solves";
+}
+
+<h2>Fastest Solves</h2>
+
+<table class="table table-condensed">
+            <thead>
+                <tr>
+                    <th>
+                        Rank
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Puzzles[0].Puzzle.Name)
+                    </th>
+                    <th>
+                        Teams
+                    </th>
+                    <th>
+                        First
+                    </th>
+                    <th>
+                        Second
+                    </th>
+                    <th>
+                        Third
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+        @for (int y = 0; y < Model.Puzzles.Count; y++) {
+            var puzzle = Model.Puzzles[y];
+                <tr>
+                    <td>
+                        @(puzzle.SortOrder + 1)
+                    </td>
+                    <td>
+                        @(puzzle.Puzzle.Name)
+                    </td>
+                    <td>
+                        @(puzzle.SolveCount)
+                    </td>
+                    @* TODO: Highlight the cell if this is your team's ID  Same for second and third place. *@
+                    <td>
+                        @if (puzzle.Fastest.Length >= 1)
+                        {
+                            <text>@puzzle.Fastest[0].Name (@puzzle.Fastest[0].Time)</text>
+                        }
+                    </td>
+                    <td>
+                        @if (puzzle.Fastest.Length >= 2)
+                        {
+                            <text>@puzzle.Fastest[1].Name (@puzzle.Fastest[1].Time)</text>
+                        }
+                    </td>
+                    <td>
+                        @if (puzzle.Fastest.Length >= 3)
+                        {
+                            <text>@puzzle.Fastest[2].Name (@puzzle.Fastest[2].Time)</text>
+                        }
+                    </td>
+                </tr>
+        }
+            </tbody>
+</table>
