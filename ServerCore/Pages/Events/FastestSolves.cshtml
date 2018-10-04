@@ -45,21 +45,21 @@
                     </td>
                     @* TODO: Highlight the cell if this is your team's ID  Same for second and third place. *@
                     <td>
-                        @if (puzzle.FirstID != null)
+                        @if (puzzle.Fastest.Length >= 1)
                         {
-                            <text>@puzzle.FirstName (@puzzle.FirstTime)</text>
+                            <text>@puzzle.Fastest[0].Name (@puzzle.Fastest[0].Time)</text>
                         }
                     </td>
                     <td>
-                        @if (puzzle.SecondID != null)
+                        @if (puzzle.Fastest.Length >= 2)
                         {
-                            <text>@puzzle.SecondName (@puzzle.SecondTime)</text>
+                            <text>@puzzle.Fastest[1].Name (@puzzle.Fastest[1].Time)</text>
                         }
                     </td>
                     <td>
-                        @if (puzzle.ThirdID != null)
+                        @if (puzzle.Fastest.Length >= 3)
                         {
-                            <text>@puzzle.ThirdName (@puzzle.ThirdTime)</text>
+                            <text>@puzzle.Fastest[2].Name (@puzzle.Fastest[2].Time)</text>
                         }
                     </td>
                 </tr>

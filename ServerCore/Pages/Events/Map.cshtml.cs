@@ -116,6 +116,31 @@ namespace ServerCore.Pages.Events
             public TeamStats Team;
             public DateTime? UnlockedTime;
             public DateTime? SolvedTime;
+
+            public string DisplayText => this.SolvedTime != null ? "C" : this.UnlockedTime != null ? "U" : "L";
+
+            public int DisplayHue => this.SolvedTime != null ? 120 : this.UnlockedTime != null ? 60 : 0;
+
+            public int DisplayLightness
+            {
+                get
+                {
+                    if (this.SolvedTime != null)
+                    {
+                        int minutes = (int)((DateTime.UtcNow - this.SolvedTime.Value).TotalMinutes);
+                        return 75 - (Math.Min(minutes, 236) >> 2);
+                    }
+                    else if (this.UnlockedTime != null)
+                    {
+                        int minutes = (int)((DateTime.UtcNow - this.UnlockedTime.Value).TotalMinutes);
+                        return 75 - (Math.Min(minutes, 236) >> 2);
+                    }
+                    else
+                    {
+                        return 100;
+                    }
+                }
+            }
         }
     }
 }

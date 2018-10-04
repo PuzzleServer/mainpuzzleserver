@@ -49,32 +49,9 @@
             @for (int x = 0; x < Model.Puzzles.Count; x++)
             {
                 var teamState = Model.StateMap[x, y] ?? MapModel.StateStats.Default;
-                char text;
-                int hue;
-                int lightness;
 
-                if (teamState.SolvedTime != null)
-                {
-                    int minutes = (int)((DateTime.UtcNow - teamState.SolvedTime.Value).TotalMinutes);
-                    text = 'C';
-                    hue = 120;
-                    lightness = 75 - (Math.Min(minutes, 236) >> 2);
-                }
-                else if (teamState.UnlockedTime != null)
-                {
-                    int minutes = (int)((DateTime.UtcNow - teamState.UnlockedTime.Value).TotalMinutes);
-                    text = 'U';
-                    hue = 60;
-                    lightness = 75 - (Math.Min(minutes, 236) >> 2);
-                }
-                else
-                {
-                    text = 'L';
-                    hue = 0;
-                    lightness = 100;
-                }
-                    <td @if(lightness < 30) { <text> class= "dark"</text> }  style="background-color: hsl(@hue, 100%, @lightness%)">
-                        <a href="">@text</a>
+                    <td @if(teamState.DisplayLightness < 30) { <text> class= "dark"</text> }  style="background-color: hsl(@teamState.DisplayHue, 100%, @teamState.DisplayLightness%)">
+                        <a href="">@teamState.DisplayText</a>
                     </td>
             }
                 </tr>

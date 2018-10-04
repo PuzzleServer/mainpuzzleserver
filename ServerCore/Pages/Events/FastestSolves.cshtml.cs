@@ -21,6 +21,7 @@ namespace ServerCore.Pages.Events
 
         public async Task OnGetAsync()
         {
+            // get the page data: puzzle, solve count, top three fastest
             var puzzlesData = await PuzzleStateHelper.GetSparseQuery(_context, this.Event, null, null)
                 .Where(s => s.SolvedTime != null && s.Puzzle.IsPuzzle)
                 .GroupBy(state => state.Puzzle)
@@ -40,28 +41,9 @@ namespace ServerCore.Pages.Events
                 {
                     Puzzle = data.Puzzle,
                     SolveCount = data.SolveCount,
-                    SortOrder = i
+                    SortOrder = i,
+                    Fastest = data.Fastest.Select(f => new FastRecord() { ID = f.ID, Name = f.Name, Time = f.Time }).ToArray()
                 };
-
-                var fastEnum = data.Fastest.GetEnumerator();
-                if (fastEnum.MoveNext())
-                {
-                    stats.FirstID = fastEnum.Current.ID;
-                    stats.FirstName = fastEnum.Current.Name;
-                    stats.FirstTime = fastEnum.Current.Time;
-                }
-                if (fastEnum.MoveNext())
-                {
-                    stats.SecondID = fastEnum.Current.ID;
-                    stats.SecondName = fastEnum.Current.Name;
-                    stats.SecondTime = fastEnum.Current.Time;
-                }
-                if (fastEnum.MoveNext())
-                {
-                    stats.ThirdID = fastEnum.Current.ID;
-                    stats.ThirdName = fastEnum.Current.Name;
-                    stats.ThirdTime = fastEnum.Current.Time;
-                }
 
                 puzzles.Add(stats);
             }
@@ -74,15 +56,14 @@ namespace ServerCore.Pages.Events
             public Puzzle Puzzle;
             public int SolveCount;
             public int SortOrder;
-            public int? FirstID;
-            public string FirstName;
-            public TimeSpan? FirstTime;
-            public int? SecondID;
-            public string SecondName;
-            public TimeSpan? SecondTime;
-            public int? ThirdID;
-            public string ThirdName;
-            public TimeSpan? ThirdTime;
+            public FastRecord[] Fastest;
+        }
+
+        public class FastRecord
+        {
+            public int ID;
+            public string Name;
+            public TimeSpan? Time;
         }
     }
 }
