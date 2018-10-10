@@ -5,11 +5,7 @@ namespace ServerCore.DataModel
 {
     public class PuzzleStatePerTeam
     {
-        /// <summary>
-        /// Row ID
-        /// </summary>
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ID { get; set; }
+        // Note: No ID here. See PuzzleServerContext.OnModelCreating for the declaration of the key.
 
         public int PuzzleID { get; set; }
         public virtual Puzzle Puzzle { get; set; }

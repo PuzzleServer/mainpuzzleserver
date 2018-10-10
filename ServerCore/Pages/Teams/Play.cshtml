@@ -53,12 +53,20 @@
                 @Html.DisplayFor(modelItem => item.Puzzle.OrderInGroup)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.Puzzle.PuzzleFile.ShortName)
+            </td>
+            <td>
                 <a asp-page="/Submissions/Index" asp-route-puzzleid="@item.Puzzle.ID" asp-route-teamid="@Model.TeamID">@(item.State.IsSolved ? "See Answers" : "Submit Answer")</a>
             </td>
+            @if (showAnswers) {
+                <td>
+                    @Html.DisplayFor(modelItem => item.Puzzle.AnswerFile.ShortName)
+                </td>
+            }
             <td>
                 @if (item.State.IsSolved)
                 {
-                    <text>Solved at </text>@item.State.SolvedTime?.ToLocalTime()
+                <text>Solved at </text>@item.State.SolvedTime?.ToLocalTime()
                 }
             </td>
         </tr>
