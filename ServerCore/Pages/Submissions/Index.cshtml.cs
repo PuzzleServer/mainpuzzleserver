@@ -25,31 +25,44 @@ namespace ServerCore.Pages.Submissions
 
         public int PuzzleId { get; set; }
 
+        public int TeamId { get; set; }
+
         public string AnswerToken { get; set; }
 
-        public async Task<IActionResult> OnPostAsync(int puzzleId)
+        public async Task<IActionResult> OnPostAsync(int puzzleId, int teamId)
         {
+            // Create submission and add it to list
             Submission.TimeSubmitted = DateTime.Now;
             Submission.Puzzle = await _context.Puzzles.SingleOrDefaultAsync(p => p.ID == puzzleId);
+            Submission.Team = await _context.Teams.Where((t) => t.ID == teamId).FirstOrDefaultAsync();
 
             List<Response> responses = await _context.Responses.Where(r => r.Puzzle.ID == puzzleId && Submission.SubmissionText == r.SubmittedText).ToListAsync();
-            Submission.Response = responses.Count == 1 ? responses.First() : null;
+            Submission.Response = responses.FirstOrDefault();
 
+            // Update puzzle state if submission was correct
+            if (Submission.Response != null && Submission.Response.IsSolution)
+            {
+                PuzzleStatePerTeam puzzleState = await _context.PuzzleStatePerTeam.Where(state => state.TeamID == teamId && state.PuzzleID == puzzleId).FirstOrDefaultAsync();
+                puzzleState.IsSolved = true;
+                Submission.TimeSubmitted = (DateTime)puzzleState.SolvedTime;
+            }
+            
             _context.Submissions.Add(Submission);
             await _context.SaveChangesAsync();
 
-            return RedirectToPage("./Index", new { puzzleid = puzzleId });
+            return RedirectToPage("/Submissions/Index", new { puzzleid = puzzleId, teamid = teamId });
         }
 
-        public async Task OnGetAsync(int puzzleId)
+        public async Task OnGetAsync(int puzzleId, int teamId)
         {
-            this.Submissions = await _context.Submissions.Where((s) => s.Puzzle != null && s.Puzzle.ID == puzzleId).ToListAsync();
-            this.PuzzleId = puzzleId;
+            Submissions = await _context.Submissions.Where((s) => s.Team != null && s.Team.ID == teamId && s.Puzzle != null && s.Puzzle.ID == puzzleId).ToListAsync();
+            PuzzleId = puzzleId;
+            TeamId = teamId;
 
-            Submission lastSubmission = this.Submissions.LastOrDefault();
-            if (lastSubmission != null && lastSubmission.Response != null && lastSubmission.Response.IsSolution)
+            Submission correctSubmission = this.Submissions?.Where((s) => s.Response != null && s.Response.IsSolution).FirstOrDefault();
+            if (correctSubmission != null)
             {
-                this.AnswerToken = lastSubmission.SubmissionText;
+                AnswerToken = correctSubmission.SubmissionText;
             }
         }
     }

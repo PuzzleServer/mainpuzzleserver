@@ -82,20 +82,10 @@
                 @Html.DisplayFor(modelItem => item.MinPrerequisiteCount)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.PuzzleUrlString)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AnswerUrlString)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MaterialsUrlString)
-            </td>
-            <td>
                 <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |
                 <a asp-page="./Details" asp-route-id="@item.ID">Details</a> |
                 <a asp-page="./Delete" asp-route-id="@item.ID">Delete</a> |
                 <a asp-page="/Responses/Index" asp-route-puzzleid="@item.ID" asp-route-eventid="@item.Event.ID">Responses</a> |
-                <a asp-page="/Submissions/Index" asp-route-puzzleid="@item.ID" asp-route-eventid="@item.Event.ID">Answer</a> |
                 <a asp-page="./Status" asp-route-id="@item.ID">Status</a>
             </td>
         </tr>

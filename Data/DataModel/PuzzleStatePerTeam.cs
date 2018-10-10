@@ -34,7 +34,7 @@ namespace ServerCore.DataModel
         }
 
         /// <summary>
-        /// Whether or not the puzzle has been unlocked
+        /// Whether or not the puzzle has been solved
         /// </summary>
         [NotMapped]
         public bool IsSolved

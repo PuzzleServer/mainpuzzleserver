@@ -23,7 +23,7 @@ namespace ServerCore.Pages.Responses
 
         public IActionResult OnGet(int puzzleId, int eventId)
         {
-            this.PuzzleId = puzzleId;
+            PuzzleId = puzzleId;
             return Page();
         }
 

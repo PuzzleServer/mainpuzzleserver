@@ -69,7 +69,7 @@ namespace ServerCore.Pages.Teams
                     throw new ArgumentException($"unknown sort: {sort}");
             }
 
-            PuzzlesWithState = await visiblePuzzlesQ.ToListAsync();
+            this.PuzzlesWithState = await visiblePuzzlesQ.ToListAsync();
         }
 
         public SortOrder? SortForColumnLink(SortOrder ascendingSort, SortOrder descendingSort)

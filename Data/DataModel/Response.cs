@@ -32,8 +32,8 @@ namespace ServerCore.DataModel
         /// </summary>
         public string SubmittedText
         {
-            get { return this.submittedText; }
-            set { this.submittedText = FormatSubmission(value); }
+            get { return submittedText; }
+            set { submittedText = FormatSubmission(value); }
         }
 
         /// <summary>

@@ -8,7 +8,7 @@ namespace ServerCore.DataModel
     /// </summary>
     public class Submission
     {
-        private string submission = string.Empty;
+        private string submissionText = string.Empty;
         
         /// <summary>
         /// The ID
@@ -41,8 +41,8 @@ namespace ServerCore.DataModel
         /// </summary>
         public string SubmissionText
         {
-            get { return this.submission; }
-            set { this.submission = Response.FormatSubmission(value); }
+            get { return submissionText; }
+            set { submissionText = Response.FormatSubmission(value); }
         }
 
         /// <summary>

@@ -23,7 +23,7 @@ namespace ServerCore.Pages.Responses
         public async Task<IActionResult> OnGetAsync(int id, int puzzleId)
         {
             PuzzleResponse = await _context.Responses.FirstOrDefaultAsync(m => m.ID == id);
-            this.PuzzleId = puzzleId;
+            PuzzleId = puzzleId;
 
             if (Response == null)
             {

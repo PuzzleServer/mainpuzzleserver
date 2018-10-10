@@ -23,8 +23,8 @@ namespace ServerCore.Pages.Responses
 
         public async Task OnGetAsync(int puzzleId)
         {
-            this.Responses = await _context.Responses.Where((r) => r.Puzzle != null && r.Puzzle.ID == puzzleId).ToListAsync();
-            this.PuzzleId = puzzleId;
+            Responses = await _context.Responses.Where((r) => r.Puzzle != null && r.Puzzle.ID == puzzleId).ToListAsync();
+            PuzzleId = puzzleId;
         }
     }
 }
