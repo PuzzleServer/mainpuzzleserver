@@ -10,11 +10,11 @@ namespace ServerCore.Pages.Events
 {
     public class StandingsModel : EventSpecificPageModel
     {
-        private readonly ServerCore.Models.PuzzleServerContext _context;
+        private readonly PuzzleServerContext _context;
 
         public List<TeamStats> Teams { get; private set; }
 
-        public StandingsModel(ServerCore.Models.PuzzleServerContext context)
+        public StandingsModel(PuzzleServerContext context)
         {
             _context = context;
         }
