@@ -16,6 +16,9 @@ namespace ServerCore.DataModel
         [DataType(DataType.Url)]
         public string UrlString { get; set; }
 
+        [DataType(DataType.EmailAddress)]
+        public string ContactEmail { get; set; }
+
         [NotMapped]
         public Uri URL
         {

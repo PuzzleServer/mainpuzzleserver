@@ -1,0 +1,82 @@
+﻿@page  "/{eventId}/Puzzles/FileManagement/{id}/{handler?}"
+@model ServerCore.Pages.Puzzles.FileManagementModel
+
+@{
+    ViewData["Title"] = "FileManagement";
+}
+
+<h2>FileManagement</h2>
+
+<div>
+    <h4>Puzzle</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Puzzle.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Puzzle.Name)
+        </dd>
+
+    </dl>
+    <div class="form-group">
+        <form method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Puzzle.ID" />
+            <label class="control-label">Puzzle File</label>
+            <div>
+                @if (Model.Puzzle.PuzzleFile != null)
+                {
+                    @Html.ActionLink(Model.Puzzle.PuzzleFile.ShortName, "Index", "Files", new { eventId = Model.Event.ID, filename = Model.Puzzle.PuzzleFile.ShortName })
+                    <button type="submit" asp-route-id="@Model.Puzzle.ID" asp-route-fileId="@Model.Puzzle.PuzzleFile.ID" asp-page-handler="Delete">Delete</button>
+                }
+            </div>
+            <input asp-for="PuzzleFile" class="form-control" style="height:auto" />
+            <span asp-validation-for="PuzzleFile" class="text-danger"></span>
+            <hr />
+
+            <label class="control-label">Answer File</label>
+            <div>
+                @if (Model.Puzzle.AnswerFile != null)
+                {
+                    @Html.ActionLink(Model.Puzzle.AnswerFile.ShortName, "Index", "Files", new { eventId = Model.Event.ID, filename = Model.Puzzle.AnswerFile.ShortName })
+                    <button type="submit" asp-route-id="@Model.Puzzle.ID" asp-route-fileId="@Model.Puzzle.AnswerFile.ID" asp-page-handler="Delete">Delete</button>
+                }
+            </div>
+            <input asp-for="AnswerFile" class="form-control" style="height:auto" />
+            <span asp-validation-for="AnswerFile" class="text-danger"></span>
+            <hr />
+
+            <label class="control-label">Materials</label>
+            @foreach (var puzzleFile in Model.Puzzle.Materials)
+            {
+                <p>
+                    @Html.ActionLink(puzzleFile.ShortName, "Index", "Files", new { eventId = Model.Event.ID, filename = puzzleFile.ShortName })
+                    <button type="submit" asp-route-id="@Model.Puzzle.ID" asp-route-fileId="@puzzleFile.ID" asp-page-handler="Delete">Delete</button>
+                </p>
+            }
+            <input asp-for="PuzzleMaterialFiles" class="form-control" style="height:auto" />
+            <span asp-validation-for="PuzzleMaterialFiles" class="text-danger"></span>
+            <hr />
+
+            <label class="control-label">Solve Token Files</label>
+            @foreach (var solveFile in Model.Puzzle.SolveTokenFiles)
+            {
+                <p>
+                    @Html.ActionLink(solveFile.ShortName, "Index", "Files", new { eventId = Model.Event.ID, filename = solveFile.ShortName })
+                    <button type="submit" asp-route-id="@Model.Puzzle.ID" asp-route-fileId="@solveFile.ID" asp-page-handler="Delete">Delete</button>
+                </p>
+            }
+            <input asp-for="SolveTokenFiles" class="form-control" style="height:auto" />
+            <span asp-validation-for="SolveTokenFiles" class="text-danger"></span>
+
+            <div class="form-group">
+                <input type="submit" value="Upload" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+<div>
+    |
+    <a asp-page="./Index">Back to List</a>
+</div>
