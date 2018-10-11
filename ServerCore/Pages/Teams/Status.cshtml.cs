@@ -13,7 +13,7 @@ namespace ServerCore.Pages.Teams
     /// </summary>
     public class StatusModel : PuzzleStatePerTeamPageModel
     {
-        public StatusModel(ServerCore.Models.PuzzleServerContext context) : base(context)
+        public StatusModel(PuzzleServerContext context) : base(context)
         {
         }
 

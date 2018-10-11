@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
-using ServerCore.Models;
 
 namespace ServerCore.ModelBases
 {
@@ -14,7 +13,7 @@ namespace ServerCore.ModelBases
 
         public SortOrder? Sort { get; set; }
 
-        public PuzzleStatePerTeamPageModel(ServerCore.Models.PuzzleServerContext context)
+        public PuzzleStatePerTeamPageModel(PuzzleServerContext context)
         {
             this.Context = context;
         }

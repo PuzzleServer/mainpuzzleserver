@@ -8,9 +8,9 @@ namespace ServerCore.Pages.Teams
 {
     public class CreateModel : EventSpecificPageModel
     {
-        private readonly ServerCore.Models.PuzzleServerContext _context;
+        private readonly PuzzleServerContext _context;
 
-        public CreateModel(ServerCore.Models.PuzzleServerContext context)
+        public CreateModel(PuzzleServerContext context)
         {
             _context = context;
         }

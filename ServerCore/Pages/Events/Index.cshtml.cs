@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
-using ServerCore.Models;
 
 namespace ServerCore.Pages.Events
 {
     public class IndexModel : PageModel
     {
-        private readonly ServerCore.Models.PuzzleServerContext _context;
+        private readonly PuzzleServerContext _context;
 
-        public IndexModel(ServerCore.Models.PuzzleServerContext context)
+        public IndexModel(PuzzleServerContext context)
         {
             _context = context;
         }

@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using ServerCore.DataModel;
-using ServerCore.Models;
 
 namespace ServerCore.Pages
 {

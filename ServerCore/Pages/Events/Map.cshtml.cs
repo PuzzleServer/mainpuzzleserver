@@ -10,7 +10,7 @@ namespace ServerCore.Pages.Events
 {
     public class MapModel : EventSpecificPageModel
     {
-        private readonly ServerCore.Models.PuzzleServerContext _context;
+        private readonly PuzzleServerContext _context;
 
         public List<PuzzleStats> Puzzles { get; private set; }
 
@@ -18,7 +18,7 @@ namespace ServerCore.Pages.Events
 
         public StateStats[,] StateMap { get; private set; }
 
-        public MapModel(ServerCore.Models.PuzzleServerContext context)
+        public MapModel(PuzzleServerContext context)
         {
             _context = context;
         }
