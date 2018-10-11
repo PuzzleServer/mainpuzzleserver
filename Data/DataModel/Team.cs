@@ -20,7 +20,6 @@ namespace ServerCore.DataModel
         /// String formatted rooms for events that don't pre-reserve rooms
         /// </summary>
         public string CustomRoom { get; set; }
-        public virtual TeamMembers Members { get; set; }
 
         public virtual List<Invitation> Invitations { get; set; }
 
