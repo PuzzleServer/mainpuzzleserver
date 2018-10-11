@@ -33,7 +33,13 @@ namespace ServerCore.Pages.Teams
                 return NotFound("Could not find team with ID '" + teamId + "'. Check to make sure you're accessing this page in the context of a team.");
             }
 
-            Users = await _context.Users.ToListAsync();
+            // Get all users that are not already on a team in this event
+            Users = await _context.Users
+                .Except(_context.TeamMembers
+                .Where(member => member.Team.Event == Event)
+                .Select(model => model.Member))
+                .ToListAsync();
+            
             return Page();
         }
 
@@ -61,12 +67,10 @@ namespace ServerCore.Pages.Teams
             _context.TeamMembers.Add(Member);
             await _context.SaveChangesAsync();
             return RedirectToPage("./Members", new { id = teamId });
-
-            //SqlException: Cannot insert duplicate key row in object 'dbo.TeamMembers' with unique index 'IX_TeamMembers_Team.ID'. The duplicate key value is (2).
         }
 
-        // TEMPORARY - can't test member add without this function
-        // TODO - delete once users have an add page
+        // TEMPORARY - can't test member add without this function to add random users
+        // TODO (@Jenna) - delete once users have an add page
         public async Task<IActionResult> OnGetAddUserAsync(int teamId)
         {
             User User = new User();
