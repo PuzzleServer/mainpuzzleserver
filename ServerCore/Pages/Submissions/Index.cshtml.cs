@@ -47,7 +47,8 @@ namespace ServerCore.Pages.Submissions
             // Update puzzle state if submission was correct
             if (Submission.Response != null && Submission.Response.IsSolution)
             {
-                PuzzleStatePerTeam puzzleState = await _context.PuzzleStatePerTeam.Where(state => state.TeamID == teamId && state.PuzzleID == puzzleId).FirstOrDefaultAsync();
+                var statesQ = await PuzzleStateHelper.GetFullReadWriteQueryAsync(_context, this.Event, Submission.Puzzle, Submission.Team);
+                PuzzleStatePerTeam puzzleState = await statesQ.FirstOrDefaultAsync();
                 puzzleState.IsSolved = true;
                 Submission.TimeSubmitted = (DateTime)puzzleState.SolvedTime;
             }

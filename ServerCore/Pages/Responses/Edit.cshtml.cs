@@ -21,19 +21,20 @@ namespace ServerCore.Pages.Responses
 
         public int PuzzleId { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int id, int puzzleId)
+        public async Task<IActionResult> OnGetAsync(int id)
         {
             PuzzleResponse = await _context.Responses.FirstOrDefaultAsync(m => m.ID == id);
-            PuzzleId = puzzleId;
 
             if (PuzzleResponse == null)
             {
                 return NotFound();
             }
+
+            PuzzleId = PuzzleResponse.PuzzleID;
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(int puzzleId)
+        public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
@@ -41,7 +42,7 @@ namespace ServerCore.Pages.Responses
             }
 
             _context.Attach(PuzzleResponse).State = EntityState.Modified;
-            this.PuzzleId = puzzleId;
+            PuzzleId = PuzzleResponse.PuzzleID;
 
             try
             {
@@ -59,7 +60,7 @@ namespace ServerCore.Pages.Responses
                 }
             }
 
-            return RedirectToPage("./Index", new { puzzleId = puzzleId });
+            return RedirectToPage("./Index", new { puzzleId = PuzzleId });
         }
 
         private bool ResponseExists(int id)

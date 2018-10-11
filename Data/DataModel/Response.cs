@@ -16,11 +16,16 @@ namespace ServerCore.DataModel
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
+        
+        /// <summary>
+        /// The id of the puzzle the response is for
+        /// </summary>
+        public int PuzzleID { get; set; }
 
         /// <summary>
         /// The puzzle the response is for
         /// </summary>
-        public virtual Puzzle Puzzle {get; set;}
+        public virtual Puzzle Puzzle { get; set; }
 
         /// <summary>
         /// True if the submitted text is considered a solution to the puzzle

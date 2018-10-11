@@ -34,7 +34,7 @@ namespace ServerCore.Pages.Responses
                 return Page();
             }
 
-            PuzzleResponse.Puzzle = await _context.Puzzles.SingleOrDefaultAsync(m => m.ID == puzzleId);
+            PuzzleResponse.PuzzleID = puzzleId;
 
             _context.Responses.Add(PuzzleResponse);
             await _context.SaveChangesAsync();

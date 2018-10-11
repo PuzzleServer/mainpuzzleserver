@@ -19,15 +19,16 @@ namespace ServerCore.Pages.Responses
 
         public int PuzzleId { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int id, int puzzleId)
+        public async Task<IActionResult> OnGetAsync(int id)
         {
             PuzzleResponse = await _context.Responses.FirstOrDefaultAsync(m => m.ID == id);
-            PuzzleId = puzzleId;
 
             if (PuzzleResponse == null)
             {
                 return NotFound();
             }
+
+            PuzzleId = PuzzleResponse.PuzzleID;
             return Page();
         }
     }

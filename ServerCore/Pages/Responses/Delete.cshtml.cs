@@ -20,29 +20,32 @@ namespace ServerCore.Pages.Responses
         
         public int PuzzleId { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int id, int puzzleId)
+        public async Task<IActionResult> OnGetAsync(int id)
         {
             PuzzleResponse = await _context.Responses.FirstOrDefaultAsync(m => m.ID == id);
-            PuzzleId = puzzleId;
 
-            if (Response == null)
+            if (PuzzleResponse == null)
             {
                 return NotFound();
             }
+
+            PuzzleId = PuzzleResponse.Puzzle.ID;
+
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(int id, int puzzleId)
+        public async Task<IActionResult> OnPostAsync(int id)
         {
             PuzzleResponse = await _context.Responses.FindAsync(id);
+            PuzzleId = PuzzleResponse.PuzzleID;
 
-            if (Response != null)
+            if (PuzzleResponse != null)
             {
                 _context.Responses.Remove(PuzzleResponse);
                 await _context.SaveChangesAsync();
             }
 
-            return RedirectToPage("./Index", new { puzzleId = puzzleId });
+            return RedirectToPage("./Index", new { puzzleId = PuzzleId });
         }
     }
 }

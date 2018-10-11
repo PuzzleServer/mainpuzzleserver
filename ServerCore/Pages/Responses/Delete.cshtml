@@ -41,6 +41,6 @@
     <form method="post">
         <input type="hidden" asp-for="PuzzleResponse.ID" />
         <input type="submit" value="Delete" class="btn btn-default" /> |
-        <a asp-page="./Index">Back to Puzzle List</a>
+        <a asp-page="./Index" asp-route-puzzleid="@Model.PuzzleId">Back to List</a>
     </form>
 </div>
