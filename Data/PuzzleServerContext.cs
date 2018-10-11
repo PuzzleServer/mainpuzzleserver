@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ServerCore.DataModel
 {
-    public class PuzzleServerContext : DbContext, IPuzzleServerContext
+    public class PuzzleServerContext : IdentityDbContext, IPuzzleServerContext
     {
         public PuzzleServerContext(DbContextOptions<PuzzleServerContext> options)
             : base(options)
@@ -29,7 +30,7 @@ namespace ServerCore.DataModel
         public DbSet<Submission> Submissions { get; set; }
         public DbSet<Team> Teams { get; set; }
         public DbSet<TeamMembers> TeamMembers { get; set; }
-        public DbSet<User> Users { get; set; }
+        public DbSet<PuzzleUser> PuzzleUsers { get; set; }
 
         public static void UpdateDatabase(IApplicationBuilder app)
         {
