@@ -29,7 +29,9 @@
 @foreach (var item in Model.Events) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Name)
+                <a asp-page="/EventSpecific/Index" asp-route-eventId="@item.ID">
+                    @Html.DisplayFor(modelItem => item.Name)
+                </a>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.UrlString)

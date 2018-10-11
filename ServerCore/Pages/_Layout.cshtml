@@ -34,7 +34,18 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a asp-page="/Index" class="navbar-brand">@(Event?.Name ?? "Microsoft Puzzles")</a>
+                @if (Event == null)
+                {
+                    <a asp-page="/Index" class="navbar-brand">
+                        Microsoft Puzzles
+                    </a>
+                }
+                else
+                {
+                    <a asp-page="/EventSpecific/Index" asp-route-eventId=@Event.ID class="navbar-brand">
+                        @(Event.Name)
+                    </a>
+                }
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
