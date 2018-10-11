@@ -1,0 +1,12 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using ServerCore.ModelBases;
+
+namespace ServerCore.Pages.EventSpecific
+{
+    public class IndexModel : EventSpecificPageModel { }
+}

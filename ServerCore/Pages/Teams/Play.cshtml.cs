@@ -15,9 +15,9 @@ namespace ServerCore.Pages.Teams
     {
         // see https://docs.microsoft.com/en-us/aspnet/core/data/ef-rp/sort-filter-page?view=aspnetcore-2.1 to make this sortable!
 
-        private readonly ServerCore.Models.PuzzleServerContext _context;
+        private readonly PuzzleServerContext _context;
 
-        public PlayModel(ServerCore.Models.PuzzleServerContext context)
+        public PlayModel(PuzzleServerContext context)
         {
             _context = context;
         }

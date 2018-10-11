@@ -10,11 +10,11 @@ namespace ServerCore.Pages.Events
 {
     public class FastestSolvesModel : EventSpecificPageModel
     {
-        private readonly ServerCore.Models.PuzzleServerContext _context;
+        private readonly PuzzleServerContext _context;
 
         public List<PuzzleStats> Puzzles { get; private set; }
 
-        public FastestSolvesModel(ServerCore.Models.PuzzleServerContext context)
+        public FastestSolvesModel(PuzzleServerContext context)
         {
             _context = context;
         }

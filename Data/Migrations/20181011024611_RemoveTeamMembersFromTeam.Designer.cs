@@ -10,16 +10,45 @@ using ServerCore.DataModel;
 namespace Data.Migrations
 {
     [DbContext(typeof(PuzzleServerContext))]
-    [Migration("20180830034636_Plurals")]
-    partial class Plurals
+    [Migration("20181011024611_RemoveTeamMembersFromTeam")]
+    partial class RemoveTeamMembersFromTeam
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.1-rtm-30846")
+                .HasAnnotation("ProductVersion", "2.1.3-rtm-32065")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("ServerCore.DataModel.ContentFile", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("EventID");
+
+                    b.Property<int>("FileType");
+
+                    b.Property<int?>("PuzzleID")
+                        .IsRequired();
+
+                    b.Property<string>("ShortName")
+                        .IsRequired();
+
+                    b.Property<string>("UrlString")
+                        .IsRequired();
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("PuzzleID");
+
+                    b.HasIndex("EventID", "ShortName")
+                        .IsUnique();
+
+                    b.ToTable("ContentFiles");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.Event", b =>
                 {
@@ -34,6 +63,8 @@ namespace Data.Migrations
                     b.Property<DateTime>("AnswerSubmissionEnd");
 
                     b.Property<DateTime>("AnswersAvailableBegin");
+
+                    b.Property<string>("ContactEmail");
 
                     b.Property<DateTime>("EventBegin");
 
@@ -229,8 +260,6 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("AnswerUrlString");
-
                     b.Property<int?>("EventID");
 
                     b.Property<string>("Group");
@@ -243,15 +272,11 @@ namespace Data.Migrations
 
                     b.Property<bool>("IsPuzzle");
 
-                    b.Property<string>("MaterialsUrlString");
-
                     b.Property<int>("MinPrerequisiteCount");
 
                     b.Property<string>("Name");
 
                     b.Property<int>("OrderInGroup");
-
-                    b.Property<string>("PuzzleUrlString");
 
                     b.Property<int>("SolveValue");
 
@@ -285,23 +310,19 @@ namespace Data.Migrations
 
             modelBuilder.Entity("ServerCore.DataModel.PuzzleStatePerTeam", b =>
                 {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<int>("PuzzleID");
 
-                    b.Property<int?>("PuzzleID");
+                    b.Property<int>("TeamID");
 
-                    b.Property<DateTime>("StateChanged");
+                    b.Property<string>("Notes");
 
-                    b.Property<int?>("StateID");
+                    b.Property<bool>("Printed");
 
-                    b.Property<int?>("TeamID");
+                    b.Property<DateTime?>("SolvedTime");
 
-                    b.HasKey("ID");
+                    b.Property<DateTime?>("UnlockedTime");
 
-                    b.HasIndex("PuzzleID");
-
-                    b.HasIndex("StateID");
+                    b.HasKey("PuzzleID", "TeamID");
 
                     b.HasIndex("TeamID");
 
@@ -327,25 +348,6 @@ namespace Data.Migrations
                     b.HasIndex("PuzzleID");
 
                     b.ToTable("Responses");
-                });
-
-            modelBuilder.Entity("ServerCore.DataModel.State", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<bool>("IsSolved");
-
-                    b.Property<bool>("IsUnlocked");
-
-                    b.Property<string>("Notes");
-
-                    b.Property<bool>("Printed");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("States");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Submission", b =>
@@ -387,23 +389,21 @@ namespace Data.Migrations
 
                     b.Property<string>("CustomRoom");
 
-                    b.Property<int>("EventID");
+                    b.Property<int?>("EventID");
 
                     b.Property<string>("Name");
-
-                    b.Property<string>("Password");
 
                     b.Property<string>("PrimaryContactEmail");
 
                     b.Property<string>("PrimaryPhoneNumber");
 
-                    b.Property<DateTime>("PuzzleCacheLastUpdated");
-
-                    b.Property<int>("RoomID");
+                    b.Property<int?>("RoomID");
 
                     b.Property<string>("SecondaryPhoneNumber");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("EventID");
 
                     b.ToTable("Teams");
                 });
@@ -420,9 +420,7 @@ namespace Data.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("Team.ID")
-                        .IsUnique()
-                        .HasFilter("[Team.ID] IS NOT NULL");
+                    b.HasIndex("Team.ID");
 
                     b.HasIndex("User.ID");
 
@@ -450,6 +448,19 @@ namespace Data.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("ServerCore.DataModel.ContentFile", b =>
+                {
+                    b.HasOne("ServerCore.DataModel.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventID")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
+                        .WithMany("Contents")
+                        .HasForeignKey("PuzzleID")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Event", b =>
@@ -554,15 +565,13 @@ namespace Data.Migrations
                 {
                     b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
                         .WithMany()
-                        .HasForeignKey("PuzzleID");
-
-                    b.HasOne("ServerCore.DataModel.State", "State")
-                        .WithMany()
-                        .HasForeignKey("StateID");
+                        .HasForeignKey("PuzzleID")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("ServerCore.DataModel.Team", "Team")
                         .WithMany()
-                        .HasForeignKey("TeamID");
+                        .HasForeignKey("TeamID")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Response", b =>
@@ -591,11 +600,18 @@ namespace Data.Migrations
                         .HasForeignKey("TeamID");
                 });
 
+            modelBuilder.Entity("ServerCore.DataModel.Team", b =>
+                {
+                    b.HasOne("ServerCore.DataModel.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventID");
+                });
+
             modelBuilder.Entity("ServerCore.DataModel.TeamMembers", b =>
                 {
                     b.HasOne("ServerCore.DataModel.Team", "Team")
-                        .WithOne("Members")
-                        .HasForeignKey("ServerCore.DataModel.TeamMembers", "Team.ID");
+                        .WithMany()
+                        .HasForeignKey("Team.ID");
 
                     b.HasOne("ServerCore.DataModel.User", "Member")
                         .WithMany()
