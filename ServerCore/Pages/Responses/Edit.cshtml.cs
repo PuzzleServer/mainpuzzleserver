@@ -35,6 +35,11 @@ namespace ServerCore.Pages.Responses
 
         public async Task<IActionResult> OnPostAsync(int puzzleId)
         {
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
+
             _context.Attach(PuzzleResponse).State = EntityState.Modified;
             this.PuzzleId = puzzleId;
 

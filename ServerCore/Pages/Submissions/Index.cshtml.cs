@@ -31,6 +31,11 @@ namespace ServerCore.Pages.Submissions
 
         public async Task<IActionResult> OnPostAsync(int puzzleId, int teamId)
         {
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
+
             // Create submission and add it to list
             Submission.TimeSubmitted = DateTime.Now;
             Submission.Puzzle = await _context.Puzzles.SingleOrDefaultAsync(p => p.ID == puzzleId);

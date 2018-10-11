@@ -21,7 +21,7 @@ namespace ServerCore.Pages.Responses
 
         public int PuzzleId { get; set; }
 
-        public IActionResult OnGet(int puzzleId, int eventId)
+        public IActionResult OnGet(int puzzleId)
         {
             PuzzleId = puzzleId;
             return Page();
@@ -29,6 +29,11 @@ namespace ServerCore.Pages.Responses
 
         public async Task<IActionResult> OnPostAsync(int puzzleId)
         {
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
+
             PuzzleResponse.Puzzle = await _context.Puzzles.SingleOrDefaultAsync(m => m.ID == puzzleId);
 
             _context.Responses.Add(PuzzleResponse);
