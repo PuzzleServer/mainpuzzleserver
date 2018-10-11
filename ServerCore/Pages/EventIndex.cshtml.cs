@@ -8,11 +8,5 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages
 {
-    public class EventIndexModel : EventSpecificPageModel
-    {
-        public void OnGet()
-        {
-
-        }
-    }
+    public class EventIndexModel : EventSpecificPageModel { }
 }
