@@ -9,9 +9,9 @@ namespace ServerCore.Pages.Puzzles
 {
     public class DeleteModel : EventSpecificPageModel
     {
-        private readonly ServerCore.Models.PuzzleServerContext _context;
+        private readonly PuzzleServerContext _context;
 
-        public DeleteModel(ServerCore.Models.PuzzleServerContext context)
+        public DeleteModel(PuzzleServerContext context)
         {
             _context = context;
         }

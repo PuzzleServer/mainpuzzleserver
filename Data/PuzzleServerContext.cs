@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
-using ServerCore.DataModel;
 
-namespace ServerCore.Models
+namespace ServerCore.DataModel
 {
     public class PuzzleServerContext : DbContext, IPuzzleServerContext
     {

@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 using ServerCore.ModelBases;
-using ServerCore.Models;
 
 namespace ServerCore.Pages.Puzzles
 {
@@ -19,9 +16,9 @@ namespace ServerCore.Pages.Puzzles
     /// </summary>
     public class FileManagementModel : EventSpecificPageModel
     {
-        private readonly ServerCore.Models.PuzzleServerContext _context;
+        private readonly PuzzleServerContext _context;
 
-        public FileManagementModel(ServerCore.Models.PuzzleServerContext context)
+        public FileManagementModel(PuzzleServerContext context)
         {
             _context = context;
         }

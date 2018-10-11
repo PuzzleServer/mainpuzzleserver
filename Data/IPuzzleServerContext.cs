@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ServerCore.DataModel;
 
-namespace ServerCore.Models
+namespace ServerCore.DataModel
 {
     public interface IPuzzleServerContext
     {

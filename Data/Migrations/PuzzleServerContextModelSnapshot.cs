@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using ServerCore.Models;
+using ServerCore.DataModel;
 
 namespace Data.Migrations
 {
@@ -15,7 +15,7 @@ namespace Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.1-rtm-30846")
+                .HasAnnotation("ProductVersion", "2.1.3-rtm-32065")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -61,6 +61,8 @@ namespace Data.Migrations
                     b.Property<DateTime>("AnswerSubmissionEnd");
 
                     b.Property<DateTime>("AnswersAvailableBegin");
+
+                    b.Property<string>("ContactEmail");
 
                     b.Property<DateTime>("EventBegin");
 
@@ -418,9 +420,7 @@ namespace Data.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("Team.ID")
-                        .IsUnique()
-                        .HasFilter("[Team.ID] IS NOT NULL");
+                    b.HasIndex("Team.ID");
 
                     b.HasIndex("User.ID");
 
@@ -610,8 +610,8 @@ namespace Data.Migrations
             modelBuilder.Entity("ServerCore.DataModel.TeamMembers", b =>
                 {
                     b.HasOne("ServerCore.DataModel.Team", "Team")
-                        .WithOne("Members")
-                        .HasForeignKey("ServerCore.DataModel.TeamMembers", "Team.ID");
+                        .WithMany()
+                        .HasForeignKey("Team.ID");
 
                     b.HasOne("ServerCore.DataModel.User", "Member")
                         .WithMany()

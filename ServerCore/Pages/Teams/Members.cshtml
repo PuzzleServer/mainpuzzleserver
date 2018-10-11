@@ -1,0 +1,54 @@
+﻿@page "/{eventId}/Teams/Members"
+@model ServerCore.Pages.Teams.MembersModel
+@{
+    ViewData["Title"] = "Members";
+}
+
+<h2>Team Members</h2>
+
+<h4>Team: @Model.Team.Name</h4>
+<h4>ID: @Model.Team.ID</h4>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Members[0].ID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Members[0].Member.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Members[0].Member.EmailAddress)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Members)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Member.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Member.EmailAddress)
+            </td>
+            <td>
+                <a asp-page-handler="RemoveMember" asp-route-teamId="@Model.Team.ID" asp-route-teamMemberId="@item.ID">Remove</a>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <a asp-page="./AddMember" asp-route-teamId="@Model.Team.ID">Add a member</a>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to team list</a>
+</div>

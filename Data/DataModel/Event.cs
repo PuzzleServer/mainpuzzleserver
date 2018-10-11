@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ServerCore.DataModel
 {
@@ -32,18 +29,80 @@ namespace ServerCore.DataModel
         public bool IsInternEvent { get; set; }
         public DateTime TeamRegistrationBegin { get; set; }
         public DateTime TeamRegistrationEnd { get; set; }
+
+        /// <summary>
+        /// Returns whether or not team registration is active.
+        /// </summary>
+        /// <returns>True if the current date is between the team registration begin and end times.</returns>
+        [NotMapped]
+        public bool IsTeamRegistrationActive
+        {
+            get
+            {
+                return DateTime.UtcNow.CompareTo(TeamRegistrationBegin) > 0 &&
+                    DateTime.UtcNow.CompareTo(TeamRegistrationEnd) < 0;
+            }
+        }
+
         public DateTime TeamNameChangeEnd { get; set; }
         public DateTime TeamMembershipChangeEnd { get; set; }
         public DateTime TeamMiscDataChangeEnd { get; set; }
         public DateTime TeamDeleteEnd { get; set; }
         public DateTime EventBegin { get; set; }
+
+        /// <summary>
+        /// Returns whether or not the event has started. Does not necessarily indicate the event
+        /// is currently active.
+        /// </summary>
+        /// <returns>True if the current date is after the EventBegin time</returns>
+        [NotMapped]
+        public bool EventHasStarted
+        {
+            get { return DateTime.UtcNow.CompareTo(EventBegin) > 0; }
+        }
+
         public DateTime AnswerSubmissionEnd { get; set; }
+
+        /// <summary>
+        /// Returns whether or not answer submission is active.
+        /// </summary>
+        /// <returns>True if the current date is after the event start and before the answer submission end times.</returns>
+        [NotMapped]
+        public bool IsAnswerSubmissionActive
+        {
+            get
+            {
+                return DateTime.UtcNow.CompareTo(EventBegin) > 0 &&
+                    DateTime.UtcNow.CompareTo(AnswerSubmissionEnd) < 0;
+            }
+        }
+
         public DateTime AnswersAvailableBegin { get; set; }
+
+        /// <summary>
+        /// Returns whether or not the puzzle answers should be available now.
+        /// </summary>
+        /// <returns>True if the current date is after the AnswersAvailableBegin time</returns>
+        [NotMapped]
+        public bool AreAnswersAvailableNow
+        {
+            get { return DateTime.UtcNow.CompareTo(AnswersAvailableBegin) > 0; }
+        }
 
         /// <summary>
         /// Automatically makes the standings page available at the DateTime below
         /// </summary>
         public DateTime StandingsAvailableBegin { get; set; }
+
+        /// <summary>
+        /// Returns whether or not the standings page should be available now.
+        /// </summary>
+        /// <returns>True if the current date is after the StandingsAvailableBegin time</returns>
+        [NotMapped]
+        public bool AreStandingsAvailableNow
+        {
+            get { return DateTime.UtcNow.CompareTo(StandingsAvailableBegin) > 0; }
+        }
 
         /// <summary>
         /// Allows event owners to hide standings during the event if they prefer - overrides the timed setting
