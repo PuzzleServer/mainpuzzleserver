@@ -10,9 +10,9 @@ namespace ServerCore.Pages.Teams
 {
     public class MembersModel : EventSpecificPageModel
     {
-        private readonly ServerCore.Models.PuzzleServerContext _context;
+        private readonly ServerCore.DataModel.PuzzleServerContext _context;
  
-        public MembersModel(ServerCore.Models.PuzzleServerContext context)
+        public MembersModel(ServerCore.DataModel.PuzzleServerContext context)
         {
             _context = context;
         }

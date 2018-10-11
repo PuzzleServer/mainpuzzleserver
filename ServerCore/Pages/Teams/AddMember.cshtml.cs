@@ -7,20 +7,19 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
-using ServerCore.Models;
 using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Teams
 {
     public class AddMemberModel : EventSpecificPageModel
     {
-        private readonly ServerCore.Models.PuzzleServerContext _context;
+        private readonly ServerCore.DataModel.PuzzleServerContext _context;
 
         public Team MyTeam { get; set; }
 
         public IList<User> Users { get; set; }
 
-        public AddMemberModel(ServerCore.Models.PuzzleServerContext context)
+        public AddMemberModel(ServerCore.DataModel.PuzzleServerContext context)
         {
             _context = context;
         }
