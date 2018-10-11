@@ -33,3 +33,57 @@ body {
         display: none;
     }
 }
+
+table.ph-statemap {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    width: auto;
+}
+
+table.ph-statemap > tbody > tr > td {
+    padding: 3px;
+    vertical-align: middle;
+}
+
+table.ph-statemap > thead > tr > th:nth-child(1n+5) {
+    font-weight: normal;
+    writing-mode: vertical-rl;
+}
+
+table.ph-statemap > tbody > tr > td:nth-child(1) {
+    text-align: right;
+}
+
+table.ph-statemap > tbody > tr > td:nth-child(2) {
+    max-width: 15em;
+}
+
+table.ph-statemap > tbody > tr > td:nth-child(2) > a {
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+}
+
+table.ph-statemap > tbody > tr > td:nth-child(3) {
+    text-align: right;
+}
+
+table.ph-statemap > tbody > tr > td:nth-child(4) {
+    text-align: right;
+}
+
+table.ph-statemap > tbody > tr > td:nth-child(1n+5) {
+    text-align: center;
+}
+
+table.ph-statemap > thead > tr > th > a, table.ph-statemap > tbody > tr > td > a {
+    color: #333;
+    text-decoration: none;
+}
+
+table.ph-statemap tbody tr td.dark a {
+    color: #ccc;
+}
