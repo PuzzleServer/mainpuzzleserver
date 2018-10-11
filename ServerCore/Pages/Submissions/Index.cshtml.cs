@@ -11,9 +11,9 @@ namespace ServerCore.Pages.Submissions
 {
     public class IndexModel : EventSpecificPageModel
     {
-        private readonly ServerCore.Models.PuzzleServerContext _context;
+        private readonly ServerCore.DataModel.PuzzleServerContext _context;
 
-        public IndexModel(ServerCore.Models.PuzzleServerContext context)
+        public IndexModel(ServerCore.DataModel.PuzzleServerContext context)
         {
             _context = context;
         }

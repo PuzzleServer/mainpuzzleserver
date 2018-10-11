@@ -9,9 +9,9 @@ namespace ServerCore.Pages.Responses
 {
     public class EditModel : EventSpecificPageModel
     {
-        private readonly ServerCore.Models.PuzzleServerContext _context;
+        private readonly ServerCore.DataModel.PuzzleServerContext _context;
 
-        public EditModel(ServerCore.Models.PuzzleServerContext context)
+        public EditModel(ServerCore.DataModel.PuzzleServerContext context)
         {
             _context = context;
         }
