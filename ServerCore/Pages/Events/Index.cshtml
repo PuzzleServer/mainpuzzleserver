@@ -29,7 +29,7 @@
 @foreach (var item in Model.Events) {
         <tr>
             <td>
-                <a asp-page="/EventIndex" asp-route-eventId="@item.ID">
+                <a asp-page="/EventSpecific/Index" asp-route-eventId="@item.ID">
                     @Html.DisplayFor(modelItem => item.Name)
                 </a>
             </td>
