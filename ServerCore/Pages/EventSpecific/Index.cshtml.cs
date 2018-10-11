@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using ServerCore.ModelBases;
 
-namespace ServerCore.Pages
+namespace ServerCore.Pages.EventSpecific
 {
-    public class EventIndexModel : EventSpecificPageModel { }
+    public class IndexModel : EventSpecificPageModel { }
 }
