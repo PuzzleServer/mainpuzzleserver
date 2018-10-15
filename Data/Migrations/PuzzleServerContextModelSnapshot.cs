@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using ServerCore.Models;
+using ServerCore.DataModel;
 
 namespace Data.Migrations
 {
@@ -15,7 +15,7 @@ namespace Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.2-rtm-30932")
+                .HasAnnotation("ProductVersion", "2.1.3-rtm-32065")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -61,6 +61,8 @@ namespace Data.Migrations
                     b.Property<DateTime>("AnswerSubmissionEnd");
 
                     b.Property<DateTime>("AnswersAvailableBegin");
+
+                    b.Property<string>("ContactEmail");
 
                     b.Property<DateTime>("EventBegin");
 
@@ -306,25 +308,19 @@ namespace Data.Migrations
 
             modelBuilder.Entity("ServerCore.DataModel.PuzzleStatePerTeam", b =>
                 {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<int>("PuzzleID");
+
+                    b.Property<int>("TeamID");
 
                     b.Property<string>("Notes");
 
                     b.Property<bool>("Printed");
 
-                    b.Property<int?>("PuzzleID");
-
                     b.Property<DateTime?>("SolvedTime");
-
-                    b.Property<int?>("TeamID");
 
                     b.Property<DateTime?>("UnlockedTime");
 
-                    b.HasKey("ID");
-
-                    b.HasIndex("PuzzleID");
+                    b.HasKey("PuzzleID", "TeamID");
 
                     b.HasIndex("TeamID");
 
@@ -342,6 +338,8 @@ namespace Data.Migrations
                     b.Property<string>("Note");
 
                     b.Property<int?>("PuzzleID");
+
+                    b.Property<string>("ResponseText");
 
                     b.Property<string>("SubmittedText");
 
@@ -422,9 +420,7 @@ namespace Data.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("Team.ID")
-                        .IsUnique()
-                        .HasFilter("[Team.ID] IS NOT NULL");
+                    b.HasIndex("Team.ID");
 
                     b.HasIndex("User.ID");
 
@@ -569,11 +565,13 @@ namespace Data.Migrations
                 {
                     b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
                         .WithMany()
-                        .HasForeignKey("PuzzleID");
+                        .HasForeignKey("PuzzleID")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("ServerCore.DataModel.Team", "Team")
                         .WithMany()
-                        .HasForeignKey("TeamID");
+                        .HasForeignKey("TeamID")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Response", b =>
@@ -612,8 +610,8 @@ namespace Data.Migrations
             modelBuilder.Entity("ServerCore.DataModel.TeamMembers", b =>
                 {
                     b.HasOne("ServerCore.DataModel.Team", "Team")
-                        .WithOne("Members")
-                        .HasForeignKey("ServerCore.DataModel.TeamMembers", "Team.ID");
+                        .WithMany()
+                        .HasForeignKey("Team.ID");
 
                     b.HasOne("ServerCore.DataModel.User", "Member")
                         .WithMany()

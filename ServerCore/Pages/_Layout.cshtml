@@ -34,7 +34,18 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a asp-page="/Index" class="navbar-brand">@(Event?.Name ?? "Microsoft Puzzles")</a>
+                @if (Event == null)
+                {
+                    <a asp-page="/Index" class="navbar-brand">
+                        Microsoft Puzzles
+                    </a>
+                }
+                else
+                {
+                    <a asp-page="/EventSpecific/Index" asp-route-eventId=@Event.ID class="navbar-brand">
+                        @(Event.Name)
+                    </a>
+                }
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
@@ -48,10 +59,18 @@
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="#">Unsolved Puzzles <i>(if event active)</i></a></li>
-                            <li><a href="#">Solved Puzzles <i>(if event active)</i></a></li>
-                            <li><a href="#">All Puzzles <i>(if event active/over)</i></a></li>
-                            <li class="divider"></li>
+                            @if (Event.EventHasStarted)
+                            {
+                                if (Event.IsAnswerSubmissionActive)
+                                {
+                                    <li><a href="#">Unsolved Puzzles</a></li>
+                                    <li><a href="#">Solved Puzzles</a></li>
+                                }
+                                <li><a asp-page="/Puzzles/Index" asp-route-eventId="@Event.ID">
+                                    All Puzzles
+                                </a></li>
+                                <li class="divider"></li>
+                            }
                             <li><a href="#">Administer Puzzles <i>(if author/admin)</i></a></li>
                             <li><a href="#">Import Puzzle Data <i>(if author/admin; P2)</i></a></li>
                         </ul>
@@ -63,9 +82,12 @@
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="#">Standings <i>(if event active/over)</i></a></li>
-                            <li><a href="#">Fastest Solves <i>(if event active/over)</i></a></li>
-                            <li class="divider"></li>
+                            @if (Event.AreStandingsAvailableNow)
+                            {
+                                <li><a href="#">Standings</a></li>
+                                <li><a href="#">Fastest Solves</a></li>
+                                <li class="divider"></li>
+                            }
                             <li><a href="#">Puzzle State Map <i>(if author/admin)</i></a></li>
                             <li><a href="#">Submissions <i>(if author/admin)</i></a></li>
                             <li><a href="#">Puzzles in Lockout <i>(if author/admin)</i></a></li>
@@ -80,7 +102,7 @@
                         <ul class="dropdown-menu">
                             <li><a href="#">MY TEAM NAME <i>(if member)</i></a></li>
                             <li><a href="#">Matchmaking Zone <i>(if available)</i></a></li>
-                            <li><a href="#">Teams</a></li>
+                            <li><a asp-page="/Teams/Index" asp-route-eventId="@Event.ID">Teams</a></li>
                             <li><a href="#">Players <i>(everybody if author/admin)</i></a></li>
                             <li class="divider"></li>
                             <li><a href="#">Authors <i>(if author; editable if admin)</i></a></li>
@@ -127,7 +149,13 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; 2018 - ServerCore</p>
+            <ul class="list-inline text-right">
+                <li><a href="mailto:@(Event?.ContactEmail ?? "puzzhunt@microsoft.com")">Contact Us</a></li>
+                <li><a href="https://go.microsoft.com/fwlink/?LinkID=206977">Terms Of Use</a></li>
+                <li><a href="https://go.microsoft.com/fwlink/?LinkId=506942">Trademarks</a></li>
+                <li><a href="http://go.microsoft.com/fwlink/?LinkId=521839">Privacy &amp; Cookies</a></li>
+                <li>© 2018 ServerCore</li>
+            </ul>
         </footer>
     </div>
 

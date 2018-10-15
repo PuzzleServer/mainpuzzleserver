@@ -29,7 +29,9 @@
 @foreach (var item in Model.Events) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Name)
+                <a asp-page="/EventSpecific/Index" asp-route-eventId="@item.ID">
+                    @Html.DisplayFor(modelItem => item.Name)
+                </a>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.UrlString)
@@ -42,7 +44,10 @@
                 <a asp-page="./Details" asp-route-id="@item.ID">Details</a> |
                 <a asp-page="./Delete" asp-route-id="@item.ID">Delete</a> |
                 <a asp-page="/Puzzles/Index" asp-route-eventId="@item.ID">Puzzles</a> |
-                <a asp-page="/Teams/Index" asp-route-eventId="@item.ID">Teams</a>
+                <a asp-page="/Teams/Index" asp-route-eventId="@item.ID">Teams</a> |
+                <a asp-page="/Events/Standings" asp-route-eventId="@item.ID">Standings</a> |
+                <a asp-page="/Events/FastestSolves" asp-route-eventId="@item.ID">Fastest</a> |
+                <a asp-page="/Events/Map" asp-route-eventId="@item.ID">Map</a>
             </td>
         </tr>
 }

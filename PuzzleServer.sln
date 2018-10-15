@@ -10,11 +10,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerCore.Test", "ServerCo
 		{67B91CCE-4E3D-4F0F-8A76-EAFD37C5F949} = {67B91CCE-4E3D-4F0F-8A76-EAFD37C5F949}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Puzzleday", "Puzzleday\Puzzleday.csproj", "{EE66B8FE-FF6B-4D82-B682-E04BADC51511}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Puzzleday", "Puzzleday\Puzzleday.csproj", "{EE66B8FE-FF6B-4D82-B682-E04BADC51511}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Puzzlehunt", "Puzzlehunt\Puzzlehunt.csproj", "{EB0ECD97-00DF-4E41-B675-D244F92648A7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Puzzlehunt", "Puzzlehunt\Puzzlehunt.csproj", "{EB0ECD97-00DF-4E41-B675-D244F92648A7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data", "Data\Data.csproj", "{3DE98AFE-8F47-4ED8-8461-3F07EF69F4C1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7CC5049C-96CD-4EC4-9E60-96BD7EE8D460}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

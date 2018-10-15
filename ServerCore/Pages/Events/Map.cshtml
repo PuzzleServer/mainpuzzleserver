@@ -1,0 +1,60 @@
+﻿@page "/{eventId}/Events/Map"
+@model ServerCore.Pages.Events.MapModel
+
+@{
+    ViewData["Title"] = "Puzzle State Map";
+}
+
+<h2>Puzzle State Map</h2>
+
+<table class="table table-condensed ph-statemap">
+            <thead>
+                <tr>
+                    <th>
+                        Rank
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Teams[0].Team.Name)
+                    </th>
+                    <th>
+                        Puzzles
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Teams[0].Score)
+                    </th>
+                    @foreach (var puzzle in Model.Puzzles)
+                    {
+                        <th>
+                            <a asp-page="/Puzzles/Status" asp-route-id="@puzzle.Puzzle.ID">@(puzzle.Puzzle.Name) (@puzzle.SolveCount)</a>
+                        </th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+        @for (int y = 0; y < Model.Teams.Count; y++) {
+            var team = Model.Teams[y];
+                <tr>
+                    <td>
+                        @(team.Rank)
+                    </td>
+                    <td>
+                        <a asp-page="/Teams/Status" asp-route-id="@team.Team.ID">@(team.Team.Name)</a>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => team.SolveCount)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => team.Score)
+                    </td>
+            @for (int x = 0; x < Model.Puzzles.Count; x++)
+            {
+                var teamState = Model.StateMap[x, y] ?? MapModel.StateStats.Default;
+
+                    <td @if(teamState.DisplayLightness < 30) { <text> class= "dark"</text> }  style="background-color: hsl(@teamState.DisplayHue, 100%, @teamState.DisplayLightness%)">
+                        <a href="">@teamState.DisplayText</a>
+                    </td>
+            }
+                </tr>
+        }
+            </tbody>
+</table>

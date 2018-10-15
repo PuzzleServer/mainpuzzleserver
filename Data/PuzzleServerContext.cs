@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using ServerCore.DataModel;
 
-namespace ServerCore.Models
+namespace ServerCore.DataModel
 {
     public class PuzzleServerContext : DbContext, IPuzzleServerContext
     {
@@ -53,6 +52,7 @@ namespace ServerCore.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ContentFile>().HasIndex(contentFile => new { contentFile.EventID, contentFile.ShortName }).IsUnique();
+            modelBuilder.Entity<PuzzleStatePerTeam>().HasKey(state => new { state.PuzzleID, state.TeamID });
 
             base.OnModelCreating(modelBuilder);
         }

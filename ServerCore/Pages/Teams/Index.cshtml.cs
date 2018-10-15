@@ -9,9 +9,9 @@ namespace ServerCore.Pages.Teams
 {
     public class IndexModel : EventSpecificPageModel
     {
-        private readonly ServerCore.Models.PuzzleServerContext _context;
+        private readonly PuzzleServerContext _context;
 
-        public IndexModel(ServerCore.Models.PuzzleServerContext context)
+        public IndexModel(PuzzleServerContext context)
         {
             _context = context;
         }

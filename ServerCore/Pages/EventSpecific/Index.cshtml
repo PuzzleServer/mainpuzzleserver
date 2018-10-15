@@ -1,0 +1,7 @@
+﻿@page "/{eventId}"
+@model ServerCore.Pages.EventSpecific.IndexModel
+@{
+    ViewData["Title"] = Model.Event.Name;
+}
+
+<h2>@Model.Event.Name</h2>
