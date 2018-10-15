@@ -10,9 +10,9 @@ namespace ServerCore.Pages.Puzzles
 {
     public class SubmitFeedbackModel : EventSpecificPageModel
     {
-        private readonly ServerCore.Models.PuzzleServerContext _context;
+        private readonly PuzzleServerContext _context;
 
-        public SubmitFeedbackModel(ServerCore.Models.PuzzleServerContext context)
+        public SubmitFeedbackModel(PuzzleServerContext context)
         {
             _context = context;
         }
@@ -47,6 +47,12 @@ namespace ServerCore.Pages.Puzzles
             }
 
             Feedback.Puzzle = await _context.Puzzles.Where(m => m.ID == id).FirstOrDefaultAsync();
+
+            if (Feedback.Puzzle == null) 
+            { 
+                return NotFound(); 
+            } 
+
             Feedback.SubmissionTime = DateTime.UtcNow;
             _context.Feedback.Add(Feedback);
             await _context.SaveChangesAsync();

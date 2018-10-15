@@ -14,9 +14,9 @@ namespace ServerCore.Pages.Puzzles
     /// </summary>
     public class FeedbackModel : EventSpecificPageModel
     {
-        private readonly ServerCore.Models.PuzzleServerContext _context;
+        private readonly PuzzleServerContext _context;
 
-        public FeedbackModel(ServerCore.Models.PuzzleServerContext context)
+        public FeedbackModel(PuzzleServerContext context)
         {
             _context = context;
         }
