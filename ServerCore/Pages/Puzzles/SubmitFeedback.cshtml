@@ -1,0 +1,63 @@
+@page "/{eventId}/Puzzles/SubmitFeedback/{id}"
+@model ServerCore.Pages.Puzzles.SubmitFeedbackModel
+
+@{
+    ViewData["Title"] = "Submit Feedback";
+    var id = ViewContext.RouteData.Values["id"];
+}
+
+<h2>Submit Feedback for @Html.DisplayFor(model => model.Puzzle.Name)</h2> 
+
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Feedback.WrittenFeedback" class="control-label"></label>
+                <input asp-for="Feedback.WrittenFeedback" class="form-control" />
+                <span asp-validation-for="Feedback.WrittenFeedback" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Feedback.Difficulty" class="control-label"></label>
+                <input asp-for="Feedback.Difficulty" type="range" min="0" max="10" value="5" step="1" class="slider" id="difficultySlider">
+                <label id="difficultyLabel">NULL</label>
+                <script>
+                    var diffslider = document.getElementById("difficultySlider");
+                    var diffoutput = document.getElementById("difficultyLabel");
+                    diffoutput.innerHTML = diffslider.value; // Display the default slider value
+
+                    // Update the current slider value (each time you drag the slider handle)
+                    diffslider.oninput = function() {
+                        diffoutput.innerHTML = this.value;
+                    }
+                </script>
+            </div>
+            <div class="form-group">
+                <label asp-for="Feedback.Fun" class="control-label"></label>
+                <input asp-for="Feedback.Fun" type="range" min="0" max="10" value="5" step="1" class="slider" id="funSlider">
+                <label id="funLabel">NULL</label>
+                <script>
+                    var funslider = document.getElementById("funSlider");
+                    var funoutput = document.getElementById("funLabel");
+                    funoutput.innerHTML = funslider.value; // Display the default slider value
+
+                    // Update the current slider value (each time you drag the slider handle)
+                    funslider.oninput = function() {
+                        funoutput.innerHTML = this.value;
+                    }
+                </script>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to Puzzles</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
