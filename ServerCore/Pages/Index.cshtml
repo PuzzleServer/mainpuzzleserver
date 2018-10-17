@@ -1,5 +1,5 @@
 ﻿@page
-@model IndexModel
+@model ServerCore.Pages.IndexModel
 @{
     ViewData["Title"] = "Microsoft Puzzle Event Homepage";
 }
@@ -71,7 +71,12 @@
     <div class="col-md-3">
         <h2>Guide to Microsoft Puzzle Events</h2>
         <ul>
-            <li><a href="/events">CLICK HERE TO CHECK YOUR DATABASE SETUP</a></li>
+            <li><a href="/events">Click Here to view all events</a></li>
+            <li><a href="/events/Create">Click Here to Create an Event</a></li>
+            @foreach (var item in Model.Events)
+            {
+                <li><a href="/Event/@item.ID">Click Here to View The test Event</a></li>
+            }
             <li><a href="https://aka.ms/puzzleday">Intern? Click Here</a></li>
             <li><a href="https://aka.ms/nipd">Non-Intern Beginner? Click Here</a></li>
             <li><a href="https://aka.ms/puzzlehunt">Advanced Solver? Click Here</a></li>

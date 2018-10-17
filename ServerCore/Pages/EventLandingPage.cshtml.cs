@@ -1,26 +1,25 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
+using ServerCore.ModelBases;
 
 namespace ServerCore.Pages
 {
-    public class IndexModel : PageModel
+    public class EventLandingPageModel : EventSpecificPageModel
     {
         private readonly PuzzleServerContext _context;
-        public IList<Event> Events { get; set; }
 
-        public IndexModel(PuzzleServerContext context)
+        public EventLandingPageModel(PuzzleServerContext context)
         {
             _context = context;
         }
-        public async Task OnGetAsync()
+        public void OnGet()
         {
-            Events = await _context.Events.ToListAsync();
+
         }
     }
 }
