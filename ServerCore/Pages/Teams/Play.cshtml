@@ -63,7 +63,7 @@
             }
             <td>
                 <a asp-page="/Submissions/Index" asp-route-puzzleid="@item.Puzzle.ID" asp-route-teamid="@Model.TeamID">
-                    @if (item.State.IsSolved)
+                    @if (item.State.SolvedTime != null)
                     {
                         <text>Solved at </text>@item.State.SolvedTime
                     }

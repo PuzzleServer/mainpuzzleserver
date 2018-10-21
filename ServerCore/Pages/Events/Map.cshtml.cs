@@ -27,20 +27,20 @@ namespace ServerCore.Pages.Events
         {
             // get the puzzles and teams
             // TODO: Filter puzzles if an author; no need to filter teams. Revisit when authors exist.
-            var puzzles = await _context.Puzzles.Where(p => p.Event == this.Event).Select(p => new PuzzleStats() { Puzzle = p }).ToListAsync();
-            var teams = await _context.Teams.Where(t => t.Event == this.Event).Select(t => new TeamStats() { Team = t }).ToListAsync();
+            List<PuzzleStats> puzzles = await _context.Puzzles.Where(p => p.Event == Event).Select(p => new PuzzleStats() { Puzzle = p }).ToListAsync();
+            List<TeamStats> teams = await _context.Teams.Where(t => t.Event == Event).Select(t => new TeamStats() { Team = t }).ToListAsync();
 
             // build an ID-based lookup for puzzles and teams
-            var puzzleLookup = new Dictionary<int, PuzzleStats>();
+            Dictionary<int, PuzzleStats> puzzleLookup = new Dictionary<int, PuzzleStats>();
             puzzles.ForEach(p => puzzleLookup[p.Puzzle.ID] = p);
 
-            var teamLookup = new Dictionary<int, TeamStats>();
+            Dictionary<int, TeamStats> teamLookup = new Dictionary<int, TeamStats>();
             teams.ForEach(t => teamLookup[t.Team.ID] = t);
 
             // tabulate solve counts and team scores
-            var states = await PuzzleStateHelper.GetSparseQuery(_context, this.Event, null, null).ToListAsync();
-            var stateList = new List<StateStats>(states.Count);
-            foreach (var state in states)
+            List<PuzzleStatePerTeam> states = await PuzzleStateHelper.GetSparseQuery(_context, Event, null, null).ToListAsync();
+            List<StateStats> stateList = new List<StateStats>(states.Count);
+            foreach (PuzzleStatePerTeam state in states)
             {
                 // TODO: Is it more performant to prefilter the states if an author, or is this sufficient?
                 if (!puzzleLookup.TryGetValue(state.PuzzleID, out PuzzleStats puzzle) || !teamLookup.TryGetValue(state.TeamID, out TeamStats team))
@@ -50,7 +50,7 @@ namespace ServerCore.Pages.Events
 
                 stateList.Add(new StateStats() { Puzzle = puzzle, Team = team, UnlockedTime = state.UnlockedTime, SolvedTime = state.SolvedTime });
 
-                if (state.IsSolved)
+                if (state.SolvedTime != null)
                 {
                     puzzle.SolveCount++;
                     team.SolveCount++;
@@ -86,53 +86,65 @@ namespace ServerCore.Pages.Events
             var stateMap = new StateStats[puzzles.Count, teams.Count];
             stateList.ForEach(state => stateMap[state.Puzzle.SortOrder, state.Team.SortOrder] = state);
 
-            this.Puzzles = puzzles;
-            this.Teams = teams;
-            this.StateMap = stateMap;
+            Puzzles = puzzles;
+            Teams = teams;
+            StateMap = stateMap;
         }
 
         public class PuzzleStats
         {
-            public Puzzle Puzzle;
-            public int SolveCount;
-            public int SortOrder;
+            public Puzzle Puzzle { get; set; }
+            public int SolveCount { get; set; }
+            public int SortOrder { get; set; }
         }
 
         public class TeamStats
         {
-            public Team Team;
-            public int SolveCount;
-            public int Score;
-            public int SortOrder;
-            public int? Rank;
-            public DateTime FinalMetaSolveTime = DateTime.MaxValue;
+            public Team Team { get; set; }
+            public int SolveCount { get; set; }
+            public int Score { get; set; }
+            public int SortOrder { get; set; }
+            public int? Rank { get; set; }
+            public DateTime FinalMetaSolveTime { get; set; } = DateTime.MaxValue;
         }
 
         public class StateStats
         {
-            public static StateStats Default = new StateStats();
+            public static StateStats Default { get; } = new StateStats();
 
-            public PuzzleStats Puzzle;
-            public TeamStats Team;
-            public DateTime? UnlockedTime;
-            public DateTime? SolvedTime;
+            public PuzzleStats Puzzle { get; set; }
+            public TeamStats Team { get; set; }
+            public DateTime? UnlockedTime { get; set; }
+            public DateTime? SolvedTime { get; set; }
 
-            public string DisplayText => this.SolvedTime != null ? "C" : this.UnlockedTime != null ? "U" : "L";
+            public string DisplayText
+            {
+                get
+                {
+                    return SolvedTime != null ? "C" : UnlockedTime != null ? "U" : "L";
+                }
+            }
 
-            public int DisplayHue => this.SolvedTime != null ? 120 : this.UnlockedTime != null ? 60 : 0;
+            public int DisplayHue
+            {
+                get
+                {
+                    return SolvedTime != null ? 120 : UnlockedTime != null ? 60 : 0;
+                }
+            }
 
             public int DisplayLightness
             {
                 get
                 {
-                    if (this.SolvedTime != null)
+                    if (SolvedTime != null)
                     {
-                        int minutes = (int)((DateTime.UtcNow - this.SolvedTime.Value).TotalMinutes);
+                        int minutes = (int)((DateTime.UtcNow - SolvedTime.Value).TotalMinutes);
                         return 75 - (Math.Min(minutes, 236) >> 2);
                     }
-                    else if (this.UnlockedTime != null)
+                    else if (UnlockedTime != null)
                     {
-                        int minutes = (int)((DateTime.UtcNow - this.UnlockedTime.Value).TotalMinutes);
+                        int minutes = (int)((DateTime.UtcNow - UnlockedTime.Value).TotalMinutes);
                         return 75 - (Math.Min(minutes, 236) >> 2);
                     }
                     else

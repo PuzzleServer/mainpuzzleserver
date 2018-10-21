@@ -15,7 +15,7 @@ namespace ServerCore.ModelBases
 
         public PuzzleStatePerTeamPageModel(PuzzleServerContext context)
         {
-            this.Context = context;
+            Context = context;
         }
 
         public IList<PuzzleStatePerTeam> PuzzleStatePerTeam { get; set; }
@@ -24,10 +24,10 @@ namespace ServerCore.ModelBases
 
         public async Task InitializeModelAsync(Puzzle puzzle, Team team, SortOrder? sort)
         {
-            IQueryable<PuzzleStatePerTeam> statesQ = PuzzleStateHelper.GetFullReadOnlyQuery(this.Context, this.Event, puzzle, team);
-            this.Sort = sort;
+            IQueryable<PuzzleStatePerTeam> statesQ = PuzzleStateHelper.GetFullReadOnlyQuery(Context, Event, puzzle, team);
+            Sort = sort;
 
-            switch(sort ?? this.DefaultSort)
+            switch(sort ?? DefaultSort)
             {
                 case SortOrder.PuzzleAscending:
                     statesQ = statesQ.OrderBy(state => state.Puzzle.Name);
@@ -64,7 +64,7 @@ namespace ServerCore.ModelBases
         {
             SortOrder result = ascendingSort;
 
-            if (result == (this.Sort ?? DefaultSort))
+            if (result == (Sort ?? DefaultSort))
             {
                 result = descendingSort;
             }
@@ -77,28 +77,14 @@ namespace ServerCore.ModelBases
             return result;
         }
 
-        public async Task SetUnlockStateAsync(Puzzle puzzle, Team team, bool value)
+        public Task SetUnlockStateAsync(Puzzle puzzle, Team team, bool value)
         {
-            var statesQ = await PuzzleStateHelper.GetFullReadWriteQueryAsync(this.Context, this.Event, puzzle, team);
-            var states = await statesQ.ToListAsync();
-
-            for (int i = 0; i < states.Count; i++)
-            {
-                states[i].IsUnlocked = value;
-            }
-            await Context.SaveChangesAsync();
+            return PuzzleStateHelper.SetUnlockStateAsync(Context, Event, puzzle, team, value ? (DateTime?)DateTime.UtcNow : null);
         }
 
-        public async Task SetSolveStateAsync(Puzzle puzzle, Team team, bool value)
+        public Task SetSolveStateAsync(Puzzle puzzle, Team team, bool value)
         {
-            var statesQ = await PuzzleStateHelper.GetFullReadWriteQueryAsync(this.Context, this.Event, puzzle, team);
-            var states = await statesQ.ToListAsync();
-
-            for (int i = 0; i < states.Count; i++)
-            {
-                states[i].IsSolved = value;
-            }
-            await Context.SaveChangesAsync();
+            return PuzzleStateHelper.SetSolveStateAsync(Context, Event, puzzle, team, value ? (DateTime?)DateTime.UtcNow : null);
         }
 
         public enum SortOrder
