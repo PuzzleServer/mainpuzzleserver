@@ -37,7 +37,7 @@ namespace ServerCore.Pages.Submissions
             }
 
             // Create submission and add it to list
-            Submission.TimeSubmitted = DateTime.Now;
+            Submission.TimeSubmitted = DateTime.UtcNow;
             Submission.Puzzle = await _context.Puzzles.SingleOrDefaultAsync(p => p.ID == puzzleId);
             Submission.Team = await _context.Teams.Where((t) => t.ID == teamId).FirstOrDefaultAsync();
 

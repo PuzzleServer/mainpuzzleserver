@@ -168,12 +168,12 @@ namespace ServerCore
                 states[i].SolvedTime = value;
             }
 
+            await context.SaveChangesAsync();
+
             if (value != null)
             {
-                // TODO: Unlock puzzles here when prerequisites are solved!
+                await UnlockIfPrequisitesMetAsync(context, eventObj, puzzle, team, value.Value);
             }
-
-            await context.SaveChangesAsync();
         }
 
         /// <summary>
@@ -241,6 +241,97 @@ namespace ServerCore
 
             // now this query is no longer sparse because we just filled it all out!
             return GetSparseQuery(context, eventObj, puzzle, team);
+        }
+
+        /// <summary>
+        /// Unlock any puzzles that need to be unlocked due to the recent solve of a prerequisite.
+        /// </summary>
+        /// <param name="context">The puzzle DB context</param>
+        /// <param name="eventObj">The event we are working in</param>
+        /// <param name="puzzleJustSolved">The puzzle just solved; if null, all the puzzles in the event (which will make more sense once we add per author filtering)</param>
+        /// <param name="team">The team that just solved; if null, all the teams in the event.</param>
+        /// <param name="unlockTime">The time that the puzzle should be marked as unlocked.</param>
+        /// <returns></returns>
+        private static async Task UnlockIfPrequisitesMetAsync(PuzzleServerContext context, Event eventObj, Puzzle puzzleJustSolved, Team team, DateTime unlockTime)
+        {
+            // a simple query for all puzzle IDs in the event - will be used at least once below
+            IQueryable<int> allPuzzleIDsQ = context.Puzzles.Where(p => p.Event == eventObj).Select(p => p.ID);
+
+            // if we solved a group of puzzles, every puzzle needs an update.
+            // if we solved a single puzzle, only update the puzzles that have that one as a prerequisite.
+            IQueryable<int> needsUpdatePuzzleIDsQ =
+                puzzleJustSolved == null ?
+                allPuzzleIDsQ :
+                context.Prerequisites.Where(pre => pre.Prerequisite == puzzleJustSolved).Select(pre => pre.PuzzleID).Distinct();
+
+            // get the prerequisites for all puzzles that need an update
+            // information we get per puzzle: { id, min count, prerequisite IDs }
+            var prerequisiteDataForNeedsUpdatePuzzles = await context.Prerequisites
+                .Where(pre => needsUpdatePuzzleIDsQ.Contains(pre.PuzzleID))
+                .GroupBy(pre => pre.Puzzle)
+                .Select(g => new {
+                    PuzzleID = g.Key.ID,
+                    g.Key.MinPrerequisiteCount,
+                    PrerequisiteIDs = g.Select(pre => pre.PrerequisiteID)
+                })
+                .ToListAsync();
+
+            // Are we updating one team or all teams?
+            List<Team> teamsToUpdate = team == null ? await context.Teams.Where(t => t.Event == eventObj).ToListAsync() : new List<Team>() { team };
+
+            // Update teams one at a time
+            foreach (Team t in teamsToUpdate)
+            {
+                // Collect the IDs of all solved/unlocked puzzles for this team
+                // sparse lookup is fine since if the state is missing it isn't unlocked or solved!
+                var puzzleStateForTeamT = await PuzzleStateHelper.GetSparseQuery(context, eventObj, null, t)
+                    .Select(state => new { state.PuzzleID, state.UnlockedTime, state.SolvedTime })
+                    .ToListAsync();
+
+                // Make a hash set out of them for easy lookup in case we have several prerequisites to chase
+                HashSet<int> unlockedPuzzleIDsForTeamT = new HashSet<int>();
+                HashSet<int> solvedPuzzleIDsForTeamT = new HashSet<int>();
+
+                foreach (var puzzleState in puzzleStateForTeamT)
+                {
+                    if (puzzleState.UnlockedTime != null)
+                    {
+                        unlockedPuzzleIDsForTeamT.Add(puzzleState.PuzzleID);
+                    }
+
+                    if (puzzleState.SolvedTime != null)
+                    {
+                        solvedPuzzleIDsForTeamT.Add(puzzleState.PuzzleID);
+                    }
+                }
+
+                // now loop through all puzzles and count up who needs to be unlocked
+                foreach (var puzzleToUpdate in prerequisiteDataForNeedsUpdatePuzzles)
+                {
+                    // already unlocked? skip
+                    if (unlockedPuzzleIDsForTeamT.Contains(puzzleToUpdate.PuzzleID))
+                    {
+                        continue;
+                    }
+
+                    // Enough puzzles unlocked by count? Let's unlock it
+                    if (puzzleToUpdate.PrerequisiteIDs.Where(id => solvedPuzzleIDsForTeamT.Contains(id)).Count() >= puzzleToUpdate.MinPrerequisiteCount)
+                    {
+                        PuzzleStatePerTeam state = await context.PuzzleStatePerTeam.Where(s => s.PuzzleID == puzzleToUpdate.PuzzleID && s.Team == t).FirstOrDefaultAsync();
+                        if (state == null)
+                        {
+                            context.PuzzleStatePerTeam.Add(new DataModel.PuzzleStatePerTeam() { PuzzleID = puzzleToUpdate.PuzzleID, Team = t, UnlockedTime = unlockTime });
+                        }
+                        else
+                        {
+                            state.UnlockedTime = unlockTime;
+                        }
+                    }
+                }
+            }
+
+            // after looping through all teams, send one update with all changes made
+            await context.SaveChangesAsync();
         }
     }
 }
