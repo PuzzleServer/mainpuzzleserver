@@ -20,7 +20,7 @@ namespace ServerCore.Pages.Events
 
         public IActionResult OnGet()
         {
-            // Ppoulate default fields
+            // Populate default fields
             Event = new Event();
             Event.TeamRegistrationBegin = DateTime.UtcNow;
             Event.TeamRegistrationEnd = DateTime.UtcNow.AddDays(1);
