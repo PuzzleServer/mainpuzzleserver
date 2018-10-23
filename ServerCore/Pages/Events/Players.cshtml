@@ -1,0 +1,57 @@
+﻿@page "/{eventId}/Events/Players"
+@model ServerCore.Pages.Events.PlayersModel
+@{
+    ViewData["Title"] = "Players";
+}
+
+<h2>Players</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Players[0].Member.ID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Players[0].Member.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Players[0].Member.EmailAddress)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Players[0].Team.ID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Players[0].Team.Name)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Players)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Member.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Member.EmailAddress)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Team.ID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Team.Name)
+            </td>
+            <td></td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <a asp-page="./Index">Back to event list</a>
+</div>
