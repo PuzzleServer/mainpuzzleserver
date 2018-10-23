@@ -22,7 +22,7 @@ namespace ServerCore.Pages.Teams
             _context = context;
         }
 
-        public IList<PuzzleWithState> PuzzlesWithState { get;set; }
+        public IList<PuzzleWithState> PuzzlesWithState { get; set; }
 
         public int TeamID { get; set; }
 

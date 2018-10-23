@@ -28,11 +28,11 @@
             <th>
                 Puzzle
             </th>
-@if (showAnswers) {
-            <th>
-                Answer
-            </th>
-}
+            @if (showAnswers) {
+                <th>
+                    Answer
+                </th>
+            }
             <th>
                 <a asp-page="./Play" asp-route-id="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(PlayModel.SortOrder.SolveAscending, PlayModel.SortOrder.SolveDescending))">
                     Solve
@@ -55,26 +55,30 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Puzzle.PuzzleFile.ShortName)
             </td>
-            @if (showAnswers)
-            {
-                <td>
-                    @Html.DisplayFor(modelItem => item.Puzzle.AnswerFile.ShortName)
-                </td>
-            }
+                @if (showAnswers)
+                {
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Puzzle.AnswerFile.ShortName)
+                    </td>
+                }
             <td>
                 <a asp-page="/Submissions/Index" asp-route-puzzleid="@item.Puzzle.ID" asp-route-teamid="@Model.TeamID">
                     @if (item.State.IsSolved)
                     {
                         <text>Solved at </text>@item.State.SolvedTime
                     }
-                    else
+                    else if (@Model.Event.IsAnswerSubmissionActive)
                     {
                         <text>Submit Answer</text>
+                    }
+                    else
+                    {
+                        <text>See past submissions</text>
                     }
                 </a>
             </td>
         </tr>
-}
+    }
     </tbody>
 </table>
 <div>
