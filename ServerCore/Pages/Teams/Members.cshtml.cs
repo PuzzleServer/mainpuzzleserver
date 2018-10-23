@@ -17,12 +17,11 @@ namespace ServerCore.Pages.Teams
             _context = context;
         }
 
-        //[BindProperty]
         public Team Team { get; set; }
 
-        public IList<User> Users { get; set; }
-
         public IList<TeamMembers> Members { get; set; }
+
+        public string Emails { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
@@ -35,7 +34,11 @@ namespace ServerCore.Pages.Teams
             
             Members = await _context.TeamMembers.Where(members => members.Team == Team).ToListAsync();
 
-            Users = await _context.Users.ToListAsync();
+            Emails = "";
+            foreach (TeamMembers Member in Members)
+            {
+                Emails += Member.Member.EmailAddress + "; ";
+            }
 
             return Page();
         }

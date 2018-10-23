@@ -16,6 +16,8 @@ namespace ServerCore.Pages.Events
 
         public IList<TeamMembers> Players { get; set; }
 
+        public string Emails { get; set; }
+
         public PlayersModel(ServerCore.DataModel.PuzzleServerContext context)
         {
             _context = context;
@@ -26,6 +28,12 @@ namespace ServerCore.Pages.Events
             Players = await _context.TeamMembers
                 .Where(member => member.Team.Event == Event)
                 .ToListAsync();
+
+            Emails = "";
+            foreach(TeamMembers Player in Players)
+            {
+                Emails += Player.Member.EmailAddress + "; ";
+            }
 
             return Page();
         }

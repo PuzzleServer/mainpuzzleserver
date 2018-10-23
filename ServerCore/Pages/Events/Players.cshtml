@@ -30,27 +30,31 @@
     <tbody>
         @foreach (var item in Model.Players)
         {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Member.ID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Member.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Member.EmailAddress)
-            </td>
-            <td>
-                <a asp-page="/Teams/Details" asp-route-id="@item.Team.ID">@Html.DisplayFor(modelItem => item.Team.ID)</a>
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Team.Name)
-            </td>
-            <td></td>
-        </tr>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Member.ID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Member.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Member.EmailAddress)
+                </td>
+                <td>
+                    <a asp-page="/Teams/Details" asp-route-id="@item.Team.ID">@Html.DisplayFor(modelItem => item.Team.ID)</a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Team.Name)
+                </td>
+                <td></td>
+            </tr>
         }
     </tbody>
 </table>
+
+<h3>All player e-mails</h3>
+
+<p>@Model.Emails</p>
 
 <div>
     <a asp-page="./Index">Back to event list</a>
