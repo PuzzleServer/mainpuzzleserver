@@ -36,28 +36,29 @@ namespace ServerCore.Areas.Identity.Pages.Account.Manage
         public string StatusMessage { get; set; }
 
         [BindProperty]
-        public InputModel Input { get; set; }
+        //public InputModel Input { get; set; }
+        public PuzzleUser Input { get; set; }
 
-        public class InputModel
-        {
-            [Required]
-            [EmailAddress]
-            public string Email { get; set; }
+        //public class InputModel
+        //{
+        //    [Required]
+        //    [EmailAddress]
+        //    public string Email { get; set; }
 
-            [Phone]
-            [Display(Name = "Phone number")]
-            public string PhoneNumber { get; set; }
+        //    [Phone]
+        //    [Display(Name = "Phone number")]
+        //    public string PhoneNumber { get; set; }
 
-            [Display(Name = "Employee alias")]
-            public string EmployeeAlias { get; set; }
-            public string Name { get; set; }
+        //    [Display(Name = "Employee alias")]
+        //    public string EmployeeAlias { get; set; }
+        //    public string Name { get; set; }
 
-            [Display(Name = "T-shirt size")]
-            public string TShirtSize { get; set; }
+        //    [Display(Name = "T-shirt size")]
+        //    public string TShirtSize { get; set; }
 
-            [Display(Name = "User is visible to other users")]
-            public bool VisibleToOthers { get; set; }
-        }
+        //    [Display(Name = "User is visible to other users")]
+        //    public bool VisibleToOthers { get; set; }
+        //}
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -73,9 +74,9 @@ namespace ServerCore.Areas.Identity.Pages.Account.Manage
 
             Username = userName;
 
-            Input = new InputModel
+            Input = new PuzzleUser
             {
-                Email = puzzleUser.EmailAddress,
+                Email = puzzleUser.Email,
                 PhoneNumber = puzzleUser.PhoneNumber,
                 EmployeeAlias = puzzleUser.EmployeeAlias,
                 Name = puzzleUser.Name,
@@ -101,40 +102,40 @@ namespace ServerCore.Areas.Identity.Pages.Account.Manage
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
-            PuzzleUser puzzleUser = PuzzleUser.GetPuzzleUser(user.Id, _context);
+            //PuzzleUser puzzleUser = PuzzleUser.GetPuzzleUser(user.Id, _context);
 
-            if (Input.EmployeeAlias != puzzleUser.EmployeeAlias)
-            {
-                puzzleUser.EmployeeAlias = Input.EmployeeAlias;
-            }
+            //if (Input.EmployeeAlias != puzzleUser.EmployeeAlias)
+            //{
+            //    puzzleUser.EmployeeAlias = Input.EmployeeAlias;
+            //}
 
-            if (Input.Name != puzzleUser.Name)
-            {
-                puzzleUser.Name = Input.Name;
-            }
+            //if (Input.Name != puzzleUser.Name)
+            //{
+            //    puzzleUser.Name = Input.Name;
+            //}
 
-            if (Input.TShirtSize != puzzleUser.TShirtSize)
-            {
-                puzzleUser.TShirtSize = Input.TShirtSize;
-            }
+            //if (Input.TShirtSize != puzzleUser.TShirtSize)
+            //{
+            //    puzzleUser.TShirtSize = Input.TShirtSize;
+            //}
 
-            if (Input.VisibleToOthers != puzzleUser.VisibleToOthers)
-            {
-                puzzleUser.VisibleToOthers = Input.VisibleToOthers;
-            }
+            //if (Input.VisibleToOthers != puzzleUser.VisibleToOthers)
+            //{
+            //    puzzleUser.VisibleToOthers = Input.VisibleToOthers;
+            //}
 
-            if (Input.PhoneNumber != puzzleUser.PhoneNumber)
-            {
-                puzzleUser.PhoneNumber = Input.PhoneNumber;
-            }
+            //if (Input.PhoneNumber != puzzleUser.PhoneNumber)
+            //{
+            //    puzzleUser.PhoneNumber = Input.PhoneNumber;
+            //}
 
-            if (Input.Email != puzzleUser.EmailAddress)
-            {
-                puzzleUser.EmailAddress = Input.Email;
-            }
+            //if (Input.Email != puzzleUser.EmailAddress)
+            //{
+            //    puzzleUser.EmailAddress = Input.Email;
+            //}
 
             // Note - this will consider all fields on the object to be modified. Extra work can be done here to have individual modification history if we need it.
-            _context.Update(puzzleUser);
+            _context.Update(Input);
             await _context.SaveChangesAsync(true);
 
             await _signInManager.RefreshSignInAsync(user);

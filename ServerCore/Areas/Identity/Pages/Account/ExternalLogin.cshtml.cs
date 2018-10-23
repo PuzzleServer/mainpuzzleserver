@@ -139,7 +139,7 @@ namespace ServerCore.Areas.Identity.Pages.Account
                         // Once they have an IdentityUser they need a matching puzzle User
                         PuzzleUser puzzleUser = new PuzzleUser
                         {
-                            EmailAddress = Input.Email,
+                            Email = Input.Email,
                             EmployeeAlias = Input.EmployeeAlias,
                             Name = Input.Name,
                             PhoneNumber = Input.PhoneNumber,
