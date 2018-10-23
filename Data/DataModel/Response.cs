@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.RegularExpressions;
 
 namespace ServerCore.DataModel
@@ -35,6 +36,7 @@ namespace ServerCore.DataModel
         /// <summary>
         /// The submitted text
         /// </summary>
+        [Required]
         public string SubmittedText
         {
             get { return submittedText; }
@@ -44,6 +46,7 @@ namespace ServerCore.DataModel
         /// <summary>
         /// The response text
         /// </summary>
+        [Required]
         public string ResponseText { get; set; }
 
         /// <summary>
