@@ -10,19 +10,19 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Players[0].Member.ID)
+                Player @Html.DisplayNameFor(model => model.Players[0].Member.ID)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Players[0].Member.Name)
+                Player @Html.DisplayNameFor(model => model.Players[0].Member.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Players[0].Member.EmailAddress)
+                Player @Html.DisplayNameFor(model => model.Players[0].Member.EmailAddress)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Players[0].Team.ID)
+                Team @Html.DisplayNameFor(model => model.Players[0].Team.ID)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Players[0].Team.Name)
+                Team @Html.DisplayNameFor(model => model.Players[0].Team.Name)
             </th>
             <th></th>
         </tr>
@@ -32,7 +32,7 @@
         {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.ID)
+                @Html.DisplayFor(modelItem => item.Member.ID)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Member.Name)
@@ -41,7 +41,7 @@
                 @Html.DisplayFor(modelItem => item.Member.EmailAddress)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Team.ID)
+                <a asp-page="/Teams/Details" asp-route-id="@item.Team.ID">@Html.DisplayFor(modelItem => item.Team.ID)</a>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Team.Name)
