@@ -27,6 +27,7 @@ namespace ServerCore.DataModel
         /// <summary>
         /// The name of the puzzle
         /// </summary>
+        [Required]
         public string Name { get; set; }
 
         /// <summary>

@@ -9,6 +9,9 @@ namespace ServerCore.Pages.Puzzles
     {
         private readonly PuzzleServerContext _context;
 
+        [BindProperty]
+        public Puzzle Puzzle { get; set; }
+
         public CreateModel(PuzzleServerContext context)
         {
             _context = context;
@@ -16,11 +19,15 @@ namespace ServerCore.Pages.Puzzles
 
         public IActionResult OnGet()
         {
+            // Populate default fields
+            Puzzle = new Puzzle();
+            Puzzle.IsPuzzle = true;
+            Puzzle.SolveValue = 10;
+            Puzzle.OrderInGroup = 0;
+            Puzzle.MinPrerequisiteCount = 0;
+
             return Page();
         }
-
-        [BindProperty]
-        public Puzzle Puzzle { get; set; }
 
         public async Task<IActionResult> OnPostAsync()
         {
