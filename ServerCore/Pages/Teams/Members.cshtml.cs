@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -33,12 +34,13 @@ namespace ServerCore.Pages.Teams
             }
             
             Members = await _context.TeamMembers.Where(members => members.Team == Team).ToListAsync();
-
-            Emails = "";
+            
+            StringBuilder emailList = new StringBuilder("");
             foreach (TeamMembers Member in Members)
             {
-                Emails += Member.Member.EmailAddress + "; ";
+                emailList.Append(Member.Member.EmailAddress + "; ");
             }
+            Emails = emailList.ToString();
 
             return Page();
         }

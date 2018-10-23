@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -29,11 +30,12 @@ namespace ServerCore.Pages.Events
                 .Where(member => member.Team.Event == Event)
                 .ToListAsync();
 
-            Emails = "";
-            foreach(TeamMembers Player in Players)
+            StringBuilder emailList = new StringBuilder("");
+            foreach (TeamMembers Player in Players)
             {
-                Emails += Player.Member.EmailAddress + "; ";
+                emailList.Append(Player.Member.EmailAddress + "; ");
             }
+            Emails = emailList.ToString();
 
             return Page();
         }
