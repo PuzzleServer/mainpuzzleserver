@@ -73,9 +73,9 @@
         <ul>
             <li><a href="/events">Click Here to view all events</a></li>
             <li><a href="/events/Create">Click Here to Create an Event</a></li>
-            @foreach (var item in Model.Events)
+            @foreach (var item in Model.Events.OrderBy(i => i.EventBegin).Reverse())
             {
-                <li><a href="/Event/@item.ID">Click Here to View The test Event</a></li>
+                <li><a href="/Event/@item.ID">@item.Name</a></li>
             }
             <li><a href="https://aka.ms/puzzleday">Intern? Click Here</a></li>
             <li><a href="https://aka.ms/nipd">Non-Intern Beginner? Click Here</a></li>
