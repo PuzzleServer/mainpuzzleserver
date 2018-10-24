@@ -78,7 +78,7 @@ namespace ServerCore.Pages.Submissions
                     PuzzleState.SetPuzzleLockout((double)lockoutTime);
                 }
                 // We also determine if the puzzle should be set to email-only mode.
-                if (IsPuzzleSubmissiongLimitReached(Event, Submissions))
+                if (IsPuzzleSubmissionLimitReached(Event, Submissions))
                 {
                     PuzzleState.IsEmailOnlyMode = true;
                 }
@@ -163,9 +163,10 @@ namespace ServerCore.Pages.Submissions
 
             foreach (Submission s in submissions.Reverse())
             {
+                // Do not increment on partials
                 if (s.Response != null)
                 {
-                    break;
+                    continue;
                 }
 
                 if (s.TimeSubmitted.AddMinutes(ev.LockoutSpamDuration).CompareTo(
@@ -199,7 +200,7 @@ namespace ServerCore.Pages.Submissions
             return null;
         }
 
-        private static bool IsPuzzleSubmissiongLimitReached(Event ev, IList<Submission> submissions)
+        private static bool IsPuzzleSubmissionLimitReached(Event ev, IList<Submission> submissions)
         {
             uint wrongSubmissions = 0;
 
