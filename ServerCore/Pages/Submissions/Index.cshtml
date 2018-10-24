@@ -12,31 +12,40 @@
 </div>
 <br />
 <div class="row">
+    <div class="col-md-4">
     @if (!string.IsNullOrEmpty(Model.AnswerToken))
     {
-        <div class="col-md-4">
-            <div class="alert alert-success" role="alert">
-                You got it! Correct answer: @Model.AnswerToken
-            </div>
+        <div class="alert alert-success" role="alert">
+            You got it! Correct answer: @Model.AnswerToken
+        </div>
+    }
+    else if (Model.PuzzleState.IsEmailOnlyMode)
+    {
+        <div class="alert alert-danger" role="alert">
+            You have submitted too many wrong responses. Please email your solutions to <a href="mailto:@(Model.Event?.ContactEmail ?? "puzzhunt@microsoft.com")">the admins</a>.
+        </div>
+    }
+    else if (Model.PuzzleState.IsTeamLockedOut)
+    {
+        <div class="alert alert-danger" role="alert">
+           You are locked out. Please wait @Model.PuzzleState.LockoutTimeRemaining?.ToString(@"mm\:ss") before attempting another submission.
         </div>
     }
     else
     {
-        <div class="col-md-4">
-            <form method="post">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="form-group">
-                    <label asp-for="Submission.SubmissionText" class="control-label">Answer</label>
-                    <input asp-for="Submission.SubmissionText" class="form-control" />
-                    <span asp-validation-for="Submission.SubmissionText" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <input type="submit" value="Submit" class="btn btn-default" />
-                </div>
-            </form>
-        </div>
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Submission.SubmissionText" class="control-label">Answer</label>
+                <input asp-for="Submission.SubmissionText" class="form-control" />
+                <span asp-validation-for="Submission.SubmissionText" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Submit" class="btn btn-default" />
+            </div>
+        </form>
     }
-
+    </div>
 </div>
 
 <div>
@@ -63,7 +72,7 @@
                         @Html.DisplayFor(modelItem => item.TimeSubmitted)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.SubmissionText)
+                        "@Html.DisplayFor(modelItem => item.SubmissionText)"
                     </td>
                     <td>
                         @(item.Response != null ? item.Response.ResponseText : "Incorrect")

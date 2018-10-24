@@ -125,5 +125,34 @@ namespace ServerCore.DataModel
         public virtual EventTeams Teams { get; set; }
         public virtual EventAuthors Authors { get; set; }
         public virtual EventAdmins Admins { get; set; }
+
+        /// <summary>
+        /// The window of time where if a team spams enough incorrect answers
+        /// causes the team to be locked out of submitting additional answers.
+        /// </summary>
+        public double LockoutSpamDuration { get; set; }
+
+        /// <summary>
+        /// The amount if incorrect answers required to cause a lockout.
+        /// </summary>
+        public uint LockoutSpamCount { get; set; }
+
+        /// <summary>
+        /// The multiplier for the lockout duration for consecutive lockouts.
+        /// </summary>
+        public double LockoutDurationMultiplier { get; set; }
+
+        /// <summary>
+        /// If this amount of time passes after a team's lockout ends, then
+        /// the team's lockout stage resets to the initial value.
+        /// </summary>
+        public double LockoutForgivenessTime { get; set; }
+
+        /// <summary>
+        /// The maximum number of incorrect submissions a team can have for
+        /// a single puzzle before being locked out entirely and being placed
+        /// in email-only mode.
+        /// </summary>
+        public uint MaxSubmissionCount { get; set; }
     }
 }

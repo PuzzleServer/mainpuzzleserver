@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ServerCore.DataModel
@@ -39,6 +40,7 @@ namespace ServerCore.DataModel
         /// <summary>
         /// The actual submission text
         /// </summary>
+        [Required]
         public string SubmissionText
         {
             get { return submissionText; }
