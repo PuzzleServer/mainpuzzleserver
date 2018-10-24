@@ -27,23 +27,27 @@
     <tbody>
         @foreach (var item in Model.Members)
         {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Member.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Member.EmailAddress)
-            </td>
-            <td>
-                <a asp-page-handler="RemoveMember" asp-route-teamId="@Model.Team.ID" asp-route-teamMemberId="@item.ID">Remove</a>
-            </td>
-        </tr>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Member.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Member.EmailAddress)
+                </td>
+                <td>
+                    <a asp-page-handler="RemoveMember" asp-route-teamId="@Model.Team.ID" asp-route-teamMemberId="@item.ID">Remove</a>
+                </td>
+            </tr>
         }
     </tbody>
 </table>
+
+<h3>All member e-mails</h3>
+
+<p>@Model.Emails</p>
 
 <div>
     <a asp-page="./AddMember" asp-route-teamId="@Model.Team.ID">Add a member</a>
