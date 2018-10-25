@@ -31,7 +31,7 @@ namespace ServerCore.Areas.Identity.Pages.Account
         }
 
         [BindProperty]
-        public InputModel Input { get; set; }
+        public PuzzleUser Input { get; set; }
 
         public string LoginProvider { get; set; }
 
@@ -39,27 +39,6 @@ namespace ServerCore.Areas.Identity.Pages.Account
 
         [TempData]
         public string ErrorMessage { get; set; }
-
-        public class InputModel
-        {
-            [Required]
-            [EmailAddress]
-            public string Email { get; set; }
-
-            [Phone]
-            [Display(Name = "Phone number")]
-            public string PhoneNumber { get; set; }
-
-            [Display(Name = "Employee alias")]
-            public string EmployeeAlias { get; set; }
-            public string Name { get; set; }
-
-            [Display(Name = "T-shirt size")]
-            public string TShirtSize { get; set; }
-
-            [Display(Name = "User is visible to other users")]
-            public bool VisibleToOthers { get; set; }
-        }
 
         public IActionResult OnGetAsync()
         {
@@ -107,9 +86,10 @@ namespace ServerCore.Areas.Identity.Pages.Account
                 LoginProvider = info.LoginProvider;
                 if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Email))
                 {
-                    Input = new InputModel
+                    Input = new PuzzleUser
                     {
                         Email = info.Principal.FindFirstValue(ClaimTypes.Email),
+                        IdentityUserId = "fake"
                     };
                 }
                 return Page();
@@ -127,7 +107,7 @@ namespace ServerCore.Areas.Identity.Pages.Account
                 return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
             }
 
-            if (ModelState.IsValid)
+            using (var transaction = _context.Database.BeginTransaction())
             {
                 var user = new IdentityUser { UserName = Input.Email, Email = Input.Email };
                 var result = await _userManager.CreateAsync(user);
@@ -136,30 +116,36 @@ namespace ServerCore.Areas.Identity.Pages.Account
                     result = await _userManager.AddLoginAsync(user, info);
                     if (result.Succeeded)
                     {
-                        // Once they have an IdentityUser they need a matching puzzle User
-                        PuzzleUser puzzleUser = new PuzzleUser
+                        Input.IdentityUserId = user.Id;
+
+                        if (ModelState.IsValid)
                         {
-                            Email = Input.Email,
-                            EmployeeAlias = Input.EmployeeAlias,
-                            Name = Input.Name,
-                            PhoneNumber = Input.PhoneNumber,
-                            TShirtSize = Input.TShirtSize,
-                            VisibleToOthers = Input.VisibleToOthers,
-                            IdentityUserId = user.Id
-                        };
+                           // // Once they have an IdentityUser they need a matching PuzzleUser
+                           //Input = new PuzzleUser
+                           // {
+                           //     Email = Input.Email,
+                           //     EmployeeAlias = Input.EmployeeAlias,
+                           //     Name = Input.Name,
+                           //     PhoneNumber = Input.PhoneNumber,
+                           //     TShirtSize = Input.TShirtSize,
+                           //     VisibleToOthers = Input.VisibleToOthers,
+                           //     IdentityUserId = user.Id
+                           // };
 
-                        _context.PuzzleUsers.Add(puzzleUser);
-                        await _context.SaveChangesAsync(true);
+                            _context.PuzzleUsers.Add(Input);
+                            await _context.SaveChangesAsync(true);
+                            transaction.Commit();
 
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
-                        return LocalRedirect(returnUrl);
+                            await _signInManager.SignInAsync(user, isPersistent: false);
+                            _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
+                            return LocalRedirect(returnUrl);
+                        }
                     }
-                }
 
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
                 }
             }
 
