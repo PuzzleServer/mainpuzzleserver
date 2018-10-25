@@ -37,7 +37,7 @@ namespace ServerCore.Pages.Submissions
             }
 
             // Create submission and add it to list
-            Submission.TimeSubmitted = DateTime.Now;
+            Submission.TimeSubmitted = DateTime.UtcNow;
             Submission.Puzzle = await _context.Puzzles.SingleOrDefaultAsync(p => p.ID == puzzleId);
             Submission.Team = await _context.Teams.Where((t) => t.ID == teamId).FirstOrDefaultAsync();
 
@@ -47,10 +47,7 @@ namespace ServerCore.Pages.Submissions
             // Update puzzle state if submission was correct
             if (Submission.Response != null && Submission.Response.IsSolution)
             {
-                var statesQ = await PuzzleStateHelper.GetFullReadWriteQueryAsync(_context, this.Event, Submission.Puzzle, Submission.Team);
-                PuzzleStatePerTeam puzzleState = await statesQ.FirstOrDefaultAsync();
-                puzzleState.IsSolved = true;
-                Submission.TimeSubmitted = (DateTime)puzzleState.SolvedTime;
+                await PuzzleStateHelper.SetSolveStateAsync(_context, Event, Submission.Puzzle, Submission.Team, Submission.TimeSubmitted);
             }
             
             _context.Submissions.Add(Submission);
@@ -65,7 +62,7 @@ namespace ServerCore.Pages.Submissions
             PuzzleId = puzzleId;
             TeamId = teamId;
 
-            Submission correctSubmission = this.Submissions?.Where((s) => s.Response != null && s.Response.IsSolution).FirstOrDefault();
+            Submission correctSubmission = Submissions?.Where((s) => s.Response != null && s.Response.IsSolution).FirstOrDefault();
             if (correctSubmission != null)
             {
                 AnswerToken = correctSubmission.SubmissionText;
