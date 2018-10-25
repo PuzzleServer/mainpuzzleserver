@@ -170,9 +170,10 @@ namespace ServerCore
 
             await context.SaveChangesAsync();
 
+            // if this puzzle got solved, look for others to unlock
             if (value != null)
             {
-                await UnlockIfPrequisitesMetAsync(context, eventObj, puzzle, team, value.Value);
+                await UnlockAnyPuzzlesThatThisSolveUnlockedAsync(context, eventObj, puzzle, team, value.Value);
             }
         }
 
@@ -252,7 +253,7 @@ namespace ServerCore
         /// <param name="team">The team that just solved; if null, all the teams in the event.</param>
         /// <param name="unlockTime">The time that the puzzle should be marked as unlocked.</param>
         /// <returns></returns>
-        private static async Task UnlockIfPrequisitesMetAsync(PuzzleServerContext context, Event eventObj, Puzzle puzzleJustSolved, Team team, DateTime unlockTime)
+        private static async Task UnlockAnyPuzzlesThatThisSolveUnlockedAsync(PuzzleServerContext context, Event eventObj, Puzzle puzzleJustSolved, Team team, DateTime unlockTime)
         {
             // a simple query for all puzzle IDs in the event - will be used at least once below
             IQueryable<int> allPuzzleIDsQ = context.Puzzles.Where(p => p.Event == eventObj).Select(p => p.ID);

@@ -49,14 +49,14 @@ namespace ServerCore.Pages.Puzzles
             IQueryable<Puzzle> currentPrerequisitesQ = _context.Prerequisites.Where(m => m.Puzzle == Puzzle).Select(m => m.Prerequisite);
             IQueryable<Puzzle> potentialPrerequitesQ = _context.Puzzles.Where(m => m.Event == Event && m != Puzzle).Except(currentPrerequisitesQ);
 
-            CurrentPrerequisites = await currentPrerequisitesQ.ToListAsync();
-            PotentialPrerequisites = await potentialPrerequitesQ.ToListAsync();
+            CurrentPrerequisites = await currentPrerequisitesQ.OrderBy(p => p.Name).ToListAsync();
+            PotentialPrerequisites = await potentialPrerequitesQ.OrderBy(p => p.Name).ToListAsync();
 
             IQueryable<Puzzle> currentPrerequisitesOfQ = _context.Prerequisites.Where(m => m.Prerequisite == Puzzle).Select(m => m.Puzzle);
             IQueryable<Puzzle> potentialPrerequitesOfQ = _context.Puzzles.Where(m => m.Event == Event && m != Puzzle).Except(currentPrerequisitesOfQ);
 
-            CurrentPrerequisitesOf = await currentPrerequisitesOfQ.ToListAsync();
-            PotentialPrerequisitesOf = await potentialPrerequitesOfQ.ToListAsync();
+            CurrentPrerequisitesOf = await currentPrerequisitesOfQ.OrderBy(p => p.Name).ToListAsync();
+            PotentialPrerequisitesOf = await potentialPrerequitesOfQ.OrderBy(p => p.Name).ToListAsync();
 
             return Page();
         }
@@ -91,26 +91,32 @@ namespace ServerCore.Pages.Puzzles
 
         public async Task<IActionResult> OnPostAddPrerequisiteAsync()
         {
-            if (!PuzzleExists(NewPrerequisiteID) || PrerequisiteExists(Puzzle.ID, NewPrerequisiteID))
+            if (!PuzzleExists(NewPrerequisiteID))
             {
                 return NotFound();
             }
 
-            _context.Prerequisites.Add(new Prerequisites() { PuzzleID = Puzzle.ID, PrerequisiteID = NewPrerequisiteID });
-            await _context.SaveChangesAsync();
+            if (!PrerequisiteExists(Puzzle.ID, NewPrerequisiteID))
+            {
+                _context.Prerequisites.Add(new Prerequisites() { PuzzleID = Puzzle.ID, PrerequisiteID = NewPrerequisiteID });
+                await _context.SaveChangesAsync();
+            }
 
             return RedirectToPage();
         }
 
         public async Task<IActionResult> OnPostAddPrerequisiteOfAsync()
         {
-            if (!PuzzleExists(NewPrerequisiteOfID) || PrerequisiteExists(NewPrerequisiteOfID, Puzzle.ID))
+            if (!PuzzleExists(NewPrerequisiteOfID))
             {
                 return NotFound();
             }
 
-            _context.Prerequisites.Add(new Prerequisites() { PuzzleID = NewPrerequisiteOfID, PrerequisiteID = Puzzle.ID });
-            await _context.SaveChangesAsync();
+            if (!PrerequisiteExists(NewPrerequisiteOfID, Puzzle.ID))
+            {
+                _context.Prerequisites.Add(new Prerequisites() { PuzzleID = NewPrerequisiteOfID, PrerequisiteID = Puzzle.ID });
+                await _context.SaveChangesAsync();
+            }
 
             return RedirectToPage();
         }
