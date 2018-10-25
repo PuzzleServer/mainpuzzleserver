@@ -84,6 +84,11 @@ namespace ServerCore.DataModel
         public virtual ICollection<ContentFile> Contents { get; set; }
 
         /// <summary>
+        /// This puzzle's hints
+        /// </summary>
+        public virtual ICollection<Hint> Hints { get; set; }
+
+        /// <summary>
         /// File for the main puzzle (typically a PDF containing the puzzle)
         /// </summary>
         [NotMapped]
