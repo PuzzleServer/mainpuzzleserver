@@ -36,6 +36,11 @@ namespace ServerCore.Pages.Submissions
                 return Page();
             }
 
+            if (!this.Event.IsAnswerSubmissionActive)
+            {
+                return RedirectToPage("/Submissions/Index", new { puzzleid = puzzleId, teamid = teamId });
+            }
+
             // Create submission and add it to list
             Submission.TimeSubmitted = DateTime.UtcNow;
             Submission.Puzzle = await _context.Puzzles.SingleOrDefaultAsync(p => p.ID == puzzleId);
