@@ -1,0 +1,63 @@
+﻿@page
+@model ServerCore.Pages.Events.CreateDemoModel
+
+@{
+    ViewData["Title"] = "Create Demo Event";
+}
+
+<h2>Create Demo Event</h2>
+
+<h4>Demo Event</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Event.Name" class="control-label"></label>
+                <input asp-for="Event.Name" class="form-control" />
+                <span asp-validation-for="Event.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Event.EventBegin" class="control-label"></label>
+                <input asp-for="Event.EventBegin" class="form-control" />
+                <span asp-validation-for="Event.EventBegin" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Event.AnswerSubmissionEnd" class="control-label"></label>
+                <input asp-for="Event.AnswerSubmissionEnd" class="form-control" />
+                <span asp-validation-for="Event.AnswerSubmissionEnd" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="StartTheEvent" /> @Html.DisplayNameFor(model => model.StartTheEvent)
+                    </label>
+                </div>
+            </div>
+            <br/>
+            <div class="form-group">
+                <b>Usage:</b>
+                <ul>
+                    <li>The default event start time is now (in UTC), and the default event end is one day later. Adjust them now if you want.</li>
+                    <li>Related times will update to roughly matching values.</li>
+                    <li>All puzzles have a partial named PARTIAL, and an answer named ANSWER.</li>
+                    <li>If you check the &quot;StartTheEvent&quot; checkbox, the start puzzle will unlock now.</li>
+                    <li>If you do not check that box, then you will need to mark that puzzle as solved on that puzzle's Status page.</li>
+                </ul>
+            </div>
+            <br/>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
