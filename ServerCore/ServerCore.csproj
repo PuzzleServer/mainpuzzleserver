@@ -34,6 +34,8 @@
   <ItemGroup>
     <Folder Include="Areas\Identity\Data\" />
     <Folder Include="Content\" />
+    <Folder Include="Pages\Manage\" />
+    <Folder Include="Pages\Play\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Data\Data.csproj" />
