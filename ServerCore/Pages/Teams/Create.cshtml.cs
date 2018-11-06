@@ -30,6 +30,11 @@ namespace ServerCore.Pages.Teams
 
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!Event.IsTeamRegistrationActive)
+            {
+                return NotFound();
+            }
+
             if (!ModelState.IsValid)
             {
                 return Page();
