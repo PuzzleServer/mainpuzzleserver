@@ -13,9 +13,19 @@ namespace ServerCore.DataModel
         public int ID { get; set; }
 
         /// <summary>
-        /// The puzzle that depends on others.
+        /// The puzzle ID that depends on others to be solved before it will be unlocked.
+        /// </summary>
+        public int PuzzleID { get; set; }
+
+        /// <summary>
+        /// The puzzle that depends on others to be solved before it will be unlocked.
         /// </summary>
         public virtual Puzzle Puzzle { get; set; }
+
+        /// <summary>
+        /// A potential prerequisite ID of the puzzle named in Puzzle, which may need to be solved before Puzzle will be unlocked.
+        /// </summary>
+        public int PrerequisiteID { get; set; }
 
         /// <summary>
         /// A potential prerequisite of the puzzle named in Puzzle, which may need to be solved before Puzzle will be unlocked.

@@ -14,38 +14,6 @@ namespace ServerCore.DataModel
         public virtual Team Team { get; set; }
 
         /// <summary>
-        /// Whether or not the puzzle has been unlocked
-        /// </summary>
-        [NotMapped]
-        public bool IsUnlocked
-        {
-            get { return UnlockedTime != null; }
-            set
-            {
-                if (IsUnlocked != value)
-                {
-                    UnlockedTime = value ? (DateTime?)DateTime.UtcNow : null;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Whether or not the puzzle has been solved
-        /// </summary>
-        [NotMapped]
-        public bool IsSolved
-        {
-            get { return SolvedTime != null; }
-            set
-            {
-                if (IsSolved != value)
-                {
-                    SolvedTime = value ? (DateTime?)DateTime.UtcNow : null;
-                }
-            }
-        }
-
-        /// <summary>
         /// Whether or not the puzzle has been unlocked by this team, and if so when
         /// </summary>
         public DateTime? UnlockedTime { get; set; }

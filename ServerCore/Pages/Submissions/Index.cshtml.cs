@@ -34,6 +34,11 @@ namespace ServerCore.Pages.Submissions
         public async Task<IActionResult> OnPostAsync(int puzzleId, int teamId)
         {
 
+            if (!this.Event.IsAnswerSubmissionActive)
+            {
+                return RedirectToPage("/Submissions/Index", new { puzzleid = puzzleId, teamid = teamId });
+            }
+
             // TODO: Once auth exists, we need to check if the team has access
             // to this puzzle.
 
@@ -50,6 +55,7 @@ namespace ServerCore.Pages.Submissions
                 return Page();
             }
 
+
             // Create submission and add it to list
             Submission.TimeSubmitted = DateTime.UtcNow;
             Submission.Puzzle = PuzzleState.Puzzle;
@@ -64,7 +70,12 @@ namespace ServerCore.Pages.Submissions
             // Update puzzle state if submission was correct
             if (Submission.Response != null && Submission.Response.IsSolution)
             {
-                PuzzleState.SolvedTime = Submission.TimeSubmitted;
+                await PuzzleStateHelper.SetSolveStateAsync(_context,
+                    Event,
+                    Submission.Puzzle,
+                    Submission.Team,
+                    Submission.TimeSubmitted);
+
             }
             else if (Submission.Response == null)
             {
@@ -74,17 +85,30 @@ namespace ServerCore.Pages.Submissions
                         Submissions,
                         PuzzleState))
                 {
-                    PuzzleState.IsEmailOnlyMode = true;
+                    await PuzzleStateHelper.SetEmailOnlyModeAsync(_context,
+                        Event,
+                        Submission.Puzzle,
+                        Submission.Team,
+                        true);
                 }
                 else
                 {
                     // If the submission was incorrect and not a partial solution,
                     // we will do the lockout computations now.
-                    PuzzleState.LockoutExpiryTime = ComputeLockoutExpiryTime(
+                    DateTime? lockoutExpiryTime = ComputeLockoutExpiryTime(
                         Event,
                         Submissions,
                         PuzzleState);
 
+                    if (lockoutExpiryTime != null)
+                    {
+                        await PuzzleStateHelper.SetLockoutExpiryTimeAsync(_context,
+                            Event,
+                            Submission.Puzzle,
+                            Submission.Team,
+                            lockoutExpiryTime);
+
+                    }
                 }
             }
             
@@ -127,8 +151,8 @@ namespace ServerCore.Pages.Submissions
             Team team = await _context.Teams.Where(
                 (t) => t.ID == teamId).FirstOrDefaultAsync();
 
-            PuzzleState = await (await PuzzleStateHelper
-                .GetFullReadWriteQueryAsync(
+            PuzzleState = await (PuzzleStateHelper
+                .GetFullReadOnlyQuery(
                     _context,
                     Event,
                     puzzle,

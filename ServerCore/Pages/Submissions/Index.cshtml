@@ -19,6 +19,12 @@
             You got it! Correct answer: @Model.AnswerToken
         </div>
     }
+    else if (@Model.Event.IsAnswerSubmissionActive)
+    {
+        <div class="col-md-12" style="padding-bottom: 15px;">
+            <h3>This event is not in session. No submissions will be accepted at this time.</h3>
+        </div>
+    }
     else if (Model.PuzzleState.IsEmailOnlyMode)
     {
         <div class="alert alert-danger" role="alert">

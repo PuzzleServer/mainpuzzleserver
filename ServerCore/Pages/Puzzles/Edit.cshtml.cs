@@ -1,8 +1,10 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 using ServerCore.ModelBases;
@@ -21,6 +23,20 @@ namespace ServerCore.Pages.Puzzles
         [BindProperty]
         public Puzzle Puzzle { get; set; }
 
+        [BindProperty]
+        public int NewPrerequisiteID { get; set; }
+
+        [BindProperty]
+        public int NewPrerequisiteOfID { get; set; }
+
+        public List<Puzzle> PotentialPrerequisites { get; set; }
+
+        public List<Puzzle> CurrentPrerequisites { get; set; }
+
+        public List<Puzzle> PotentialPrerequisitesOf { get; set; }
+
+        public List<Puzzle> CurrentPrerequisitesOf { get; set; }
+
         public async Task<IActionResult> OnGetAsync(int id)
         {
             Puzzle = await _context.Puzzles.Where(m => m.ID == id).FirstOrDefaultAsync();
@@ -29,6 +45,19 @@ namespace ServerCore.Pages.Puzzles
             {
                 return NotFound();
             }
+
+            IQueryable<Puzzle> currentPrerequisitesQ = _context.Prerequisites.Where(m => m.Puzzle == Puzzle).Select(m => m.Prerequisite);
+            IQueryable<Puzzle> potentialPrerequitesQ = _context.Puzzles.Where(m => m.Event == Event && m != Puzzle).Except(currentPrerequisitesQ);
+
+            CurrentPrerequisites = await currentPrerequisitesQ.OrderBy(p => p.Name).ToListAsync();
+            PotentialPrerequisites = await potentialPrerequitesQ.OrderBy(p => p.Name).ToListAsync();
+
+            IQueryable<Puzzle> currentPrerequisitesOfQ = _context.Prerequisites.Where(m => m.Prerequisite == Puzzle).Select(m => m.Puzzle);
+            IQueryable<Puzzle> potentialPrerequitesOfQ = _context.Puzzles.Where(m => m.Event == Event && m != Puzzle).Except(currentPrerequisitesOfQ);
+
+            CurrentPrerequisitesOf = await currentPrerequisitesOfQ.OrderBy(p => p.Name).ToListAsync();
+            PotentialPrerequisitesOf = await potentialPrerequitesOfQ.OrderBy(p => p.Name).ToListAsync();
+
             return Page();
         }
 
@@ -60,9 +89,74 @@ namespace ServerCore.Pages.Puzzles
             return RedirectToPage("./Index");
         }
 
+        public async Task<IActionResult> OnPostAddPrerequisiteAsync()
+        {
+            if (!PuzzleExists(NewPrerequisiteID))
+            {
+                return NotFound();
+            }
+
+            if (!PrerequisiteExists(Puzzle.ID, NewPrerequisiteID))
+            {
+                _context.Prerequisites.Add(new Prerequisites() { PuzzleID = Puzzle.ID, PrerequisiteID = NewPrerequisiteID });
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToPage();
+        }
+
+        public async Task<IActionResult> OnPostAddPrerequisiteOfAsync()
+        {
+            if (!PuzzleExists(NewPrerequisiteOfID))
+            {
+                return NotFound();
+            }
+
+            if (!PrerequisiteExists(NewPrerequisiteOfID, Puzzle.ID))
+            {
+                _context.Prerequisites.Add(new Prerequisites() { PuzzleID = NewPrerequisiteOfID, PrerequisiteID = Puzzle.ID });
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToPage();
+        }
+
+        public async Task<IActionResult> OnGetRemovePrerequisiteAsync(int id, int prerequisite)
+        {
+            Prerequisites toRemove = await _context.Prerequisites.Where(m => m.PuzzleID == id && m.PrerequisiteID == prerequisite).FirstOrDefaultAsync();
+
+            if (toRemove != null)
+            {
+                _context.Prerequisites.Remove(toRemove);
+                await _context.SaveChangesAsync();
+            }
+
+            // redirect without the prerequisite info to keep the URL clean
+            return RedirectToPage(new { id });
+        }
+
+        public async Task<IActionResult> OnGetRemovePrerequisiteOfAsync(int id, int prerequisiteOf)
+        {
+            Prerequisites toRemove = await _context.Prerequisites.Where(m => m.PuzzleID == prerequisiteOf && m.PrerequisiteID == id).FirstOrDefaultAsync();
+
+            if (toRemove != null)
+            {
+                _context.Prerequisites.Remove(toRemove);
+                await _context.SaveChangesAsync();
+            }
+
+            // redirect without the prerequisite info to keep the URL clean
+            return RedirectToPage(new { id });
+        }
+
         private bool PuzzleExists(int id)
         {
             return _context.Puzzles.Any(e => e.ID == id);
+        }
+
+        private bool PrerequisiteExists(int puzzleId, int prerequisiteId)
+        {
+            return _context.Prerequisites.Any(pr => pr.Puzzle.ID == puzzleId && pr.Prerequisite.ID == prerequisiteId);
         }
     }
 }

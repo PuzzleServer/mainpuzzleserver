@@ -9,6 +9,7 @@
 
 <h4>Puzzle</h4>
 <hr />
+<h3>Properties</h3>
 <div class="row">
     <div class="col-md-4">
         <form method="post" enctype="multipart/form-data">
@@ -75,6 +76,73 @@
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-default" />
             </div>
+        </form>
+        <hr />
+        <h3>Prerequisites</h3>
+        <h4>These puzzles help to unlock me:</h4>
+        <form method="post" enctype="multipart/form-data">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Prerequisite</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var pre in Model.CurrentPrerequisites)
+                {
+                    <tr>
+                        <td>
+                            <a asp-page="./Edit" asp-route-id="@(pre.ID)">@(pre.Name)</a>
+                        </td>
+                        <td>
+                            <a asp-page-handler="RemovePrerequisite" asp-route-id="@Model.Puzzle.ID" asp-route-prerequisite="@(pre.ID)">Remove</a>
+                        </td>
+                    </tr>
+                }
+                    <tr>
+                        <td>
+                            <select class="form-control" asp-for="NewPrerequisiteID" asp-items="@(new SelectList(Model.PotentialPrerequisites, "ID", "Name"))"></select>
+                        </td>
+                        <td>
+                            <input type="submit" value="Add" asp-page-handler="AddPrerequisite" class="btn btn-default" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+        <br />
+        <h4>I help to unlock these puzzles:</h4>
+        <form method="post" enctype="multipart/form-data">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Puzzle</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var p in Model.CurrentPrerequisitesOf)
+                {
+                    <tr>
+                        <td>
+                            <a asp-page="./Edit" asp-route-id="@(p.ID)">@(p.Name)</a>
+                        </td>
+                        <td>
+                            <a asp-page-handler="RemovePrerequisiteOf" asp-route-id="@Model.Puzzle.ID" asp-route-prerequisiteOf="@(p.ID)">Remove</a>
+                        </td>
+                    </tr>
+                }
+                    <tr>
+                        <td>
+                            <select class="form-control" asp-for="NewPrerequisiteOfID" asp-items="@(new SelectList(Model.PotentialPrerequisitesOf, "ID", "Name"))"></select>
+                        </td>
+                        <td>
+                            <input type="submit" value="Add" asp-page-handler="AddPrerequisiteOf" class="btn btn-default" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </form>
     </div>
 </div>
