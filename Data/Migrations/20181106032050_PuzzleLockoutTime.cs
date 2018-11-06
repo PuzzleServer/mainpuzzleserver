@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Data.Migrations
 {
-    public partial class PuzzleLockoutState : Migration
+    public partial class PuzzleLockoutTime : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -20,16 +20,16 @@ namespace Data.Migrations
                 nullable: false,
                 defaultValue: false);
 
-            migrationBuilder.AddColumn<double>(
-                name: "LockoutStage",
-                table: "PuzzleStatePerTeam",
-                nullable: false,
-                defaultValue: 0.0);
-
             migrationBuilder.AddColumn<DateTime>(
-                name: "LockoutTime",
+                name: "LockoutExpiryTime",
                 table: "PuzzleStatePerTeam",
                 nullable: true);
+
+            migrationBuilder.AddColumn<long>(
+                name: "WrongSubmissionCountBuffer",
+                table: "PuzzleStatePerTeam",
+                nullable: false,
+                defaultValue: 0L);
 
             migrationBuilder.AddColumn<double>(
                 name: "LockoutDurationMultiplier",
@@ -37,20 +37,14 @@ namespace Data.Migrations
                 nullable: false,
                 defaultValue: 0.0);
 
-            migrationBuilder.AddColumn<double>(
-                name: "LockoutForgivenessTime",
+            migrationBuilder.AddColumn<int>(
+                name: "LockoutIncorrectGuessLimit",
                 table: "Events",
                 nullable: false,
-                defaultValue: 0.0);
-
-            migrationBuilder.AddColumn<long>(
-                name: "LockoutSpamCount",
-                table: "Events",
-                nullable: false,
-                defaultValue: 0L);
+                defaultValue: 0);
 
             migrationBuilder.AddColumn<double>(
-                name: "LockoutSpamDuration",
+                name: "LockoutIncorrectGuessPeriod",
                 table: "Events",
                 nullable: false,
                 defaultValue: 0.0);
@@ -69,11 +63,11 @@ namespace Data.Migrations
                 table: "PuzzleStatePerTeam");
 
             migrationBuilder.DropColumn(
-                name: "LockoutStage",
+                name: "LockoutExpiryTime",
                 table: "PuzzleStatePerTeam");
 
             migrationBuilder.DropColumn(
-                name: "LockoutTime",
+                name: "WrongSubmissionCountBuffer",
                 table: "PuzzleStatePerTeam");
 
             migrationBuilder.DropColumn(
@@ -81,15 +75,11 @@ namespace Data.Migrations
                 table: "Events");
 
             migrationBuilder.DropColumn(
-                name: "LockoutForgivenessTime",
+                name: "LockoutIncorrectGuessLimit",
                 table: "Events");
 
             migrationBuilder.DropColumn(
-                name: "LockoutSpamCount",
-                table: "Events");
-
-            migrationBuilder.DropColumn(
-                name: "LockoutSpamDuration",
+                name: "LockoutIncorrectGuessPeriod",
                 table: "Events");
 
             migrationBuilder.DropColumn(

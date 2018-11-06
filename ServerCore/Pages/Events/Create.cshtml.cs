@@ -32,10 +32,9 @@ namespace ServerCore.Pages.Events
             Event.AnswerSubmissionEnd= DateTime.UtcNow.AddDays(2);
             Event.AnswersAvailableBegin = DateTime.UtcNow.AddDays(2);
             Event.StandingsAvailableBegin = DateTime.UtcNow.AddDays(2);
-            Event.LockoutSpamCount = 5;
-            Event.LockoutSpamDuration = 1;
+            Event.LockoutIncorrectGuessLimit = 5;
+            Event.LockoutIncorrectGuessPeriod = 1;
             Event.LockoutDurationMultiplier = 2;
-            Event.LockoutForgivenessTime = 5;
             Event.MaxSubmissionCount = 50;
 
             return Page();

@@ -122,24 +122,19 @@
                 </div>
             </div>
             <div class="form-group">
-                <label asp-for="Event.LockoutSpamCount" class="control-label"></label>
-                <input asp-for="Event.LockoutSpamCount" class="form-control" />
-                <span asp-validation-for="Event.LockoutSpamCount" class="text-danger"></span>
+                <label asp-for="Event.LockoutIncorrectGuessLimit" class="control-label"></label>
+                <input asp-for="Event.LockoutIncorrectGuessLimit" class="form-control" />
+                <span asp-validation-for="Event.LockoutIncorrectGuessLimit" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Event.LockoutSpamDuration" class="control-label"></label>
-                <input asp-for="Event.LockoutSpamDuration" class="form-control" />
-                <span asp-validation-for="Event.LockoutSpamDuration" class="text-danger"></span>
+                <label asp-for="Event.LockoutIncorrectGuessPeriod" class="control-label"></label>
+                <input asp-for="Event.LockoutIncorrectGuessPeriod" class="form-control" />
+                <span asp-validation-for="Event.LockoutIncorrectGuessPeriod" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Event.LockoutDurationMultiplier" class="control-label"></label>
                 <input asp-for="Event.LockoutDurationMultiplier" class="form-control" />
                 <span asp-validation-for="Event.LockoutDurationMultiplier" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Event.LockoutForgivenessTime" class="control-label"></label>
-                <input asp-for="Event.LockoutForgivenessTime" class="form-control" />
-                <span asp-validation-for="Event.LockoutForgivenessTime" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Event.MaxSubmissionCount" class="control-label"></label>

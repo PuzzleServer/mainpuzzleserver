@@ -70,7 +70,7 @@ namespace ServerCore.DataModel
         /// puzzle again. If a team spams answers to a puzzle, they will be locked-out
         /// from submitting additional answers for a brief period of time.
         /// </summary>
-        public DateTime? LockoutTime { get; set; }
+        public DateTime? LockoutExpiryTime { get; set; }
 
         /// <summary>
         /// Returns whether or not the team is currently locked out of a puzzle.
@@ -78,39 +78,36 @@ namespace ServerCore.DataModel
         [NotMapped]
         public bool IsTeamLockedOut
         {
-            get { return LockoutTime == null ? false : DateTime.UtcNow.CompareTo(LockoutTime) < 0; }
+            get {
+                return LockoutExpiryTime == null ?
+                    false :
+                    DateTime.UtcNow.CompareTo(LockoutExpiryTime) < 0;
+            }
         }
 
         /// <summary>
         /// Returns how much lockout time is left.
         /// </summary>
         [NotMapped]
-        public TimeSpan? LockoutTimeRemaining
+        public TimeSpan LockoutTimeRemaining
         {
-            get { return LockoutTime == null ? null : LockoutTime - DateTime.UtcNow; }
+            get {
+                return LockoutExpiryTime == null ? 
+                    TimeSpan.Zero :
+                    LockoutExpiryTime.Value - DateTime.UtcNow;
+            }
         }
 
         /// <summary>
-        /// Represents the duration in minutes of the next lockout period for the team on
-        /// this puzzle. This should decrease over time to 0 if a team hasn't been locked
-        /// out in a while.
-        /// </summary>
-        public double LockoutStage { get; set; }
-
-        /// <summary>
-        /// If the team submits too many wrong answers, they become permanently locked out
-        /// of the puzzle and must email the admins.
+        /// If the team submits too many wrong answers, they become permanently
+        /// locked out of the puzzle and must email the admins.
         /// </summary>
         public bool IsEmailOnlyMode { get; set; }
 
         /// <summary>
-        /// Sets the puzzle state lockout fields.
+        /// The number of additional incorrect guesses a team may have before
+        /// reaching the maximum submission limit for this puzzle.
         /// </summary>
-        /// <param name="lockoutTime">The number of minutes this puzzle should be locked out.</param>
-        public void SetPuzzleLockout (double lockoutTime)
-        {
-            LockoutStage = lockoutTime;
-            LockoutTime = DateTime.UtcNow.AddMinutes(lockoutTime);
-        }
+        public uint WrongSubmissionCountBuffer { get; set; }
     }
 }

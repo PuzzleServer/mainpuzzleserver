@@ -143,5 +143,7 @@ namespace ServerCore.DataModel
                        select contentFile;
             }
         }        
+
+        public virtual List<Submission> Submissions { get; set; }
     }
 }

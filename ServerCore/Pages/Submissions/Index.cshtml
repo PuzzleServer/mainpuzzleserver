@@ -28,7 +28,7 @@
     else if (Model.PuzzleState.IsTeamLockedOut)
     {
         <div class="alert alert-danger" role="alert">
-           You are locked out. Please wait @Model.PuzzleState.LockoutTimeRemaining?.ToString(@"mm\:ss") before attempting another submission.
+           You are locked out. Please wait @Model.PuzzleState.LockoutTimeRemaining.ToString(@"mm\:ss") before attempting another submission.
         </div>
     }
     else
@@ -72,7 +72,7 @@
                         @Html.DisplayFor(modelItem => item.TimeSubmitted)
                     </td>
                     <td>
-                        "@Html.DisplayFor(modelItem => item.SubmissionText)"
+                        @Html.DisplayFor(modelItem => item.SubmissionText)
                     </td>
                     <td>
                         @(item.Response != null ? item.Response.ResponseText : "Incorrect")

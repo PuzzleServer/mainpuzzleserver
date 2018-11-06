@@ -10,8 +10,8 @@ using ServerCore.DataModel;
 namespace Data.Migrations
 {
     [DbContext(typeof(PuzzleServerContext))]
-    [Migration("20181024190219_PuzzleLockoutState")]
-    partial class PuzzleLockoutState
+    [Migration("20181106032050_PuzzleLockoutTime")]
+    partial class PuzzleLockoutTime
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -72,11 +72,9 @@ namespace Data.Migrations
 
                     b.Property<double>("LockoutDurationMultiplier");
 
-                    b.Property<double>("LockoutForgivenessTime");
+                    b.Property<int>("LockoutIncorrectGuessLimit");
 
-                    b.Property<long>("LockoutSpamCount");
-
-                    b.Property<double>("LockoutSpamDuration");
+                    b.Property<double>("LockoutIncorrectGuessPeriod");
 
                     b.Property<int>("MaxExternalsPerTeam");
 
@@ -328,9 +326,7 @@ namespace Data.Migrations
 
                     b.Property<bool>("IsEmailOnlyMode");
 
-                    b.Property<double>("LockoutStage");
-
-                    b.Property<DateTime?>("LockoutTime");
+                    b.Property<DateTime?>("LockoutExpiryTime");
 
                     b.Property<string>("Notes");
 
@@ -339,6 +335,8 @@ namespace Data.Migrations
                     b.Property<DateTime?>("SolvedTime");
 
                     b.Property<DateTime?>("UnlockedTime");
+
+                    b.Property<long>("WrongSubmissionCountBuffer");
 
                     b.HasKey("PuzzleID", "TeamID");
 
@@ -608,7 +606,7 @@ namespace Data.Migrations
             modelBuilder.Entity("ServerCore.DataModel.Submission", b =>
                 {
                     b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
-                        .WithMany()
+                        .WithMany("Submissions")
                         .HasForeignKey("PuzzleID");
 
                     b.HasOne("ServerCore.DataModel.Response", "Response")
@@ -620,7 +618,7 @@ namespace Data.Migrations
                         .HasForeignKey("SubmitterID");
 
                     b.HasOne("ServerCore.DataModel.Team", "Team")
-                        .WithMany()
+                        .WithMany("Submissions")
                         .HasForeignKey("TeamID");
                 });
 

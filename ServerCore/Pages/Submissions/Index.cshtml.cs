@@ -33,12 +33,6 @@ namespace ServerCore.Pages.Submissions
         public async Task<IActionResult> OnPostAsync(int puzzleId, int teamId)
         {
 
-            // Don't allow submissions after the answer has been found.
-            if (AnswerToken != null)
-            {
-                return Page();
-            }
-
             // TODO: Once auth exists, we need to check if the team has access
             // to this puzzle.
 
@@ -48,6 +42,12 @@ namespace ServerCore.Pages.Submissions
             }
 
             await SetupContext(puzzleId, teamId);
+
+            // Don't allow submissions after the answer has been found.
+            if (PuzzleState.SolvedTime != null)
+            {
+                return Page();
+            }
 
             // Create submission and add it to list
             Submission.TimeSubmitted = DateTime.UtcNow;
@@ -68,26 +68,33 @@ namespace ServerCore.Pages.Submissions
             }
             else if (Submission.Response == null)
             {
-                // If the submission was incorrect and not a partial solution,
-                // we will do the lockout computations now.
-                double? lockoutTime = ComputeLockoutTime(Event,
-                                                         Submissions,
-                                                         PuzzleState);
-                if (lockoutTime != null)
-                {
-                    PuzzleState.SetPuzzleLockout((double)lockoutTime);
-                }
                 // We also determine if the puzzle should be set to email-only mode.
-                if (IsPuzzleSubmissionLimitReached(Event, Submissions))
+                if (IsPuzzleSubmissionLimitReached(
+                        Event,
+                        Submissions,
+                        PuzzleState))
                 {
                     PuzzleState.IsEmailOnlyMode = true;
+                }
+                else
+                {
+                    // If the submission was incorrect and not a partial solution,
+                    // we will do the lockout computations now.
+                    PuzzleState.LockoutExpiryTime = ComputeLockoutTime(
+                        Event,
+                        Submissions,
+                        PuzzleState);
+
                 }
             }
             
             _context.Submissions.Add(Submission);
             await _context.SaveChangesAsync();
 
-            return RedirectToPage("/Submissions/Index", new { puzzleid = puzzleId, teamid = teamId });
+            return RedirectToPage(
+                "/Submissions/Index",
+                new { puzzleid = puzzleId, teamid = teamId });
+
         }
 
         public async Task<IActionResult> OnGetAsync(int puzzleId, int teamId)
@@ -96,14 +103,18 @@ namespace ServerCore.Pages.Submissions
             // to this puzzle.
 
             await SetupContext(puzzleId, teamId);
-            Submission correctSubmission = this.Submissions?.Where(
-                (s) => s.Response != null &&
-                       s.Response.IsSolution
-                ).FirstOrDefault();
-
-            if (correctSubmission != null)
+            
+            if (PuzzleState.SolvedTime != null)
             {
-                AnswerToken = correctSubmission.SubmissionText;
+                Submission correctSubmission = this.Submissions?.Where(
+                    (s) => s.Response != null &&
+                           s.Response.IsSolution
+                    ).FirstOrDefault();
+
+                if (correctSubmission != null)
+                {
+                    AnswerToken = correctSubmission.SubmissionText;
+                }
             }
 
             return Page();
@@ -120,11 +131,13 @@ namespace ServerCore.Pages.Submissions
             Team team = await _context.Teams.Where(
                 (t) => t.ID == teamId).FirstOrDefaultAsync();
 
-            PuzzleState = await (await PuzzleStateHelper.GetFullReadWriteQueryAsync(
-                _context,
-                Event,
-                puzzle,
-                team)).FirstOrDefaultAsync();
+            PuzzleState = await (await PuzzleStateHelper
+                .GetFullReadWriteQueryAsync(
+                    _context,
+                    Event,
+                    puzzle,
+                    team))
+                .FirstOrDefaultAsync();
 
             // Note: These submissions are not guaranteed to be sorted, but
             // they should be entered into the database in-order.
@@ -137,27 +150,29 @@ namespace ServerCore.Pages.Submissions
         }
 
         /// <summary>
-        ///     Computes whether a team should be locked out from submitting to this puzzle
-        ///     and returns for how long the lockout should be.
+        ///     Computes whether a team should be locked out from submitting
+        ///     to this puzzle and returns for how long the lockout should be.
         /// </summary>
         /// <param name="ev"></param>
-        /// <param name="submissions">Expects submissions in chronological order</param>
+        /// <param name="submissions">
+        ///     Expects submissions in chronological order
+        /// </param>
         /// <param name="puzzleState"></param>
         /// <returns>
-        ///     The number of minutes the team should be locked out of the puzzle or null
-        ///     if the team should not be locked out.
+        ///     The number of minutes the team should be locked out of the
+        ///     puzzle or null if the team should not be locked out.
         /// </returns>
-        private static double? ComputeLockoutTime(
+        private static DateTime? ComputeLockoutTime(
             Event ev,
             IList<Submission> submissions,
             PuzzleStatePerTeam puzzleState)
         {
-            uint consecutiveWrongSubmissions = 0;
-            bool shouldLockout = false;
+            int consecutiveWrongSubmissions = 0;
 
             /**
-             * Count the number of submissions in the past N minutes where N is the LockoutSpamDuration
-             * set for the event. If that count exceeds the LockoutSpamCount set for the event, then
+             * Count the number of submissions in the past N minutes where N is
+             * the LockoutIncorrectGuessPeriod set for the event. If that count
+             * exceeds the LockoutIncorrectGuessLimit set for the event, then
              * the team should be locked out of that puzzle.
              */
 
@@ -169,38 +184,30 @@ namespace ServerCore.Pages.Submissions
                     continue;
                 }
 
-                if (s.TimeSubmitted.AddMinutes(ev.LockoutSpamDuration).CompareTo(
-                        DateTime.UtcNow) < 0)
+                if (s.TimeSubmitted.AddMinutes(ev.LockoutIncorrectGuessPeriod)
+                        .CompareTo(DateTime.UtcNow) < 0)
                 {
                     break;
                 }
 
-                if (++consecutiveWrongSubmissions >= ev.LockoutSpamCount)
-                {
-                    shouldLockout = true;
-                    break;
-                }
+                ++consecutiveWrongSubmissions;
             }
 
-            if (shouldLockout)
-            {
-                /**
-                 * If this is the team's first lockout for the puzzle or If enough times has passed
-                 * since the team's last lockout, we give them the minimum lockout duration, 1 minute.
-                 */
-                if (puzzleState.LockoutTime == null ||
-                    (DateTime.UtcNow - puzzleState.LockoutTime)?.TotalMinutes >= ev.LockoutForgivenessTime)
-                {
-                    return 1.0;
-                }
-
-                return puzzleState.LockoutStage * ev.LockoutDurationMultiplier;
+            if (consecutiveWrongSubmissions <= ev.LockoutIncorrectGuessLimit) {
+                return null;
             }
 
-            return null;
+            return DateTime.UtcNow.AddMinutes(
+                (consecutiveWrongSubmissions -
+                 ev.LockoutIncorrectGuessLimit) *
+                ev.LockoutDurationMultiplier);
+
         }
 
-        private static bool IsPuzzleSubmissionLimitReached(Event ev, IList<Submission> submissions)
+        private static bool IsPuzzleSubmissionLimitReached(
+            Event ev,
+            IList<Submission> submissions,
+            PuzzleStatePerTeam puzzleState)
         {
             uint wrongSubmissions = 0;
 
@@ -212,7 +219,14 @@ namespace ServerCore.Pages.Submissions
                 }
             }
 
-            return wrongSubmissions >= ev.MaxSubmissionCount;
+            if (wrongSubmissions < puzzleState.WrongSubmissionCountBuffer)
+            {
+                return false;
+            }
+
+            return wrongSubmissions - puzzleState.WrongSubmissionCountBuffer >=
+                ev.MaxSubmissionCount;
+
         }
     }
 }

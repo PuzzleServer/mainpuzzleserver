@@ -63,7 +63,7 @@ namespace ServerCore.DataModel
         {
             if (submission == null)
             {
-                return "";
+                return string.Empty;
             }
 
             return Regex.Replace(submission, @"[^a-zA-Z\d]", string.Empty).ToUpper();
