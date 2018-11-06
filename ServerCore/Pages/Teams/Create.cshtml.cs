@@ -16,7 +16,12 @@ namespace ServerCore.Pages.Teams
         }
 
         public IActionResult OnGet()
-        {
+        {        
+            if (!Event.IsTeamRegistrationActive)
+            {
+                return NotFound();
+            }
+
             return Page();
         }
 
