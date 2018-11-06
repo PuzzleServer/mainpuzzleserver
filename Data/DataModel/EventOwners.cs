@@ -21,6 +21,6 @@ namespace ServerCore.DataModel
         /// Foreign Key - user table (owner)
         /// </summary>
         [ForeignKey("User.ID")]
-        public virtual User Owner { get; set; }
+        public virtual PuzzleUser Owner { get; set; }
     }
 }

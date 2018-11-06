@@ -17,7 +17,7 @@ namespace ServerCore.DataModel
         /// Foreign key - user table
         /// </summary>
         [ForeignKey("User.ID")]
-        public virtual User Admin { get; set; }
+        public virtual PuzzleUser Admin { get; set; }
 
     }
 }
