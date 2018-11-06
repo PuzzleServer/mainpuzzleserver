@@ -1,0 +1,46 @@
+﻿@page "/{eventId}/Hints/Edit/{puzzleId}"
+@model ServerCore.Pages.Hints.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h2>Edit</h2>
+
+<h4>Hint</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Hint.Id" />
+            @*<input type="hidden" asp-for="Hint.Puzzle" />*@
+            <div class="form-group">
+                <label asp-for="Hint.Description" class="control-label"></label>
+                <input asp-for="Hint.Description" class="form-control" />
+                <span asp-validation-for="Hint.Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Hint.Content" class="control-label"></label>
+                <input asp-for="Hint.Content" class="form-control" />
+                <span asp-validation-for="Hint.Content" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Hint.Cost" class="control-label"></label>
+                <input asp-for="Hint.Cost" class="form-control" />
+                <span asp-validation-for="Hint.Cost" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
