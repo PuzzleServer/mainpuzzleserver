@@ -19,6 +19,7 @@ namespace ServerCore.Pages.Submissions
         }
 
         public PuzzleStatePerTeam PuzzleState { get; set; }
+
         [BindProperty]
         public Submission Submission { get; set; }
 
@@ -79,7 +80,7 @@ namespace ServerCore.Pages.Submissions
                 {
                     // If the submission was incorrect and not a partial solution,
                     // we will do the lockout computations now.
-                    PuzzleState.LockoutExpiryTime = ComputeLockoutTime(
+                    PuzzleState.LockoutExpiryTime = ComputeLockoutExpiryTime(
                         Event,
                         Submissions,
                         PuzzleState);
@@ -123,7 +124,7 @@ namespace ServerCore.Pages.Submissions
             Puzzle puzzle = await _context.Puzzles.Where(
                 (p) => p.ID == puzzleId).FirstOrDefaultAsync();
 
-            Team team = await Event.Teams. _context.Teams.Where(
+            Team team = await _context.Teams.Where(
                 (t) => t.ID == teamId).FirstOrDefaultAsync();
 
             PuzzleState = await (await PuzzleStateHelper
@@ -145,8 +146,9 @@ namespace ServerCore.Pages.Submissions
         }
 
         /// <summary>
-        ///     Computes whether a team should be locked out from submitting
-        ///     to this puzzle and returns for how long the lockout should be.
+        ///     Determines if the team should be locked out for their most
+        ///     recent incorrect submission and returns the expiry time for the
+        ///     lockout.
         /// </summary>
         /// <param name="ev"></param>
         /// <param name="submissions">
@@ -154,10 +156,11 @@ namespace ServerCore.Pages.Submissions
         /// </param>
         /// <param name="puzzleState"></param>
         /// <returns>
-        ///     The number of minutes the team should be locked out of the
-        ///     puzzle or null if the team should not be locked out.
+        ///     If the team should be locked out, returns the time when a team
+        ///     can enter submissions again.
+        ///     Null if the team should not be locked out.
         /// </returns>
-        private static DateTime? ComputeLockoutTime(
+        private static DateTime? ComputeLockoutExpiryTime(
             Event ev,
             IList<Submission> submissions,
             PuzzleStatePerTeam puzzleState)
@@ -191,6 +194,14 @@ namespace ServerCore.Pages.Submissions
             if (consecutiveWrongSubmissions <= ev.LockoutIncorrectGuessLimit) {
                 return null;
             }
+
+            /**
+             * The lockout duration is determined by the difference between the
+             * count of wrong submissions in the lockout period and the lockout
+             * limit. That difference is multiplied by the event's 
+             * LockoutDurationMultiplier to determine the lockout time in
+             * minutes.
+             */
 
             return DateTime.UtcNow.AddMinutes(
                 (consecutiveWrongSubmissions -

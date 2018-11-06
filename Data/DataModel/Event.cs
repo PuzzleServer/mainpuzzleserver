@@ -127,13 +127,14 @@ namespace ServerCore.DataModel
         public virtual EventAdmins Admins { get; set; }
 
         /// <summary>
-        /// The window of time where if a team spams enough incorrect answers
-        /// causes the team to be locked out of submitting additional answers.
+        /// The window of time where if a team enters a certain number of
+        /// incorrect answers would cause the team to be locked out of
+        /// submitting additional answers for a brief amount of time.
         /// </summary>
         public double LockoutIncorrectGuessPeriod { get; set; }
 
         /// <summary>
-        /// The amount if incorrect answers required to cause a lockout.
+        /// The amount of incorrect submissions required to initiate a lockout.
         /// </summary>
         public int LockoutIncorrectGuessLimit { get; set; }
 
