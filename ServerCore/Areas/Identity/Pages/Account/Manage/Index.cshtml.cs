@@ -52,15 +52,7 @@ namespace ServerCore.Areas.Identity.Pages.Account.Manage
 
             Username = userName;
 
-            Input = new PuzzleUser
-            {
-                Email = puzzleUser.Email,
-                PhoneNumber = puzzleUser.PhoneNumber,
-                EmployeeAlias = puzzleUser.EmployeeAlias,
-                Name = puzzleUser.Name,
-                TShirtSize = puzzleUser.TShirtSize,
-                VisibleToOthers = puzzleUser.VisibleToOthers
-            };
+            Input = puzzleUser;
 
             IsEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
 
@@ -101,7 +93,6 @@ namespace ServerCore.Areas.Identity.Pages.Account.Manage
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
-
 
             var userId = await _userManager.GetUserIdAsync(user);
             var email = await _userManager.GetEmailAsync(user);
