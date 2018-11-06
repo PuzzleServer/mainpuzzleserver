@@ -63,7 +63,6 @@ namespace ServerCore.Pages.Submissions
             // Update puzzle state if submission was correct
             if (Submission.Response != null && Submission.Response.IsSolution)
             {
-                PuzzleState.IsSolved = true;
                 PuzzleState.SolvedTime = Submission.TimeSubmitted;
             }
             else if (Submission.Response == null)
@@ -106,11 +105,7 @@ namespace ServerCore.Pages.Submissions
             
             if (PuzzleState.SolvedTime != null)
             {
-                Submission correctSubmission = this.Submissions?.Where(
-                    (s) => s.Response != null &&
-                           s.Response.IsSolution
-                    ).FirstOrDefault();
-
+                Submission correctSubmission = this.Submissions?.Last();
                 if (correctSubmission != null)
                 {
                     AnswerToken = correctSubmission.SubmissionText;
@@ -128,7 +123,7 @@ namespace ServerCore.Pages.Submissions
             Puzzle puzzle = await _context.Puzzles.Where(
                 (p) => p.ID == puzzleId).FirstOrDefaultAsync();
 
-            Team team = await _context.Teams.Where(
+            Team team = await Event.Teams. _context.Teams.Where(
                 (t) => t.ID == teamId).FirstOrDefaultAsync();
 
             PuzzleState = await (await PuzzleStateHelper

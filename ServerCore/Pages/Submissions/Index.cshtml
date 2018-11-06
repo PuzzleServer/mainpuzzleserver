@@ -22,7 +22,7 @@
     else if (Model.PuzzleState.IsEmailOnlyMode)
     {
         <div class="alert alert-danger" role="alert">
-            You have submitted too many wrong responses. Please email your solutions to <a href="mailto:@(Model.Event?.ContactEmail ?? "puzzhunt@microsoft.com")">the admins</a>.
+            You have submitted too many wrong responses. Please email your solutions to <a href="mailto:@(Model.Event?.ContactEmail ?? "puzzhunt@microsoft.com")">@(Model.Event?.ContactEmail ?? "puzzhunt@microsoft.com")</a>.
         </div>
     }
     else if (Model.PuzzleState.IsTeamLockedOut)
