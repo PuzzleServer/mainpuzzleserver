@@ -33,7 +33,7 @@ namespace ServerCore.Pages.Events
             StringBuilder emailList = new StringBuilder("");
             foreach (TeamMembers Player in Players)
             {
-                emailList.Append(Player.Member.EmailAddress + "; ");
+                emailList.Append(Player.Member.Email + "; ");
             }
             Emails = emailList.ToString();
 

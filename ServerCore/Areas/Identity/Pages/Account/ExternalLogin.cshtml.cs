@@ -120,18 +120,6 @@ namespace ServerCore.Areas.Identity.Pages.Account
 
                         if (ModelState.IsValid)
                         {
-                           // // Once they have an IdentityUser they need a matching PuzzleUser
-                           //Input = new PuzzleUser
-                           // {
-                           //     Email = Input.Email,
-                           //     EmployeeAlias = Input.EmployeeAlias,
-                           //     Name = Input.Name,
-                           //     PhoneNumber = Input.PhoneNumber,
-                           //     TShirtSize = Input.TShirtSize,
-                           //     VisibleToOthers = Input.VisibleToOthers,
-                           //     IdentityUserId = user.Id
-                           // };
-
                             _context.PuzzleUsers.Add(Input);
                             await _context.SaveChangesAsync(true);
                             transaction.Commit();

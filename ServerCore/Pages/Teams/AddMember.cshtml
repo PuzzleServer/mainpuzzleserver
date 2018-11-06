@@ -19,7 +19,7 @@
                 @Html.DisplayNameFor(model => model.Users[0].Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Users[0].EmailAddress)
+                @Html.DisplayNameFor(model => model.Users[0].Email)
             </th>
             <th></th>
         </tr>
@@ -35,7 +35,7 @@
                     @Html.DisplayFor(modelItem => item.Name)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.EmailAddress)
+                    @Html.DisplayFor(modelItem => item.Email)
                 </td>
                 <td>
                     <a asp-page-handler="AddMember" asp-route-teamId="@Model.MyTeam.ID" asp-route-userId="@item.ID">Add</a>
