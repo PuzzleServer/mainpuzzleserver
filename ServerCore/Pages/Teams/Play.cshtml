@@ -50,7 +50,7 @@
                 @Html.DisplayFor(modelItem => item.Puzzle.Group)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Puzzle.OrderInGroup)
+                @((item.Puzzle.IsMetaPuzzle || item.Puzzle.IsFinalPuzzle) ? "Meta" : item.Puzzle.OrderInGroup.ToString())
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Puzzle.PuzzleFile.ShortName)
