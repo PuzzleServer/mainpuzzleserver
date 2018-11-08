@@ -16,7 +16,12 @@ namespace ServerCore.Pages.Teams
         }
 
         public IActionResult OnGet()
-        {
+        {        
+            if (!Event.IsTeamRegistrationActive)
+            {
+                return NotFound();
+            }
+
             return Page();
         }
 
@@ -25,6 +30,11 @@ namespace ServerCore.Pages.Teams
 
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!Event.IsTeamRegistrationActive)
+            {
+                return NotFound();
+            }
+
             if (!ModelState.IsValid)
             {
                 return Page();
