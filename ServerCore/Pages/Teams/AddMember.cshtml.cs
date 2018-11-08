@@ -17,7 +17,7 @@ namespace ServerCore.Pages.Teams
 
         public Team MyTeam { get; set; }
 
-        public IList<User> Users { get; set; }
+        public IList<PuzzleUser> Users { get; set; }
 
         public AddMemberModel(ServerCore.DataModel.PuzzleServerContext context)
         {
@@ -33,7 +33,7 @@ namespace ServerCore.Pages.Teams
             }
 
             // Get all users that are not already on a team in this event
-            Users = await _context.Users
+            Users = await _context.PuzzleUsers
                 .Except(_context.TeamMembers
                 .Where(member => member.Team.Event == Event)
                 .Select(model => model.Member))
@@ -56,7 +56,7 @@ namespace ServerCore.Pages.Teams
             }
             Member.Team = team;
 
-            User user = await _context.Users.FirstOrDefaultAsync(m => m.ID == userId);
+            PuzzleUser user = await _context.PuzzleUsers.FirstOrDefaultAsync(m => m.ID == userId);
             if (user == null)
             {
                 return NotFound("Could not find user with ID '" + userId + "'. Check to make sure the user hasn't been removed.");
@@ -72,14 +72,14 @@ namespace ServerCore.Pages.Teams
         // TODO (@Jenna) - delete once users have an add page
         public async Task<IActionResult> OnGetAddUserAsync(int teamId)
         {
-            User User = new User();
+            PuzzleUser User = new PuzzleUser();
             User.Name = "MyName" + new Random().Next(1, 99);
             User.EmployeeAlias = "null";
-            User.EmailAddress = User.Name + "@domain.com";
+            User.Email = User.Name + "@domain.com";
             User.PhoneNumber = "null";
             User.TShirtSize = "null";
             User.VisibleToOthers = true;
-            _context.Users.Add(User);
+            _context.PuzzleUsers.Add(User);
 
             await _context.SaveChangesAsync();
             return RedirectToPage("./AddMember", new { teamId });

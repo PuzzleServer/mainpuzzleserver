@@ -20,6 +20,6 @@ namespace ServerCore.DataModel
         DbSet<Submission> Submissions { get; set; }
         DbSet<TeamMembers> TeamMembers { get; set; }
         DbSet<Team> Teams { get; set; }
-        DbSet<User> Users { get; set; }
+        DbSet<PuzzleUser> PuzzleUsers { get; set; }
     }
 }

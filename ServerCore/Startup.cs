@@ -19,11 +19,24 @@ namespace ServerCore
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            services.AddMvc()
+                .AddRazorPagesOptions(options =>
+                {
+                    options.Conventions.AuthorizeFolder("/Events");
+                    options.Conventions.AuthorizeFolder("/Puzzles");
+                    options.Conventions.AuthorizeFolder("/Shared");
+                    options.Conventions.AuthorizeFolder("/Teams");
+                });
 
             services.AddDbContext<PuzzleServerContext>
                 (options => options.UseLazyLoadingProxies()
                     .UseSqlServer(Configuration.GetConnectionString("PuzzleServerContext")));
+
+            services.AddAuthentication().AddMicrosoftAccount(microsoftOptions =>
+            {
+                microsoftOptions.ClientId = Configuration["Authentication:Microsoft:ApplicationId"];
+                microsoftOptions.ClientSecret = Configuration["Authentication:Microsoft:Password"];
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -38,10 +51,15 @@ namespace ServerCore
             else
             {
                 app.UseExceptionHandler("/Error");
+                app.UseHsts();
             }
 
-            app.UseStaticFiles();
+            app.UseHttpsRedirection();
 
+            // According to the Identity Scaffolding readme the order of the following calls matters
+            // Must be UseStaticFiles, UseAuthentication, UseMvc
+            app.UseStaticFiles();
+            app.UseAuthentication();
             app.UseMvc();
         }
     }

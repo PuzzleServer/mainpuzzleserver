@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ServerCore.DataModel;
 
 namespace Data.Migrations
 {
     [DbContext(typeof(PuzzleServerContext))]
-    partial class PuzzleServerContextModelSnapshot : ModelSnapshot
+    [Migration("20181019030930_RenameEmail")]
+    partial class RenameEmail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -239,8 +241,7 @@ namespace Data.Migrations
 
                     b.Property<int>("MaxTeamSize");
 
-                    b.Property<string>("Name")
-                        .IsRequired();
+                    b.Property<string>("Name");
 
                     b.Property<bool>("ShowFastestSolves");
 
@@ -438,8 +439,7 @@ namespace Data.Migrations
 
                     b.Property<int>("MinPrerequisiteCount");
 
-                    b.Property<string>("Name")
-                        .IsRequired();
+                    b.Property<string>("Name");
 
                     b.Property<int>("OrderInGroup");
 
@@ -530,13 +530,9 @@ namespace Data.Migrations
 
                     b.Property<string>("Note");
 
-                    b.Property<int>("PuzzleID");
+                    b.Property<int?>("PuzzleID");
 
-                    b.Property<string>("ResponseText")
-                        .IsRequired();
-
-                    b.Property<string>("SubmittedText")
-                        .IsRequired();
+                    b.Property<string>("SubmittedText");
 
                     b.HasKey("ID");
 
@@ -615,7 +611,9 @@ namespace Data.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("Team.ID");
+                    b.HasIndex("Team.ID")
+                        .IsUnique()
+                        .HasFilter("[Team.ID] IS NOT NULL");
 
                     b.HasIndex("User.ID");
 
@@ -795,8 +793,7 @@ namespace Data.Migrations
                 {
                     b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
                         .WithMany()
-                        .HasForeignKey("PuzzleID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("PuzzleID");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Submission", b =>
@@ -828,8 +825,8 @@ namespace Data.Migrations
             modelBuilder.Entity("ServerCore.DataModel.TeamMembers", b =>
                 {
                     b.HasOne("ServerCore.DataModel.Team", "Team")
-                        .WithMany()
-                        .HasForeignKey("Team.ID");
+                        .WithOne("Members")
+                        .HasForeignKey("ServerCore.DataModel.TeamMembers", "Team.ID");
 
                     b.HasOne("ServerCore.DataModel.PuzzleUser", "Member")
                         .WithMany()
