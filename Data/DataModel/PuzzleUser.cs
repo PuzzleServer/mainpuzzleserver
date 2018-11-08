@@ -34,16 +34,31 @@ namespace ServerCore.DataModel
             return dbContext.PuzzleUsers.Where(user => user.IdentityUserId == identityUserId).FirstOrDefault();
         }
 
-        public bool IsAuthorForEvent(Event thisEvent, PuzzleServerContext puzzleServerContext)
+        /// <summary>
+        /// Returns whether or not a user is an author for the given event
+        /// </summary>
+        /// <param name="thisEvent">The event that's being checked</param>
+        /// <param name="puzzleServerContext">Current PuzzleServerContext</param>
+        public bool IsAuthorForEvent(PuzzleServerContext puzzleServerContext, Event thisEvent)
         {
             return puzzleServerContext.EventAuthors.Where(a => a.Author.ID == ID && a.Event.ID == thisEvent.ID).Any();
         }
 
+        /// <summary>
+        /// Returns a list of the author's puzzles for the given event
+        /// </summary>
+        /// <param name="thisEvent">The event that's being checked</param>
+        /// <param name="puzzleServerContext">Current PuzzleServerContext</param>
         public List<Puzzle> GetPuzzlesForAuthorAndEvent(PuzzleServerContext dbContext, Event thisEvent)
         {
             return dbContext.PuzzleAuthors.Where(pa => pa.Author.ID == ID && pa.Puzzle.Event.ID == thisEvent.ID).Select(pa => pa.Puzzle).ToList();
         }
 
+        /// <summary>
+        /// Returns whether or not a user is an admin for the given event
+        /// </summary>
+        /// <param name="thisEvent">The event that's being checked</param>
+        /// <param name="puzzleServerContext">Current PuzzleServerContext</param>
         public bool IsAdminForEvent (PuzzleServerContext dbContext, Event thisEvent)
         {
             return dbContext.EventAdmins.Where(a => a.Admin.ID == ID && a.Event.ID == thisEvent.ID).Any();
