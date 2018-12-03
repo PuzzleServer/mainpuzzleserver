@@ -38,6 +38,8 @@ namespace ServerCore.DataModel
         /// <summary>
         /// The number of hint coins needed to unlock this hint
         /// </summary>
-        public uint Cost { get; set; }
+        public int Cost { get; set; }
+
+        public int DisplayOrder { get; set; }
     }
 }

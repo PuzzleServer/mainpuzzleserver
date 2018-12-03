@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Transactions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using ServerCore.DataModel;
 using ServerCore.ModelBases;
 
@@ -21,12 +25,6 @@ namespace ServerCore.Pages.Hints
 
         public IActionResult OnGet()
         {
-
-            //Hint = new Hint()
-            //{
-            //    Puzzle = puzzle
-            //};
-
             return Page();
         }
 
@@ -50,8 +48,21 @@ namespace ServerCore.Pages.Hints
                 return Page();
             }
 
-            _context.Hints.Add(Hint);
-            await _context.SaveChangesAsync();
+            using (IDbContextTransaction transaction = _context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable))
+            {
+                var teams = from Team team in _context.Teams
+                            where team.Event == Event
+                            select team;
+                _context.Hints.Add(Hint);
+
+                foreach (Team team in teams)
+                {
+                    _context.HintStatePerTeam.Add(new HintStatePerTeam() { Hint = Hint, Team = team });
+                }
+
+                await _context.SaveChangesAsync();
+                transaction.Commit();
+            }
 
             return RedirectToPage("./Index");
         }

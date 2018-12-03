@@ -1,0 +1,64 @@
+﻿@page "/{eventId}/Teams/Hints"
+@model ServerCore.Pages.Teams.HintsModel
+
+@{
+    ViewData["Title"] = "Hints";
+}
+
+<h2>Hints</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.LockedHints[0].Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LockedHints[0].Content)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LockedHints[0].Cost)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var hint in Model.UnlockedHints)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => hint.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => hint.Content)
+                </td>
+                <td></td>
+                <td></td>
+            </tr>
+        }
+        @foreach (var hint in Model.LockedHints)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => hint.Description)
+                </td>
+                <td></td>
+                <td>
+                    @Html.DisplayFor(modelItem => hint.Cost)
+                </td>
+                <td>
+                    <form method="post">
+                        @if (Model.Team.HintCoinCount >= hint.Cost)
+                        {
+                            <button type="submit" asp-route-hintId="@hint.Id" asp-route-teamID="@Model.Team.ID" asp-page-handler="Unlock">Unlock</button>
+                        }
+                        else
+                        {
+                            <button type="submit" asp-route-hintId="@hint.Id" asp-route-teamID="@Model.Team.ID" asp-page-handler="Unlock" disabled>Unlock</button>
+                        }
+                    </form>
+                    </td>
+            </tr>
+        }
+    </tbody>
+</table>
