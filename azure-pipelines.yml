@@ -12,11 +12,19 @@ variables:
 steps:
 - script: dotnet build --configuration $(buildConfiguration)
   displayName: 'dotnet build $(buildConfiguration)'
-- task: DotNetCoreCLI@2
-  inputs:
-    command: publish
-    publishWebProjects: True
-    arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
-    zipAfterPublish: True
+  dotnet publish --configuration $(buildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY
+
+#- task: DotNetCoreCLI@2
+#  inputs:
+ #   command: publish
+  #  publishWebProjects: True
+  #  arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+   # zipAfterPublish: True
 
 - task: PublishBuildArtifacts@1
+
+#- task: AzureRmWebAppDeployment@3
+#inputs:
+#  azureSubscription: 'Visual Studio Enterprise'
+#  WebAppName: 'PuzzleServerTestDeploy'
+#  Package: $(Build.ArtifactsStagingDirectory)/**/ServerCore.zip
