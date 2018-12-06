@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ServerCore.Areas.Deployment;
 using ServerCore.DataModel;
 
 namespace ServerCore
@@ -15,15 +16,15 @@ namespace ServerCore
             Configuration = configuration;
         }
 
-
         public Startup(IHostingEnvironment env)
         {
-            var builder = new ConfigurationBuilder()
+            // Set up to use Azure settings
+            IConfigurationBuilder configBuilder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
-            Configuration = builder.Build();
+            Configuration = configBuilder.Build();
         }
 
         public IConfiguration Configuration { get; }
@@ -39,6 +40,8 @@ namespace ServerCore
                     options.Conventions.AuthorizeFolder("/Shared");
                     options.Conventions.AuthorizeFolder("/Teams");
                 });
+
+            DeploymentConfiguration.ConfigureDatabase(Configuration, services);
 
             // Use SQL Database if in Azure, otherwise, use localdb
             if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
@@ -74,7 +77,7 @@ namespace ServerCore
             }
             else
             {
-                app.UseDeveloperExceptionPage();
+
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
