@@ -168,6 +168,12 @@ namespace ServerCore
                 states[i].SolvedTime = value;
             }
 
+            // Award hint coins
+            if (value != null)
+            {
+                team.HintCoinCount += puzzle.HintCoinsForSolve;
+            }
+
             await context.SaveChangesAsync();
 
             // if this puzzle got solved, look for others to unlock

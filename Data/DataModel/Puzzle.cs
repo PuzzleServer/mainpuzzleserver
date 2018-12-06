@@ -51,6 +51,11 @@ namespace ServerCore.DataModel
         public int SolveValue { get; set; } = 0;
 
         /// <summary>
+        /// The number of hint coins to award if the puzzle is solved
+        /// </summary>
+        public int HintCoinsForSolve { get; set; } = 0;
+
+        /// <summary>
         /// Reward if solved: Sometimes displayed publicly, sometimes used internally by meta engine
         /// </summary>
         public string Token { get; set; }
