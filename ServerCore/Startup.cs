@@ -43,20 +43,6 @@ namespace ServerCore
 
             DeploymentConfiguration.ConfigureDatabase(Configuration, services);
 
-            // Use SQL Database if in Azure, otherwise, use localdb
-            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
-            {
-                services.AddDbContext<PuzzleServerContext>
-                    (options => options.UseLazyLoadingProxies()
-                        .UseSqlServer(Configuration.GetConnectionString("PuzzleServerSQLConnectionString")));
-            }
-            else
-            {
-                services.AddDbContext<PuzzleServerContext>
-                    (options => options.UseLazyLoadingProxies()
-                        .UseSqlServer(Configuration.GetConnectionString("PuzzleServerContextLocal")));
-            }
-
             services.AddAuthentication().AddMicrosoftAccount(microsoftOptions =>
             {
                 microsoftOptions.ClientId = Configuration["Authentication-Microsoft-ApplicationId"];
