@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ServerCore.Areas.Identity.UserAuthorizationPolicy;
+using ServerCore.Areas.Deployment;
 using ServerCore.DataModel;
 
 namespace ServerCore
@@ -17,6 +18,17 @@ namespace ServerCore
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+        }
+
+        public Startup(IHostingEnvironment env)
+        {
+            // Set up to use Azure settings
+            IConfigurationBuilder configBuilder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddEnvironmentVariables();
+            Configuration = configBuilder.Build();
         }
 
         public IConfiguration Configuration { get; }
@@ -40,9 +52,11 @@ namespace ServerCore
                     options.Conventions.AuthorizeFolder("/ModelBases");
                 });
 
-            services.AddDbContext<PuzzleServerContext>
-                (options => options.UseLazyLoadingProxies()
-                    .UseSqlServer(Configuration.GetConnectionString("PuzzleServerContext")));
+            DeploymentConfiguration.ConfigureDatabase(Configuration, services);
+
+            //services.AddDbContext<PuzzleServerContext>
+            //    (options => options.UseLazyLoadingProxies()
+            //        .UseSqlServer(Configuration.GetConnectionString("PuzzleServerContext")));
 
             services.AddAuthentication().AddMicrosoftAccount(microsoftOptions =>
             {
@@ -99,7 +113,6 @@ namespace ServerCore
                 // Use KeyVault to get secrets
                 app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
-                PuzzleServerContext.UpdateDatabase(app);
             }
             else
             {
