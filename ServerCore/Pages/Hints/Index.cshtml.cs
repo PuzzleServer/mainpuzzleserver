@@ -26,7 +26,7 @@ namespace ServerCore.Pages.Hints
         public async Task OnGetAsync(int puzzleID)
         {
             PuzzleID = puzzleID;
-            Hint = await _context.Hints.Where(hint => hint.Puzzle.ID == puzzleID).ToListAsync();
+            Hint = await _context.Hints.Where(hint => hint.Puzzle.ID == puzzleID).OrderBy(hint => hint.DisplayOrder).ToListAsync();
         }
     }
 }

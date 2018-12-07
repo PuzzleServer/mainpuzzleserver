@@ -52,11 +52,11 @@ You have @Model.Team.HintCoinCount hint ticket(s).
                     <form method="post">
                         @if (Model.Team.HintCoinCount >= hint.Cost)
                         {
-                            <button type="submit" asp-route-hintId="@hint.Id" asp-route-teamID="@Model.Team.ID" asp-page-handler="Unlock" onclick="return confirm('Are you sure you want to spend @hint.Cost tickets to find out &quot;@hint.Description&quot;?')">Unlock</button>
+                            <button type="submit" asp-route-hintId="@hint.Id" asp-route-teamID="@Model.Team.ID" asp-route-puzzleID="@Model.PuzzleID" asp-page-handler="Unlock" onclick="return confirm('Are you sure you want to spend @hint.Cost tickets to find out &quot;@hint.Description&quot;?')">Unlock</button>
                         }
                         else
                         {
-                            <button type="submit" asp-route-hintId="@hint.Id" asp-route-teamID="@Model.Team.ID" asp-page-handler="Unlock" disabled>Unlock</button>
+                            <button type="submit" asp-page-handler="Unlock" disabled>Unlock</button>
                         }
                     </form>
                     </td>
