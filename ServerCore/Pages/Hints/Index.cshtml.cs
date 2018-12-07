@@ -23,10 +23,13 @@ namespace ServerCore.Pages.Hints
 
         public int PuzzleID { get; set; }
 
+        public string PuzzleName { get; set; }
+
         public async Task OnGetAsync(int puzzleID)
         {
             PuzzleID = puzzleID;
-            Hint = await _context.Hints.Where(hint => hint.Puzzle.ID == puzzleID).OrderBy(hint => hint.DisplayOrder).ToListAsync();
+            Hint = await _context.Hints.Where(hint => hint.Puzzle.ID == puzzleID).OrderBy(hint => hint.DisplayOrder).ThenBy(hint => hint.Description).ToListAsync();
+            PuzzleName = await _context.Puzzles.Where(puzzle => puzzle.ID == puzzleID).Select(puzzle => puzzle.Name).FirstOrDefaultAsync();
         }
     }
 }

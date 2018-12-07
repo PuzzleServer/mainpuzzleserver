@@ -19,10 +19,16 @@ namespace ServerCore.Pages.Teams
             _context = context;
         }
 
-        public IList<Hint> UnlockedHints { get; set; }
-        public IList<Hint> LockedHints { get; set; }
+        public class HintWithState
+        {
+            public Hint Hint { get; set; }
+            public bool IsUnlocked { get; set; }
+        }
+
+        public IList<HintWithState> Hints { get; set; }
         public Team Team { get; set; }
         public int PuzzleID { get; set; }
+        public string PuzzleName { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int puzzleID, int teamID)
         {
@@ -43,20 +49,15 @@ namespace ServerCore.Pages.Teams
 
         private async Task PopulateUI(int puzzleID, int teamID)
         {
-            var allHints =
-                from Hint hint in _context.Hints
-                join HintStatePerTeam state in _context.HintStatePerTeam on hint.Id equals state.HintID
-                where state.TeamID == teamID && hint.Puzzle.ID == puzzleID
-                orderby hint.DisplayOrder
-                select new { Hint = hint, State = state };
-
-            UnlockedHints = await (from hintState in allHints
-                                   where hintState.State.IsUnlocked
-                                   select hintState.Hint).ToListAsync();
-
-            LockedHints = await (from hintState in allHints
-                                 where !hintState.State.IsUnlocked
-                                 select hintState.Hint).ToListAsync();
+            PuzzleName = await (from Puzzle in _context.Puzzles
+                                where Puzzle.ID == puzzleID
+                                select Puzzle.Name).FirstOrDefaultAsync();
+            Hints = await
+                (from Hint hint in _context.Hints
+                 join HintStatePerTeam state in _context.HintStatePerTeam on hint.Id equals state.HintID
+                 where state.TeamID == teamID && hint.Puzzle.ID == puzzleID
+                 orderby hint.DisplayOrder, hint.Description
+                 select new HintWithState { Hint = hint, IsUnlocked = state.IsUnlocked }).ToListAsync();
         }
 
         public async Task<IActionResult> OnPostUnlockAsync(int hintID, int puzzleID, int teamID)
