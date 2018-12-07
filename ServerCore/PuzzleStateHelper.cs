@@ -171,7 +171,20 @@ namespace ServerCore
             // Award hint coins
             if (value != null)
             {
-                team.HintCoinCount += puzzle.HintCoinsForSolve;
+                if (team != null)
+                {
+                    team.HintCoinCount += puzzle.HintCoinsForSolve;
+                }
+                else
+                {
+                    var allTeams = from Team curTeam in context.Teams
+                                   where curTeam.Event == eventObj
+                                   select curTeam;
+                    foreach(Team curTeam in allTeams)
+                    {
+                        curTeam.HintCoinCount += puzzle.HintCoinsForSolve;
+                    }
+                }
             }
 
             await context.SaveChangesAsync();
