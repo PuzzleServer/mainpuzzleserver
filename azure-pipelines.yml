@@ -11,6 +11,6 @@ variables:
 
 steps:
 - script: dotnet build --configuration $(buildConfiguration)
-- script: dotnet publish --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)
+- script: dotnet publish --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) /p:PublishProfile=Azure
 
 - task: PublishBuildArtifacts@1
