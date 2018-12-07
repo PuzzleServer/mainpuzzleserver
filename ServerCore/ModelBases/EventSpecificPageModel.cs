@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -14,6 +15,18 @@ namespace ServerCore.ModelBases
         [FromRoute]
         [ModelBinder(typeof(EventBinder))]
         public Event Event { get; set; }
+
+        public PuzzleUser LoggedInUser { get; set; }
+
+        private PuzzleServerContext puzzleServerContext;
+
+        public EventSpecificPageModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager)
+        {
+            puzzleServerContext = serverContext;
+
+            // Get the currently signed in PuzzleUser
+            LoggedInUser = PuzzleUser.GetPuzzleUserForCurrentUser(puzzleServerContext, User, userManager);
+        }
 
         public class EventBinder : IModelBinder
         {
