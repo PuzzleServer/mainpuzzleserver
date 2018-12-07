@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Security.Claims;
@@ -49,6 +50,17 @@ namespace ServerCore.DataModel
         /// <returns>The user's PuzzleUser object</returns>
         public static PuzzleUser GetPuzzleUserForCurrentUser(PuzzleServerContext puzzleServerContext, ClaimsPrincipal user, UserManager<IdentityUser> userManager)
         {
+            if (userManager == null || puzzleServerContext == null)
+            {
+                //Default PageModel constructor used - cannot get current user.
+                return new PuzzleUser { Name = String.Empty };
+            }
+
+            if (user == null)
+            {
+                return new PuzzleUser { Name = String.Empty };
+            }
+
             string userId = userManager.GetUserId(user);
             return puzzleServerContext.PuzzleUsers.Where(u => u.IdentityUserId == userId).FirstOrDefault();
         }
@@ -68,7 +80,7 @@ namespace ServerCore.DataModel
         /// </summary>
         /// <param name="thisEvent">The event that's being checked</param>
         /// <param name="puzzleServerContext">Current PuzzleServerContext</param>
-        public bool IsAdminForEvent (PuzzleServerContext dbContext, Event thisEvent)
+        public bool IsAdminForEvent(PuzzleServerContext dbContext, Event thisEvent)
         {
             return dbContext.EventAdmins.Where(a => a.Admin.ID == ID && a.Event.ID == thisEvent.ID).Any();
         }

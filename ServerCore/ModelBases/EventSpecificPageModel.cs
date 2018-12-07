@@ -16,16 +16,33 @@ namespace ServerCore.ModelBases
         [ModelBinder(typeof(EventBinder))]
         public Event Event { get; set; }
 
-        public PuzzleUser LoggedInUser { get; set; }
+        private PuzzleUser loggedInUser;
+
+        public PuzzleUser LoggedInUser
+        {
+            get
+            {
+                if (loggedInUser == null)
+                {
+                    loggedInUser = PuzzleUser.GetPuzzleUserForCurrentUser(puzzleServerContext, User, userManager);
+                }
+
+                return loggedInUser;
+            }
+        }
 
         private PuzzleServerContext puzzleServerContext;
+        private UserManager<IdentityUser> userManager;
 
-        public EventSpecificPageModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager)
+        public EventSpecificPageModel()
+        {
+            // Default constructor - note that pages that use this constructor won't know what PuzzleUser is signed in
+        }
+
+        public EventSpecificPageModel(PuzzleServerContext serverContext, UserManager<IdentityUser> manager)
         {
             puzzleServerContext = serverContext;
-
-            // Get the currently signed in PuzzleUser
-            LoggedInUser = PuzzleUser.GetPuzzleUserForCurrentUser(puzzleServerContext, User, userManager);
+            userManager = manager;
         }
 
         public class EventBinder : IModelBinder
