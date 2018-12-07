@@ -38,6 +38,9 @@
                     Solve
                 </a>
             </th>
+            <th>
+                Hints
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -76,6 +79,9 @@
                         <text>See past submissions</text>
                     }
                 </a>
+            </td>
+            <td>
+                <a asp-page="./Hints" asp-route-puzzleid="@item.Puzzle.ID" asp-route-teamid="@Model.TeamID">Hints</a>
             </td>
         </tr>
     }

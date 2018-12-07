@@ -51,6 +51,11 @@ namespace ServerCore.DataModel
         public int SolveValue { get; set; } = 0;
 
         /// <summary>
+        /// The number of hint coins to award if the puzzle is solved
+        /// </summary>
+        public int HintCoinsForSolve { get; set; } = 0;
+
+        /// <summary>
         /// Reward if solved: Sometimes displayed publicly, sometimes used internally by meta engine
         /// </summary>
         public string Token { get; set; }
@@ -82,6 +87,11 @@ namespace ServerCore.DataModel
         /// All of the content files associated with this puzzle
         /// </summary>
         public virtual ICollection<ContentFile> Contents { get; set; }
+
+        /// <summary>
+        /// This puzzle's hints
+        /// </summary>
+        public virtual ICollection<Hint> Hints { get; set; }
 
         /// <summary>
         /// File for the main puzzle (typically a PDF containing the puzzle)

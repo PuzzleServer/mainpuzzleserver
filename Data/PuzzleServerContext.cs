@@ -30,6 +30,8 @@ namespace ServerCore.DataModel
         public DbSet<Team> Teams { get; set; }
         public DbSet<TeamMembers> TeamMembers { get; set; }
         public DbSet<PuzzleUser> PuzzleUsers { get; set; }
+        public DbSet<Hint> Hints { get; set; }
+        public DbSet<HintStatePerTeam> HintStatePerTeam { get; set; }
 
         public static void UpdateDatabase(IApplicationBuilder app)
         {
@@ -53,6 +55,7 @@ namespace ServerCore.DataModel
         {
             modelBuilder.Entity<ContentFile>().HasIndex(contentFile => new { contentFile.EventID, contentFile.ShortName }).IsUnique();
             modelBuilder.Entity<PuzzleStatePerTeam>().HasKey(state => new { state.PuzzleID, state.TeamID });
+            modelBuilder.Entity<HintStatePerTeam>().HasKey(state => new { state.TeamID, state.HintID });
 
             base.OnModelCreating(modelBuilder);
         }

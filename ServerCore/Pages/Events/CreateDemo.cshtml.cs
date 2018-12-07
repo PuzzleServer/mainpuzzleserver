@@ -83,6 +83,7 @@ namespace ServerCore.Pages.Events
                 Event = Event,
                 IsPuzzle = true,
                 SolveValue = 10,
+                HintCoinsForSolve = 1,
                 Group = "Thumper's Stumpers",
                 OrderInGroup = 1,
                 MinPrerequisiteCount = 1
@@ -95,6 +96,7 @@ namespace ServerCore.Pages.Events
                 Event = Event,
                 IsPuzzle = true,
                 SolveValue = 10,
+                HintCoinsForSolve = 2,
                 Group = "Thumper's Stumpers",
                 OrderInGroup = 2,
                 MinPrerequisiteCount = 1
@@ -107,6 +109,7 @@ namespace ServerCore.Pages.Events
                 Event = Event,
                 IsPuzzle = true,
                 SolveValue = 10,
+                HintCoinsForSolve = 3,
                 Group = "Thumper's Stumpers",
                 OrderInGroup = 3,
                 MinPrerequisiteCount = 1
