@@ -41,6 +41,9 @@ namespace ServerCore.Pages.Hints
 
         public async Task<IActionResult> OnPostAsync()
         {
+            // The Puzzle property doesn't get round-tripped by ASP.NET and would cause
+            // the validation below to fail. By removing it from the ModelState,
+            // validation passes.
             ModelState.Remove("Hint.Puzzle");
             if (!ModelState.IsValid)
             {

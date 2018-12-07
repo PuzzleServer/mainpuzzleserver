@@ -19,7 +19,7 @@ namespace ServerCore.Pages.Hints
             _context = context;
         }
 
-        public IList<Hint> Hint { get;set; }
+        public IList<Hint> Hints { get;set; }
 
         public int PuzzleID { get; set; }
 
@@ -28,7 +28,7 @@ namespace ServerCore.Pages.Hints
         public async Task OnGetAsync(int puzzleID)
         {
             PuzzleID = puzzleID;
-            Hint = await _context.Hints.Where(hint => hint.Puzzle.ID == puzzleID).OrderBy(hint => hint.DisplayOrder).ThenBy(hint => hint.Description).ToListAsync();
+            Hints = await _context.Hints.Where(hint => hint.Puzzle.ID == puzzleID).OrderBy(hint => hint.DisplayOrder).ThenBy(hint => hint.Description).ToListAsync();
             PuzzleName = await _context.Puzzles.Where(puzzle => puzzle.ID == puzzleID).Select(puzzle => puzzle.Name).FirstOrDefaultAsync();
         }
     }

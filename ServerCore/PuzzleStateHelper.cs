@@ -169,7 +169,7 @@ namespace ServerCore
             }
 
             // Award hint coins
-            if (value != null)
+            if (value != null && puzzle.HintCoinsForSolve != 0)
             {
                 if (team != null)
                 {
