@@ -11,6 +11,6 @@ variables:
 
 steps:
 - script: dotnet build --configuration $(buildConfiguration)
-- script: dotnet publish --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) /p:WebPublishMethod=Package
+- script: dotnet publish --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) /p:DeployOnBuild=True /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:PublishProfile=$(DeploymentConfiguration) /p:TransformConfigFile=true
 
 - task: PublishBuildArtifacts@1
