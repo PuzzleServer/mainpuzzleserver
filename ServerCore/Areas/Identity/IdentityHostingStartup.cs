@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ServerCore.Areas.Deployment;
 using ServerCore.DataModel;
 
 [assembly: HostingStartup(typeof(ServerCore.Areas.Identity.IdentityHostingStartup))]
@@ -14,9 +14,16 @@ namespace ServerCore.Areas.Identity
         {
             builder.ConfigureServices((context, services) =>
             {
-                services.AddDbContext<PuzzleServerContext>(options =>
-                    options.UseSqlServer(
-                        context.Configuration.GetConnectionString("PuzzleServerContext")));
+                // Set up to use Azure settings
+                IHostingEnvironment env = context.HostingEnvironment;
+                IConfigurationBuilder configBuilder = new ConfigurationBuilder()
+                    .SetBasePath(env.ContentRootPath)
+                    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                    .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                    .AddEnvironmentVariables();
+                context.Configuration = configBuilder.Build();
+
+                DeploymentConfiguration.ConfigureDatabase(context.Configuration, services);
 
                 services.AddDefaultIdentity<IdentityUser>()
                     .AddEntityFrameworkStores<PuzzleServerContext>();

@@ -11,12 +11,6 @@ variables:
 
 steps:
 - script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'dotnet build $(buildConfiguration)'
-- task: DotNetCoreCLI@2
-  inputs:
-    command: publish
-    publishWebProjects: True
-    arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
-    zipAfterPublish: True
+- script: dotnet publish --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) /p:WebPublishMethod=Package
 
 - task: PublishBuildArtifacts@1
