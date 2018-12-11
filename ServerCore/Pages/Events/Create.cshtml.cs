@@ -6,6 +6,7 @@ using ServerCore.DataModel;
 
 namespace ServerCore.Pages.Events
 {
+    [Authorize(Policy = "IsAdmin")]
     public class CreateModel : PageModel
     {
         private readonly PuzzleServerContext _context;
