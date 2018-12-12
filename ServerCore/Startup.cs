@@ -43,6 +43,7 @@ namespace ServerCore
             {
                 options.AddPolicy("IsAuthor", policy => policy.Requirements.Add(new IsAuthorInEventRequirement()));
                 options.AddPolicy("IsAdmin", policy => policy.Requirements.Add(new IsAdminInEventRequirement()));
+                options.AddPolicy("IsGlobalAdmin", policy => policy.Requirements.Add(new IsGlobalAdminRequirement()));
             });
         }
 
