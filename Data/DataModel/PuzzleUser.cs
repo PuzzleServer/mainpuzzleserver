@@ -26,6 +26,7 @@ namespace ServerCore.DataModel
         public string Name { get; set; }
         public string EmployeeAlias { get; set; }
         public string Email { get; set; }
+        public bool IsGlobalAdmin { get; set; }
         public string PhoneNumber { get; set; }
         public string TShirtSize { get; set; }
         public bool VisibleToOthers { get; set; }

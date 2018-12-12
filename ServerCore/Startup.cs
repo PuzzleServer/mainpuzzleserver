@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ServerCore.Areas.Identity;
 using ServerCore.DataModel;
 
 namespace ServerCore
@@ -37,12 +38,13 @@ namespace ServerCore
                 microsoftOptions.ClientId = Configuration["Authentication:Microsoft:ApplicationId"];
                 microsoftOptions.ClientSecret = Configuration["Authentication:Microsoft:Password"];
             });
-            
+
             services.AddAuthorization(options =>
             {
-               options.AddPolicy("IsAuthor", policy => policy.Requirements.Add(new IsAuthorForEventRequirement(context.Event)));
-               options.AddPolicy("IsAdmin", policy => policy.Requirements.Add(new IsAdminForEventRequirement(context.Event)));
-            }
+                options.AddPolicy("IsAuthor", policy => policy.Requirements.Add(new IsAuthorInEventRequirement()));
+                options.AddPolicy("IsAdmin", policy => policy.Requirements.Add(new IsAdminInEventRequirement()));
+            });
+        }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

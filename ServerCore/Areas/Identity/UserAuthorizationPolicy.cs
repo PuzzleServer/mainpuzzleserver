@@ -1,78 +1,134 @@
-using Microsoft.AspNetCore.Authorization;
-using PoliciesAuthApp1.Services.Requirements;
 using System;
-using System.Security.Claims;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Filters;
+using ServerCore.DataModel;
 
 namespace ServerCore.Areas.Identity
 {
-  public class IsAuthorInEventRequirement : IAuthorizationRequirement
-  {
-      public Event ThisEvent { get; private set; }
+    public class IsGlobalAdminRequirement : IAuthorizationRequirement
+    {
+        public IsGlobalAdminRequirement()
+        {
+        }
+    }
 
-      public IsAuthorInEventRequirement(Event thisEvent)
-      {
-          ThisEvent = thisEvent;
-      }
-  }
+    public class IsGlobalAdminHandler : AuthorizationHandler<IsGlobalAdminRequirement>
+    {
+        private readonly PuzzleServerContext puzzleContext;
+        private readonly UserManager<IdentityUser> userManager;
 
-  public class IsAuthorInEventHandler : AuthorizationHandler<IsAuthorInEventRequirement>
-  {
-      private readonly IPuzzleServerContext puzzleContext;
-      private readonly UserManager<IdentityUser> userManager;
+        public IsGlobalAdminHandler(PuzzleServerContext pContext, UserManager<IdentityUser> manager)
+        {
+            puzzleContext = pContext;
+            userManager = manager;
+        }
 
-      public IsAuthorInEventHandler(IPuzzleServerContext pContext, UserManager<IdentityUser> manager)
-      {
-        puzzleContext = pContext;
-        userManager = manager;
-      }
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
+                                                       IsGlobalAdminRequirement requirement)
+        {
+            PuzzleUser puzzleUser = PuzzleUser.GetPuzzleUserForCurrentUser(puzzleContext, context.User, userManager);
 
-      protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
-                                                     IsAuthorInEventRequirement requirement)
-      {
-          PuzzleUser puzzleUser = PuzzleUser.GetPuzzleUserForCurrentUser(puzzleContext, context.User, userManager);
+            if (puzzleUser.IsGlobalAdmin)
+            {
+                context.Succeed(requirement);
+            }
 
-          if (puzzleUser.IsAuthor(requirement.ThisEvent))
-          {
-              context.Succeed(requirement);
-          }
+            return Task.CompletedTask;
+        }
+    }
 
-          return Task.CompletedTask;
-      }
-   }
-   
-     public class IsAdminInEventRequirement : IAuthorizationRequirement
-  {
-      public Event ThisEvent { get; private set; }
+    public class IsAuthorInEventRequirement : IAuthorizationRequirement
+    {
+        public IsAuthorInEventRequirement()
+        {
+        }
+    }
 
-      public IsAdminInEventRequirement(Event thisEvent)
-      {
-          ThisEvent = thisEvent;
-      }
-  }
+    public class IsAuthorInEventHandler : AuthorizationHandler<IsAuthorInEventRequirement>
+    {
+        private readonly PuzzleServerContext puzzleContext;
+        private readonly UserManager<IdentityUser> userManager;
 
-  public class IsAdminInEventHandler : AuthorizationHandler<IsAuthorInEventRequirement>
-  {
-      private readonly IPuzzleServerContext puzzleContext;
-      private readonly UserManager<IdentityUser> userManager;
+        public IsAuthorInEventHandler(PuzzleServerContext pContext, UserManager<IdentityUser> manager)
+        {
+            puzzleContext = pContext;
+            userManager = manager;
+        }
 
-      public IsAdminInEventHandler(IPuzzleServerContext pContext, UserManager<IdentityUser> manager)
-      {
-        puzzleContext = pContext;
-        userManager = manager;
-      }
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
+                                                       IsAuthorInEventRequirement requirement)
+        {
+            PuzzleUser puzzleUser = PuzzleUser.GetPuzzleUserForCurrentUser(puzzleContext, context.User, userManager);
 
-      protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
-                                                     IsAdminInEventRequirement requirement)
-      {
-          PuzzleUser puzzleUser = PuzzleUser.GetPuzzleUserForCurrentUser(puzzleContext, context.User, userManager);
+            if (context.Resource is AuthorizationFilterContext filterContext)
+            {
 
-          if (puzzleUser.IsAdmin(requirement.ThisEvent))
-          {
-              context.Succeed(requirement);
-          }
+                Event thisEvent = AuthorizationHelper.GetEventFromContext(context);
 
-          return Task.CompletedTask;
-      }
-   }
- }
+                if (thisEvent != null && puzzleUser.IsAuthorForEvent(puzzleContext, thisEvent))
+                {
+                    context.Succeed(requirement);
+                }
+            }
+
+            return Task.CompletedTask;
+        }
+    }
+
+    public class IsAdminInEventRequirement : IAuthorizationRequirement
+    {
+        public IsAdminInEventRequirement()
+        {
+        }
+    }
+
+    public class IsAdminInEventHandler : AuthorizationHandler<IsAdminInEventRequirement>
+    {
+        private readonly PuzzleServerContext puzzleContext;
+        private readonly UserManager<IdentityUser> userManager;
+
+        public IsAdminInEventHandler(PuzzleServerContext pContext, UserManager<IdentityUser> manager)
+        {
+            puzzleContext = pContext;
+            userManager = manager;
+        }
+
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
+                                                       IsAdminInEventRequirement requirement)
+        {
+            PuzzleUser puzzleUser = PuzzleUser.GetPuzzleUserForCurrentUser(puzzleContext, context.User, userManager);
+
+            Event thisEvent = AuthorizationHelper.GetEventFromContext(context);
+
+            if (thisEvent != null && puzzleUser.IsAdminForEvent(puzzleContext, thisEvent))
+            {
+                context.Succeed(requirement);
+            }
+
+            return Task.CompletedTask;
+        }
+    }
+
+    public class AuthorizationHelper
+    {
+        public static Event GetEventFromContext(AuthorizationHandlerContext context)
+        {
+            if (context.Resource is AuthorizationFilterContext filterContext)
+            {
+                string eventIdAsString = filterContext.RouteData.Values["eventId"] as string;
+
+                if (Int32.TryParse(eventIdAsString, out int eventId))
+                {
+                    PuzzleServerContext puzzleServerContext = (PuzzleServerContext)filterContext.HttpContext.RequestServices.GetService(typeof(PuzzleServerContext));
+                    return puzzleServerContext.Events.Where(e => e.ID == eventId).FirstOrDefault();
+                }
+            }
+
+            return null;
+        }
+    }
+}
+
