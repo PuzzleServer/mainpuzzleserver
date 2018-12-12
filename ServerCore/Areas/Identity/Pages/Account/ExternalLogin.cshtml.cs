@@ -1,7 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -121,7 +123,7 @@ namespace ServerCore.Areas.Identity.Pages.Account
                         if (ModelState.IsValid)
                         {
                             // If there are no GlobalAdmins make them the GlobalAdmin
-                            if (!_context.PuzzleUsers.Where(u => u.IsGlobalAdmin).Any())
+                            if ((Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == EnvironmentName.Development) && !_context.PuzzleUsers.Where(u => u.IsGlobalAdmin).Any())
                             {
                                 Input.IsGlobalAdmin = true;
                             }
