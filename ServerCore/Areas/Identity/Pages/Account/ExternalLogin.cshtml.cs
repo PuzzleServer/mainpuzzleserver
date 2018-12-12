@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Linq;
+﻿using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -122,7 +121,7 @@ namespace ServerCore.Areas.Identity.Pages.Account
                         if (ModelState.IsValid)
                         {
                             // If there are no GlobalAdmins make them the GlobalAdmin
-                            if (!_context.PuzzleUsers.Where(u=> u.IsGlobalAdmin).Any())
+                            if (!_context.PuzzleUsers.Where(u => u.IsGlobalAdmin).Any())
                             {
                                 Input.IsGlobalAdmin = true;
                             }
