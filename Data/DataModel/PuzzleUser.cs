@@ -3,7 +3,9 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace ServerCore.DataModel
 {
@@ -36,9 +38,9 @@ namespace ServerCore.DataModel
         /// <param name="identityUserId">The string Id of an IdentityUser</param>
         /// <param name="dbContext">The current PuzzleServerContext</param>
         /// <returns>A PuzzleUser object that corresponds to the given IdentityUser</returns>
-        public static PuzzleUser GetPuzzleUser(string identityUserId, PuzzleServerContext dbContext)
+        public static async Task<PuzzleUser> GetPuzzleUser(string identityUserId, PuzzleServerContext dbContext)
         {
-            return dbContext.PuzzleUsers.Where(user => user.IdentityUserId == identityUserId).FirstOrDefault();
+            return await dbContext.PuzzleUsers.Where(user => user.IdentityUserId == identityUserId).FirstOrDefaultAsync();
         }
 
         /// <summary>
