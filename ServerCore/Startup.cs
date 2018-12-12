@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -35,8 +36,8 @@ namespace ServerCore
 
             services.AddAuthentication().AddMicrosoftAccount(microsoftOptions =>
             {
-                microsoftOptions.ClientId = Configuration["Authentication:Microsoft:ApplicationId"];
-                microsoftOptions.ClientSecret = Configuration["Authentication:Microsoft:Password"];
+                microsoftOptions.ClientId = Configuration["Authentication-Microsoft-ApplicationId"];
+                microsoftOptions.ClientSecret = Configuration["Authentication-Microsoft-Password"];
             });
 
             services.AddAuthorization(options =>
@@ -45,6 +46,11 @@ namespace ServerCore
                 options.AddPolicy("IsAdmin", policy => policy.Requirements.Add(new IsAdminInEventRequirement()));
                 options.AddPolicy("IsGlobalAdmin", policy => policy.Requirements.Add(new IsGlobalAdminRequirement()));
             });
+
+            services.AddTransient<IAuthorizationHandler, IsAuthorInEventHandler>();
+            services.AddTransient<IAuthorizationHandler, IsAdminInEventHandler>();
+            services.AddTransient<IAuthorizationHandler, IsGlobalAdminHandler>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
