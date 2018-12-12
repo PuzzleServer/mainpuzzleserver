@@ -1,9 +1,11 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace ServerCore.DataModel
 {
@@ -37,9 +39,33 @@ namespace ServerCore.DataModel
         /// <param name="identityUserId">The string Id of an IdentityUser</param>
         /// <param name="dbContext">The current PuzzleServerContext</param>
         /// <returns>A PuzzleUser object that corresponds to the given IdentityUser</returns>
-        public static PuzzleUser GetPuzzleUser(string identityUserId, PuzzleServerContext dbContext)
+        public static async Task<PuzzleUser> GetPuzzleUser(string identityUserId, PuzzleServerContext dbContext)
         {
-            return dbContext.PuzzleUsers.Where(user => user.IdentityUserId == identityUserId).FirstOrDefault();
+            return await dbContext.PuzzleUsers.Where(user => user.IdentityUserId == identityUserId).FirstOrDefaultAsync();
+        }
+
+        /// <summary>
+        /// Returns the PuzzleUser for the currently signed in player
+        /// </summary>
+        /// <param name="puzzlerServerContext">Current PuzzleServerContext</param>
+        /// <param name="user">The claim for the user being checked</param>
+        /// <param name="userManager">The UserManager for the current context</param>
+        /// <returns>The user's PuzzleUser object</returns>
+        public static PuzzleUser GetPuzzleUserForCurrentUser(PuzzleServerContext puzzleServerContext, ClaimsPrincipal user, UserManager<IdentityUser> userManager)
+        {
+            if (userManager == null || puzzleServerContext == null)
+            {
+                //Default PageModel constructor used - cannot get current user.
+                return new PuzzleUser { Name = String.Empty };
+            }
+
+            if (user == null)
+            {
+                return new PuzzleUser { Name = String.Empty };
+            }
+
+            string userId = userManager.GetUserId(user);
+            return puzzleServerContext.PuzzleUsers.Where(u => u.IdentityUserId == userId).FirstOrDefault();
         }
 
         /// <summary>
