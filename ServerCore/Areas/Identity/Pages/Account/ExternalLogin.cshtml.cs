@@ -120,12 +120,19 @@ namespace ServerCore.Areas.Identity.Pages.Account
 
                         if (ModelState.IsValid)
                         {
+                            // If this is the first user make them the GlobalAdmin
+                            if (_context.PuzzleUsers.Local.Count == 0)
+                            {
+                                Input.IsGlobalAdmin = true;
+                            }
+
                             _context.PuzzleUsers.Add(Input);
                             await _context.SaveChangesAsync(true);
                             transaction.Commit();
 
                             await _signInManager.SignInAsync(user, isPersistent: false);
                             _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
+
                             return LocalRedirect(returnUrl);
                         }
                     }
