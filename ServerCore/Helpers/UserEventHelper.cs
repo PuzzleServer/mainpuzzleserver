@@ -6,7 +6,10 @@ using ServerCore.DataModel;
 
 namespace ServerCore.Helpers
 {
-    public class PlayerEventHelper
+    /// <summary>
+    /// Includes methods that connect a PuzzleUser with another part of the data model
+    /// </summary>
+    public class UserEventHelper
     {
         /// <summary>
         /// Returns a list of the author's puzzles for the given event

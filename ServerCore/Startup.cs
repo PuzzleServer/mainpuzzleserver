@@ -47,9 +47,9 @@ namespace ServerCore
                 options.AddPolicy("IsGlobalAdmin", policy => policy.Requirements.Add(new IsGlobalAdminRequirement()));
             });
 
-            services.AddTransient<IAuthorizationHandler, IsAuthorInEventHandler>();
-            services.AddTransient<IAuthorizationHandler, IsAdminInEventHandler>();
-            services.AddTransient<IAuthorizationHandler, IsGlobalAdminHandler>();
+            services.AddScoped<IAuthorizationHandler, IsAuthorInEventHandler>();
+            services.AddScoped<IAuthorizationHandler, IsAdminInEventHandler>();
+            services.AddScoped<IAuthorizationHandler, IsGlobalAdminHandler>();
 
         }
 
