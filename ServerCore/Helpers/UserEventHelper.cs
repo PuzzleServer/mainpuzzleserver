@@ -1,7 +1,4 @@
-using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -34,7 +31,7 @@ namespace ServerCore.Helpers
         /// <returns>The user's team for this event</returns>
         public async Task<Team> GetTeamForPlayer(PuzzleServerContext dbContext, Event thisEvent, PuzzleUser user)
         {
-            return await dbContext.TeamMembers.Where(t => t.Member.ID == user.ID && t.Team.Event.ID == thisEvent.ID).Select(t => t.Team).FirstOrDefaultAsync()
+            return await dbContext.TeamMembers.Where(t => t.Member.ID == user.ID && t.Team.Event.ID == thisEvent.ID).Select(t => t.Team).FirstOrDefaultAsync();
         }
 
         /// <summary>

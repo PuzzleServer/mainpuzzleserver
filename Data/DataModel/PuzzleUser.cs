@@ -69,30 +69,6 @@ namespace ServerCore.DataModel
         }
 
         /// <summary>
-        /// Returns the PuzzleUser for the currently signed in player
-        /// </summary>
-        /// <param name="puzzlerServerContext">Current PuzzleServerContext</param>
-        /// <param name="user">The claim for the user being checked</param>
-        /// <param name="userManager">The UserManager for the current context</param>
-        /// <returns>The user's PuzzleUser object</returns>
-        public static PuzzleUser GetPuzzleUserForCurrentUser(PuzzleServerContext puzzleServerContext, ClaimsPrincipal user, UserManager<IdentityUser> userManager)
-        {
-            if (userManager == null || puzzleServerContext == null)
-            {
-                //Default PageModel constructor used - cannot get current user.
-                return new PuzzleUser { Name = String.Empty };
-            }
-
-            if (user == null)
-            {
-                return new PuzzleUser { Name = String.Empty };
-            }
-
-            string userId = userManager.GetUserId(user);
-            return puzzleServerContext.PuzzleUsers.Where(u => u.IdentityUserId == userId).FirstOrDefault();
-        }
-
-        /// <summary>
         /// Returns whether or not a user is an author for the given event
         /// </summary>
         /// <param name="thisEvent">The event that's being checked</param>
