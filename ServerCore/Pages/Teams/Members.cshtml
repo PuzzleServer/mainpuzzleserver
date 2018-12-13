@@ -1,7 +1,8 @@
-﻿@page "/{eventId}/Teams/Members"
+﻿@page "/{eventId}/{eventRole}/Teams/Members"
 @model ServerCore.Pages.Teams.MembersModel
 @{
     ViewData["Title"] = "Members";
+    Layout = "_teamLayout.cshtml";
 }
 
 <h2>Team Members</h2>

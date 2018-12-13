@@ -1,8 +1,9 @@
-﻿@page "/{eventId}/Teams/AddMember"
+﻿@page "/{eventId}/{eventRole}/Teams/AddMember"
 @model ServerCore.Pages.Teams.AddMemberModel
 
 @{
     ViewData["Title"] = "AddMember";
+    Layout = "_teamLayout.cshtml";
 }
 
 <h2>Add a team member</h2>

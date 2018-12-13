@@ -1,8 +1,9 @@
-﻿@page "/{eventId}/Teams/Edit"
+﻿@page "/{eventId}/{eventRole}/Teams/Edit"
 @model ServerCore.Pages.Teams.EditModel
 
 @{
     ViewData["Title"] = "Edit";
+    Layout = "_teamLayout.cshtml";
 }
 
 <h2>Edit</h2>

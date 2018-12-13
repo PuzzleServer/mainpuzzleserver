@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -45,6 +46,10 @@ namespace ServerCore.ModelBases
             userManager = manager;
         }
 
+        [FromRoute]
+        [ModelBinder(typeof(RoleBinder))]
+        public EventRole EventRole { get; set; }
+
         public class EventBinder : IModelBinder
         {
             public async Task BindModelAsync(ModelBindingContext bindingContext)
@@ -60,6 +65,26 @@ namespace ServerCore.ModelBases
                     {
                         bindingContext.Result = ModelBindingResult.Success(eventObj);
                     }
+                }
+            }
+        }
+
+        public class RoleBinder : IModelBinder
+        {
+            // This doesn't actually run async but the compiler complains if I try to use BindModel :(
+            public async Task BindModelAsync(ModelBindingContext bindingContext)
+            {
+                string eventRoleAsString = bindingContext.ActionContext.RouteData.Values["eventRole"] as string;
+                if (eventRoleAsString == null)
+                {
+                    eventRoleAsString = "play";
+                }
+                // TODO: Add auth check to make sure the user has permissions for the given eventRole
+                eventRoleAsString = eventRoleAsString.ToLower();
+
+                if (Enum.IsDefined(typeof(EventRole), eventRoleAsString))
+                {
+                    bindingContext.Result = ModelBindingResult.Success(Enum.Parse(typeof(EventRole), eventRoleAsString));
                 }
             }
         }
