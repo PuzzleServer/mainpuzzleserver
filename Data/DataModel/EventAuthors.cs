@@ -7,6 +7,17 @@ namespace ServerCore.DataModel
     /// </summary>
     public class EventAuthors
     {
+        public EventAuthors()
+        {
+        }
+
+        public EventAuthors(EventAuthors source)
+        {
+            // do not fill out the ID
+            Event = source.Event;
+            Author = source.Author;
+        }
+
         // ID for row
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }

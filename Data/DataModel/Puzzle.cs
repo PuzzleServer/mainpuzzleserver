@@ -13,6 +13,27 @@ namespace ServerCore.DataModel
     /// </summary>
     public class Puzzle
     {
+        public Puzzle()
+        {
+        }
+
+        public Puzzle (Puzzle source)
+        {
+            // do not fill out the ID
+            Event = source.Event;
+            Name = source.Name;
+            IsPuzzle = source.IsPuzzle;
+            IsMetaPuzzle = source.IsMetaPuzzle;
+            IsFinalPuzzle = source.IsFinalPuzzle;
+            SolveValue = source.SolveValue;
+            HintCoinsForSolve = source.HintCoinsForSolve;
+            Token = source.Token;
+            Group = source.Group;
+            OrderInGroup = source.OrderInGroup;
+            IsGloballyVisiblePrerequisite = source.IsGloballyVisiblePrerequisite;
+            MinPrerequisiteCount = source.MinPrerequisiteCount;
+        }
+
         /// <summary>
         /// The ID
         /// </summary>

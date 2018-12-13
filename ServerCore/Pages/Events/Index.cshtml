@@ -44,6 +44,7 @@
                 <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |
                 <a asp-page="./Details" asp-route-id="@item.ID">Details</a> |
                 <a asp-page="./Delete" asp-route-id="@item.ID">Delete</a> |
+                <a asp-page="./Import" asp-route-id="@item.ID" asp-route-eventRole="admin">Import</a> |
                 <a asp-page="/Puzzles/Index" asp-route-eventId="@item.ID" asp-route-eventRole="admin">Puzzles</a> |
                 <a asp-page="/Teams/Index" asp-route-eventId="@item.ID" asp-route-eventRole="admin">Teams</a> |
                 <a asp-page="./Players" asp-route-eventId="@item.ID" asp-route-eventRole="admin">Players</a> |

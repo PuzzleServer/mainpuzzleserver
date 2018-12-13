@@ -8,6 +8,17 @@ namespace ServerCore.DataModel
     /// </summary>
     public class Prerequisites
     {
+        public Prerequisites()
+        {
+        }
+
+        public Prerequisites(Prerequisites source)
+        {
+            // do not fill out the ID
+            Puzzle = source.Puzzle;
+            Prerequisite = source.Prerequisite;
+        }
+
         // ID for row
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
