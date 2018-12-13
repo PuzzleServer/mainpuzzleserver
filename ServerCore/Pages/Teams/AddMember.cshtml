@@ -6,9 +6,13 @@
     Layout = "_teamLayout.cshtml";
 }
 
-<h2>Add a team member</h2>
+<h2>@Html.DisplayFor(model => model.Team.Name) - Add Member</h2>
 
-<h4>Select a user to add to team "@Model.MyTeam.Name"</h4>
+<div>
+    <a asp-page="./Members" asp-route-id="@Model.Team.ID">Cancel</a>
+</div>
+
+<h4>Select a user to add to this team:</h4>
 
 <table class="table">
     <thead>
@@ -39,18 +43,9 @@
                     @Html.DisplayFor(modelItem => item.Email)
                 </td>
                 <td>
-                    <a asp-page-handler="AddMember" asp-route-teamId="@Model.MyTeam.ID" asp-route-userId="@item.ID">Add</a>
+                    <a asp-page-handler="AddMember" asp-route-teamId="@Model.Team.ID" asp-route-userId="@item.ID">Add</a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
-
-<div>
-    TEMPORARY - use this to add a random user so you can use this page. TODO: Remove once users have their own add page
-    <a asp-page-handler="AddUser" asp-route-teamId="@Model.MyTeam.ID">TEMP add user</a>
-</div>
-
-<div>
-    <a asp-page="Members" asp-route-id="@Model.MyTeam.ID">Back to team member list</a>
-</div>

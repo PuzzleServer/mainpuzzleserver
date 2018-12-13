@@ -86,6 +86,10 @@ namespace ServerCore.ModelBases
                 {
                     bindingContext.Result = ModelBindingResult.Success(Enum.Parse(typeof(EventRole), eventRoleAsString));
                 }
+                else
+                {
+                    throw new Exception("Invalid route parameter '" + eventRoleAsString + "'. Please check your URL to make sure you are using the correct path. (code: InvalidRoleId)");
+                }
             }
         }
     }

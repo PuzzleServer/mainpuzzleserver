@@ -169,7 +169,7 @@
                             <span class="icon-bar"></span>
                         </button>
                         <a asp-page="/." class="navbar-brand" data-toggle="dropdown">
-                            Admin
+                            @Event.Name - Admin
                         </a>
                         <!-- Get this to work & add it to the other header bars
                         <ul class="dropdown-menu">
@@ -220,7 +220,7 @@
                             <span class="icon-bar"></span>
                         </button>
                         <a asp-page="/Index" class="navbar-brand">
-                            Author
+                            @Event.Name - Author
                         </a>
                     </div>
                     <div class="navbar-collapse collapse">
@@ -263,14 +263,14 @@
                             <span class="icon-bar"></span>
                         </button>
                         <a asp-page="/Index" class="navbar-brand">
-                            Player
+                            @Event.Name
                         </a>
                     </div>
                     <div class="navbar-collapse collapse">
                         <ul class="nav navbar-nav">
                             <li><a asp-page="/Events/Details" asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play">Event</a></li>
                             <li><a asp-page="/Puzzles/Index" asp-route-eventId="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play">Puzzles</a></li>
-                            <li><a asp-page="/Teams/Index" asp-route-eventId="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play">Team</a></li>
+                            <li><a asp-page="/Teams/Details" asp-route-eventId="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play">Team</a></li>
                             <li><a asp-page="/Events/Standings" asp-route-eventId="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play">Standings</a></li>
                             <li class="dropdown">
                                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">

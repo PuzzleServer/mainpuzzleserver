@@ -65,12 +65,15 @@
                 @Html.DisplayFor(modelItem => item.SecondaryPhoneNumber)
             </td>
             <td>
-                <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.ID">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.ID">Delete</a> |
-                <a asp-page="./Play" asp-route-id="@item.ID">Play</a> |
-                <a asp-page="./Status" asp-route-id="@item.ID">Status</a> |
-                <a asp-page="./Members" asp-route-id="@item.ID">Members</a>
+                <a asp-page="./Status" asp-route-id="@item.ID">Status</a>
+                @if (Model.EventRole == ModelBases.EventRole.admin)
+                {
+                <div>
+                    |
+                    <a asp-page="./Details" asp-route-id="@item.ID">View</a> |
+                    <a asp-page="./Members" asp-route-id="@item.ID">Members</a>
+                </div>
+                }
             </td>
         </tr>
 }
