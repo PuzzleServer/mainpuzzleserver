@@ -1,8 +1,9 @@
-﻿@page "/{eventId}/Teams/Delete"
+﻿@page "/{eventId}/{eventRole}/Teams/Delete"
 @model ServerCore.Pages.Teams.DeleteModel
 
 @{
     ViewData["Title"] = "Delete";
+    Layout = "_teamLayout.cshtml";
 }
 
 <h2>Delete</h2>
