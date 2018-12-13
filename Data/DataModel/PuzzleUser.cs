@@ -87,5 +87,10 @@ namespace ServerCore.DataModel
         {
             return dbContext.EventAdmins.Where(a => a.Admin.ID == ID && a.Event.ID == thisEvent.ID).Any();
         }
+
+        public bool IsPlayerForEvent(PuzzleServerContext dbContext, Event thisEvent)
+        {
+           // return dbContext.EventTeams.Where(t=> t.Team.)
+        }
     }
 }
