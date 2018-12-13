@@ -149,6 +149,39 @@
                 </tbody>
             </table>
         </form>
+		<hr/>
+        <h3>Authors</h3>
+        <form method="post" enctype="multipart/form-data">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Author</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var author in Model.CurrentAuthors)
+                {
+                    <tr>
+                        <td>
+                            @(author.Name)
+                        </td>
+                        <td>
+                            <a asp-page-handler="RemoveAuthor" asp-route-id="@Model.Puzzle.ID" asp-route-author="@(author.ID)">Remove</a>
+                        </td>
+                    </tr>
+                }
+                    <tr>
+                        <td>
+                            <select class="form-control" asp-for="NewAuthorID" asp-items="@(new SelectList(Model.PotentialAuthors, "ID", "Name"))"></select>
+                        </td>
+                        <td>
+                            <input type="submit" value="Add" asp-page-handler="AddAuthor" class="btn btn-default" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
     </div>
 </div>
 

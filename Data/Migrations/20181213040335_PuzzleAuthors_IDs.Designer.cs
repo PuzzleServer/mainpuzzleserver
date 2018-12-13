@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ServerCore.DataModel;
 
 namespace Data.Migrations
 {
     [DbContext(typeof(PuzzleServerContext))]
-    partial class PuzzleServerContextModelSnapshot : ModelSnapshot
+    [Migration("20181213040335_PuzzleAuthors_IDs")]
+    partial class PuzzleAuthors_IDs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

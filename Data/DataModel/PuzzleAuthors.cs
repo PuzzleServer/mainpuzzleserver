@@ -8,10 +8,12 @@ namespace ServerCore.DataModel
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
-        [ForeignKey("Puzzle.ID")]
+        public int PuzzleID { get; set; }
+
         public virtual Puzzle Puzzle { get; set; }
 
-        [ForeignKey("User.ID")]
+        public int AuthorID { get; set; }
+
         public virtual PuzzleUser Author { get; set; }
     }
 }
