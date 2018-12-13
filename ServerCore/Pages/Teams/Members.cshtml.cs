@@ -31,11 +31,12 @@ namespace ServerCore.Pages.Teams
                 return NotFound("Could not find team with ID '" + id + "'. Check to make sure you're accessing this page in the context of a team.");
             }
             
-            Members = await _context.TeamMembers.Where(members => members.Team == Team).ToListAsync();
+            Members = await _context.TeamMembers.Where(members => members.Team.ID == Team.ID).ToListAsync();
             
             StringBuilder emailList = new StringBuilder("");
             foreach (TeamMembers Member in Members)
             {
+                emailList.Append(Member.Member.ID);//ToString());
                 //TODO - figure out why this isn't working: emailList.Append(Member.Member.Email + "; ");
             }
             Emails = emailList.ToString();

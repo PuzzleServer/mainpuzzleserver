@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
+using ServerCore.Helpers;
 using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Teams
@@ -23,9 +24,13 @@ namespace ServerCore.Pages.Teams
                 {
                     return NotFound("Missing team id");
                 }
-                id = 1;// TODO - fix to get the user's team loggedInUser.teamId;
+                Team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
+                return NotFound("I tried. \nID:" + LoggedInUser.ID + " - IDID:" + LoggedInUser.IdentityUserId + " - EventID:" + Event.ID);// + " - TeamID:" + Team.ID);
             }
-            Team = await _context.Teams.FirstOrDefaultAsync(m => m.ID == id);
+            else
+            {
+                Team = await _context.Teams.FirstOrDefaultAsync(m => m.ID == id);
+            }
 
             if (Team == null)
             {
