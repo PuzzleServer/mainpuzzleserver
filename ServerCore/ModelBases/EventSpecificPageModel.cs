@@ -9,6 +9,16 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ServerCore.DataModel;
 
+
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using ServerCore.DataModel;
+using ServerCore.ModelBases;
+
 namespace ServerCore.ModelBases
 {
     public abstract class EventSpecificPageModel : PageModel
@@ -85,6 +95,10 @@ namespace ServerCore.ModelBases
                 if (Enum.IsDefined(typeof(EventRole), eventRoleAsString))
                 {
                     bindingContext.Result = ModelBindingResult.Success(Enum.Parse(typeof(EventRole), eventRoleAsString));
+                }
+                else
+                {
+                    throw new Exception("Invalid route parameter '" + eventRoleAsString + "'. Please check your URL to make sure you are using the correct path. (code: InvalidRoleId)");
                 }
             }
         }
