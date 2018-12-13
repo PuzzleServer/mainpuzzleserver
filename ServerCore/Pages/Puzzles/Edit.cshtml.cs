@@ -24,10 +24,17 @@ namespace ServerCore.Pages.Puzzles
         public Puzzle Puzzle { get; set; }
 
         [BindProperty]
+        public int NewAuthorID { get; set; }
+
+        [BindProperty]
         public int NewPrerequisiteID { get; set; }
 
         [BindProperty]
         public int NewPrerequisiteOfID { get; set; }
+
+        public List<PuzzleUser> PotentialAuthors { get; set; }
+
+        public List<PuzzleUser> CurrentAuthors { get; set; }
 
         public List<Puzzle> PotentialPrerequisites { get; set; }
 
@@ -45,6 +52,12 @@ namespace ServerCore.Pages.Puzzles
             {
                 return NotFound();
             }
+
+            IQueryable<PuzzleUser> currentAuthorsQ = _context.PuzzleAuthors.Where(m => m.Puzzle == Puzzle).Select(m => m.Author);
+            IQueryable<PuzzleUser> potentialAuthorsQ = _context.EventAuthors.Where(m => m.Event == Event).Select(m => m.Author).Except(currentAuthorsQ);
+
+            CurrentAuthors = await currentAuthorsQ.OrderBy(p => p.Name).ToListAsync();
+            PotentialAuthors = await potentialAuthorsQ.OrderBy(p => p.Name).ToListAsync();
 
             IQueryable<Puzzle> currentPrerequisitesQ = _context.Prerequisites.Where(m => m.Puzzle == Puzzle).Select(m => m.Prerequisite);
             IQueryable<Puzzle> potentialPrerequitesQ = _context.Puzzles.Where(m => m.Event == Event && m != Puzzle).Except(currentPrerequisitesQ);
@@ -89,6 +102,22 @@ namespace ServerCore.Pages.Puzzles
             return RedirectToPage("./Index");
         }
 
+        public async Task<IActionResult> OnPostAddAuthorAsync()
+        {
+            if (!(await _context.EventAuthors.Select(m => m.Author.ID == NewAuthorID && m.Event == Event).AnyAsync()))
+            {
+                return NotFound();
+            }
+
+            if (!(await _context.PuzzleAuthors.Select(m => m.PuzzleID == Puzzle.ID && m.AuthorID == NewAuthorID).AnyAsync()))
+            {
+                _context.PuzzleAuthors.Add(new PuzzleAuthors() { PuzzleID = Puzzle.ID, AuthorID = NewAuthorID });
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToPage();
+        }
+
         public async Task<IActionResult> OnPostAddPrerequisiteAsync()
         {
             if (!PuzzleExists(NewPrerequisiteID))
@@ -119,6 +148,20 @@ namespace ServerCore.Pages.Puzzles
             }
 
             return RedirectToPage();
+        }
+
+        public async Task<IActionResult> OnGetRemoveAuthorAsync(int id, int author)
+        {
+            PuzzleAuthors toRemove = await _context.PuzzleAuthors.Where(m => m.PuzzleID == id && m.AuthorID == author).FirstOrDefaultAsync();
+
+            if (toRemove != null)
+            {
+                _context.PuzzleAuthors.Remove(toRemove);
+                await _context.SaveChangesAsync();
+            }
+
+            // redirect without the prerequisite info to keep the URL clean
+            return RedirectToPage(new { id });
         }
 
         public async Task<IActionResult> OnGetRemovePrerequisiteAsync(int id, int prerequisite)
