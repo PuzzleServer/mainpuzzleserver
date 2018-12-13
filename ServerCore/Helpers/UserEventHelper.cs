@@ -23,7 +23,7 @@ namespace ServerCore.Helpers
         }
 
         /// <summary>
-        /// Returns a list of the author's puzzles for the given event
+        /// Returns whether the user is an author of this puzzle
         /// </summary>
         /// <param name="puzzle">The puzzle that's being checked</param>
         /// <param name="puzzleServerContext">Current PuzzleServerContext</param>
