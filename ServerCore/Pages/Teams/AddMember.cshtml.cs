@@ -15,7 +15,7 @@ namespace ServerCore.Pages.Teams
     {
         private readonly ServerCore.DataModel.PuzzleServerContext _context;
 
-        public Team MyTeam { get; set; }
+        public Team Team { get; set; }
 
         public IList<PuzzleUser> Users { get; set; }
 
@@ -26,8 +26,8 @@ namespace ServerCore.Pages.Teams
 
         public async Task<IActionResult> OnGetAsync(int teamId)
         {
-            MyTeam = await _context.Teams.FirstOrDefaultAsync(m => m.ID == teamId);
-            if (MyTeam == null)
+            Team = await _context.Teams.FirstOrDefaultAsync(m => m.ID == teamId);
+            if (Team == null)
             {
                 return NotFound("Could not find team with ID '" + teamId + "'. Check to make sure you're accessing this page in the context of a team.");
             }
@@ -66,23 +66,6 @@ namespace ServerCore.Pages.Teams
             _context.TeamMembers.Add(Member);
             await _context.SaveChangesAsync();
             return RedirectToPage("./Members", new { id = teamId });
-        }
-
-        // TEMPORARY - can't test member add without this function to add random users
-        // TODO (@Jenna) - delete once users have an add page
-        public async Task<IActionResult> OnGetAddUserAsync(int teamId)
-        {
-            PuzzleUser User = new PuzzleUser();
-            User.Name = "MyName" + new Random().Next(1, 99);
-            User.EmployeeAlias = "null";
-            User.Email = User.Name + "@domain.com";
-            User.PhoneNumber = "null";
-            User.TShirtSize = "null";
-            User.VisibleToOthers = true;
-            _context.PuzzleUsers.Add(User);
-
-            await _context.SaveChangesAsync();
-            return RedirectToPage("./AddMember", new { teamId });
         }
     }
 }

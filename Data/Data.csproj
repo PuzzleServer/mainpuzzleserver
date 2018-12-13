@@ -21,4 +21,10 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Migrations\20181213040335_PuzzleAuthors_IDs.Designer.cs">
+      <DependentUpon>20181213040335_PuzzleAuthors_IDs.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
 </Project>

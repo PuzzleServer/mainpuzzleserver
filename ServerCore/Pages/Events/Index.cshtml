@@ -2,10 +2,10 @@
 @model ServerCore.Pages.Events.IndexModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Event Index";
 }
 
-<h2>Index</h2>
+<h2>All Events</h2>
 
 <p>
     <a asp-page="Create">Create New</a><br />
@@ -44,13 +44,13 @@
                 <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |
                 <a asp-page="./Details" asp-route-id="@item.ID">Details</a> |
                 <a asp-page="./Delete" asp-route-id="@item.ID">Delete</a> |
-                <a asp-page="./Import" asp-route-id="@item.ID">Import</a> |
-                <a asp-page="/Puzzles/Index" asp-route-eventId="@item.ID">Puzzles</a> |
-                <a asp-page="/Teams/Index" asp-route-eventId="@item.ID">Teams</a> |
-                <a asp-page="./Players" asp-route-eventId="@item.ID">Players</a> |
-                <a asp-page="/Events/Standings" asp-route-eventId="@item.ID">Standings</a> |
-                <a asp-page="/Events/FastestSolves" asp-route-eventId="@item.ID">Fastest</a> |
-                <a asp-page="/Events/Map" asp-route-eventId="@item.ID">Map</a>
+                <a asp-page="./Import" asp-route-id="@item.ID" asp-route-eventRole="admin">Import</a> |
+                <a asp-page="/Puzzles/Index" asp-route-eventId="@item.ID" asp-route-eventRole="admin">Puzzles</a> |
+                <a asp-page="/Teams/Index" asp-route-eventId="@item.ID" asp-route-eventRole="admin">Teams</a> |
+                <a asp-page="./Players" asp-route-eventId="@item.ID" asp-route-eventRole="admin">Players</a> |
+                <a asp-page="/Events/Standings" asp-route-eventId="@item.ID" asp-route-eventRole="admin">Standings</a> |
+                <a asp-page="/Events/FastestSolves" asp-route-eventId="@item.ID" asp-route-eventRole="admin">Fastest</a> |
+                <a asp-page="/Events/Map" asp-route-eventId="@item.ID" asp-route-eventRole="admin">Map</a>
             </td>
         </tr>
 }
