@@ -17,6 +17,10 @@ namespace ServerCore.ModelBases
         [ModelBinder(typeof(EventBinder))]
         public Event Event { get; set; }
 
+        [FromRoute]
+        [ModelBinder(typeof(RoleBinder))]
+        public EventRole EventRole { get; set; }
+
         private PuzzleUser loggedInUser;
 
         public PuzzleUser LoggedInUser
@@ -46,10 +50,6 @@ namespace ServerCore.ModelBases
             userManager = manager;
         }
 
-        [FromRoute]
-        [ModelBinder(typeof(RoleBinder))]
-        public EventRole EventRole { get; set; }
-
         public class EventBinder : IModelBinder
         {
             public async Task BindModelAsync(ModelBindingContext bindingContext)
@@ -77,7 +77,7 @@ namespace ServerCore.ModelBases
                 string eventRoleAsString = bindingContext.ActionContext.RouteData.Values["eventRole"] as string;
                 if (eventRoleAsString == null)
                 {
-                    eventRoleAsString = "play";
+                    eventRoleAsString = ModelBases.EventRole.play.ToString();
                 }
                 // TODO: Add auth check to make sure the user has permissions for the given eventRole
                 eventRoleAsString = eventRoleAsString.ToLower();
