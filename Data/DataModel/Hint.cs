@@ -11,6 +11,19 @@ namespace ServerCore.DataModel
     /// </summary>
     public class Hint
     {
+        public Hint()
+        {
+        }
+
+        public Hint(Hint source)
+        {
+            Puzzle = source.Puzzle;
+            Description = source.Description;
+            Content = source.Content;
+            Cost = source.Cost;
+            DisplayOrder = source.DisplayOrder;
+        }
+
         /// <summary>
         /// The ID
         /// </summary>

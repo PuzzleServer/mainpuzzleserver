@@ -9,6 +9,20 @@ namespace ServerCore.DataModel
     /// </summary>
     public class Response
     {
+        public Response()
+        {
+        }
+
+        public Response(Response source)
+        {
+            // do not fill out the ID
+            Puzzle = source.Puzzle;
+            IsSolution = source.IsSolution;
+            SubmittedText = source.SubmittedText;
+            ResponseText = source.ResponseText;
+            Note = source.Note;
+        }
+
         [NotMapped]
         private string submittedText = string.Empty;
 
