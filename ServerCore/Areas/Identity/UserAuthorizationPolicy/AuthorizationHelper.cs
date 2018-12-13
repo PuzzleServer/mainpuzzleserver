@@ -23,6 +23,22 @@ namespace ServerCore.Areas.Identity
 
             return null;
         }
+
+        public static Puzzle GetPuzzleFromContext(AuthorizationHandlerContext context)
+        {
+            if(context.Resource is AuthorizationFilterContext filterContext)
+            {
+                string puzzleIdAsString = filterContext.RouteData.Values["id"] as string;
+
+                if(Int32.TryParse(puzzleIdAsString, out int puzzleId))
+                {
+                    PuzzleServerContext puzzleServerContext = (PuzzleServerContext)filterContext.HttpContext.RequestServices.GetService(typeof(PuzzleServerContext));
+                    return puzzleServerContext.Puzzles.Where(e => e.ID == puzzleId).FirstOrDefault();
+                }
+            }
+
+            return null;
+        }
     }
 }
 
