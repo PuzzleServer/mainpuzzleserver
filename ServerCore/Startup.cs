@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using ServerCore.Areas.Identity;
+using ServerCore.Areas.Identity.UserAuthorizationPolicy;
 using ServerCore.DataModel;
 
 namespace ServerCore
@@ -53,6 +53,12 @@ namespace ServerCore
             services.AddScoped<IAuthorizationHandler, IsGlobalAdminHandler>();
             services.AddScoped<IAuthorizationHandler, IsPlayerInEventHandler>();
 
+            // TODO: These are currently not functional
+            services.AddScoped<IAuthorizationHandler, PlayerCanSeePuzzleHandler>();
+            services.AddScoped<IAuthorizationHandler, PlayerIsOnTeamHandler>();
+            services.AddScoped<IAuthorizationHandler, IsAuthorOfPuzzleHandler>();
+
+            //services.AddSingleton<IAuthorizationPolicyProvider, PlayerHasUnlockedPuzzlePolicyProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

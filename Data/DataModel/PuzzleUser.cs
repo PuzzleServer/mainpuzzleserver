@@ -94,7 +94,7 @@ namespace ServerCore.DataModel
         /// </summary>
         /// <param name="thisEvent">The event that's being checked</param>
         /// <param name="puzzleServerContext">Current PuzzleServerContext</param>
-        public bool IsPlayerForEvent(PuzzleServerContext dbContext, Event thisEvent)
+        public bool IsPlayerInEvent(PuzzleServerContext dbContext, Event thisEvent)
         {
             return dbContext.TeamMembers.Where(tm => tm.Member.ID == ID && tm.Team.Event.ID == thisEvent.ID).Any();
         }
