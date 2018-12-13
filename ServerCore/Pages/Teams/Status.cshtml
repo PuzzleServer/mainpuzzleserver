@@ -6,7 +6,7 @@
     Layout = "_teamLayout.cshtml";
 }
 
-<h2>Puzzle Status for @Model.Team.Name</h2>
+<h2>@Html.DisplayFor(model => model.Team.Name) - Status</h2>
 
 <table class="table">
     <thead>

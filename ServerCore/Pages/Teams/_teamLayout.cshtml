@@ -2,13 +2,28 @@
 
 @{ Layout = "../Shared/_Layout.cshtml"; }
 
-Current team ID: @Model.Team.ID    ||
-<a asp-page="./Index">Back to team list</a>    ||
-<a asp-page="./Edit" asp-route-id="@Model.Team.ID">Edit</a>    |
-<a asp-page="./Details" asp-route-id="@Model.Team.ID">Details</a>    |
-<a asp-page="./Delete" asp-route-id="@Model.Team.ID">Delete</a>    |
-<a asp-page="./Status" asp-route-id="@Model.Team.ID">Status</a>    |
-<a asp-page="./Members" asp-route-id="@Model.Team.ID">Members</a>
+@if (Model.EventRole == ModelBases.EventRole.admin)
+{
+    <div>
+        <a asp-page="./Index">Back to team list</a> ||
+        <a asp-page="./Details" asp-route-id="@Model.Team.ID">Details</a> |
+        <a asp-page="./Members" asp-route-id="@Model.Team.ID">Members</a> |
+        <a asp-page="./Status" asp-route-id="@Model.Team.ID">Status</a>
+    </div>
+}
+@if (Model.EventRole == ModelBases.EventRole.author)
+{
+    <div>
+        <a asp-page="./Index">Back to team list</a>
+    </div>
+}
+@if (Model.EventRole == ModelBases.EventRole.play)
+{
+    <div>
+        <a asp-page="./Details" asp-route-id="@Model.Team.ID">Details</a> |
+        <a asp-page="./Members" asp-route-id="@Model.Team.ID">Members</a>
+    </div>
+}
 
 <body>
     <div>

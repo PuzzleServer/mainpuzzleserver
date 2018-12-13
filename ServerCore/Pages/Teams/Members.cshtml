@@ -5,10 +5,11 @@
     Layout = "_teamLayout.cshtml";
 }
 
-<h2>Team Members</h2>
+<h2>@Html.DisplayFor(model => model.Team.Name) - Members</h2>
 
-<h4>Team: @Model.Team.Name</h4>
-<h4>ID: @Model.Team.ID</h4>
+<div>
+    <a asp-page="./AddMember" asp-route-teamId="@Model.Team.ID">Add a member</a>
+</div>
 
 <table class="table">
     <thead>
@@ -50,10 +51,3 @@
 
 <p>@Model.Emails</p>
 
-<div>
-    <a asp-page="./AddMember" asp-route-teamId="@Model.Team.ID">Add a member</a>
-</div>
-
-<div>
-    <a asp-page="./Index">Back to team list</a>
-</div>

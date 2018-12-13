@@ -6,7 +6,10 @@
     Layout = "_teamLayout.cshtml";
 }
 
-<h2>Edit</h2>
+<h2>@Html.DisplayFor(model => model.Team.Name) - Edit</h2>
+<div>
+    <a asp-page="./Details" asp-route-id="@Model.Team.ID">Cancel</a>
+</div>
 
 <h4>Team</h4>
 <hr />
@@ -49,10 +52,6 @@
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-page="./Index">Back to List</a>
 </div>
 
 @section Scripts {
