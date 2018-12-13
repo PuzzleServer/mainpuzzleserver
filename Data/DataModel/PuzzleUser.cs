@@ -88,9 +88,15 @@ namespace ServerCore.DataModel
             return dbContext.EventAdmins.Where(a => a.Admin.ID == ID && a.Event.ID == thisEvent.ID).Any();
         }
 
+
+        /// <summary>
+        /// Returns whether or not a user is a player in the given event
+        /// </summary>
+        /// <param name="thisEvent">The event that's being checked</param>
+        /// <param name="puzzleServerContext">Current PuzzleServerContext</param>
         public bool IsPlayerForEvent(PuzzleServerContext dbContext, Event thisEvent)
         {
-           // return dbContext.EventTeams.Where(t=> t.Team.)
+            return dbContext.TeamMembers.Where(tm => tm.Member.ID == ID && tm.Team.Event.ID == thisEvent.ID).Any();
         }
     }
 }

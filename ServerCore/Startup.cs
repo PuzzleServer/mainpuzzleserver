@@ -45,11 +45,13 @@ namespace ServerCore
                 options.AddPolicy("IsAuthor", policy => policy.Requirements.Add(new IsAuthorInEventRequirement()));
                 options.AddPolicy("IsAdmin", policy => policy.Requirements.Add(new IsAdminInEventRequirement()));
                 options.AddPolicy("IsGlobalAdmin", policy => policy.Requirements.Add(new IsGlobalAdminRequirement()));
+                options.AddPolicy("IsPlayer", policy => policy.Requirements.Add(new IsPlayerInEventRequirement()));
             });
 
             services.AddScoped<IAuthorizationHandler, IsAuthorInEventHandler>();
             services.AddScoped<IAuthorizationHandler, IsAdminInEventHandler>();
             services.AddScoped<IAuthorizationHandler, IsGlobalAdminHandler>();
+            services.AddScoped<IAuthorizationHandler, IsPlayerInEventHandler>();
 
         }
 
