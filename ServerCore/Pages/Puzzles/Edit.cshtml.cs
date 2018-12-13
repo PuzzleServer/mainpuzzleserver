@@ -104,7 +104,7 @@ namespace ServerCore.Pages.Puzzles
 
         public async Task<IActionResult> OnPostAddAuthorAsync()
         {
-            if (!(await _context.EventAuthors.Select(m => m.Author.ID == NewAuthorID).AnyAsync()))
+            if (!(await _context.EventAuthors.Select(m => m.Author.ID == NewAuthorID && m.Event == Event).AnyAsync()))
             {
                 return NotFound();
             }
