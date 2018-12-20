@@ -64,9 +64,9 @@
                 @if (showAnswers)
                 {
                     <td>        
-                        if (item.Puzzle.AnswerFile != null)
+                        @if (item.Puzzle.AnswerFile != null)
                         {
-                            @Html.ActionLink(item.Puzzle.AnswerFile.ShortName, "Index", "Files", new { eventId = Model.Event.ID, filename = item.Puzzle.AnswerFile.ShortName })
+                           @Html.ActionLink(item.Puzzle.AnswerFile.ShortName, "Index", "Files", new { eventId = Model.Event.ID, filename = item.Puzzle.AnswerFile.ShortName })
                         }
                     </td>
                 }

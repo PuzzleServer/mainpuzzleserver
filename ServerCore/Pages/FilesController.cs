@@ -23,6 +23,7 @@ namespace ServerCore.Pages
         {
             this.context = context;
             this.userManager = userManager;
+            //throw new Exception("Hi?");
         }
 
         [Route("{eventId}/Files/{filename}")]

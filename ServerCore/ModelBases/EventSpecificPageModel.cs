@@ -34,7 +34,6 @@ namespace ServerCore.ModelBases
                 {
                     loggedInUser = PuzzleUser.GetPuzzleUserForCurrentUser(_context, User, userManager).Result;
                 }
-                throw new Exception("LoggedInUser: " + loggedInUser.ID + " " + loggedInUser.Email);
                 return loggedInUser;
             }
         }
@@ -46,7 +45,6 @@ namespace ServerCore.ModelBases
         {
             _context = serverContext;
             userManager = manager;
-            throw new Exception("We did it");
         }
 
         public class EventBinder : IModelBinder
