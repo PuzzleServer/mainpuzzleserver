@@ -36,8 +36,7 @@ namespace ServerCore.Pages.Teams
             StringBuilder emailList = new StringBuilder("");
             foreach (TeamMembers Member in Members)
             {
-                emailList.Append(Member.Member.ID);//ToString());
-                //TODO - figure out why this isn't working: emailList.Append(Member.Member.Email + "; ");
+                emailList.Append(Member.Member.Email + "; ");
             }
             Emails = emailList.ToString();
 
