@@ -4,52 +4,79 @@
 @{
     ViewData["Title"] = "Feedback";
     var id = ViewContext.RouteData.Values["id"];
+    var role = ViewContext.RouteData.Values["eventRole"].ToString();
 }
 
-<h2>Feedback for @Html.DisplayFor(model => model.Puzzle.Name)</h2>
+@if (role == "admin" || (role == "author" && Model.IsCurrentUserPuzzleAuthor))
+{
+    <h2>Feedback for @Html.DisplayFor(model => model.Puzzle.Name)</h2>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Feedbacks[0].Submitter)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Feedbacks[0].SubmissionTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Feedbacks[0].WrittenFeedback)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Feedbacks[0].Difficulty)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Feedbacks[0].Fun)
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.Feedbacks) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Submitter.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SubmissionTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.WrittenFeedback)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Difficulty)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Fun)
-            </td>
-        </tr>
+    var sumFun = 0.0;
+    var sumDiff = 0.0;
+    var count = 0;
+    foreach (var item in Model.Feedbacks) {
+        sumFun += item.Fun;
+        sumDiff += item.Difficulty;
+        count++;
+    }
+    sumFun /= count;
+    sumDiff /= count;
+
+    <div>
+        <h3><b>Avg Fun Rating:</b> @sumFun</h3>
+        <br>
+        <h3><b>Avg Difficulty Rating:</b> @sumDiff</h3>
+    </div>
+
+    <br>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Feedbacks[0].Submitter)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Feedbacks[0].SubmissionTime)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Feedbacks[0].WrittenFeedback)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Feedbacks[0].Difficulty)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Feedbacks[0].Fun)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model.Feedbacks) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Submitter.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SubmissionTime)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.WrittenFeedback)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Difficulty)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Fun)
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
 }
-    </tbody>
-</table>
+else
+{
+    <h2>Can only view feedback as event admin or puzzle author.</h2>
+}
 
 <div>
     <a asp-page="./Index">Back to Puzzles</a>

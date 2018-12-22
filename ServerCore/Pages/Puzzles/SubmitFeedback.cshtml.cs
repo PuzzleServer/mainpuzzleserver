@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
@@ -12,9 +14,9 @@ namespace ServerCore.Pages.Puzzles
     {
         private readonly PuzzleServerContext _context;
 
-        public SubmitFeedbackModel(PuzzleServerContext context)
+        public SubmitFeedbackModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
-            _context = context;
+            _context = serverContext;
         }
 
         [BindProperty]
@@ -48,13 +50,28 @@ namespace ServerCore.Pages.Puzzles
 
             Feedback.Puzzle = await _context.Puzzles.Where(m => m.ID == id).FirstOrDefaultAsync();
 
-            if (Feedback.Puzzle == null) 
+            if (Feedback.Puzzle == null)
             { 
                 return NotFound(); 
             } 
 
-            Feedback.SubmissionTime = DateTime.UtcNow;
-            _context.Feedback.Add(Feedback);
+            Feedback fromThisUser = await _context.Feedback.Where((f) => f.Puzzle.ID == id && f.Submitter == LoggedInUser).FirstOrDefaultAsync();
+            // If there is already feedback from this user update it instead of overwriting.
+            if (fromThisUser != null)
+            {
+                fromThisUser.SubmissionTime = DateTime.UtcNow;
+                fromThisUser.WrittenFeedback = fromThisUser.WrittenFeedback + "\n" + Feedback.WrittenFeedback;
+                fromThisUser.Difficulty = Feedback.Difficulty;
+                fromThisUser.Fun = Feedback.Fun;
+                _context.Feedback.Update(fromThisUser);
+            }
+            // Otherwise create new feedback from this user.
+            else
+            {
+                Feedback.SubmissionTime = DateTime.UtcNow;
+                Feedback.Submitter = LoggedInUser;
+                _context.Feedback.Add(Feedback);
+            }
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");
