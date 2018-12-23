@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 using ServerCore.ModelBases;
@@ -12,11 +11,8 @@ namespace ServerCore.Pages.Hints
 {
     public class DeleteModel : EventSpecificPageModel
     {
-        private readonly ServerCore.DataModel.PuzzleServerContext _context;
-
-        public DeleteModel(ServerCore.DataModel.PuzzleServerContext context)
+        public DeleteModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
-            _context = context;
         }
 
         [BindProperty]

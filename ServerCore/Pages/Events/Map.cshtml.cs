@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
+using ServerCore.Helpers;
 using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Events
@@ -18,16 +21,30 @@ namespace ServerCore.Pages.Events
 
         public StateStats[,] StateMap { get; private set; }
 
-        public MapModel(PuzzleServerContext context)
+        public MapModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
-            _context = context;
+            _context = serverContext;
         }
 
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetAsync()
         {
+            if (EventRole != EventRole.admin && EventRole != EventRole.author)
+            {
+                return NotFound();
+            }
+
             // get the puzzles and teams
-            // TODO: Filter puzzles if an author; no need to filter teams. Revisit when authors exist.
-            List<PuzzleStats> puzzles = await _context.Puzzles.Where(p => p.Event == Event).Select(p => new PuzzleStats() { Puzzle = p }).ToListAsync();
+            List<PuzzleStats> puzzles;
+
+            if (EventRole == EventRole.admin)
+            {
+                puzzles = await _context.Puzzles.Where(p => p.Event == Event).Select(p => new PuzzleStats() { Puzzle = p }).ToListAsync();
+            }
+            else
+            {
+                puzzles = await UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser).Select(p => new PuzzleStats() { Puzzle = p }).ToListAsync();
+            }
+
             List<TeamStats> teams = await _context.Teams.Where(t => t.Event == Event).Select(t => new TeamStats() { Team = t }).ToListAsync();
 
             // build an ID-based lookup for puzzles and teams
@@ -38,7 +55,7 @@ namespace ServerCore.Pages.Events
             teams.ForEach(t => teamLookup[t.Team.ID] = t);
 
             // tabulate solve counts and team scores
-            List<PuzzleStatePerTeam> states = await PuzzleStateHelper.GetSparseQuery(_context, Event, null, null).ToListAsync();
+            List<PuzzleStatePerTeam> states = await PuzzleStateHelper.GetSparseQuery(_context, Event, null, null, EventRole == EventRole.admin ? null : LoggedInUser).ToListAsync();
             List<StateStats> stateList = new List<StateStats>(states.Count);
             foreach (PuzzleStatePerTeam state in states)
             {
@@ -89,6 +106,8 @@ namespace ServerCore.Pages.Events
             Puzzles = puzzles;
             Teams = teams;
             StateMap = stateMap;
+
+            return Page();
         }
 
         public class PuzzleStats

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
@@ -16,11 +17,8 @@ namespace ServerCore.Pages.Puzzles
     /// </summary>
     public class FileManagementModel : EventSpecificPageModel
     {
-        private readonly PuzzleServerContext _context;
-
-        public FileManagementModel(PuzzleServerContext context)
+        public FileManagementModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
-            _context = context;
         }
 
         //[BindProperty]
@@ -50,6 +48,11 @@ namespace ServerCore.Pages.Puzzles
                 return NotFound();
             }
 
+            if (!await CanAdminPuzzle(Puzzle))
+            {
+                return NotFound();
+            }
+
             return Page();
         }
 
@@ -66,6 +69,11 @@ namespace ServerCore.Pages.Puzzles
             Puzzle = await _context.Puzzles.FirstOrDefaultAsync(m => m.ID == id);
 
             if (Puzzle == null)
+            {
+                return NotFound();
+            }
+
+            if (!await CanAdminPuzzle(Puzzle))
             {
                 return NotFound();
             }
@@ -143,6 +151,11 @@ namespace ServerCore.Pages.Puzzles
             Puzzle = await _context.Puzzles.FirstOrDefaultAsync(m => m.ID == id);
 
             if (Puzzle == null)
+            {
+                return NotFound();
+            }
+
+            if (!await CanAdminPuzzle(Puzzle))
             {
                 return NotFound();
             }

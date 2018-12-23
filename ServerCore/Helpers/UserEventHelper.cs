@@ -10,7 +10,7 @@ namespace ServerCore.Helpers
     /// <summary>
     /// Includes methods that connect a PuzzleUser with another part of the data model
     /// </summary>
-    public class UserEventHelper
+    public static class UserEventHelper
     {
         /// <summary>
         /// Returns a list of the author's puzzles for the given event

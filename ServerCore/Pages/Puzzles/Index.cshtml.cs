@@ -1,33 +1,40 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
+using ServerCore.Helpers;
 using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Puzzles
 {
     public class IndexModel : EventSpecificPageModel
     {
-        private readonly PuzzleServerContext _context;
-
-        public IndexModel(ServerCore.DataModel.PuzzleServerContext context)
+        public IndexModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
-            _context = context;
         }
 
         public IList<Puzzle> Puzzles { get; set; }
 
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (Event != null)
+            if (EventRole != EventRole.admin && EventRole != EventRole.author)
             {
-                Puzzles = await _context.Puzzles.Where((p) => p.Event != null && p.Event == Event).ToListAsync();
+                return NotFound();
+            }
+
+            if (EventRole == EventRole.admin)
+            {
+                Puzzles = await _context.Puzzles.Where(p => p.Event == Event).ToListAsync();
             }
             else
             {
-                Puzzles = await _context.Puzzles.ToListAsync();
+                Puzzles = await UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser).ToListAsync();
             }
+
+            return Page();
         }
     }
 }

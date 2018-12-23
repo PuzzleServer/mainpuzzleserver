@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
@@ -10,11 +11,8 @@ namespace ServerCore.Pages.Puzzles
 {
     public class SubmitFeedbackModel : EventSpecificPageModel
     {
-        private readonly PuzzleServerContext _context;
-
-        public SubmitFeedbackModel(PuzzleServerContext context)
+        public SubmitFeedbackModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
-            _context = context;
         }
 
         [BindProperty]

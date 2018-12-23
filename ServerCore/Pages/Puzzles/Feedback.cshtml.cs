@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
@@ -14,11 +15,8 @@ namespace ServerCore.Pages.Puzzles
     /// </summary>
     public class FeedbackModel : EventSpecificPageModel
     {
-        private readonly PuzzleServerContext _context;
-
-        public FeedbackModel(PuzzleServerContext context)
+        public FeedbackModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
-            _context = context;
         }
 
         public IList<Feedback> Feedbacks { get; set; }
@@ -35,7 +33,12 @@ namespace ServerCore.Pages.Puzzles
             if (Puzzle == null) 
             { 
                 return NotFound(); 
-            } 
+            }
+
+            if (!await CanAdminPuzzle(Puzzle))
+            {
+                return NotFound();
+            }
 
             return Page();
         }

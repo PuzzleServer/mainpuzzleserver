@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
@@ -12,7 +13,7 @@ namespace ServerCore.Pages.Puzzles
     /// </summary>
     public class StatusModel : PuzzleStatePerTeamPageModel
     {
-        public StatusModel(PuzzleServerContext context) : base(context)
+        public StatusModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
         }
 
@@ -22,21 +23,20 @@ namespace ServerCore.Pages.Puzzles
 
         public async Task<IActionResult> OnGetAsync(int id, SortOrder? sort)
         {
-            Puzzle = await Context.Puzzles.FirstOrDefaultAsync(m => m.ID == id);
+            Puzzle = await _context.Puzzles.FirstOrDefaultAsync(m => m.ID == id);
 
-            if (Puzzle == null)
-            {
-                return NotFound();
-            }
-
-            await InitializeModelAsync(Puzzle, null, sort: sort);
-            return Page();
+            return await InitializeModelAsync(Puzzle, null, sort: sort);
         }
 
         public async Task<IActionResult> OnGetUnlockStateAsync(int id, int? teamId, bool value, string sort)
         {
-            var puzzle = await Context.Puzzles.FirstAsync(m => m.ID == id);
-            var team = teamId == null ? null : await Context.Teams.FirstAsync(m => m.ID == teamId.Value);
+            if (EventRole != EventRole.admin && EventRole != EventRole.author)
+            {
+                return NotFound();
+            }
+
+            var puzzle = await _context.Puzzles.FirstAsync(m => m.ID == id);
+            var team = teamId == null ? null : await _context.Teams.FirstAsync(m => m.ID == teamId.Value);
 
             await SetUnlockStateAsync(puzzle, team, value);
 
@@ -46,8 +46,13 @@ namespace ServerCore.Pages.Puzzles
 
         public async Task<IActionResult> OnGetSolveStateAsync(int id, int? teamId, bool value, string sort)
         {
-            var puzzle = await Context.Puzzles.FirstAsync(m => m.ID == id);
-            var team = teamId == null ? null : await Context.Teams.FirstAsync(m => m.ID == teamId.Value);
+            if (EventRole != EventRole.admin && EventRole != EventRole.author)
+            {
+                return NotFound();
+            }
+
+            var puzzle = await _context.Puzzles.FirstAsync(m => m.ID == id);
+            var team = teamId == null ? null : await _context.Teams.FirstAsync(m => m.ID == teamId.Value);
 
             await SetSolveStateAsync(puzzle, team, value);
 

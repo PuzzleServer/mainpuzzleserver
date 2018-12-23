@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
@@ -9,11 +10,8 @@ namespace ServerCore.Pages.Puzzles
 {
     public class DetailsModel : EventSpecificPageModel
     {
-        private readonly PuzzleServerContext _context;
-
-        public DetailsModel(PuzzleServerContext context)
+        public DetailsModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
-            _context = context;
         }
 
         public Puzzle Puzzle { get; set; }
@@ -26,6 +24,12 @@ namespace ServerCore.Pages.Puzzles
             {
                 return NotFound();
             }
+
+            if (!await CanAdminPuzzle(Puzzle))
+            {
+                return NotFound();
+            }
+
             return Page();
         }
     }

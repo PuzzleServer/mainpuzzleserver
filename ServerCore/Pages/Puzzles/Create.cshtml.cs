@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ServerCore.DataModel;
 using ServerCore.ModelBases;
@@ -7,14 +8,11 @@ namespace ServerCore.Pages.Puzzles
 {
     public class CreateModel : EventSpecificPageModel
     {
-        private readonly PuzzleServerContext _context;
-
         [BindProperty]
         public Puzzle Puzzle { get; set; }
 
-        public CreateModel(PuzzleServerContext context)
+        public CreateModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
-            _context = context;
         }
 
         public IActionResult OnGet()

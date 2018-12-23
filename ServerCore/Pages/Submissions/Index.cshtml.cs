@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
@@ -11,11 +12,8 @@ namespace ServerCore.Pages.Submissions
 {
     public class IndexModel : EventSpecificPageModel
     {
-        private readonly ServerCore.DataModel.PuzzleServerContext _context;
-
-        public IndexModel(ServerCore.DataModel.PuzzleServerContext context)
+        public IndexModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
-            _context = context;
         }
 
         [BindProperty]

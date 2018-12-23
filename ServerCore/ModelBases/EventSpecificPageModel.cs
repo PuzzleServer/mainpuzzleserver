@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ServerCore.DataModel;
+using ServerCore.Helpers;
 
 namespace ServerCore.ModelBases
 {
@@ -29,25 +30,35 @@ namespace ServerCore.ModelBases
             {
                 if (loggedInUser == null)
                 {
-                    loggedInUser = PuzzleUser.GetPuzzleUserForCurrentUser(puzzleServerContext, User, userManager);
+                    loggedInUser = PuzzleUser.GetPuzzleUserForCurrentUser(_context, User, userManager);
                 }
 
                 return loggedInUser;
             }
         }
 
-        private PuzzleServerContext puzzleServerContext;
+        protected readonly PuzzleServerContext _context;
         private UserManager<IdentityUser> userManager;
-
-        public EventSpecificPageModel()
-        {
-            // Default constructor - note that pages that use this constructor won't know what PuzzleUser is signed in
-        }
 
         public EventSpecificPageModel(PuzzleServerContext serverContext, UserManager<IdentityUser> manager)
         {
-            puzzleServerContext = serverContext;
+            _context = serverContext;
             userManager = manager;
+        }
+
+        public async Task<bool> CanAdminPuzzle(Puzzle puzzle)
+        {
+            if (EventRole != EventRole.admin && EventRole != EventRole.author)
+            {
+                return false;
+            }
+
+            if (puzzle == null || (EventRole == EventRole.author && !await UserEventHelper.IsAuthorOfPuzzle(_context, puzzle, LoggedInUser)))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public class EventBinder : IModelBinder

@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
@@ -9,11 +10,8 @@ namespace ServerCore.Pages.Puzzles
 {
     public class DeleteModel : EventSpecificPageModel
     {
-        private readonly PuzzleServerContext _context;
-
-        public DeleteModel(PuzzleServerContext context)
+        public DeleteModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
-            _context = context;
         }
 
         [BindProperty]
@@ -28,6 +26,11 @@ namespace ServerCore.Pages.Puzzles
                 return NotFound();
             }
 
+            if (!await CanAdminPuzzle(Puzzle))
+            {
+                return NotFound();
+            }
+
             return Page();
         }
 
@@ -37,6 +40,11 @@ namespace ServerCore.Pages.Puzzles
 
             if (Puzzle != null)
             {
+                if (!await CanAdminPuzzle(Puzzle))
+                {
+                    return NotFound();
+                }
+
                 foreach (ContentFile content in Puzzle.Contents)
                 {
                     await FileManager.DeleteBlobAsync(content.Url);

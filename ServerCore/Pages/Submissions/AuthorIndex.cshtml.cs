@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 using ServerCore.ModelBases;
@@ -11,11 +11,8 @@ namespace ServerCore.Pages.Submissions
 {
     public class AuthorIndexModel : EventSpecificPageModel
     {
-        private readonly ServerCore.DataModel.PuzzleServerContext _context;
-
-        public AuthorIndexModel(ServerCore.DataModel.PuzzleServerContext context)
+        public AuthorIndexModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
-            _context = context;
         }
 
         public IList<Submission> Submissions { get; set; }
