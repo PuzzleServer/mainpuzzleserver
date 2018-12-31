@@ -28,7 +28,7 @@ namespace ServerCore.Areas.Identity
         {
             if(context.Resource is AuthorizationFilterContext filterContext)
             {
-                string puzzleIdAsString = filterContext.RouteData.Values["id"] as string;
+                string puzzleIdAsString = filterContext.RouteData.Values["puzzleId"] as string;
 
                 if(Int32.TryParse(puzzleIdAsString, out int puzzleId))
                 {

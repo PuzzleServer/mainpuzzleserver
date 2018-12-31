@@ -6,6 +6,9 @@ using ServerCore.DataModel;
 
 namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
 {
+    /// <summary>
+    /// Require that the current user is an author for the event in the route.
+    /// </summary>
     public class IsAuthorInEventRequirement : IAuthorizationRequirement
     {
         public IsAuthorInEventRequirement()
@@ -15,27 +18,27 @@ namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
 
     public class IsAuthorInEventHandler : AuthorizationHandler<IsAuthorInEventRequirement>
     {
-        private readonly PuzzleServerContext puzzleContext;
+        private readonly PuzzleServerContext dbContext;
         private readonly UserManager<IdentityUser> userManager;
 
         public IsAuthorInEventHandler(PuzzleServerContext pContext, UserManager<IdentityUser> manager)
         {
-            puzzleContext = pContext;
+            dbContext = pContext;
             userManager = manager;
         }
 
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
                                                        IsAuthorInEventRequirement requirement)
         {
-            PuzzleUser puzzleUser = PuzzleUser.GetPuzzleUserForCurrentUser(puzzleContext, context.User, userManager);
+            PuzzleUser puzzleUser = PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
 
-            if (context.Resource is AuthorizationFilterContext filterContext)
+            if (authContext.Resource is AuthorizationFilterContext filterContext)
             {
-                Event thisEvent = AuthorizationHelper.GetEventFromContext(context);
+                Event thisEvent = AuthorizationHelper.GetEventFromContext(authContext);
 
-                if (thisEvent != null && puzzleUser.IsAuthorForEvent(puzzleContext, thisEvent))
+                if (thisEvent != null && puzzleUser.IsAuthorForEvent(dbContext, thisEvent).Result)
                 {
-                    context.Succeed(requirement);
+                    authContext.Succeed(requirement);
                 }
             }
 

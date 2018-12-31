@@ -73,9 +73,9 @@ namespace ServerCore.DataModel
         /// </summary>
         /// <param name="thisEvent">The event that's being checked</param>
         /// <param name="puzzleServerContext">Current PuzzleServerContext</param>
-        public bool IsAuthorForEvent(PuzzleServerContext puzzleServerContext, Event thisEvent)
+        public async Task<bool> IsAuthorForEvent(PuzzleServerContext puzzleServerContext, Event thisEvent)
         {
-            return puzzleServerContext.EventAuthors.Where(a => a.Author.ID == ID && a.Event.ID == thisEvent.ID).Any();
+            return await puzzleServerContext.EventAuthors.Where(a => a.Author.ID == ID && a.Event.ID == thisEvent.ID).AnyAsync();
         }
 
         /// <summary>
@@ -83,9 +83,9 @@ namespace ServerCore.DataModel
         /// </summary>
         /// <param name="thisEvent">The event that's being checked</param>
         /// <param name="puzzleServerContext">Current PuzzleServerContext</param>
-        public bool IsAdminForEvent(PuzzleServerContext dbContext, Event thisEvent)
+        public async Task<bool> IsAdminForEvent(PuzzleServerContext dbContext, Event thisEvent)
         {
-            return dbContext.EventAdmins.Where(a => a.Admin.ID == ID && a.Event.ID == thisEvent.ID).Any();
+            return await dbContext.EventAdmins.Where(a => a.Admin.ID == ID && a.Event.ID == thisEvent.ID).AnyAsync();
         }
 
 
@@ -94,9 +94,9 @@ namespace ServerCore.DataModel
         /// </summary>
         /// <param name="thisEvent">The event that's being checked</param>
         /// <param name="puzzleServerContext">Current PuzzleServerContext</param>
-        public bool IsPlayerInEvent(PuzzleServerContext dbContext, Event thisEvent)
+        public async Task<bool> IsPlayerInEvent(PuzzleServerContext dbContext, Event thisEvent)
         {
-            return dbContext.TeamMembers.Where(tm => tm.Member.ID == ID && tm.Team.Event.ID == thisEvent.ID).Any();
+            return await dbContext.TeamMembers.Where(tm => tm.Member.ID == ID && tm.Team.Event.ID == thisEvent.ID).AnyAsync();
         }
     }
 }

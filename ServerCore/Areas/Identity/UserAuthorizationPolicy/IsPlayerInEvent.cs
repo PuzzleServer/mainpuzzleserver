@@ -5,6 +5,9 @@ using ServerCore.DataModel;
 
 namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
 {
+    /// <summary>
+    /// Require that the current user is registered for the event in the route.
+    /// </summary>
     public class IsPlayerInEventRequirement : IAuthorizationRequirement
     {
         public IsPlayerInEventRequirement()
@@ -14,25 +17,25 @@ namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
 
     public class IsPlayerInEventHandler : AuthorizationHandler<IsPlayerInEventRequirement>
     {
-        private readonly PuzzleServerContext puzzleContext;
+        private readonly PuzzleServerContext dbContext;
         private readonly UserManager<IdentityUser> userManager;
 
         public IsPlayerInEventHandler(PuzzleServerContext pContext, UserManager<IdentityUser> manager)
         {
-            puzzleContext = pContext;
+            dbContext = pContext;
             userManager = manager;
         }
 
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
                                                        IsPlayerInEventRequirement requirement)
         {
-            PuzzleUser puzzleUser = PuzzleUser.GetPuzzleUserForCurrentUser(puzzleContext, context.User, userManager);
+            PuzzleUser puzzleUser = PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
 
-            Event thisEvent = AuthorizationHelper.GetEventFromContext(context);
+            Event thisEvent = AuthorizationHelper.GetEventFromContext(authContext);
 
-            if (thisEvent != null && puzzleUser.IsPlayerInEvent(puzzleContext, thisEvent))
+            if (thisEvent != null && puzzleUser.IsPlayerInEvent(dbContext, thisEvent).Result)
             {
-                context.Succeed(requirement);
+                authContext.Succeed(requirement);
             }
 
             return Task.CompletedTask;

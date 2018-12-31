@@ -54,12 +54,8 @@ namespace ServerCore
             services.AddScoped<IAuthorizationHandler, IsGlobalAdminHandler>();
             services.AddScoped<IAuthorizationHandler, IsPlayerInEventHandler>();
             services.AddScoped<IAuthorizationHandler, PlayerCanSeePuzzleHandler>();
-
-            // TODO: These are currently not functional
             services.AddScoped<IAuthorizationHandler, PlayerIsOnTeamHandler>();
             services.AddScoped<IAuthorizationHandler, IsAuthorOfPuzzleHandler>();
-
-            //services.AddSingleton<IAuthorizationPolicyProvider, PlayerHasUnlockedPuzzlePolicyProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

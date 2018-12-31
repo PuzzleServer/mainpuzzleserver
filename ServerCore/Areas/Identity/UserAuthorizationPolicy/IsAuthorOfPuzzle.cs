@@ -1,12 +1,14 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using ServerCore.DataModel;
+using ServerCore.Helpers;
 
 namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
 {
+    /// <summary>
+    /// Require that the current user is the author of the puzzle in the route.
+    /// </summary>
     public class IsAuthorOfPuzzleRequirement : IAuthorizationRequirement
     {
         public IsAuthorOfPuzzleRequirement()
@@ -16,26 +18,26 @@ namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
 
     public class IsAuthorOfPuzzleHandler : AuthorizationHandler<IsAuthorOfPuzzleRequirement>
     {
-        private readonly PuzzleServerContext puzzleContext;
+        private readonly PuzzleServerContext dbContext;
         private readonly UserManager<IdentityUser> userManager;
 
         public IsAuthorOfPuzzleHandler(PuzzleServerContext pContext, UserManager<IdentityUser> manager)
         {
-            puzzleContext = pContext;
+            dbContext = pContext;
             userManager = manager;
         }
 
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
                                                        IsAuthorOfPuzzleRequirement requirement)
         {
-            //PuzzleUser puzzleUser = PuzzleUser.GetPuzzleUserForCurrentUser(puzzleContext, context.User, userManager);
-            //Puzzle puzzle = puzzleContext.Puzzles.Where(p => p.ID == requirement.PuzzleId).FirstOrDefault();
-            //Event thisEvent = AuthorizationHelper.GetEventFromContext(context);
+            PuzzleUser puzzleUser = PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
+            Puzzle puzzle = AuthorizationHelper.GetPuzzleFromContext(authContext);
+            Event thisEvent = AuthorizationHelper.GetEventFromContext(authContext);
 
-            ////  if (thisEvent != null && UserEventHelper.IsAuthorOfPuzzle(puzzleContext, puzzle, puzzleUser))
-            //{
-            //    context.Succeed(requirement);
-            //}
+            if (thisEvent != null && UserEventHelper.IsAuthorOfPuzzle(dbContext, puzzle, puzzleUser).Result)
+            {
+                authContext.Succeed(requirement);
+            }
 
             return Task.CompletedTask;
         }

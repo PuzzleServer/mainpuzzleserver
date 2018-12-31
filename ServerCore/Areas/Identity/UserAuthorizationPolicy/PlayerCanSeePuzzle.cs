@@ -7,6 +7,9 @@ using ServerCore.Helpers;
 
 namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
 {
+    /// <summary>
+    /// Require that the current user has permission to see the puzzle in the route.
+    /// </summary>
     public class PlayerCanSeePuzzleRequirement : IAuthorizationRequirement
     {
         public PlayerCanSeePuzzleRequirement()
@@ -16,33 +19,33 @@ namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
 
     public class PlayerCanSeePuzzleHandler : AuthorizationHandler<PlayerCanSeePuzzleRequirement>
     {
-        private readonly PuzzleServerContext puzzleContext;
+        private readonly PuzzleServerContext dbContext;
         private readonly UserManager<IdentityUser> userManager;
 
         public PlayerCanSeePuzzleHandler(PuzzleServerContext pContext, UserManager<IdentityUser> manager)
         {
-            puzzleContext = pContext;
+            dbContext = pContext;
             userManager = manager;
         }
 
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
                                                        PlayerCanSeePuzzleRequirement requirement)
         {
-            PuzzleUser puzzleUser = PuzzleUser.GetPuzzleUserForCurrentUser(puzzleContext, context.User, userManager);
-            Puzzle puzzle = AuthorizationHelper.GetPuzzleFromContext(context);
-            Event thisEvent = AuthorizationHelper.GetEventFromContext(context);
+            PuzzleUser puzzleUser = PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
+            Puzzle puzzle = AuthorizationHelper.GetPuzzleFromContext(authContext);
+            Event thisEvent = AuthorizationHelper.GetEventFromContext(authContext);
 
             if (thisEvent != null && puzzle != null)
             {
-                Team team = UserEventHelper.GetTeamForPlayer(puzzleContext, thisEvent, puzzleUser).Result;
+                Team team = UserEventHelper.GetTeamForPlayer(dbContext, thisEvent, puzzleUser).Result;
 
                 if (team != null)
                 {
-                    IQueryable<PuzzleStatePerTeam> statesQ = PuzzleStateHelper.GetFullReadOnlyQuery(puzzleContext, thisEvent, puzzle, team);
+                    IQueryable<PuzzleStatePerTeam> statesQ = PuzzleStateHelper.GetFullReadOnlyQuery(dbContext, thisEvent, puzzle, team);
 
                     if (statesQ.FirstOrDefault().UnlockedTime != null || thisEvent.AreAnswersAvailableNow)
                     {
-                        context.Succeed(requirement);
+                        authContext.Succeed(requirement);
                     }
                 }
             }

@@ -5,6 +5,9 @@ using ServerCore.DataModel;
 
 namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
 {
+    /// <summary>
+    /// Require the current user is a global admin.
+    /// </summary>
     public class IsGlobalAdminRequirement : IAuthorizationRequirement
     {
         public IsGlobalAdminRequirement()
@@ -14,23 +17,23 @@ namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
 
     public class IsGlobalAdminHandler : AuthorizationHandler<IsGlobalAdminRequirement>
     {
-        private readonly PuzzleServerContext puzzleContext;
+        private readonly PuzzleServerContext dbContext;
         private readonly UserManager<IdentityUser> userManager;
 
         public IsGlobalAdminHandler(PuzzleServerContext pContext, UserManager<IdentityUser> manager)
         {
-            puzzleContext = pContext;
+            dbContext = pContext;
             userManager = manager;
         }
 
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
                                                        IsGlobalAdminRequirement requirement)
         {
-            PuzzleUser puzzleUser = PuzzleUser.GetPuzzleUserForCurrentUser(puzzleContext, context.User, userManager);
+            PuzzleUser puzzleUser = PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
 
             if (puzzleUser.IsGlobalAdmin)
             {
-                context.Succeed(requirement);
+                authContext.Succeed(requirement);
             }
 
             return Task.CompletedTask;
