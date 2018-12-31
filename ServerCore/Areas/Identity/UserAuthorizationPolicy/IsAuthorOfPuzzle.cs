@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using ServerCore.DataModel;
-using ServerCore.Helpers;
 
 namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
 {
@@ -30,16 +29,7 @@ namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
                                                        IsAuthorOfPuzzleRequirement requirement)
         {
-            PuzzleUser puzzleUser = PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
-            Puzzle puzzle = AuthorizationHelper.GetPuzzleFromContext(authContext);
-            Event thisEvent = AuthorizationHelper.GetEventFromContext(authContext);
-
-            if (thisEvent != null && UserEventHelper.IsAuthorOfPuzzle(dbContext, puzzle, puzzleUser).Result)
-            {
-                authContext.Succeed(requirement);
-            }
-
-            return Task.CompletedTask;
+            return AuthorizationHelper.IsPuzzleAuthorCheck(authContext, dbContext, userManager, requirement);
         }
     }
 }

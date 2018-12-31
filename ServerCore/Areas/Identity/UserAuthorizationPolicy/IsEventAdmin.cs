@@ -29,16 +29,7 @@ namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
                                                        IsAdminInEventRequirement requirement)
         {
-            PuzzleUser puzzleUser = PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
-
-            Event thisEvent = AuthorizationHelper.GetEventFromContext(authContext);
-
-            if (thisEvent != null && puzzleUser.IsAdminForEvent(dbContext, thisEvent).Result)
-            {
-                authContext.Succeed(requirement);
-            }
-
-            return Task.CompletedTask;
+            return AuthorizationHelper.IsEventAdminCheck(authContext, dbContext, userManager, requirement);
         }
     }
 }

@@ -30,19 +30,7 @@ namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
                                                        IsAuthorInEventRequirement requirement)
         {
-            PuzzleUser puzzleUser = PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
-
-            if (authContext.Resource is AuthorizationFilterContext filterContext)
-            {
-                Event thisEvent = AuthorizationHelper.GetEventFromContext(authContext);
-
-                if (thisEvent != null && puzzleUser.IsAuthorForEvent(dbContext, thisEvent).Result)
-                {
-                    authContext.Succeed(requirement);
-                }
-            }
-
-            return Task.CompletedTask;
+            return AuthorizationHelper.IsEventAuthorCheck(authContext, dbContext, userManager, requirement);
         }
     }
 }

@@ -7,16 +7,10 @@ using ServerCore.Helpers;
 namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
 {
     /// <summary>
-    /// Require that the current user is on the given team (team must be explicitly passed into check).
+    /// Require that the current user is on the team in the route.
     /// </summary>
     public class PlayerIsOnTeamRequirement : IAuthorizationRequirement
     {
-        public int TeamId { get; set; }
-
-        public PlayerIsOnTeamRequirement(int teamId)
-        {
-            TeamId = teamId;
-        }
     }
 
     public class PlayerIsOnTeamHandler : AuthorizationHandler<PlayerIsOnTeamRequirement>
@@ -34,10 +28,10 @@ namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
                                                        PlayerIsOnTeamRequirement requirement)
         {
             PuzzleUser puzzleUser = PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
-            
+            Team team = AuthorizationHelper.GetTeamFromContext(authContext);
             Event thisEvent = AuthorizationHelper.GetEventFromContext(authContext);
 
-            if (thisEvent != null && UserEventHelper.GetTeamForPlayer(dbContext, thisEvent, puzzleUser).Result.ID == requirement.TeamId)
+            if (thisEvent != null && UserEventHelper.GetTeamForPlayer(dbContext, thisEvent, puzzleUser).Result.ID == team.ID)
             {
                 authContext.Succeed(requirement);
             }
