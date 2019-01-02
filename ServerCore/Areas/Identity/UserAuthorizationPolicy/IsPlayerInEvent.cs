@@ -26,10 +26,10 @@ namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
             userManager = manager;
         }
 
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
+        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
                                                        IsPlayerInEventRequirement requirement)
         {
-            return AuthorizationHelper.IsEventPlayerCheck(authContext, dbContext, userManager, requirement);
+            await AuthorizationHelper.IsEventPlayerCheck(authContext, dbContext, userManager, requirement);
         }
     }
 }

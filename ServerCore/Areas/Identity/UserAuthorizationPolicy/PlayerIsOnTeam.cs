@@ -24,19 +24,17 @@ namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
             userManager = manager;
         }
 
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
+        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
                                                        PlayerIsOnTeamRequirement requirement)
         {
-            PuzzleUser puzzleUser = PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
-            Team team = AuthorizationHelper.GetTeamFromContext(authContext);
-            Event thisEvent = AuthorizationHelper.GetEventFromContext(authContext);
+            PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
+            Team team = await AuthorizationHelper.GetTeamFromContext(authContext);
+            Event thisEvent = await AuthorizationHelper.GetEventFromContext(authContext);
 
-            if (thisEvent != null && UserEventHelper.GetTeamForPlayer(dbContext, thisEvent, puzzleUser).Result.ID == team.ID)
+            if (thisEvent != null && (await UserEventHelper.GetTeamForPlayer(dbContext, thisEvent, puzzleUser)).ID == team.ID)
             {
                 authContext.Succeed(requirement);
             }
-
-            return Task.CompletedTask;
         }
     }
 }

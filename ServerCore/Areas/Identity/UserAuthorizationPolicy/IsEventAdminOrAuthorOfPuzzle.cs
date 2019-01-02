@@ -26,10 +26,10 @@ namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
             userManager = manager;
         }
 
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
+        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
                                                        IsEventAdminOrAuthorOfPuzzleRequirement requirement)
         {
-            return AuthorizationHelper.IsEventAdminCheck(authContext, dbContext, userManager, requirement);
+            await AuthorizationHelper.IsEventAdminCheck(authContext, dbContext, userManager, requirement);
         }
     }
 
@@ -44,10 +44,10 @@ namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
             userManager = manager;
         }
 
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
+        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
                                                        IsEventAdminOrAuthorOfPuzzleRequirement requirement)
         {
-            return AuthorizationHelper.IsPuzzleAuthorCheck(authContext, dbContext, userManager, requirement);
+            await AuthorizationHelper.IsPuzzleAuthorCheck(authContext, dbContext, userManager, requirement);
         }
     }
 }

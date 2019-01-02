@@ -26,17 +26,15 @@ namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
             userManager = manager;
         }
 
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
+        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
                                                        IsGlobalAdminRequirement requirement)
         {
-            PuzzleUser puzzleUser = PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
+            PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
 
             if (puzzleUser.IsGlobalAdmin)
             {
                 authContext.Succeed(requirement);
             }
-
-            return Task.CompletedTask;
         }
     }
 }

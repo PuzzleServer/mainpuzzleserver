@@ -28,16 +28,16 @@ namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
             userManager = manager;
         }
 
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
+        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
                                                        PlayerCanSeePuzzleRequirement requirement)
         {
-            PuzzleUser puzzleUser = PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
-            Puzzle puzzle = AuthorizationHelper.GetPuzzleFromContext(authContext);
-            Event thisEvent = AuthorizationHelper.GetEventFromContext(authContext);
+            PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
+            Puzzle puzzle = await AuthorizationHelper.GetPuzzleFromContext(authContext);
+            Event thisEvent = await AuthorizationHelper.GetEventFromContext(authContext);
 
             if (thisEvent != null && puzzle != null)
             {
-                Team team = UserEventHelper.GetTeamForPlayer(dbContext, thisEvent, puzzleUser).Result;
+                Team team = await UserEventHelper.GetTeamForPlayer(dbContext, thisEvent, puzzleUser);
 
                 if (team != null)
                 {
@@ -49,8 +49,6 @@ namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
                     }
                 }
             }
-
-            return Task.CompletedTask;
         }
     }
 }

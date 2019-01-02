@@ -51,9 +51,9 @@ namespace ServerCore.DataModel
         /// <param name="user">The claim for the user being checked</param>
         /// <param name="userManager">The UserManager for the current context</param>
         /// <returns>The user's PuzzleUser object</returns>
-        public static PuzzleUser GetPuzzleUserForCurrentUser(PuzzleServerContext puzzleServerContext, ClaimsPrincipal user, UserManager<IdentityUser> userManager)
+        public static async Task<PuzzleUser> GetPuzzleUserForCurrentUser(PuzzleServerContext dbContext, ClaimsPrincipal user, UserManager<IdentityUser> userManager)
         {
-            if (userManager == null || puzzleServerContext == null)
+            if (userManager == null || dbContext == null)
             {
                 //Default PageModel constructor used - cannot get current user.
                 return new PuzzleUser { Name = String.Empty };
@@ -65,7 +65,7 @@ namespace ServerCore.DataModel
             }
 
             string userId = userManager.GetUserId(user);
-            return puzzleServerContext.PuzzleUsers.Where(u => u.IdentityUserId == userId).FirstOrDefault();
+            return await dbContext.PuzzleUsers.Where(u => u.IdentityUserId == userId).FirstOrDefaultAsync();
         }
 
         /// <summary>
