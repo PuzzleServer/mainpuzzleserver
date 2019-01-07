@@ -63,10 +63,10 @@ namespace ServerCore.Pages
             Event currentEvent = await (from ev in context.Events
                                         where ev.ID == eventId
                                         select ev).SingleAsync();
-            PuzzleUser user = PuzzleUser.GetPuzzleUserForCurrentUser(context, User, userManager);
+            PuzzleUser user = await PuzzleUser.GetPuzzleUserForCurrentUser(context, User, userManager);
 
             // Admins can see all files
-            if (user.IsAdminForEvent(context, currentEvent))
+            if (await user.IsAdminForEvent(context, currentEvent))
             {
                 return true;
             }

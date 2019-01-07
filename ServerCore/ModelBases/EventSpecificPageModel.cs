@@ -30,7 +30,7 @@ namespace ServerCore.ModelBases
             {
                 if (loggedInUser == null)
                 {
-                    loggedInUser = PuzzleUser.GetPuzzleUserForCurrentUser(_context, User, userManager);
+                    loggedInUser = PuzzleUser.GetPuzzleUserForCurrentUser(_context, User, userManager).Result;
                 }
 
                 return loggedInUser;

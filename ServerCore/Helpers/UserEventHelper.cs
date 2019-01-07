@@ -39,9 +39,9 @@ namespace ServerCore.Helpers
         /// <param name="thisEvent">The event that's being checked</param>
         /// <param name="user">The user being checked</param>
         /// <returns>The user's team for this event</returns>
-        public static Task<Team> GetTeamForPlayer(PuzzleServerContext dbContext, Event thisEvent, PuzzleUser user)
+        public static async Task<Team> GetTeamForPlayer(PuzzleServerContext dbContext, Event thisEvent, PuzzleUser user)
         {
-            return dbContext.TeamMembers.Where(t => t.Member.ID == user.ID && t.Team.Event.ID == thisEvent.ID).Select(t => t.Team).FirstOrDefaultAsync();
+            return await dbContext.TeamMembers.Where(t => t.Member.ID == user.ID && t.Team.Event.ID == thisEvent.ID).Select(t => t.Team).FirstOrDefaultAsync();
         }
 
         /// <summary>
@@ -52,10 +52,10 @@ namespace ServerCore.Helpers
         /// <param name="user">The claim for the user being checked</param>
         /// <param name="userManager">The UserManager for the current context</param>
         /// <returns>The user's team for this event</returns>
-        public static Task<Team> GetTeamForCurrentPlayer(PuzzleServerContext puzzleServerContext, Event thisEvent, ClaimsPrincipal user, UserManager<IdentityUser> userManager)
+        public static async Task<Team> GetTeamForCurrentPlayer(PuzzleServerContext puzzleServerContext, Event thisEvent, ClaimsPrincipal user, UserManager<IdentityUser> userManager)
         {
-            PuzzleUser pUser = PuzzleUser.GetPuzzleUserForCurrentUser(puzzleServerContext, user, userManager);
-            return GetTeamForPlayer(puzzleServerContext, thisEvent, pUser);
+            PuzzleUser pUser = await PuzzleUser.GetPuzzleUserForCurrentUser(puzzleServerContext, user, userManager);
+            return await GetTeamForPlayer(puzzleServerContext, thisEvent, pUser);
         }
     }
 }

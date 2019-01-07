@@ -191,7 +191,7 @@ namespace ServerCore.Pages.Events
             Team team3 = new Team { Name = "Team Buster", Event = Event };
             _context.Teams.Add(team3);
 
-            var demoCreatorUser = PuzzleUser.GetPuzzleUserForCurrentUser(_context, User, _userManager);
+            var demoCreatorUser = await PuzzleUser.GetPuzzleUserForCurrentUser(_context, User, _userManager);
             if (demoCreatorUser != null)
             {
                 //
