@@ -51,9 +51,9 @@ namespace ServerCore.DataModel
         /// <param name="user">The claim for the user being checked</param>
         /// <param name="userManager">The UserManager for the current context</param>
         /// <returns>The user's PuzzleUser object</returns>
-        public static PuzzleUser GetPuzzleUserForCurrentUser(PuzzleServerContext puzzleServerContext, ClaimsPrincipal user, UserManager<IdentityUser> userManager)
+        public static async Task<PuzzleUser> GetPuzzleUserForCurrentUser(PuzzleServerContext dbContext, ClaimsPrincipal user, UserManager<IdentityUser> userManager)
         {
-            if (userManager == null || puzzleServerContext == null)
+            if (userManager == null || dbContext == null)
             {
                 //Default PageModel constructor used - cannot get current user.
                 return new PuzzleUser { Name = String.Empty };
@@ -65,7 +65,7 @@ namespace ServerCore.DataModel
             }
 
             string userId = userManager.GetUserId(user);
-            return puzzleServerContext.PuzzleUsers.Where(u => u.IdentityUserId == userId).FirstOrDefault();
+            return await dbContext.PuzzleUsers.Where(u => u.IdentityUserId == userId).FirstOrDefaultAsync();
         }
 
         /// <summary>
@@ -73,9 +73,9 @@ namespace ServerCore.DataModel
         /// </summary>
         /// <param name="thisEvent">The event that's being checked</param>
         /// <param name="puzzleServerContext">Current PuzzleServerContext</param>
-        public bool IsAuthorForEvent(PuzzleServerContext puzzleServerContext, Event thisEvent)
+        public async Task<bool> IsAuthorForEvent(PuzzleServerContext puzzleServerContext, Event thisEvent)
         {
-            return puzzleServerContext.EventAuthors.Where(a => a.Author.ID == ID && a.Event.ID == thisEvent.ID).Any();
+            return await puzzleServerContext.EventAuthors.Where(a => a.Author.ID == ID && a.Event.ID == thisEvent.ID).AnyAsync();
         }
 
         /// <summary>
@@ -83,9 +83,20 @@ namespace ServerCore.DataModel
         /// </summary>
         /// <param name="thisEvent">The event that's being checked</param>
         /// <param name="puzzleServerContext">Current PuzzleServerContext</param>
-        public bool IsAdminForEvent(PuzzleServerContext dbContext, Event thisEvent)
+        public async Task<bool> IsAdminForEvent(PuzzleServerContext dbContext, Event thisEvent)
         {
-            return dbContext.EventAdmins.Where(a => a.Admin.ID == ID && a.Event.ID == thisEvent.ID).Any();
+            return await dbContext.EventAdmins.Where(a => a.Admin.ID == ID && a.Event.ID == thisEvent.ID).AnyAsync();
+        }
+
+
+        /// <summary>
+        /// Returns whether or not a user is a player in the given event
+        /// </summary>
+        /// <param name="thisEvent">The event that's being checked</param>
+        /// <param name="puzzleServerContext">Current PuzzleServerContext</param>
+        public async Task<bool> IsPlayerInEvent(PuzzleServerContext dbContext, Event thisEvent)
+        {
+            return await dbContext.TeamMembers.Where(tm => tm.Member.ID == ID && tm.Team.Event.ID == thisEvent.ID).AnyAsync();
         }
     }
 }
