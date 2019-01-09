@@ -1,21 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Submissions
 {
+    [Authorize(Policy = "IsEventAdminOrAuthorOfPuzzle")]
     public class AuthorIndexModel : EventSpecificPageModel
     {
-        private readonly ServerCore.DataModel.PuzzleServerContext _context;
+        private readonly PuzzleServerContext dbContext;
 
-        public AuthorIndexModel(ServerCore.DataModel.PuzzleServerContext context)
+        public AuthorIndexModel(PuzzleServerContext context)
         {
-            _context = context;
+            dbContext = context;
         }
 
         public IList<Submission> Submissions { get; set; }
@@ -24,11 +24,11 @@ namespace ServerCore.Pages.Submissions
         {
             if (puzzleId == null)
             {
-                Submissions = await _context.Submissions.ToListAsync();
+                Submissions = await dbContext.Submissions.ToListAsync();
             }
             else
             {
-                Submissions = await _context.Submissions.Where((s) => s.Puzzle != null && s.Puzzle.ID == puzzleId).ToListAsync();
+                Submissions = await dbContext.Submissions.Where((s) => s.Puzzle != null && s.Puzzle.ID == puzzleId).ToListAsync();
             }
         }
     }

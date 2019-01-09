@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
+using ServerCore.ModelBases;
 
 namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
 {
@@ -30,8 +31,9 @@ namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
             PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
             Team team = await AuthorizationHelper.GetTeamFromContext(authContext);
             Event thisEvent = await AuthorizationHelper.GetEventFromContext(authContext);
+            EventRole role = AuthorizationHelper.GetEventRoleFromContext(authContext);
 
-            if (thisEvent != null && (await UserEventHelper.GetTeamForPlayer(dbContext, thisEvent, puzzleUser)).ID == team.ID)
+            if (thisEvent != null && role == EventRole.play && (await UserEventHelper.GetTeamForPlayer(dbContext, thisEvent, puzzleUser)).ID == team.ID)
             {
                 authContext.Succeed(requirement);
             }

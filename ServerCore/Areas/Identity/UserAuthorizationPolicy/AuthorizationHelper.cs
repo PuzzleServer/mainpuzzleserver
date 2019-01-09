@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
+using ServerCore.ModelBases;
 
 namespace ServerCore.Areas.Identity
 {
@@ -58,6 +59,19 @@ namespace ServerCore.Areas.Identity
             }
 
             return null;
+        }
+
+        public static EventRole GetEventRoleFromContext(AuthorizationHandlerContext context)
+        {
+            if (context.Resource is AuthorizationFilterContext filterContext)
+            {
+                string eventRole = filterContext.RouteData.Values["eventRole"] as string;
+
+                Enum.TryParse<EventRole>(eventRole, out EventRole role);
+                return role;
+            }
+
+            return EventRole.play;
         }
 
         public static async Task IsEventAdminCheck(AuthorizationHandlerContext authContext, PuzzleServerContext dbContext, UserManager<IdentityUser> userManager, IAuthorizationRequirement requirement)
