@@ -12,7 +12,7 @@ using ServerCore.DataModel;
 
 namespace ServerCore.ModelBases
 {
-    [Authorize(Policy = "IsEventAdminOrEventAUthorOrEventPlayer")]
+    [Authorize(Policy = "IsRegisteredForEvent")]
     public abstract class EventSpecificPageModel : PageModel
     {
         [FromRoute]
