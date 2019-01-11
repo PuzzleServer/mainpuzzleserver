@@ -61,7 +61,7 @@ namespace ServerCore.DataModel
 
             if (user == null)
             {
-                return new PuzzleUser { Name = String.Empty };
+                return null;
             }
 
             string userId = userManager.GetUserId(user);
