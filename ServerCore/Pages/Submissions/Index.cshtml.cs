@@ -13,11 +13,11 @@ namespace ServerCore.Pages.Submissions
     [Authorize(Policy = "IsEventAdminOrAuthorOfPuzzle")]
     public class IndexModel : EventSpecificPageModel
     {
-        private readonly PuzzleServerContext dbContext;
+        private readonly PuzzleServerContext _context;
 
         public IndexModel(PuzzleServerContext context)
         {
-            dbContext = context;
+            _context = context;
         }
 
         [BindProperty]
@@ -45,27 +45,27 @@ namespace ServerCore.Pages.Submissions
 
             // Create submission and add it to list
             Submission.TimeSubmitted = DateTime.UtcNow;
-            Submission.Puzzle = await dbContext.Puzzles.SingleOrDefaultAsync(p => p.ID == puzzleId);
-            Submission.Team = await dbContext.Teams.Where((t) => t.ID == teamId).FirstOrDefaultAsync();
+            Submission.Puzzle = await _context.Puzzles.SingleOrDefaultAsync(p => p.ID == puzzleId);
+            Submission.Team = await _context.Teams.Where((t) => t.ID == teamId).FirstOrDefaultAsync();
 
-            List<Response> responses = await dbContext.Responses.Where(r => r.Puzzle.ID == puzzleId && Submission.SubmissionText == r.SubmittedText).ToListAsync();
+            List<Response> responses = await _context.Responses.Where(r => r.Puzzle.ID == puzzleId && Submission.SubmissionText == r.SubmittedText).ToListAsync();
             Submission.Response = responses.FirstOrDefault();
 
             // Update puzzle state if submission was correct
             if (Submission.Response != null && Submission.Response.IsSolution)
             {
-                await PuzzleStateHelper.SetSolveStateAsync(dbContext, Event, Submission.Puzzle, Submission.Team, Submission.TimeSubmitted);
+                await PuzzleStateHelper.SetSolveStateAsync(_context, Event, Submission.Puzzle, Submission.Team, Submission.TimeSubmitted);
             }
             
-            dbContext.Submissions.Add(Submission);
-            await dbContext.SaveChangesAsync();
+            _context.Submissions.Add(Submission);
+            await _context.SaveChangesAsync();
 
             return RedirectToPage("/Submissions/Index", new { puzzleid = puzzleId, teamid = teamId });
         }
 
         public async Task OnGetAsync(int puzzleId, int teamId)
         {
-            Submissions = await dbContext.Submissions.Where((s) => s.Team != null && s.Team.ID == teamId && s.Puzzle != null && s.Puzzle.ID == puzzleId).ToListAsync();
+            Submissions = await _context.Submissions.Where((s) => s.Team != null && s.Team.ID == teamId && s.Puzzle != null && s.Puzzle.ID == puzzleId).ToListAsync();
             PuzzleId = puzzleId;
             TeamId = teamId;
 

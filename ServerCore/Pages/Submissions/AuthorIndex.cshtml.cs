@@ -11,11 +11,11 @@ namespace ServerCore.Pages.Submissions
     [Authorize(Policy = "IsEventAdminOrAuthorOfPuzzle")]
     public class AuthorIndexModel : EventSpecificPageModel
     {
-        private readonly PuzzleServerContext dbContext;
+        private readonly PuzzleServerContext _context;
 
         public AuthorIndexModel(PuzzleServerContext context)
         {
-            dbContext = context;
+            _context = context;
         }
 
         public IList<Submission> Submissions { get; set; }
@@ -24,11 +24,11 @@ namespace ServerCore.Pages.Submissions
         {
             if (puzzleId == null)
             {
-                Submissions = await dbContext.Submissions.ToListAsync();
+                Submissions = await _context.Submissions.ToListAsync();
             }
             else
             {
-                Submissions = await dbContext.Submissions.Where((s) => s.Puzzle != null && s.Puzzle.ID == puzzleId).ToListAsync();
+                Submissions = await _context.Submissions.Where((s) => s.Puzzle != null && s.Puzzle.ID == puzzleId).ToListAsync();
             }
         }
     }
