@@ -8,6 +8,8 @@
   <ItemGroup>
     <Compile Remove="Migrations\20181006003400_CreateIdentitySchema.cs" />
     <Compile Remove="Migrations\20181006003838_CreateIdentitySchema.cs" />
+    <Compile Remove="Migrations\20190111053724_EventId.cs" />
+    <Compile Remove="Migrations\20190111053724_EventId.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

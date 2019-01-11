@@ -49,7 +49,7 @@
                     }
                     else
                     {
-                        <a asp-page="/EventSpecific/Index" asp-route-eventId=@Event.ID class="navbar-brand">
+                        <a asp-page="/EventSpecific/Index" asp-route-eventId=@Event.EventID class="navbar-brand">
                             @(Event.Name)
                         </a>
                     }
@@ -74,7 +74,7 @@
                                             <li><a href="#">Solved Puzzles</a></li>
                                         }
                                         <li>
-                                            <a asp-page="/Puzzles/Index" asp-route-eventId="@Event.ID">
+                                            <a asp-page="/Puzzles/Index" asp-route-eventId="@Event.EventID">
                                                 All Puzzles
                                             </a>
                                         </li>
@@ -111,7 +111,7 @@
                                 <ul class="dropdown-menu">
                                     <li><a href="#">MY TEAM NAME <i>(if member)</i></a></li>
                                     <li><a href="#">Matchmaking Zone <i>(if available)</i></a></li>
-                                    <li><a asp-page="/Teams/Index" asp-route-eventId="@Event.ID">Teams</a></li>
+                                    <li><a asp-page="/Teams/Index" asp-route-eventId="@Event.EventID">Teams</a></li>
                                     <li><a href="#">Players <i>(everybody if author/admin)</i></a></li>
                                     <li class="divider"></li>
                                     <li><a href="#">Authors <i>(if author; editable if admin)</i></a></li>
@@ -182,10 +182,10 @@
                     <div class="navbar-collapse collapse">
                         <ul class="nav navbar-nav">
                             <li><a asp-page="/Events/Details" asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.admin">Event</a></li>
-                            <li><a asp-page="/Puzzles/Index" asp-route-eventId="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.admin">Puzzles</a></li>
-                            <li><a asp-page="/Teams/Index" asp-route-eventId="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.admin">Teams</a></li>
-                            <li><a asp-page="/Events/Standings" asp-route-eventId="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.admin">Standings</a></li>
-                            <li><a asp-page="/Events/Players" asp-route-eventId="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.admin">Users</a></li>
+                            <li><a asp-page="/Puzzles/Index" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.admin">Puzzles</a></li>
+                            <li><a asp-page="/Teams/Index" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.admin">Teams</a></li>
+                            <li><a asp-page="/Events/Standings" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.admin">Standings</a></li>
+                            <li><a asp-page="/Events/Players" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.admin">Users</a></li>
                             <li class="dropdown">
                                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                                     Resources (not implemented)
@@ -226,9 +226,9 @@
                     <div class="navbar-collapse collapse">
                         <ul class="nav navbar-nav">
                             <li><a asp-page="/Events/Details" asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.author">Event</a></li>
-                            <li><a asp-page="/Puzzles/Index" asp-route-eventId="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.author">Puzzles</a></li>
-                            <li><a asp-page="/Teams/Index" asp-route-eventId="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.author">Teams</a></li>
-                            <li><a asp-page="/Events/Standings" asp-route-eventId="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.author">Standings</a></li>
+                            <li><a asp-page="/Puzzles/Index" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.author">Puzzles</a></li>
+                            <li><a asp-page="/Teams/Index" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.author">Teams</a></li>
+                            <li><a asp-page="/Events/Standings" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.author">Standings</a></li>
                             <li class="dropdown">
                                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                                     Resources (not implemented)
@@ -269,9 +269,9 @@
                     <div class="navbar-collapse collapse">
                         <ul class="nav navbar-nav">
                             <li><a asp-page="/Events/Details" asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play">Event</a></li>
-                            <li><a asp-page="/Puzzles/Index" asp-route-eventId="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play">Puzzles</a></li>
-                            <li><a asp-page="/Teams/Details" asp-route-eventId="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play">Team</a></li>
-                            <li><a asp-page="/Events/Standings" asp-route-eventId="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play">Standings</a></li>
+                            <li><a asp-page="/Puzzles/Index" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.play">Puzzles</a></li>
+                            <li><a asp-page="/Teams/Details" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.play">Team</a></li>
+                            <li><a asp-page="/Events/Standings" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.play">Standings</a></li>
                             <li class="dropdown">
                                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                                     Resources (not implemented)

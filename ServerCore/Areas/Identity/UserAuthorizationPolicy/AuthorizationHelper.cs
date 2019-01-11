@@ -14,18 +14,22 @@ namespace ServerCore.Areas.Identity
     {
         public static async Task<Event> GetEventFromContext(AuthorizationHandlerContext context)
         {
+            Event result = null;
+
             if (context.Resource is AuthorizationFilterContext filterContext)
             {
-                string eventIdAsString = filterContext.RouteData.Values["eventId"] as string;
+                PuzzleServerContext puzzleServerContext = (PuzzleServerContext)filterContext.HttpContext.RequestServices.GetService(typeof(PuzzleServerContext));
+                string eventId = filterContext.RouteData.Values["eventId"] as string;
 
-                if (Int32.TryParse(eventIdAsString, out int eventId))
+                result = await puzzleServerContext.Events.Where(e => e.UrlString == eventId).FirstOrDefaultAsync();
+
+                if (result == null && Int32.TryParse(eventId, out int eventIdAsInt))
                 {
-                    PuzzleServerContext puzzleServerContext = (PuzzleServerContext)filterContext.HttpContext.RequestServices.GetService(typeof(PuzzleServerContext));
-                    return await puzzleServerContext.Events.Where(e => e.ID == eventId).FirstOrDefaultAsync();
+                    result = await puzzleServerContext.Events.Where(e => e.ID == eventIdAsInt).FirstOrDefaultAsync();
                 }
             }
 
-            return null;
+            return result;
         }
 
         public static async Task<Puzzle> GetPuzzleFromContext(AuthorizationHandlerContext context)

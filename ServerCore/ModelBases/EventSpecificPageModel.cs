@@ -54,17 +54,23 @@ namespace ServerCore.ModelBases
         {
             public async Task BindModelAsync(ModelBindingContext bindingContext)
             {
-                string eventIdAsString = bindingContext.ActionContext.RouteData.Values["eventId"] as string;
+                string eventId = bindingContext.ActionContext.RouteData.Values["eventId"] as string;
 
-                if (int.TryParse(eventIdAsString, out int eventId))
+                var puzzleServerContext = bindingContext.HttpContext.RequestServices.GetService<PuzzleServerContext>();
+
+                // first, lookup by UrlString - this is the friendly name
+                Event eventObj = await puzzleServerContext.Events.Where(e => e.UrlString == eventId).FirstOrDefaultAsync();
+
+                // otherwise, look up by int for legacy event support
+                // TODO: Delete when people have cleaned up their DBs
+                if (eventObj == null && int.TryParse(eventId, out int eventIdAsInt))
                 {
-                    var puzzleServerContext = bindingContext.HttpContext.RequestServices.GetService<PuzzleServerContext>();
-                    Event eventObj = await puzzleServerContext.Events.Where(e => e.ID == eventId).FirstOrDefaultAsync();
+                    eventObj = await puzzleServerContext.Events.Where(e => e.ID == eventIdAsInt).FirstOrDefaultAsync();
+                }
 
-                    if (eventObj != null)
-                    {
-                        bindingContext.Result = ModelBindingResult.Success(eventObj);
-                    }
+                if (eventObj != null)
+                {
+                    bindingContext.Result = ModelBindingResult.Success(eventObj);
                 }
             }
         }
