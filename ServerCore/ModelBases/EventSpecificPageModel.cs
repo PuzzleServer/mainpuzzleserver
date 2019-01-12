@@ -60,15 +60,7 @@ namespace ServerCore.ModelBases
 
                 var puzzleServerContext = bindingContext.HttpContext.RequestServices.GetService<PuzzleServerContext>();
 
-                // first, lookup by UrlString - this is the friendly name
-                Event eventObj = await puzzleServerContext.Events.Where(e => e.UrlString == eventId).FirstOrDefaultAsync();
-
-                // otherwise, look up by int for legacy event support
-                // TODO: Delete when people have cleaned up their DBs
-                if (eventObj == null && int.TryParse(eventId, out int eventIdAsInt))
-                {
-                    eventObj = await puzzleServerContext.Events.Where(e => e.ID == eventIdAsInt).FirstOrDefaultAsync();
-                }
+                Event eventObj = await EventHelper.GetEventFromEventId(puzzleServerContext, eventId);
 
                 if (eventObj != null)
                 {

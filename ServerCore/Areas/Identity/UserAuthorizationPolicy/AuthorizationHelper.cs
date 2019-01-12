@@ -22,12 +22,7 @@ namespace ServerCore.Areas.Identity
                 PuzzleServerContext puzzleServerContext = (PuzzleServerContext)filterContext.HttpContext.RequestServices.GetService(typeof(PuzzleServerContext));
                 string eventId = filterContext.RouteData.Values["eventId"] as string;
 
-                result = await puzzleServerContext.Events.Where(e => e.UrlString == eventId).FirstOrDefaultAsync();
-
-                if (result == null && Int32.TryParse(eventId, out int eventIdAsInt))
-                {
-                    result = await puzzleServerContext.Events.Where(e => e.ID == eventIdAsInt).FirstOrDefaultAsync();
-                }
+                result = await EventHelper.GetEventFromEventId(puzzleServerContext, eventId);
             }
 
             return result;

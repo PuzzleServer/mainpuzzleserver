@@ -26,10 +26,12 @@ namespace ServerCore.Pages
         }
 
         [Route("{eventId}/Files/{filename}")]
-        public async Task<IActionResult> Index(int eventId, string filename)
+        public async Task<IActionResult> Index(string eventId, string filename)
         {
+            Event eventObj = await EventHelper.GetEventFromEventId(context, eventId);
+
             ContentFile content = await (from contentFile in context.ContentFiles
-                                         where contentFile.EventID == eventId &&
+                                         where contentFile.Event == eventObj &&
                                          contentFile.ShortName == filename
                                          select contentFile).SingleOrDefaultAsync();
             if (content == null)
