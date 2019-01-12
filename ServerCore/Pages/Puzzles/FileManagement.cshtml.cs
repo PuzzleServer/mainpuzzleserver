@@ -41,9 +41,9 @@ namespace ServerCore.Pages.Puzzles
         /// <summary>
         /// Handler for listing files
         /// </summary>
-        public async Task<IActionResult> OnGetAsync(int id)
+        public async Task<IActionResult> OnGetAsync(int puzzleId)
         {
-            Puzzle = await _context.Puzzles.FirstOrDefaultAsync(m => m.ID == id);
+            Puzzle = await _context.Puzzles.FirstOrDefaultAsync(m => m.ID == puzzleId);
 
             if (Puzzle == null)
             {
@@ -56,14 +56,14 @@ namespace ServerCore.Pages.Puzzles
         /// <summary>
         /// Handler for uploading files
         /// </summary>
-        public async Task<IActionResult> OnPostAsync(int id)
+        public async Task<IActionResult> OnPostAsync(int puzzleId)
         {
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            Puzzle = await _context.Puzzles.FirstOrDefaultAsync(m => m.ID == id);
+            Puzzle = await _context.Puzzles.FirstOrDefaultAsync(m => m.ID == puzzleId);
 
             if (Puzzle == null)
             {
@@ -138,9 +138,9 @@ namespace ServerCore.Pages.Puzzles
         /// <summary>
         /// Handler for deleting an uploaded file
         /// </summary>
-        public async Task<IActionResult> OnPostDeleteAsync(int id, int fileId)
+        public async Task<IActionResult> OnPostDeleteAsync(int puzzleId, int fileId)
         {
-            Puzzle = await _context.Puzzles.FirstOrDefaultAsync(m => m.ID == id);
+            Puzzle = await _context.Puzzles.FirstOrDefaultAsync(m => m.ID == puzzleId);
 
             if (Puzzle == null)
             {
@@ -181,9 +181,9 @@ namespace ServerCore.Pages.Puzzles
         /// <summary>
         /// Returns true if a puzzle exists with a given id
         /// </summary>
-        private bool PuzzleExists(int id)
+        private bool PuzzleExists(int puzzleId)
         {
-            return _context.Puzzles.Any(e => e.ID == id);
+            return _context.Puzzles.Any(e => e.ID == puzzleId);
         }
 
         /// <summary>

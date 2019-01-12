@@ -18,9 +18,9 @@ namespace ServerCore.Pages.Puzzles
 
         public Puzzle Puzzle { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int id)
+        public async Task<IActionResult> OnGetAsync(int puzzleId)
         {
-            Puzzle = await _context.Puzzles.Where(m => m.ID == id).FirstOrDefaultAsync();
+            Puzzle = await _context.Puzzles.Where(m => m.ID == puzzleId).FirstOrDefaultAsync();
 
             if (Puzzle == null)
             {

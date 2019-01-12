@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
@@ -9,11 +10,12 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Submissions
 {
+    [Authorize(Policy = "IsEventAdminOrAuthorOfPuzzle")]
     public class IndexModel : EventSpecificPageModel
     {
-        private readonly ServerCore.DataModel.PuzzleServerContext _context;
+        private readonly PuzzleServerContext _context;
 
-        public IndexModel(ServerCore.DataModel.PuzzleServerContext context)
+        public IndexModel(PuzzleServerContext context)
         {
             _context = context;
         }
