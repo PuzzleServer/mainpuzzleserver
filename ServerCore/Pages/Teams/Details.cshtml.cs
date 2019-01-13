@@ -17,28 +17,28 @@ namespace ServerCore.Pages.Teams
         public Team Team { get; set; }
         public bool HasTeam { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int id=-1)
+        public async Task<IActionResult> OnGetAsync(int teamId = -1)
         {
             HasTeam = false;
             if (EventRole == ModelBases.EventRole.play)
             {
                 // Ignore reqeusted team IDs for players - always re-direct to their own team
-                Team = await UserEventHelper.GetTeamForPlayer(context, Event, LoggedInUser);
+                Team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
             }
-            else if (id == -1)
+            else if (teamId == -1)
             {
                 return NotFound("Missing team id");
             }
             else
             {
-                Team = await _context.Teams.FirstOrDefaultAsync(m => m.ID == id);
+                Team = await _context.Teams.FirstOrDefaultAsync(m => m.ID == teamId);
             }
 
             if (Team == null)
             {
                 if (EventRole != ModelBases.EventRole.play)
                 {
-                    return NotFound("No team found with id '" + id + "'.");
+                    return NotFound("No team found with id '" + teamId + "'.");
                 }
                 // The html page handles the 'no team' case using HasTeam
                 return Page();

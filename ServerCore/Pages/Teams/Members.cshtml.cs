@@ -22,13 +22,13 @@ namespace ServerCore.Pages.Teams
 
         public string Emails { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int id)
+        public async Task<IActionResult> OnGetAsync(int teamId)
         {
-            Team = await _context.Teams.FirstOrDefaultAsync(m => m.ID == id);
+            Team = await _context.Teams.FirstOrDefaultAsync(m => m.ID == teamId);
 
             if (Team == null)
             {
-                return NotFound("Could not find team with ID '" + id + "'. Check to make sure you're accessing this page in the context of a team.");
+                return NotFound("Could not find team with ID '" + teamId + "'. Check to make sure you're accessing this page in the context of a team.");
             }
             
             Members = await _context.TeamMembers.Where(members => members.Team.ID == Team.ID).ToListAsync();

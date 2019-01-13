@@ -16,8 +16,8 @@
         @if (Model.EventRole != ModelBases.EventRole.author)
         {
             <div>
-                <a asp-page="./Edit" asp-route-id="@Model.Team.ID">Edit</a> |
-                <a asp-page="./Delete">Delete</a>
+                <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID">Edit</a> |
+                <a asp-page="./Delete" asp-route-teamId="@Model.Team.ID">Delete</a>
             </div>
         }
         <hr />

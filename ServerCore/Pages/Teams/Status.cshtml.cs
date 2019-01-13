@@ -24,9 +24,9 @@ namespace ServerCore.Pages.Teams
 
         protected override SortOrder DefaultSort => SortOrder.PuzzleAscending;
 
-        public async Task<IActionResult> OnGetAsync(int id, SortOrder? sort)
+        public async Task<IActionResult> OnGetAsync(int teamId, SortOrder? sort)
         {
-            Team = await _context.Teams.FirstOrDefaultAsync(m => m.ID == id);
+            Team = await _context.Teams.FirstOrDefaultAsync(m => m.ID == teamId);
 
             if (Team == null)
             {
@@ -36,10 +36,10 @@ namespace ServerCore.Pages.Teams
             return await InitializeModelAsync(null, Team, sort: sort);
         }
 
-        public async Task<IActionResult> OnGetUnlockStateAsync(int id, int? puzzleId, bool value, string sort)
+        public async Task<IActionResult> OnGetUnlockStateAsync(int teamId, int? puzzleId, bool value, string sort)
         {
             var puzzle = puzzleId == null ? null : await _context.Puzzles.FirstAsync(m => m.ID == puzzleId.Value);
-            var team = await _context.Teams.FirstAsync(m => m.ID == id);
+            var team = await _context.Teams.FirstAsync(m => m.ID == teamId);
 
             if (Team == null)
             {
@@ -49,13 +49,13 @@ namespace ServerCore.Pages.Teams
             await SetUnlockStateAsync(puzzle, team, value);
 
             // redirect without the unlock info to keep the URL clean
-            return RedirectToPage(new { id, sort });
+            return RedirectToPage(new { teamId, sort });
         }
 
-        public async Task<IActionResult> OnGetSolveStateAsync(int id, int? puzzleId, bool value, string sort)
+        public async Task<IActionResult> OnGetSolveStateAsync(int teamId, int? puzzleId, bool value, string sort)
         {
             var puzzle = puzzleId == null ? null : await _context.Puzzles.FirstAsync(m => m.ID == puzzleId.Value);
-            var team = await _context.Teams.FirstAsync(m => m.ID == id);
+            var team = await _context.Teams.FirstAsync(m => m.ID == teamId);
 
             if (Team == null)
             {
@@ -65,7 +65,7 @@ namespace ServerCore.Pages.Teams
             await SetSolveStateAsync(puzzle, team, value);
 
             // redirect without the solve info to keep the URL clean
-            return RedirectToPage(new { id, sort });
+            return RedirectToPage(new { teamId, sort });
         }
     }
 }
