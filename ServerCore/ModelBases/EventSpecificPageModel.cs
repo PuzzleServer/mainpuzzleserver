@@ -40,7 +40,7 @@ namespace ServerCore.ModelBases
         }
 
         protected readonly PuzzleServerContext _context;
-        private UserManager<IdentityUser> userManager;
+        private readonly UserManager<IdentityUser> userManager;
 
         public EventSpecificPageModel(PuzzleServerContext serverContext, UserManager<IdentityUser> manager)
         {
@@ -69,7 +69,7 @@ namespace ServerCore.ModelBases
             {
                 string eventId = bindingContext.ActionContext.RouteData.Values["eventId"] as string;
 
-                var puzzleServerContext = bindingContext.HttpContext.RequestServices.GetService<PuzzleServerContext>();
+                PuzzleServerContext puzzleServerContext = bindingContext.HttpContext.RequestServices.GetService<PuzzleServerContext>();
 
                 Event eventObj = await EventHelper.GetEventFromEventId(puzzleServerContext, eventId);
 
