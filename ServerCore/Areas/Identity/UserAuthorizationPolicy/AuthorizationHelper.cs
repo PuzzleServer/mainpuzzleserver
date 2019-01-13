@@ -125,6 +125,19 @@ namespace ServerCore.Areas.Identity
                 authContext.Succeed(requirement);
             }
         }
+
+        public static async Task IsPlayerOnTeamCheck(AuthorizationHandlerContext authContext, PuzzleServerContext dbContext, UserManager<IdentityUser> userManager, IAuthorizationRequirement requirement)
+        {
+            PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
+            Team team = await AuthorizationHelper.GetTeamFromContext(authContext);
+            Event thisEvent = await AuthorizationHelper.GetEventFromContext(authContext);
+            EventRole role = AuthorizationHelper.GetEventRoleFromContext(authContext);
+
+            if (thisEvent != null && role == EventRole.play && (await UserEventHelper.GetTeamForPlayer(dbContext, thisEvent, puzzleUser)).ID == team.ID)
+            {
+                authContext.Succeed(requirement);
+            }
+        }
     }
 }
 

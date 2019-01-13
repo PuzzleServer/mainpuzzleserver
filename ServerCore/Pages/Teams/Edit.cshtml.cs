@@ -8,6 +8,7 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Teams
 {
+    //[Authorize(Policy = "IsEventAdminOrPlayerOnTeam")]
     public class EditModel : EventSpecificPageModel
     {
         public EditModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)

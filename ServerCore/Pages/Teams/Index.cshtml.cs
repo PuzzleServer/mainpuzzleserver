@@ -8,7 +8,7 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Teams
 {
-    //[Authorize(Policy = "IsEventAdminOrEventAuthor")]
+    [Authorize(Policy = "IsEventAdminOrEventAuthor")]
     public class IndexModel : EventSpecificPageModel
     {
         public IndexModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
