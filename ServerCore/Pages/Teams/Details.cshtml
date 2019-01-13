@@ -63,9 +63,19 @@
 }
 @if (!Model.HasTeam)
 {
-    <h2>You are not yet part of a team for this event</h2>
-
-    <div>
-        Talk to your friends and sign up!
-    </div>
+    @if (Model.Event.IsTeamRegistrationActive)
+    {
+        <h2>You are not yet part of a team for this event</h2>
+        <div>
+            Gather a group and sign up!
+        </div>
+        <a asp-page="Create">Create a new team</a>
+    }
+    @if (!Model.Event.IsTeamRegistrationActive)
+    {
+        <h2>Registration closed</h2>
+        <div>
+            You are not part of a team for this event, and unfortuantely we're no longer accepting new teams into the event.
+        </div>
+    }
 }

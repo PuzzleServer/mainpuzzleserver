@@ -8,7 +8,7 @@
 <h2>All Teams</h2>
 
 <p>
-    @if (Model.Event.IsTeamRegistrationActive) // Or current user is admin
+    @if (Model.Event.IsTeamRegistrationActive && Model.EventRole == ModelBases.EventRole.admin)
     {
         <a asp-page="Create">Create New</a>
     }
