@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -12,6 +13,7 @@ using ServerCore.Helpers;
 
 namespace ServerCore.ModelBases
 {
+    [Authorize(Policy = "IsRegisteredForEvent")]
     public abstract class EventSpecificPageModel : PageModel
     {
         [FromRoute]
@@ -65,17 +67,15 @@ namespace ServerCore.ModelBases
         {
             public async Task BindModelAsync(ModelBindingContext bindingContext)
             {
-                string eventIdAsString = bindingContext.ActionContext.RouteData.Values["eventId"] as string;
+                string eventId = bindingContext.ActionContext.RouteData.Values["eventId"] as string;
 
-                if (int.TryParse(eventIdAsString, out int eventId))
+                var puzzleServerContext = bindingContext.HttpContext.RequestServices.GetService<PuzzleServerContext>();
+
+                Event eventObj = await EventHelper.GetEventFromEventId(puzzleServerContext, eventId);
+
+                if (eventObj != null)
                 {
-                    var puzzleServerContext = bindingContext.HttpContext.RequestServices.GetService<PuzzleServerContext>();
-                    Event eventObj = await puzzleServerContext.Events.Where(e => e.ID == eventId).FirstOrDefaultAsync();
-
-                    if (eventObj != null)
-                    {
-                        bindingContext.Result = ModelBindingResult.Success(eventObj);
-                    }
+                    bindingContext.Result = ModelBindingResult.Success(eventObj);
                 }
             }
         }

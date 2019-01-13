@@ -25,10 +25,10 @@ namespace ServerCore.Pages.Puzzles
         /// <summary>
         /// Gets the feedback and puzzle associated with the given ID
         /// </summary>
-        public async Task<IActionResult> OnGetAsync(int id)
+        public async Task<IActionResult> OnGetAsync(int puzzleId)
         {
-            Feedbacks = await _context.Feedback.Where((f) => f.Puzzle.ID == id).ToListAsync();
-            Puzzle = await _context.Puzzles.Where((p) => p.ID == id).FirstOrDefaultAsync();
+            Feedbacks = await _context.Feedback.Where((f) => f.Puzzle.ID == puzzleId).ToListAsync();
+            Puzzle = await _context.Puzzles.Where((p) => p.ID == puzzleId).FirstOrDefaultAsync();
 
             if (Puzzle == null) 
             { 
