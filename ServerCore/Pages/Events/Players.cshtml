@@ -1,4 +1,4 @@
-﻿@page "/{eventId}/Events/Players"
+﻿@page "/{eventId}/{eventRole}/Events/Players"
 @model ServerCore.Pages.Events.PlayersModel
 @{
     ViewData["Title"] = "Players";
@@ -16,7 +16,7 @@
                 Player @Html.DisplayNameFor(model => model.Players[0].Member.Name)
             </th>
             <th>
-                Player @Html.DisplayNameFor(model => model.Players[0].Member.EmailAddress)
+                Player @Html.DisplayNameFor(model => model.Players[0].Member.Email)
             </th>
             <th>
                 Team @Html.DisplayNameFor(model => model.Players[0].Team.ID)
@@ -38,7 +38,7 @@
                     @Html.DisplayFor(modelItem => item.Member.Name)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Member.EmailAddress)
+                    @Html.DisplayFor(modelItem => item.Member.Email)
                 </td>
                 <td>
                     <a asp-page="/Teams/Details" asp-route-id="@item.Team.ID">@Html.DisplayFor(modelItem => item.Team.ID)</a>

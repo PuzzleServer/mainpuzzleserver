@@ -28,5 +28,10 @@ namespace ServerCore.DataModel
         public string SecondaryPhoneNumber { get; set; }
 
         public virtual List<Submission> Submissions { get; set; }
+
+        /// <summary>
+        /// The number of hint coins this team currently has
+        /// </summary>
+        public int HintCoinCount { get; set; }
     }
 }

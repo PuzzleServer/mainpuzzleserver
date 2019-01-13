@@ -7,7 +7,6 @@ namespace ServerCore.DataModel
         DbSet<Event> Events { get; set; }
         DbSet<EventAdmins> EventAdmins { get; set; }
         DbSet<EventAuthors> EventAuthors { get; set; }
-        DbSet<EventOwners> EventOwners { get; set; }
         DbSet<EventTeams> EventTeams { get; set; }
         DbSet<Feedback> Feedback { get; set; }
         DbSet<Invitation> Invitations { get; set; }
@@ -20,6 +19,6 @@ namespace ServerCore.DataModel
         DbSet<Submission> Submissions { get; set; }
         DbSet<TeamMembers> TeamMembers { get; set; }
         DbSet<Team> Teams { get; set; }
-        DbSet<User> Users { get; set; }
+        DbSet<PuzzleUser> PuzzleUsers { get; set; }
     }
 }

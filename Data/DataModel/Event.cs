@@ -12,18 +12,13 @@ namespace ServerCore.DataModel
         [Required]
         public string Name { get; set; }
 
-        [DataType(DataType.Url)]
         public string UrlString { get; set; }
+
+        [NotMapped]
+        public string EventID => UrlString ?? ID.ToString();
 
         [DataType(DataType.EmailAddress)]
         public string ContactEmail { get; set; }
-
-        [NotMapped]
-        public Uri URL
-        {
-            get { Uri.TryCreate(UrlString, UriKind.RelativeOrAbsolute, out Uri result); return result; }
-            set { UrlString = value?.ToString(); }
-        }
 
         public int MaxNumberOfTeams { get; set; }
         public int MaxTeamSize { get; set; }

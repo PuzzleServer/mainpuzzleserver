@@ -15,9 +15,9 @@ namespace ServerCore.Pages.Teams
     {
         private readonly ServerCore.DataModel.PuzzleServerContext _context;
 
-        public Team MyTeam { get; set; }
+        public Team Team { get; set; }
 
-        public IList<User> Users { get; set; }
+        public IList<PuzzleUser> Users { get; set; }
 
         public AddMemberModel(ServerCore.DataModel.PuzzleServerContext context)
         {
@@ -26,14 +26,14 @@ namespace ServerCore.Pages.Teams
 
         public async Task<IActionResult> OnGetAsync(int teamId)
         {
-            MyTeam = await _context.Teams.FirstOrDefaultAsync(m => m.ID == teamId);
-            if (MyTeam == null)
+            Team = await _context.Teams.FirstOrDefaultAsync(m => m.ID == teamId);
+            if (Team == null)
             {
                 return NotFound("Could not find team with ID '" + teamId + "'. Check to make sure you're accessing this page in the context of a team.");
             }
 
             // Get all users that are not already on a team in this event
-            Users = await _context.Users
+            Users = await _context.PuzzleUsers
                 .Except(_context.TeamMembers
                 .Where(member => member.Team.Event == Event)
                 .Select(model => model.Member))
@@ -56,7 +56,7 @@ namespace ServerCore.Pages.Teams
             }
             Member.Team = team;
 
-            User user = await _context.Users.FirstOrDefaultAsync(m => m.ID == userId);
+            PuzzleUser user = await _context.PuzzleUsers.FirstOrDefaultAsync(m => m.ID == userId);
             if (user == null)
             {
                 return NotFound("Could not find user with ID '" + userId + "'. Check to make sure the user hasn't been removed.");
@@ -66,23 +66,6 @@ namespace ServerCore.Pages.Teams
             _context.TeamMembers.Add(Member);
             await _context.SaveChangesAsync();
             return RedirectToPage("./Members", new { id = teamId });
-        }
-
-        // TEMPORARY - can't test member add without this function to add random users
-        // TODO (@Jenna) - delete once users have an add page
-        public async Task<IActionResult> OnGetAddUserAsync(int teamId)
-        {
-            User User = new User();
-            User.Name = "MyName" + new Random().Next(1, 99);
-            User.EmployeeAlias = "null";
-            User.EmailAddress = User.Name + "@domain.com";
-            User.PhoneNumber = "null";
-            User.TShirtSize = "null";
-            User.VisibleToOthers = true;
-            _context.Users.Add(User);
-
-            await _context.SaveChangesAsync();
-            return RedirectToPage("./AddMember", new { teamId });
         }
     }
 }

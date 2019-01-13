@@ -13,6 +13,27 @@ namespace ServerCore.DataModel
     /// </summary>
     public class Puzzle
     {
+        public Puzzle()
+        {
+        }
+
+        public Puzzle (Puzzle source)
+        {
+            // do not fill out the ID
+            Event = source.Event;
+            Name = source.Name;
+            IsPuzzle = source.IsPuzzle;
+            IsMetaPuzzle = source.IsMetaPuzzle;
+            IsFinalPuzzle = source.IsFinalPuzzle;
+            SolveValue = source.SolveValue;
+            HintCoinsForSolve = source.HintCoinsForSolve;
+            Token = source.Token;
+            Group = source.Group;
+            OrderInGroup = source.OrderInGroup;
+            IsGloballyVisiblePrerequisite = source.IsGloballyVisiblePrerequisite;
+            MinPrerequisiteCount = source.MinPrerequisiteCount;
+        }
+
         /// <summary>
         /// The ID
         /// </summary>
@@ -51,6 +72,11 @@ namespace ServerCore.DataModel
         public int SolveValue { get; set; } = 0;
 
         /// <summary>
+        /// The number of hint coins to award if the puzzle is solved
+        /// </summary>
+        public int HintCoinsForSolve { get; set; } = 0;
+
+        /// <summary>
         /// Reward if solved: Sometimes displayed publicly, sometimes used internally by meta engine
         /// </summary>
         public string Token { get; set; }
@@ -82,6 +108,11 @@ namespace ServerCore.DataModel
         /// All of the content files associated with this puzzle
         /// </summary>
         public virtual ICollection<ContentFile> Contents { get; set; }
+
+        /// <summary>
+        /// This puzzle's hints
+        /// </summary>
+        public virtual ICollection<Hint> Hints { get; set; }
 
         /// <summary>
         /// File for the main puzzle (typically a PDF containing the puzzle)

@@ -1,11 +1,15 @@
-﻿@page "/{eventId}/Teams/Delete"
+﻿@page "/{eventId}/{eventRole}/Teams/Delete"
 @model ServerCore.Pages.Teams.DeleteModel
 
 @{
     ViewData["Title"] = "Delete";
+    Layout = "_teamLayout.cshtml";
 }
 
-<h2>Delete</h2>
+<h2>@Html.DisplayFor(model => model.Team.Name) - Delete</h2>
+<div>
+    <a asp-page="./Details" asp-route-id="@Model.Team.ID">Cancel</a>
+</div>
 
 <h3>Are you sure you want to delete this?</h3>
 <div>

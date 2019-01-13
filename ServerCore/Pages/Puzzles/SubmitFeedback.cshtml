@@ -1,9 +1,9 @@
-@page "/{eventId}/Puzzles/SubmitFeedback/{id}"
+@page "/{eventId}/{eventRole}/Puzzles/SubmitFeedback/{puzzleId}"
 @model ServerCore.Pages.Puzzles.SubmitFeedbackModel
 
 @{
     ViewData["Title"] = "Submit Feedback";
-    var id = ViewContext.RouteData.Values["id"];
+    var id = ViewContext.RouteData.Values["puzzleId"];
 }
 
 <h2>Submit Feedback for @Html.DisplayFor(model => model.Puzzle.Name)</h2> 

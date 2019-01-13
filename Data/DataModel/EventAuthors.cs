@@ -7,6 +7,17 @@ namespace ServerCore.DataModel
     /// </summary>
     public class EventAuthors
     {
+        public EventAuthors()
+        {
+        }
+
+        public EventAuthors(EventAuthors source)
+        {
+            // do not fill out the ID
+            Event = source.Event;
+            Author = source.Author;
+        }
+
         // ID for row
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
@@ -21,6 +32,6 @@ namespace ServerCore.DataModel
         /// Foreign Key - user table (author)
         /// </summary>
         [ForeignKey("User.ID")]
-        public virtual User Author { get; set; }
+        public virtual PuzzleUser Author { get; set; }
     }
 }

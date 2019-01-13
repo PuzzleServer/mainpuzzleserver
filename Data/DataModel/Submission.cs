@@ -30,7 +30,7 @@ namespace ServerCore.DataModel
         /// <summary>
         /// The exact user giving the submission
         /// </summary>
-        public virtual User Submitter { get; set; }
+        public virtual PuzzleUser Submitter { get; set; }
 
         /// <summary>
         /// The time the submission was submitted

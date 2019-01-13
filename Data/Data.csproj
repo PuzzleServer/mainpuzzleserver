@@ -6,6 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20181006003400_CreateIdentitySchema.cs" />
+    <Compile Remove="Migrations\20181006003838_CreateIdentitySchema.cs" />
+    <Compile Remove="Migrations\20190111053724_EventId.cs" />
+    <Compile Remove="Migrations\20190111053724_EventId.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="2.1.0" />
   </ItemGroup>
@@ -14,6 +21,12 @@
     <Reference Include="Microsoft.EntityFrameworkCore">
       <HintPath>..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.entityframeworkcore\2.0.3\lib\netstandard2.0\Microsoft.EntityFrameworkCore.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Migrations\20181213040335_PuzzleAuthors_IDs.Designer.cs">
+      <DependentUpon>20181213040335_PuzzleAuthors_IDs.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,333 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Microsoft Puzzle Server</title>
+
+    <environment include="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/css/site.css" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
+              asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
+              asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
+        <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+    </environment>
+
+    <!-- TODO: Remove when menus are implemented -->
+    <style>
+        .nav i {
+            color: gray;
+            font-size: 10px;
+        }
+    </style>
+</head>
+<body>
+    @{
+        var Event = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Event;
+        var EventRole = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.EventRole;
+    }
+    <!--CURRENT NAV BAR-->
+    @if (Event == null)
+    {
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    @if (Event == null)
+                    {
+                        <a asp-page="/Index" class="navbar-brand">
+                            Microsoft Puzzles
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-page="/EventSpecific/Index" asp-route-eventId=@Event.EventID class="navbar-brand">
+                            @(Event.Name)
+                        </a>
+                    }
+                </div>
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a asp-page="/Index">Home</a></li>
+
+                        @if (Event != null)
+                        {
+                            <li class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                    Puzzles
+                                    <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    @if (Event.EventHasStarted)
+                                    {
+                                        if (Event.IsAnswerSubmissionActive)
+                                        {
+                                            <li><a href="#">Unsolved Puzzles</a></li>
+                                            <li><a href="#">Solved Puzzles</a></li>
+                                        }
+                                        <li>
+                                            <a asp-page="/Puzzles/Index" asp-route-eventId="@Event.EventID">
+                                                All Puzzles
+                                            </a>
+                                        </li>
+                                        <li class="divider"></li>
+                                    }
+                                    <li><a href="#">Administer Puzzles <i>(if author/admin)</i></a></li>
+                                    <li><a href="#">Import Puzzle Data <i>(if author/admin; P2)</i></a></li>
+                                </ul>
+                            </li>
+
+                            <li class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                    Results
+                                    <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    @if (Event.AreStandingsAvailableNow)
+                                    {
+                                        <li><a href="#">Standings</a></li>
+                                        <li><a href="#">Fastest Solves</a></li>
+                                        <li class="divider"></li>
+                                    }
+                                    <li><a href="#">Puzzle State Map <i>(if author/admin)</i></a></li>
+                                    <li><a href="#">Submissions <i>(if author/admin)</i></a></li>
+                                    <li><a href="#">Puzzles in Lockout <i>(if author/admin)</i></a></li>
+                                </ul>
+                            </li>
+
+                            <li class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                    Registration
+                                    <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#">MY TEAM NAME <i>(if member)</i></a></li>
+                                    <li><a href="#">Matchmaking Zone <i>(if available)</i></a></li>
+                                    <li><a asp-page="/Teams/Index" asp-route-eventId="@Event.EventID">Teams</a></li>
+                                    <li><a href="#">Players <i>(everybody if author/admin)</i></a></li>
+                                    <li class="divider"></li>
+                                    <li><a href="#">Authors <i>(if author; editable if admin)</i></a></li>
+                                    <li><a href="#">Admins <i>(if author; editable if admin)</i></a></li>
+                                </ul>
+                            </li>
+                        }
+
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                Resources
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                @if (Event != null)
+                                {
+                                    <li><a href="#">FAQ</a></li>
+                                    <li><a href="#">Rules</a></li>
+                                }
+                                <li><a href="#">Encodings</a></li>
+                                <li><a href="#">Tools</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#">My Events</a></li>
+                                @if (Event != null)
+                                {
+                                    <li><a href="#">Event Properties <i>(if admin)</i></a></li>
+                                }
+                                <li><a href="#">Events Dashboard <i>(if admin)</i></a></li>
+                                <li class="divider"></li>
+                                <li><a asp-page="/About">About</a></li>
+                                <li><a asp-page="/Contact">Contact</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+                        <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login/out</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    }
+        <!--CURRENT NAV BAR END-->
+        <!--ADMIN NAV BAR-->
+        @if (Event != null && EventRole != null && EventRole == ModelBases.EventRole.admin)
+        {
+            <nav class="navbar navbar-inverse navbar-fixed-top admin-menu">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a asp-page="/." class="navbar-brand" data-toggle="dropdown">
+                            @Event.Name - Admin
+                        </a>
+                        <!-- Get this to work & add it to the other header bars
+                        <ul class="dropdown-menu">
+                            <li><a asp-page="/." asp-route-eventRole="@ModelBases.EventRole.admin">Admin</a></li>
+                            <li><a asp-page="/." asp-route-eventRole="@ModelBases.EventRole.author">Author</a></li>
+                            <li><a asp-page="/." asp-route-eventRole="@ModelBases.EventRole.play">Player</a></li>
+                        </ul>
+                        -->
+                    </div>
+                    <div class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav">
+                            <li><a asp-page="/Events/Details" asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.admin">Event</a></li>
+                            <li><a asp-page="/Puzzles/Index" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.admin">Puzzles</a></li>
+                            <li><a asp-page="/Teams/Index" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.admin">Teams</a></li>
+                            <li><a asp-page="/Events/Standings" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.admin">Standings</a></li>
+                            <li><a asp-page="/Events/Players" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.admin">Users</a></li>
+                            <li class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                    Resources (not implemented)
+                                    <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#">FAQ</a></li>
+                                    <li class="divider"></li>
+                                    <li><a href="#">Other things</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <partial name="/Pages/Shared/_LoginPartial.cshtml" />
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        }
+        <!--ADMIN NAV BAR END-->
+        <!--AUTHOR NAV BAR-->
+        @if (Event != null && EventRole != null && EventRole == ModelBases.EventRole.author)
+        {
+            <nav class="navbar navbar-inverse navbar-fixed-top author-menu">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a asp-page="/Index" class="navbar-brand">
+                            @Event.Name - Author
+                        </a>
+                    </div>
+                    <div class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav">
+                            <li><a asp-page="/Events/Details" asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.author">Event</a></li>
+                            <li><a asp-page="/Puzzles/Index" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.author">Puzzles</a></li>
+                            <li><a asp-page="/Teams/Index" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.author">Teams</a></li>
+                            <li><a asp-page="/Events/Standings" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.author">Standings</a></li>
+                            <li class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                    Resources (not implemented)
+                                    <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#">FAQ</a></li>
+                                    <li class="divider"></li>
+                                    <li><a href="#">Other things</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <partial name="/Pages/Shared/_LoginPartial.cshtml" />
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        }
+        <!--AUTHOR NAV BAR END-->
+        <!--PLAYER NAV BAR-->
+        @if (Event != null && (EventRole == null || (EventRole != ModelBases.EventRole.admin && EventRole != ModelBases.EventRole.author)))
+        {
+            <nav class="navbar navbar-inverse navbar-fixed-top player-menu">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a asp-page="/Index" class="navbar-brand">
+                            @Event.Name
+                        </a>
+                    </div>
+                    <div class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav">
+                            <li><a asp-page="/Events/Details" asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play">Event</a></li>
+                            <li><a asp-page="/Puzzles/Index" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.play">Puzzles</a></li>
+                            <li><a asp-page="/Teams/Details" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.play">Team</a></li>
+                            <li><a asp-page="/Events/Standings" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.play">Standings</a></li>
+                            <li class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                    Resources (not implemented)
+                                    <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#">FAQ</a></li>
+                                    <li class="divider"></li>
+                                    <li><a href="#">Other things</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <partial name="/Pages/Shared/_LoginPartial.cshtml" />
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        }
+        <!--PLAYER NAV BAR END-->
+        <div class="container body-content">
+            @RenderBody()
+            <hr />
+            <footer>
+                <ul class="list-inline text-right">
+                    <li><a href="mailto:@(Event?.ContactEmail ?? "puzzhunt@microsoft.com")">Contact Us</a></li>
+                    <li><a href="https://go.microsoft.com/fwlink/?LinkID=206977">Terms Of Use</a></li>
+                    <li><a href="https://go.microsoft.com/fwlink/?LinkId=506942">Trademarks</a></li>
+                    <li><a href="http://go.microsoft.com/fwlink/?LinkId=521839">Privacy &amp; Cookies</a></li>
+                    <li>© 2018 ServerCore</li>
+                </ul>
+            </footer>
+        </div>
+
+        <environment include="Development">
+            <script src="~/lib/jquery/dist/jquery.js"></script>
+            <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+            <script src="~/js/site.js" asp-append-version="true"></script>
+        </environment>
+        <environment exclude="Development">
+            <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"
+                    asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                    asp-fallback-test="window.jQuery"
+                    crossorigin="anonymous"
+                    integrity="sha384-K+ctZQ+LL8q6tP7I94W+qzQsfRV2a+AfHIi9k8z8l9ggpc8X+Ytst4yBo/hH+8Fk">
+            </script>
+            <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
+                    asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
+                    asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
+                    crossorigin="anonymous"
+                    integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa">
+            </script>
+            <script src="~/js/site.min.js" asp-append-version="true"></script>
+        </environment>
+
+        @RenderSection("Scripts", required: false)
+    </body>
+</html>

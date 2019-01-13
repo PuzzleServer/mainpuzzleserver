@@ -15,9 +15,174 @@ namespace Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.1-rtm-30846")
+                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken();
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256);
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
+
+                    b.ToTable("AspNetRoles");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ClaimType");
+
+                    b.Property<string>("ClaimValue");
+
+                    b.Property<string>("RoleId")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetRoleClaims");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("AccessFailedCount");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken();
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256);
+
+                    b.Property<bool>("EmailConfirmed");
+
+                    b.Property<bool>("LockoutEnabled");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256);
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256);
+
+                    b.Property<string>("PasswordHash");
+
+                    b.Property<string>("PhoneNumber");
+
+                    b.Property<bool>("PhoneNumberConfirmed");
+
+                    b.Property<string>("SecurityStamp");
+
+                    b.Property<bool>("TwoFactorEnabled");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.ToTable("AspNetUsers");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ClaimType");
+
+                    b.Property<string>("ClaimValue");
+
+                    b.Property<string>("UserId")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasMaxLength(128);
+
+                    b.Property<string>("ProviderKey")
+                        .HasMaxLength(128);
+
+                    b.Property<string>("ProviderDisplayName");
+
+                    b.Property<string>("UserId")
+                        .IsRequired();
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.Property<string>("UserId");
+
+                    b.Property<string>("RoleId");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.Property<string>("UserId");
+
+                    b.Property<string>("LoginProvider")
+                        .HasMaxLength(128);
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(128);
+
+                    b.Property<string>("Value");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("AspNetUserTokens");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.ContentFile", b =>
                 {
@@ -53,8 +218,6 @@ namespace Data.Migrations
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("AdminsID");
 
                     b.Property<bool>("AllowFeedback");
 
@@ -107,7 +270,9 @@ namespace Data.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("AdminsID");
+                    b.HasIndex("UrlString")
+                        .IsUnique()
+                        .HasFilter("[UrlString] IS NOT NULL");
 
                     b.ToTable("Events");
                 });
@@ -124,7 +289,9 @@ namespace Data.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("Event.ID");
+                    b.HasIndex("Event.ID")
+                        .IsUnique()
+                        .HasFilter("[Event.ID] IS NOT NULL");
 
                     b.HasIndex("User.ID");
 
@@ -150,25 +317,6 @@ namespace Data.Migrations
                     b.HasIndex("User.ID");
 
                     b.ToTable("EventAuthors");
-                });
-
-            modelBuilder.Entity("ServerCore.DataModel.EventOwners", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("Event.ID");
-
-                    b.Property<int?>("User.ID");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("Event.ID");
-
-                    b.HasIndex("User.ID");
-
-                    b.ToTable("EventOwners");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.EventTeams", b =>
@@ -219,6 +367,46 @@ namespace Data.Migrations
                     b.ToTable("Feedback");
                 });
 
+            modelBuilder.Entity("ServerCore.DataModel.Hint", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Content")
+                        .IsRequired();
+
+                    b.Property<int>("Cost");
+
+                    b.Property<string>("Description")
+                        .IsRequired();
+
+                    b.Property<int>("DisplayOrder");
+
+                    b.Property<int>("PuzzleID");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PuzzleID");
+
+                    b.ToTable("Hints");
+                });
+
+            modelBuilder.Entity("ServerCore.DataModel.HintStatePerTeam", b =>
+                {
+                    b.Property<int>("TeamID");
+
+                    b.Property<int>("HintID");
+
+                    b.Property<DateTime?>("UnlockTime");
+
+                    b.HasKey("TeamID", "HintID");
+
+                    b.HasIndex("HintID");
+
+                    b.ToTable("HintStatePerTeam");
+                });
+
             modelBuilder.Entity("ServerCore.DataModel.Invitation", b =>
                 {
                     b.Property<int>("ID")
@@ -248,9 +436,9 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("PrerequisiteID");
+                    b.Property<int>("PrerequisiteID");
 
-                    b.Property<int?>("PuzzleID");
+                    b.Property<int>("PuzzleID");
 
                     b.HasKey("ID");
 
@@ -270,6 +458,8 @@ namespace Data.Migrations
                     b.Property<int?>("EventID");
 
                     b.Property<string>("Group");
+
+                    b.Property<int>("HintCoinsForSolve");
 
                     b.Property<bool>("IsFinalPuzzle");
 
@@ -303,15 +493,15 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("Puzzle.ID");
+                    b.Property<int>("AuthorID");
 
-                    b.Property<int?>("User.ID");
+                    b.Property<int>("PuzzleID");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("Puzzle.ID");
+                    b.HasIndex("AuthorID");
 
-                    b.HasIndex("User.ID");
+                    b.HasIndex("PuzzleID");
 
                     b.ToTable("PuzzleAuthors");
                 });
@@ -341,6 +531,34 @@ namespace Data.Migrations
                     b.HasIndex("TeamID");
 
                     b.ToTable("PuzzleStatePerTeam");
+                });
+
+            modelBuilder.Entity("ServerCore.DataModel.PuzzleUser", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Email");
+
+                    b.Property<string>("EmployeeAlias");
+
+                    b.Property<string>("IdentityUserId")
+                        .IsRequired();
+
+                    b.Property<bool>("IsGlobalAdmin");
+
+                    b.Property<string>("Name");
+
+                    b.Property<string>("PhoneNumber");
+
+                    b.Property<string>("TShirtSize");
+
+                    b.Property<bool>("VisibleToOthers");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("PuzzleUsers");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Response", b =>
@@ -410,6 +628,8 @@ namespace Data.Migrations
 
                     b.Property<int?>("EventID");
 
+                    b.Property<int>("HintCoinCount");
+
                     b.Property<string>("Name");
 
                     b.Property<string>("PrimaryContactEmail");
@@ -446,27 +666,49 @@ namespace Data.Migrations
                     b.ToTable("TeamMembers");
                 });
 
-            modelBuilder.Entity("ServerCore.DataModel.User", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
 
-                    b.Property<string>("EmailAddress");
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
 
-                    b.Property<string>("EmployeeAlias");
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
 
-                    b.Property<string>("Name");
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
-                    b.Property<string>("PhoneNumber");
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
 
-                    b.Property<string>("TShirtSize");
-
-                    b.Property<bool>("VisibleToOthers");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("Users");
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.ContentFile", b =>
@@ -482,20 +724,13 @@ namespace Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("ServerCore.DataModel.Event", b =>
-                {
-                    b.HasOne("ServerCore.DataModel.EventAdmins", "Admins")
-                        .WithMany()
-                        .HasForeignKey("AdminsID");
-                });
-
             modelBuilder.Entity("ServerCore.DataModel.EventAdmins", b =>
                 {
-                    b.HasOne("ServerCore.DataModel.EventOwners", "Event")
-                        .WithMany()
-                        .HasForeignKey("Event.ID");
+                    b.HasOne("ServerCore.DataModel.Event", "Event")
+                        .WithOne("Admins")
+                        .HasForeignKey("ServerCore.DataModel.EventAdmins", "Event.ID");
 
-                    b.HasOne("ServerCore.DataModel.User", "Admin")
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Admin")
                         .WithMany()
                         .HasForeignKey("User.ID");
                 });
@@ -506,18 +741,7 @@ namespace Data.Migrations
                         .WithOne("Authors")
                         .HasForeignKey("ServerCore.DataModel.EventAuthors", "Event.ID");
 
-                    b.HasOne("ServerCore.DataModel.User", "Author")
-                        .WithMany()
-                        .HasForeignKey("User.ID");
-                });
-
-            modelBuilder.Entity("ServerCore.DataModel.EventOwners", b =>
-                {
-                    b.HasOne("ServerCore.DataModel.Event", "Event")
-                        .WithMany()
-                        .HasForeignKey("Event.ID");
-
-                    b.HasOne("ServerCore.DataModel.User", "Owner")
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Author")
                         .WithMany()
                         .HasForeignKey("User.ID");
                 });
@@ -539,9 +763,30 @@ namespace Data.Migrations
                         .WithMany()
                         .HasForeignKey("PuzzleID");
 
-                    b.HasOne("ServerCore.DataModel.User", "Submitter")
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Submitter")
                         .WithMany()
                         .HasForeignKey("SubmitterID");
+                });
+
+            modelBuilder.Entity("ServerCore.DataModel.Hint", b =>
+                {
+                    b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
+                        .WithMany("Hints")
+                        .HasForeignKey("PuzzleID")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("ServerCore.DataModel.HintStatePerTeam", b =>
+                {
+                    b.HasOne("ServerCore.DataModel.Hint", "Hint")
+                        .WithMany()
+                        .HasForeignKey("HintID")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("ServerCore.DataModel.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamID")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Invitation", b =>
@@ -555,11 +800,13 @@ namespace Data.Migrations
                 {
                     b.HasOne("ServerCore.DataModel.Puzzle", "Prerequisite")
                         .WithMany()
-                        .HasForeignKey("PrerequisiteID");
+                        .HasForeignKey("PrerequisiteID")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
                         .WithMany()
-                        .HasForeignKey("PuzzleID");
+                        .HasForeignKey("PuzzleID")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Puzzle", b =>
@@ -571,13 +818,15 @@ namespace Data.Migrations
 
             modelBuilder.Entity("ServerCore.DataModel.PuzzleAuthors", b =>
                 {
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorID")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
                         .WithMany()
-                        .HasForeignKey("Puzzle.ID");
-
-                    b.HasOne("ServerCore.DataModel.User", "Author")
-                        .WithMany()
-                        .HasForeignKey("User.ID");
+                        .HasForeignKey("PuzzleID")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.PuzzleStatePerTeam", b =>
@@ -611,7 +860,7 @@ namespace Data.Migrations
                         .WithMany()
                         .HasForeignKey("ResponseID");
 
-                    b.HasOne("ServerCore.DataModel.User", "Submitter")
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Submitter")
                         .WithMany()
                         .HasForeignKey("SubmitterID");
 
@@ -633,7 +882,7 @@ namespace Data.Migrations
                         .WithMany()
                         .HasForeignKey("Team.ID");
 
-                    b.HasOne("ServerCore.DataModel.User", "Member")
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Member")
                         .WithMany()
                         .HasForeignKey("User.ID");
                 });

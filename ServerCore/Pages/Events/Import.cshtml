@@ -1,0 +1,14 @@
+﻿@page
+@model ServerCore.Pages.Events.ImportModel
+
+@{
+    ViewData["Title"] = "Import";
+}
+
+<h2>Import</h2>
+
+<form method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Event.ID" />
+    <select class="form-control" asp-for="ImportEventID" asp-items="@(new SelectList(Model.Events, "ID", "Name"))"></select>
+    <input type="submit" value="Import" asp-page-handler="Import" class="btn btn-default" />
+</form>

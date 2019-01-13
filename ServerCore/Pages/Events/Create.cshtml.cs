@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using ServerCore.DataModel;
 
 namespace ServerCore.Pages.Events
 {
+    [Authorize(Policy = "IsGlobalAdmin")]
     public class CreateModel : PageModel
     {
         private readonly PuzzleServerContext _context;
@@ -54,3 +56,4 @@ namespace ServerCore.Pages.Events
         }
     }
 }
+

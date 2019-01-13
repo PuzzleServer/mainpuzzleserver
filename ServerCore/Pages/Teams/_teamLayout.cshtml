@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+
+@{ Layout = "../Shared/_Layout.cshtml"; }
+
+@if (Model.EventRole == ModelBases.EventRole.admin)
+{
+    <div>
+        <a asp-page="./Index">Back to team list</a> ||
+        <a asp-page="./Details" asp-route-id="@Model.Team.ID">Details</a> |
+        <a asp-page="./Members" asp-route-id="@Model.Team.ID">Members</a> |
+        <a asp-page="./Status" asp-route-id="@Model.Team.ID">Status</a>
+    </div>
+}
+@if (Model.EventRole == ModelBases.EventRole.author)
+{
+    <div>
+        <a asp-page="./Index">Back to team list</a>
+    </div>
+}
+@if (Model.EventRole == ModelBases.EventRole.play)
+{
+    <div>
+        <a asp-page="./Details" asp-route-id="@Model.Team.ID">Details</a> |
+        <a asp-page="./Members" asp-route-id="@Model.Team.ID">Members</a>
+    </div>
+}
+
+<body>
+    <div>
+        @RenderBody()
+    </div>
+</body>
+<div> @RenderSection("Scripts", required: false) </div>

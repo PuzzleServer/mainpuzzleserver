@@ -1,11 +1,11 @@
-﻿@page "/{eventId}/Puzzles"
+﻿@page "/{eventId}/{eventRole}/Puzzles"
 @model ServerCore.Pages.Puzzles.IndexModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Puzzle Index";
 }
 
-<h2>Index</h2>
+<h2>All Puzzles</h2>
 
 <p>
     <a asp-page="Create">Create New</a>
@@ -94,7 +94,9 @@
                 <a asp-Page="./Feedback" asp-route-id="@item.ID">Admin View Feedback</a> |
                 <a asp-Page="./SubmitFeedback" asp-route-id="@item.ID">User Submit Feedback</a> |
                 <a asp-page="/Responses/Index" asp-route-puzzleid="@item.ID">Responses</a> |
-                <a asp-Page="./FileManagement" asp-route-id="@item.ID">File Management</a>
+                <a asp-page="/Submissions/AuthorIndex" asp-route-puzzleid="@item.ID">Player Submissions</a> |
+                <a asp-Page="./FileManagement" asp-route-id="@item.ID">File Management</a> |
+                <a asp-page="/Hints/Index" asp-route-puzzleid="@item.ID">Hints</a> |
             </td>
         </tr>
 }

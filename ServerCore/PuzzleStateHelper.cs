@@ -260,6 +260,25 @@ namespace ServerCore
                 states[i].SolvedTime = value;
             }
 
+            // Award hint coins
+            if (value != null && puzzle.HintCoinsForSolve != 0)
+            {
+                if (team != null)
+                {
+                    team.HintCoinCount += puzzle.HintCoinsForSolve;
+                }
+                else
+                {
+                    var allTeams = from Team curTeam in context.Teams
+                                   where curTeam.Event == eventObj
+                                   select curTeam;
+                    foreach(Team curTeam in allTeams)
+                    {
+                        curTeam.HintCoinCount += puzzle.HintCoinsForSolve;
+                    }
+                }
+            }
+
             await context.SaveChangesAsync();
 
             // if this puzzle got solved, look for others to unlock
