@@ -1,0 +1,60 @@
+﻿@page "/{eventId}/{eventRole}/AuthorSubmissions/{puzzleId}"
+@model ServerCore.Pages.Submissions.AuthorIndexModel
+@{
+    ViewData["Title"] = "AuthorIndex";
+}
+
+<h2>Team Submissions</h2>
+</hr>
+
+<div>
+    <a asp-page="/Puzzles/Index">Back to Puzzle List</a>
+</div>
+<br />
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Player
+                </th>
+                <th>
+                    Team Name
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Submissions[0].Response.ResponseText)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Submissions[0].SubmissionText)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Submissions[0].TimeSubmitted)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Submissions)
+            {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Submitter.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Team.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Response.ResponseText)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SubmissionText)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TimeSubmitted)
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+

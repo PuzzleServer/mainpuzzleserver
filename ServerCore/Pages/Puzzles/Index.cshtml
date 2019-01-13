@@ -1,11 +1,11 @@
-﻿@page "/{eventId}/Puzzles"
+﻿@page "/{eventId}/{eventRole}/Puzzles"
 @model ServerCore.Pages.Puzzles.IndexModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Puzzle Index";
 }
 
-<h2>Index</h2>
+<h2>All Puzzles</h2>
 
 <p>
     <a asp-page="Create">Create New</a>
@@ -87,14 +87,16 @@
                 @Html.DisplayFor(modelItem => item.MinPrerequisiteCount)
             </td>
             <td>
-                <a asp-Page="./Edit" asp-route-id="@item.ID">Edit</a> |
-                <a asp-Page="./Details" asp-route-id="@item.ID">Details</a> |
-                <a asp-Page="./Delete" asp-route-id="@item.ID">Delete</a> |
-                <a asp-page="./Status" asp-route-id="@item.ID">Status</a> |
-                <a asp-Page="./Feedback" asp-route-id="@item.ID">Admin View Feedback</a> |
-                <a asp-Page="./SubmitFeedback" asp-route-id="@item.ID">User Submit Feedback</a> |
+                <a asp-Page="./Edit" asp-route-puzzleid="@item.ID">Edit</a> |
+                <a asp-Page="./Details" asp-route-puzzleid="@item.ID">Details</a> |
+                <a asp-Page="./Delete" asp-route-puzzleid="@item.ID">Delete</a> |
+                <a asp-page="./Status" asp-route-puzzleid="@item.ID">Status</a> |
+                <a asp-Page="./Feedback" asp-route-puzzleid="@item.ID">Admin View Feedback</a> |
+                <a asp-Page="./SubmitFeedback" asp-route-puzzleid="@item.ID">User Submit Feedback</a> |
                 <a asp-page="/Responses/Index" asp-route-puzzleid="@item.ID">Responses</a> |
-                <a asp-Page="./FileManagement" asp-route-id="@item.ID">File Management</a>
+                <a asp-page="/Submissions/AuthorIndex" asp-route-puzzleid="@item.ID">Player Submissions</a> |
+                <a asp-Page="./FileManagement" asp-route-puzzleid="@item.ID">File Management</a> |
+                <a asp-page="/Hints/Index" asp-route-puzzleid="@item.ID">Hints</a> |
             </td>
         </tr>
 }

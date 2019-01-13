@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
+using ServerCore.Helpers;
 
 namespace ServerCore
 {
@@ -17,7 +18,7 @@ namespace ServerCore
         /// <param name="puzzle">The puzzle; if null, get all puzzles in the event.</param>
         /// <param name="team">The team; if null, get all the teams in the event.</param>
         /// <returns>A query of PuzzleStatePerTeam objects that can be sorted and instantiated, but you can't edit the results.</returns>
-        public static IQueryable<PuzzleStatePerTeam> GetFullReadOnlyQuery(PuzzleServerContext context, Event eventObj, Puzzle puzzle, Team team)
+        public static IQueryable<PuzzleStatePerTeam> GetFullReadOnlyQuery(PuzzleServerContext context, Event eventObj, Puzzle puzzle, Team team, PuzzleUser author = null)
         {
             if (context == null)
             {
@@ -67,7 +68,7 @@ namespace ServerCore
 
             if (team != null)
             {
-                IQueryable<Puzzle> puzzles = context.Puzzles.Where(p => p.Event == eventObj);
+                IQueryable<Puzzle> puzzles = author == null ? context.Puzzles.Where(p => p.Event == eventObj) : UserEventHelper.GetPuzzlesForAuthorAndEvent(context, eventObj, author);
                 IQueryable<PuzzleStatePerTeam> states = context.PuzzleStatePerTeam.Where(state => state.Team == team);
 
                 return from p in puzzles
@@ -98,7 +99,7 @@ namespace ServerCore
         /// <param name="puzzle">The puzzle; if null, get all puzzles in the event.</param>
         /// <param name="team">The team; if null, get all the teams in the event.</param>
         /// <returns>A query of PuzzleStatePerTeam objects that currently exist in the table.</returns>
-        public static IQueryable<PuzzleStatePerTeam> GetSparseQuery(PuzzleServerContext context, Event eventObj, Puzzle puzzle, Team team)
+        public static IQueryable<PuzzleStatePerTeam> GetSparseQuery(PuzzleServerContext context, Event eventObj, Puzzle puzzle, Team team, PuzzleUser author = null)
         {
             if (context == null)
             {
@@ -137,9 +138,9 @@ namespace ServerCore
         /// <param name="team">The team; if null, get all the teams in the event.</param>
         /// <param name="value">The unlock time (null if relocking)</param>
         /// <returns>A task that can be awaited for the unlock/lock operation</returns>
-        public static async Task SetUnlockStateAsync(PuzzleServerContext context, Event eventObj, Puzzle puzzle, Team team, DateTime? value)
+        public static async Task SetUnlockStateAsync(PuzzleServerContext context, Event eventObj, Puzzle puzzle, Team team, DateTime? value, PuzzleUser author = null)
         {
-            IQueryable<PuzzleStatePerTeam> statesQ = await PuzzleStateHelper.GetFullReadWriteQueryAsync(context, eventObj, puzzle, team);
+            IQueryable<PuzzleStatePerTeam> statesQ = await PuzzleStateHelper.GetFullReadWriteQueryAsync(context, eventObj, puzzle, team, author);
             List<PuzzleStatePerTeam> states = await statesQ.ToListAsync();
 
             for (int i = 0; i < states.Count; i++)
@@ -158,14 +159,33 @@ namespace ServerCore
         /// <param name="team">The team; if null, get all the teams in the event.</param>
         /// <param name="value">The solve time (null if unsolving)</param>
         /// <returns>A task that can be awaited for the solve/unsolve operation</returns>
-        public static async Task SetSolveStateAsync(PuzzleServerContext context, Event eventObj, Puzzle puzzle, Team team, DateTime? value)
+        public static async Task SetSolveStateAsync(PuzzleServerContext context, Event eventObj, Puzzle puzzle, Team team, DateTime? value, PuzzleUser author = null)
         {
-            IQueryable<PuzzleStatePerTeam> statesQ = await PuzzleStateHelper.GetFullReadWriteQueryAsync(context, eventObj, puzzle, team);
+            IQueryable<PuzzleStatePerTeam> statesQ = await PuzzleStateHelper.GetFullReadWriteQueryAsync(context, eventObj, puzzle, team, author);
             List<PuzzleStatePerTeam> states = await statesQ.ToListAsync();
 
             for (int i = 0; i < states.Count; i++)
             {
                 states[i].SolvedTime = value;
+            }
+
+            // Award hint coins
+            if (value != null && puzzle.HintCoinsForSolve != 0)
+            {
+                if (team != null)
+                {
+                    team.HintCoinCount += puzzle.HintCoinsForSolve;
+                }
+                else
+                {
+                    var allTeams = from Team curTeam in context.Teams
+                                   where curTeam.Event == eventObj
+                                   select curTeam;
+                    foreach(Team curTeam in allTeams)
+                    {
+                        curTeam.HintCoinCount += puzzle.HintCoinsForSolve;
+                    }
+                }
             }
 
             await context.SaveChangesAsync();
@@ -185,7 +205,7 @@ namespace ServerCore
         /// <param name="puzzle">The puzzle; if null, get all puzzles in the event.</param>
         /// <param name="team">The team; if null, get all the teams in the event.</param>
         /// <returns>A query of PuzzleStatePerTeam objects that can be sorted and instantiated, but you can't edit the results.</returns>
-        private static async Task<IQueryable<PuzzleStatePerTeam>> GetFullReadWriteQueryAsync(PuzzleServerContext context, Event eventObj, Puzzle puzzle, Team team)
+        private static async Task<IQueryable<PuzzleStatePerTeam>> GetFullReadWriteQueryAsync(PuzzleServerContext context, Event eventObj, Puzzle puzzle, Team team, PuzzleUser author)
         {
             if (context == null)
             {
@@ -221,7 +241,7 @@ namespace ServerCore
             }
             else if (team != null)
             {
-                IQueryable<int> puzzleIdsQ = context.Puzzles.Where(p => p.Event == eventObj).Select(p => p.ID);
+                IQueryable<int> puzzleIdsQ = author == null ? context.Puzzles.Where(p => p.Event == eventObj).Select(p => p.ID) : UserEventHelper.GetPuzzlesForAuthorAndEvent(context, eventObj, author).Select(p => p.ID);
                 IQueryable<int> puzzleStatePuzzleIdsQ = context.PuzzleStatePerTeam.Where(s => s.Team == team).Select(s => s.PuzzleID);
                 List<int> puzzleIdsWithoutState = await puzzleIdsQ.Except(puzzleStatePuzzleIdsQ).ToListAsync();
 
@@ -241,7 +261,7 @@ namespace ServerCore
             await context.SaveChangesAsync(); // query below will not return these unless we save
 
             // now this query is no longer sparse because we just filled it all out!
-            return GetSparseQuery(context, eventObj, puzzle, team);
+            return GetSparseQuery(context, eventObj, puzzle, team, author);
         }
 
         /// <summary>

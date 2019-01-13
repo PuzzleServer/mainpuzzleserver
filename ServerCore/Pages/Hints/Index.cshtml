@@ -1,0 +1,55 @@
+﻿@page "/{eventId}/{eventRole}/Hints/{puzzleId}"
+@model ServerCore.Pages.Hints.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Hints for @Model.PuzzleName</h2>
+
+<p>
+    <a asp-page="Create" asp-route-puzzleID="@Model.PuzzleId">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Hints[0].Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Hints[0].Content)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Hints[0].Cost)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Hints[0].DisplayOrder)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Hints)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Content)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Cost)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DisplayOrder)
+                </td>
+                <td>
+                    <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

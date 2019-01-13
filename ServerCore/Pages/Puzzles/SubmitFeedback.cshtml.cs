@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
@@ -10,11 +11,8 @@ namespace ServerCore.Pages.Puzzles
 {
     public class SubmitFeedbackModel : EventSpecificPageModel
     {
-        private readonly PuzzleServerContext _context;
-
-        public SubmitFeedbackModel(PuzzleServerContext context)
+        public SubmitFeedbackModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
-            _context = context;
         }
 
         [BindProperty]
@@ -24,9 +22,9 @@ namespace ServerCore.Pages.Puzzles
         /// <summary>
         /// Gets the submit feedback page for a puzzle
         /// </summary>
-        public async Task<IActionResult> OnGetAsync(int id)
+        public async Task<IActionResult> OnGetAsync(int puzzleId)
         {       
-            Puzzle = await _context.Puzzles.Where(m => m.ID == id).FirstOrDefaultAsync();
+            Puzzle = await _context.Puzzles.Where(m => m.ID == puzzleId).FirstOrDefaultAsync();
 
             if (Puzzle == null)
             {
@@ -39,14 +37,14 @@ namespace ServerCore.Pages.Puzzles
         /// <summary>
         /// Takes the filled out items and adds it to the database as a new piece of feedback.
         /// </summary>
-        public async Task<IActionResult> OnPostAsync(int id)
+        public async Task<IActionResult> OnPostAsync(int puzzleId)
         {
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            Feedback.Puzzle = await _context.Puzzles.Where(m => m.ID == id).FirstOrDefaultAsync();
+            Feedback.Puzzle = await _context.Puzzles.Where(m => m.ID == puzzleId).FirstOrDefaultAsync();
 
             if (Feedback.Puzzle == null) 
             { 

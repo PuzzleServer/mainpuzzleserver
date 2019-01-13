@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 using ServerCore.ModelBases;
@@ -10,13 +11,10 @@ namespace ServerCore.Pages.Events
 {
     public class FastestSolvesModel : EventSpecificPageModel
     {
-        private readonly PuzzleServerContext _context;
-
         public List<PuzzleStats> Puzzles { get; private set; }
 
-        public FastestSolvesModel(PuzzleServerContext context)
+        public FastestSolvesModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
-            _context = context;
         }
 
         public async Task OnGetAsync()

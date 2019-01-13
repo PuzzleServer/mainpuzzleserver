@@ -15,7 +15,8 @@ namespace ServerCore.Areas.Identity
             builder.ConfigureServices((context, services) =>
             {
                 services.AddDbContext<PuzzleServerContext>(options =>
-                    options.UseSqlServer(
+                    options.UseLazyLoadingProxies()
+                    .UseSqlServer(
                         context.Configuration.GetConnectionString("PuzzleServerContext")));
 
                 services.AddDefaultIdentity<IdentityUser>()

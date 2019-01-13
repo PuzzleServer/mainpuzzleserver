@@ -26,5 +26,10 @@ namespace ServerCore.DataModel
         public string PrimaryContactEmail { get; set; }
         public string PrimaryPhoneNumber { get; set; }
         public string SecondaryPhoneNumber { get; set; }
+
+        /// <summary>
+        /// The number of hint coins this team currently has
+        /// </summary>
+        public int HintCoinCount { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
@@ -11,11 +12,8 @@ namespace ServerCore.Pages.Teams
 {
     public class MembersModel : EventSpecificPageModel
     {
-        private readonly ServerCore.DataModel.PuzzleServerContext _context;
- 
-        public MembersModel(ServerCore.DataModel.PuzzleServerContext context)
+        public MembersModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
-            _context = context;
         }
 
         public Team Team { get; set; }
@@ -38,7 +36,7 @@ namespace ServerCore.Pages.Teams
             StringBuilder emailList = new StringBuilder("");
             foreach (TeamMembers Member in Members)
             {
-                emailList.Append(Member.Member.Email + "; ");
+                //TODO - figure out why this isn't working: emailList.Append(Member.Member.Email + "; ");
             }
             Emails = emailList.ToString();
 

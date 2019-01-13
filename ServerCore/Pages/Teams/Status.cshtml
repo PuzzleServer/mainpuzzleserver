@@ -1,11 +1,12 @@
-﻿@page "/{eventId}/Teams/Status"
+﻿@page "/{eventId}/{eventRole}/Teams/Status"
 @model ServerCore.Pages.Teams.StatusModel
 
 @{
     ViewData["Title"] = "Status";
+    Layout = "_teamLayout.cshtml";
 }
 
-<h2>Puzzle Status for @Model.Team.Name</h2>
+<h2>@Html.DisplayFor(model => model.Team.Name) - Status</h2>
 
 <table class="table">
     <thead>
@@ -38,7 +39,7 @@
         {
             <tr>
                 <td>
-                    <a asp-page="../Puzzles/Status" asp-route-id="@item.Puzzle.ID">@Html.DisplayFor(modelItem => item.Puzzle.Name)</a>
+                    <a asp-page="../Puzzles/Status" asp-route-puzzleid="@item.Puzzle.ID">@Html.DisplayFor(modelItem => item.Puzzle.Name)</a>
                 </td>
                 <td>
                     @if (item.UnlockedTime == null)
