@@ -9,8 +9,7 @@ using ServerCore.DataModel;
 
 namespace ServerCore.Pages.Events
 {
-    // TODO: Turn this on when it's easy to make yourself a global admin
-    //[Authorize(Policy = "IsGlobalAdmin")]
+    [Authorize(Policy = "IsGlobalAdmin")]
     public class CreateDemoModel : PageModel
     {
         private readonly PuzzleServerContext _context;
@@ -62,12 +61,14 @@ namespace ServerCore.Pages.Events
             //
             // Add the event and save, so the event gets an ID.
             //
+            Event.TeamRegistrationBegin = DateTime.UtcNow;
             Event.TeamRegistrationEnd = Event.AnswerSubmissionEnd;
             Event.TeamNameChangeEnd = Event.AnswerSubmissionEnd;
             Event.TeamMembershipChangeEnd = Event.AnswerSubmissionEnd;
             Event.TeamMiscDataChangeEnd = Event.AnswerSubmissionEnd;
             Event.TeamDeleteEnd = Event.AnswerSubmissionEnd;
             Event.AnswersAvailableBegin = Event.AnswerSubmissionEnd;
+            Event.StandingsAvailableBegin = DateTime.UtcNow;
             _context.Events.Add(Event);
 
             await _context.SaveChangesAsync();

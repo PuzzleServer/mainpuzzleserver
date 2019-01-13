@@ -41,10 +41,10 @@
                 @Html.DisplayFor(modelItem => item.IsInternEvent)
             </td>
             <td>
-                <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.ID">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.ID">Delete</a> |
-                <a asp-page="./Import" asp-route-id="@item.ID" asp-route-eventRole="admin">Import</a> |
+                <a asp-page="./Edit" asp-route-eventId="@item.EventID" asp-route-eventRole="admin">Edit</a> |
+                <a asp-page="./Details" asp-route-eventId="@item.EventID" asp-route-eventRole="admin">Details</a> |
+                <a asp-page="/Events/Delete" asp-route-eventId="@item.EventID" asp-route-eventRole="admin">Delete</a> |
+                <a asp-page="./Import" asp-route-eventId="@item.EventID" asp-route-eventRole="admin">Import</a> |
                 <a asp-page="/Puzzles/Index" asp-route-eventId="@item.EventID" asp-route-eventRole="admin">Puzzles</a> |
                 <a asp-page="/Teams/Index" asp-route-eventId="@item.EventID" asp-route-eventRole="admin">Teams</a> |
                 <a asp-page="./Players" asp-route-eventId="@item.EventID" asp-route-eventRole="admin">Players</a> |
