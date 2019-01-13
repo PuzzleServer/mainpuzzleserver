@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,7 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Responses
 {
+    [Authorize(Policy = "IsEventAdminOrAuthorOfPuzzle")]
     public class DeleteModel : EventSpecificPageModel
     {
         public DeleteModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)

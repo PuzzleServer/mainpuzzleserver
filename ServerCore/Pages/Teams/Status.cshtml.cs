@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ namespace ServerCore.Pages.Teams
     /// used for tracking what each team's progress is and altering that progress manually if needed.
     /// An author's view should be filtered to puzzles where they are an author (NYI so far though).
     /// </summary>
+    [Authorize(Policy = "IsEventAdminOrEventAuthor")]
     public class StatusModel : PuzzleStatePerTeamPageModel
     {
         public StatusModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)

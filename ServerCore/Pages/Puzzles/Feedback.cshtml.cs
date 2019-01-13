@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,7 @@ namespace ServerCore.Pages.Puzzles
     /// Model for the author/admin's view of the feedback items for a specific puzzle
     /// /used for viewing and aggregating feedback for a specific puzzle
     /// </summary>
+    [Authorize(Policy = "IsEventAdminOrAuthorOfPuzzle")]
     public class FeedbackModel : EventSpecificPageModel
     {
         public FeedbackModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
@@ -33,11 +35,6 @@ namespace ServerCore.Pages.Puzzles
             if (Puzzle == null) 
             { 
                 return NotFound(); 
-            }
-
-            if (!await CanAdminPuzzle(Puzzle))
-            {
-                return NotFound();
             }
 
             return Page();

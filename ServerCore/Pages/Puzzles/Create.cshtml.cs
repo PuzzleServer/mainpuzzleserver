@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ServerCore.DataModel;
@@ -6,6 +7,7 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Puzzles
 {
+    [Authorize(Policy = "IsEventAdminOrEventAuthor")]
     public class CreateModel : EventSpecificPageModel
     {
         [BindProperty]

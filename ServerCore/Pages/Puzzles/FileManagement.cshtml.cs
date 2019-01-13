@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +16,7 @@ namespace ServerCore.Pages.Puzzles
     /// <summary>
     /// Page for managing the files associated with a puzzle
     /// </summary>
+    [Authorize(Policy = "IsEventAdminOrAuthorOfPuzzle")]
     public class FileManagementModel : EventSpecificPageModel
     {
         public FileManagementModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
@@ -48,11 +50,6 @@ namespace ServerCore.Pages.Puzzles
                 return NotFound();
             }
 
-            if (!await CanAdminPuzzle(Puzzle))
-            {
-                return NotFound();
-            }
-
             return Page();
         }
 
@@ -69,11 +66,6 @@ namespace ServerCore.Pages.Puzzles
             Puzzle = await _context.Puzzles.FirstOrDefaultAsync(m => m.ID == puzzleId);
 
             if (Puzzle == null)
-            {
-                return NotFound();
-            }
-
-            if (!await CanAdminPuzzle(Puzzle))
             {
                 return NotFound();
             }
@@ -151,11 +143,6 @@ namespace ServerCore.Pages.Puzzles
             Puzzle = await _context.Puzzles.FirstOrDefaultAsync(m => m.ID == puzzleId);
 
             if (Puzzle == null)
-            {
-                return NotFound();
-            }
-
-            if (!await CanAdminPuzzle(Puzzle))
             {
                 return NotFound();
             }

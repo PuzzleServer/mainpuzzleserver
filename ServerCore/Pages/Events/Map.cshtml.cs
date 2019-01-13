@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,10 +12,9 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Events
 {
+    [Authorize(Policy = "IsEventAdminOrEventAuthor")]
     public class MapModel : EventSpecificPageModel
     {
-        private readonly PuzzleServerContext _context;
-
         public List<PuzzleStats> Puzzles { get; private set; }
 
         public List<TeamStats> Teams { get; private set; }
@@ -23,7 +23,6 @@ namespace ServerCore.Pages.Events
 
         public MapModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
-            _context = serverContext;
         }
 
         public async Task<IActionResult> OnGetAsync()

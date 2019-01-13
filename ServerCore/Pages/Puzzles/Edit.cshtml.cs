@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +11,7 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Puzzles
 {
+    [Authorize(Policy = "IsEventAdminOrAuthorOfPuzzle")]
     public class EditModel : EventSpecificPageModel
     {
         public EditModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
@@ -44,11 +45,6 @@ namespace ServerCore.Pages.Puzzles
         public async Task<IActionResult> OnGetAsync(int puzzleId)
         {
             Puzzle = await _context.Puzzles.Where(m => m.ID == puzzleId).FirstOrDefaultAsync();
-
-            if (!await CanAdminPuzzle(Puzzle))
-            {
-                return NotFound();
-            }
 
             IQueryable<PuzzleUser> currentAuthorsQ = _context.PuzzleAuthors.Where(m => m.Puzzle == Puzzle).Select(m => m.Author);
             IQueryable<PuzzleUser> potentialAuthorsQ = _context.EventAuthors.Where(m => m.Event == Event).Select(m => m.Author).Except(currentAuthorsQ);
@@ -92,11 +88,6 @@ namespace ServerCore.Pages.Puzzles
             if (!ModelState.IsValid)
             {
                 return Page();
-            }
-
-            if (!await CanAdminPuzzle(Puzzle))
-            {
-                return NotFound();
             }
 
             _context.Attach(Puzzle).State = EntityState.Modified;

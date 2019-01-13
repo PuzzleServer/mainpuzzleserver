@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -8,6 +9,7 @@ using ServerCore.DataModel;
 
 namespace ServerCore.Pages.Events
 {
+    [Authorize(Policy = "IsGlobalAdmin")]
     public class CreateDemoModel : PageModel
     {
         private readonly PuzzleServerContext _context;

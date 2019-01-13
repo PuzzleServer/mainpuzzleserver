@@ -48,21 +48,6 @@ namespace ServerCore.ModelBases
             userManager = manager;
         }
 
-        public async Task<bool> CanAdminPuzzle(Puzzle puzzle)
-        {
-            if (EventRole != EventRole.admin && EventRole != EventRole.author)
-            {
-                return false;
-            }
-
-            if (puzzle == null || (EventRole == EventRole.author && !await UserEventHelper.IsAuthorOfPuzzle(_context, puzzle, LoggedInUser)))
-            {
-                return false;
-            }
-
-            return true;
-        }
-
         public class EventBinder : IModelBinder
         {
             public async Task BindModelAsync(ModelBindingContext bindingContext)

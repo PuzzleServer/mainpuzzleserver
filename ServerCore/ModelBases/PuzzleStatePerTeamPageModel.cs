@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
-using ServerCore.Helpers;
 
 namespace ServerCore.ModelBases
 {
@@ -25,11 +25,6 @@ namespace ServerCore.ModelBases
         public async Task<IActionResult> InitializeModelAsync(Puzzle puzzle, Team team, SortOrder? sort)
         {
             if (puzzle == null && team == null)
-            {
-                return NotFound();
-            }
-
-            if (puzzle != null && !await CanAdminPuzzle(puzzle))
             {
                 return NotFound();
             }
@@ -91,21 +86,11 @@ namespace ServerCore.ModelBases
 
         public async Task SetUnlockStateAsync(Puzzle puzzle, Team team, bool value)
         {
-            if (!await CanAdminPuzzle(puzzle))
-            {
-                return;
-            }
-
             await PuzzleStateHelper.SetUnlockStateAsync(_context, Event, puzzle, team, value ? (DateTime?)DateTime.UtcNow : null, EventRole == EventRole.admin ? null : LoggedInUser);
         }
 
         public async Task SetSolveStateAsync(Puzzle puzzle, Team team, bool value)
         {
-            if (!await CanAdminPuzzle(puzzle))
-            {
-                return;
-            }
-
             await PuzzleStateHelper.SetSolveStateAsync(_context, Event, puzzle, team, value ? (DateTime?)DateTime.UtcNow : null, EventRole == EventRole.admin ? null : LoggedInUser);
         }
 
