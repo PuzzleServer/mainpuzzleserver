@@ -17,7 +17,8 @@
         <a asp-page="./Index">Back to team list</a>
     </div>
 }
-@if (Model.EventRole == ModelBases.EventRole.play)
+<!-- Players can have a null team and still reach a default team page -->
+@if (Model.EventRole == ModelBases.EventRole.play && Model.Team != null)
 {
     <div>
         <a asp-page="./Details" asp-route-id="@Model.Team.ID">Details</a> |

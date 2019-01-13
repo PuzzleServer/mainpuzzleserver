@@ -6,53 +6,66 @@
     Layout = "_teamLayout.cshtml";
 }
 
-<h2>@Html.DisplayFor(model => model.Team.Name) - Details</h2>
 
-<div>
-    @if(Model.EventRole != ModelBases.EventRole.author)
-    {
-        <div>
-            <a asp-page="./Edit" asp-route-id="@Model.Team.ID">Edit</a> |
-            <a asp-page="./Delete">Delete</a>
-        </div>
-    }
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.Name)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Team.Name)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.RoomID)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Team.RoomID)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.CustomRoom)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Team.CustomRoom)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.PrimaryContactEmail)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Team.PrimaryContactEmail)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.PrimaryPhoneNumber)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Team.PrimaryPhoneNumber)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.SecondaryPhoneNumber)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Team.SecondaryPhoneNumber)
-        </dd>
-    </dl>
-</div>
+<!-- TEAM VIEW -->
+@if (Model.HasTeam)
+{
+    <h2>@Html.DisplayFor(model => model.Team.Name) - Details</h2>
+
+    <div>
+        @if (Model.EventRole != ModelBases.EventRole.author)
+        {
+            <div>
+                <a asp-page="./Edit" asp-route-id="@Model.Team.ID">Edit</a> |
+                <a asp-page="./Delete">Delete</a>
+            </div>
+        }
+        <hr />
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Team.Name)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Team.Name)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Team.RoomID)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Team.RoomID)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Team.CustomRoom)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Team.CustomRoom)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Team.PrimaryContactEmail)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Team.PrimaryContactEmail)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Team.PrimaryPhoneNumber)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Team.PrimaryPhoneNumber)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Team.SecondaryPhoneNumber)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Team.SecondaryPhoneNumber)
+            </dd>
+        </dl>
+    </div>
+}
+@if (!Model.HasTeam)
+{
+    <h2>You are not yet part of a team for this event</h2>
+
+    <div>
+        Talk to your friends and sign up!
+    </div>
+}

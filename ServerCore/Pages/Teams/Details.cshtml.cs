@@ -15,17 +15,19 @@ namespace ServerCore.Pages.Teams
         }
 
         public Team Team { get; set; }
+        public bool HasTeam { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int id=-1)
         {
-            if (id == -1)
+            HasTeam = false;
+            if (EventRole == ModelBases.EventRole.play)
             {
-                if (EventRole != ModelBases.EventRole.play)
-                {
-                    return NotFound("Missing team id");
-                }
-                Team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
-                return NotFound("I tried. \nID:" + LoggedInUser.ID + " - IDID:" + LoggedInUser.IdentityUserId + " - EventID:" + Event.ID);// + " - TeamID:" + Team.ID);
+                // Ignore reqeusted team IDs for players - always re-direct to their own team
+                Team = await UserEventHelper.GetTeamForPlayer(context, Event, LoggedInUser);
+            }
+            else if (id == -1)
+            {
+                return NotFound("Missing team id");
             }
             else
             {
@@ -34,8 +36,14 @@ namespace ServerCore.Pages.Teams
 
             if (Team == null)
             {
-                return NotFound("No team found with id '" + id + "'.");
+                if (EventRole != ModelBases.EventRole.play)
+                {
+                    return NotFound("No team found with id '" + id + "'.");
+                }
+                // The html page handles the 'no team' case using HasTeam
+                return Page();
             }
+            HasTeam = true;
             return Page();
         }
     }
