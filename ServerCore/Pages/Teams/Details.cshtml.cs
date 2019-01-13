@@ -9,13 +9,8 @@ namespace ServerCore.Pages.Teams
 {
     public class DetailsModel : EventSpecificPageModel
     {
-        private readonly PuzzleServerContext _context;
-        private readonly UserManager<IdentityUser> userManager;
-
-        public DetailsModel(PuzzleServerContext context, UserManager<IdentityUser> manager)
+        public DetailsModel(PuzzleServerContext context, UserManager<IdentityUser> manager) : base(context, manager)
         {
-            _context = context;
-            userManager = manager;
         }
 
         public Team Team { get; set; }

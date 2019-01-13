@@ -39,7 +39,7 @@
         {
             <tr>
                 <td>
-                    <a asp-page="../Puzzles/Status" asp-route-id="@item.Puzzle.ID">@Html.DisplayFor(modelItem => item.Puzzle.Name)</a>
+                    <a asp-page="../Puzzles/Status" asp-route-puzzleid="@item.Puzzle.ID">@Html.DisplayFor(modelItem => item.Puzzle.Name)</a>
                 </td>
                 <td>
                     @if (item.UnlockedTime == null)

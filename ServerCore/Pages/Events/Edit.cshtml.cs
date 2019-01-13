@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,7 @@ using ServerCore.DataModel;
 
 namespace ServerCore.Pages.Events
 {
+    [Authorize(Policy = "IsGlobalAdmin")]
     public class EditModel : PageModel
     {
         private readonly PuzzleServerContext _context;

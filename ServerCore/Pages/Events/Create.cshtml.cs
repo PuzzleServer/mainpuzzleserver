@@ -1,23 +1,27 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using ServerCore.DataModel;
 
 namespace ServerCore.Pages.Events
 {
-    [Authorize(Policy = "IsGlobalAdmin")]
+    // TODO: Turn this on when it's easy to make yourself a global admin
+    //[Authorize(Policy = "IsGlobalAdmin")]
     public class CreateModel : PageModel
     {
         private readonly PuzzleServerContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
         [BindProperty]
         public Event Event { get; set; }
 
-        public CreateModel(PuzzleServerContext context)
+        public CreateModel(PuzzleServerContext context, UserManager<IdentityUser> manager)
         {
             _context = context;
+            _userManager = manager;
         }
 
         public IActionResult OnGet()
@@ -46,6 +50,15 @@ namespace ServerCore.Pages.Events
             }
 
             _context.Events.Add(Event);
+
+            var loggedInUser = PuzzleUser.GetPuzzleUserForCurrentUser(_context, User, _userManager).Result;
+
+            if (loggedInUser != null)
+            {
+                _context.EventAdmins.Add(new EventAdmins() { Event = Event, Admin = loggedInUser });
+                _context.EventAuthors.Add(new EventAuthors() { Event = Event, Author = loggedInUser });
+            }
+
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");

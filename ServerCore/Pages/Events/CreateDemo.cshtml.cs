@@ -1,15 +1,20 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using ServerCore.DataModel;
 
 namespace ServerCore.Pages.Events
 {
+    // TODO: Turn this on when it's easy to make yourself a global admin
+    //[Authorize(Policy = "IsGlobalAdmin")]
     public class CreateDemoModel : PageModel
     {
         private readonly PuzzleServerContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
         [BindProperty]
         public Event Event { get; set; }
@@ -17,9 +22,10 @@ namespace ServerCore.Pages.Events
         [BindProperty]
         public bool StartTheEvent { get; set; }
 
-        public CreateDemoModel(PuzzleServerContext context)
+        public CreateDemoModel(PuzzleServerContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         public IActionResult OnGet()
@@ -73,7 +79,8 @@ namespace ServerCore.Pages.Events
             {
                 Name = "!!!Get Hopping!!!",
                 Event = Event,
-                IsPuzzle = false
+                IsPuzzle = false,
+                IsGloballyVisiblePrerequisite = true
             };
             _context.Puzzles.Add(start);
 
@@ -130,6 +137,18 @@ namespace ServerCore.Pages.Events
             };
             _context.Puzzles.Add(meta);
 
+            Puzzle other = new Puzzle
+            {
+                Name = "Rabbit Season",
+                Event = Event,
+                IsPuzzle = true,
+                SolveValue = 10,
+                Group = "Daffy's Delights",
+                OrderInGroup = 1,
+                MinPrerequisiteCount = 1
+            };
+            _context.Puzzles.Add(other);
+
             await _context.SaveChangesAsync();
 
             //
@@ -143,6 +162,8 @@ namespace ServerCore.Pages.Events
             _context.Responses.Add(new Response() { Puzzle = hard, SubmittedText = "ANSWER", ResponseText = "Correct!", IsSolution = true });
             _context.Responses.Add(new Response() { Puzzle = meta, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
             _context.Responses.Add(new Response() { Puzzle = meta, SubmittedText = "ANSWER", ResponseText = "Correct!", IsSolution = true });
+            _context.Responses.Add(new Response() { Puzzle = other, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
+            _context.Responses.Add(new Response() { Puzzle = other, SubmittedText = "ANSWER", ResponseText = "Correct!", IsSolution = true });
 
             await _context.SaveChangesAsync();
 
@@ -157,6 +178,7 @@ namespace ServerCore.Pages.Events
             _context.Prerequisites.Add(new Prerequisites() { Puzzle = meta, Prerequisite = easy });
             _context.Prerequisites.Add(new Prerequisites() { Puzzle = meta, Prerequisite = intermediate });
             _context.Prerequisites.Add(new Prerequisites() { Puzzle = meta, Prerequisite = hard });
+            _context.Prerequisites.Add(new Prerequisites() { Puzzle = other, Prerequisite = start });
 
             await _context.SaveChangesAsync();
 
@@ -172,13 +194,29 @@ namespace ServerCore.Pages.Events
             Team team3 = new Team { Name = "Team Buster", Event = Event };
             _context.Teams.Add(team3);
 
-            await _context.SaveChangesAsync();
+            var demoCreatorUser = await PuzzleUser.GetPuzzleUserForCurrentUser(_context, User, _userManager);
+            if (demoCreatorUser != null)
+            {
+                //
+                // Event admin/author
+                //
+                _context.EventAdmins.Add(new EventAdmins() { Event = Event, Admin = demoCreatorUser });
+                _context.EventAuthors.Add(new EventAuthors() { Event = Event, Author = demoCreatorUser });
 
-            // TODO: Event Owners
-            // TODO: Puzzle Authors
+                //
+                // Puzzle author (for Thumper module only)
+                //
+                _context.PuzzleAuthors.Add(new PuzzleAuthors() { Puzzle = easy, Author = demoCreatorUser });
+                _context.PuzzleAuthors.Add(new PuzzleAuthors() { Puzzle = intermediate, Author = demoCreatorUser });
+                _context.PuzzleAuthors.Add(new PuzzleAuthors() { Puzzle = hard, Author = demoCreatorUser });
+                _context.PuzzleAuthors.Add(new PuzzleAuthors() { Puzzle = meta, Author = demoCreatorUser });
+            }
+
             // TODO: Team Members
             // TODO: Files (need to know how to detect whether local blob storage is configured)
             // Is there a point to adding Feedback or is that quick/easy enough to demo by hand?
+
+            await _context.SaveChangesAsync();
 
             //
             // Mark the start puzzle as solved if we were asked to.

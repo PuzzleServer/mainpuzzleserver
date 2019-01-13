@@ -42,7 +42,7 @@ namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext authContext, IsEventAdminOrEventAuthorRequirement requirement)
         {
-            await AuthorizationHelper.IsPuzzleAuthorCheck(authContext, dbContext, userManager, requirement);
+            await AuthorizationHelper.IsEventAuthorCheck(authContext, dbContext, userManager, requirement);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -11,11 +12,8 @@ namespace ServerCore.Pages.Teams
 {
     public class CreateModel : EventSpecificPageModel
     {
-        private readonly PuzzleServerContext _context;
-
-        public CreateModel(PuzzleServerContext context)
+        public CreateModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
-            _context = context;
         }
 
         public IActionResult OnGet()
