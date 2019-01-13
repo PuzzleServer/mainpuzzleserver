@@ -40,7 +40,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.Teams[0].SecondaryPhoneNumber)
             </th>
-            @if (!Model.UserOnTeam)
+            @if (Model.EventRole == ModelBases.EventRole.play && !Model.UserOnTeam)
             {
                 <th>Join</th>
             }
@@ -68,7 +68,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.SecondaryPhoneNumber)
             </td>
-            @if (!Model.UserOnTeam)
+            @if (Model.EventRole == ModelBases.EventRole.play && !Model.UserOnTeam)
             {
             <td>
                 <!-- todo: this link doesn't trigger the action-->
