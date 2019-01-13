@@ -2,7 +2,7 @@
 @model ServerCore.Pages.Teams.PlayModel
 
 @{
-    ViewData["Title"] = "Play";
+    ViewData["Title"] = "Puzzles";
 
     bool showAnswers = Model.Event.AnswersAvailableBegin <= DateTime.UtcNow;
 }
@@ -93,6 +93,3 @@
     }
     </tbody>
 </table>
-<div>
-    <a asp-page="/Teams/Index">Back to Team List</a>
-</div>
