@@ -48,7 +48,6 @@ namespace ServerCore.Pages.Events
             Event.StandingsAvailableBegin = now;
             Event.EventBegin = now;
             Event.AnswerSubmissionEnd = now.AddDays(1);
-
             return Page();
         }
 
@@ -68,6 +67,10 @@ namespace ServerCore.Pages.Events
             Event.TeamMiscDataChangeEnd = Event.AnswerSubmissionEnd;
             Event.TeamDeleteEnd = Event.AnswerSubmissionEnd;
             Event.AnswersAvailableBegin = Event.AnswerSubmissionEnd;
+            Event.LockoutIncorrectGuessLimit = 5;
+            Event.LockoutIncorrectGuessPeriod = 1;
+            Event.LockoutDurationMultiplier = 2;
+            Event.MaxSubmissionCount = 50;
             _context.Events.Add(Event);
 
             await _context.SaveChangesAsync();

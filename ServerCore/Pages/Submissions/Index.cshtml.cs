@@ -159,13 +159,12 @@ namespace ServerCore.Pages.Submissions
                     team))
                 .FirstOrDefaultAsync();
 
-            // Note: These submissions are not guaranteed to be sorted, but
-            // they should be entered into the database in-order.
             Submissions = await _context.Submissions.Where(
                 (s) => s.Team != null &&
                        s.Team.ID == teamId &&
                        s.Puzzle != null &&
                        s.Puzzle.ID == puzzleId)
+                .OrderBy(submission => submission.TimeSubmitted)
                 .ToListAsync();
         }
 

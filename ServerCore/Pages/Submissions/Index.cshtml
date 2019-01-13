@@ -19,7 +19,7 @@
             You got it! Correct answer: @Model.AnswerToken
         </div>
     }
-    else if (@Model.Event.IsAnswerSubmissionActive)
+    else if (!@Model.Event.IsAnswerSubmissionActive)
     {
         <div class="col-md-12" style="padding-bottom: 15px;">
             <h3>This event is not in session. No submissions will be accepted at this time.</h3>
@@ -34,7 +34,7 @@
     else if (Model.PuzzleState.IsTeamLockedOut)
     {
         <div class="alert alert-danger" role="alert">
-           You are locked out. Please wait @Model.PuzzleState.LockoutTimeRemaining.ToString(@"mm\:ss") before attempting another submission.
+           You are locked out. Please wait <span id="LockoutTimer">@Model.PuzzleState.LockoutTimeRemaining.ToString(@"mm\:ss")</span> before attempting another submission.
         </div>
     }
     else
@@ -95,4 +95,30 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @if (@Model.PuzzleState.LockoutExpiryTime != null)
+    {
+        <script type="text/javascript">
+            var unlockTime = new Date(Date.UTC(
+                @Model.PuzzleState.LockoutExpiryTime.Value.Year,
+                @Model.PuzzleState.LockoutExpiryTime.Value.Month-1,
+                @Model.PuzzleState.LockoutExpiryTime.Value.Day,
+                @Model.PuzzleState.LockoutExpiryTime.Value.Hour,
+                @Model.PuzzleState.LockoutExpiryTime.Value.Minute,
+                @Model.PuzzleState.LockoutExpiryTime.Value.Second));
+
+            setInterval(function () {
+                var timer = document.getElementById("LockoutTimer");
+                if (timer === null) {
+                    return;
+                }
+                var timeDeltaSeconds = Math.floor((unlockTime - Date.now()) / 1000);
+                if (timeDeltaSeconds <= 0) {
+                    window.location.reload(false); 
+                }
+                var minutesLeft = Math.floor(timeDeltaSeconds / 60);
+                var secondsLeft = timeDeltaSeconds % 60;
+                timer.innerText = minutesLeft + ":" + secondsLeft;
+            }, 1000);
+        </script>
+    }
 }
