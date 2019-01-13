@@ -46,7 +46,7 @@ namespace ServerCore.Pages
             // * Players can see puzzles and materials on puzzles they've unlocked
             // * Players can see answers after the event's AnswersAvailable time
             // * Players can see solve tokens on puzzles they've solved
-            if (!await IsAuthorized(eventId, content.Puzzle, content))
+            if (!await IsAuthorized(eventObj.ID, content.Puzzle, content))
             {
                 return Unauthorized();
             }

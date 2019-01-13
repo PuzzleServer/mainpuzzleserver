@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ServerCore.DataModel;
+using ServerCore.Helpers;
 
 namespace ServerCore.ModelBases
 {
@@ -38,8 +39,8 @@ namespace ServerCore.ModelBases
             }
         }
 
-        private PuzzleServerContext puzzleServerContext;
-        private UserManager<IdentityUser> userManager;
+        private readonly PuzzleServerContext puzzleServerContext;
+        private readonly UserManager<IdentityUser> userManager;
 
         public EventSpecificPageModel()
         {
@@ -58,7 +59,7 @@ namespace ServerCore.ModelBases
             {
                 string eventId = bindingContext.ActionContext.RouteData.Values["eventId"] as string;
 
-                var puzzleServerContext = bindingContext.HttpContext.RequestServices.GetService<PuzzleServerContext>();
+                PuzzleServerContext puzzleServerContext = bindingContext.HttpContext.RequestServices.GetService<PuzzleServerContext>();
 
                 Event eventObj = await EventHelper.GetEventFromEventId(puzzleServerContext, eventId);
 
