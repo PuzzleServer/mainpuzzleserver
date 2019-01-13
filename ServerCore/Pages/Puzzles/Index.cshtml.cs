@@ -22,11 +22,6 @@ namespace ServerCore.Pages.Puzzles
 
         public async Task<IActionResult> OnGetAsync()
         {
-            if (EventRole != EventRole.admin && EventRole != EventRole.author)
-            {
-                return NotFound();
-            }
-
             if (EventRole == EventRole.admin)
             {
                 Puzzles = await _context.Puzzles.Where(p => p.Event == Event).ToListAsync();

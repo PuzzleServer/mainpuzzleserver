@@ -28,18 +28,23 @@ namespace ServerCore.Pages.Teams
         {
             Team = await _context.Teams.FirstOrDefaultAsync(m => m.ID == id);
 
+            if (Team == null)
+            {
+                return NotFound();
+            }
+
             return await InitializeModelAsync(null, Team, sort: sort);
         }
 
         public async Task<IActionResult> OnGetUnlockStateAsync(int id, int? puzzleId, bool value, string sort)
         {
-            if (EventRole != EventRole.admin && EventRole != EventRole.author)
+            var puzzle = puzzleId == null ? null : await _context.Puzzles.FirstAsync(m => m.ID == puzzleId.Value);
+            var team = await _context.Teams.FirstAsync(m => m.ID == id);
+
+            if (Team == null)
             {
                 return NotFound();
             }
-
-            var puzzle = puzzleId == null ? null : await _context.Puzzles.FirstAsync(m => m.ID == puzzleId.Value);
-            var team = await _context.Teams.FirstAsync(m => m.ID == id);
 
             await SetUnlockStateAsync(puzzle, team, value);
 
@@ -49,13 +54,13 @@ namespace ServerCore.Pages.Teams
 
         public async Task<IActionResult> OnGetSolveStateAsync(int id, int? puzzleId, bool value, string sort)
         {
-            if (EventRole != EventRole.admin && EventRole != EventRole.author)
+            var puzzle = puzzleId == null ? null : await _context.Puzzles.FirstAsync(m => m.ID == puzzleId.Value);
+            var team = await _context.Teams.FirstAsync(m => m.ID == id);
+
+            if (Team == null)
             {
                 return NotFound();
             }
-
-            var puzzle = puzzleId == null ? null : await _context.Puzzles.FirstAsync(m => m.ID == puzzleId.Value);
-            var team = await _context.Teams.FirstAsync(m => m.ID == id);
 
             await SetSolveStateAsync(puzzle, team, value);
 

@@ -9,7 +9,8 @@ using ServerCore.DataModel;
 
 namespace ServerCore.Pages.Events
 {
-    [Authorize(Policy = "IsGlobalAdmin")]
+    // TODO: Turn this on when it's easy to make yourself a global admin
+    //[Authorize(Policy = "IsGlobalAdmin")]
     public class CreateDemoModel : PageModel
     {
         private readonly PuzzleServerContext _context;

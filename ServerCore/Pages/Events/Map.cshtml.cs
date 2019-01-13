@@ -27,11 +27,6 @@ namespace ServerCore.Pages.Events
 
         public async Task<IActionResult> OnGetAsync()
         {
-            if (EventRole != EventRole.admin && EventRole != EventRole.author)
-            {
-                return NotFound();
-            }
-
             // get the puzzles and teams
             List<PuzzleStats> puzzles;
 

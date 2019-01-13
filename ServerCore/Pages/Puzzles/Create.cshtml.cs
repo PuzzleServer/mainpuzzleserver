@@ -39,6 +39,8 @@ namespace ServerCore.Pages.Puzzles
             Puzzle.Event = Event;
 
             _context.Puzzles.Add(Puzzle);
+            _context.PuzzleAuthors.Add(new PuzzleAuthors() { Puzzle = Puzzle, Author = LoggedInUser });
+
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");

@@ -46,6 +46,11 @@ namespace ServerCore.Pages.Puzzles
         {
             Puzzle = await _context.Puzzles.Where(m => m.ID == puzzleId).FirstOrDefaultAsync();
 
+            if (Puzzle == null)
+            {
+                return NotFound();
+            }
+
             IQueryable<PuzzleUser> currentAuthorsQ = _context.PuzzleAuthors.Where(m => m.Puzzle == Puzzle).Select(m => m.Author);
             IQueryable<PuzzleUser> potentialAuthorsQ = _context.EventAuthors.Where(m => m.Event == Event).Select(m => m.Author).Except(currentAuthorsQ);
 
