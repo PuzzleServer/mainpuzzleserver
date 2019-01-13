@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
@@ -9,11 +10,8 @@ namespace ServerCore.Pages.Teams
 {
     public class EditModel : EventSpecificPageModel
     {
-        private readonly PuzzleServerContext _context;
-
-        public EditModel(PuzzleServerContext context)
+        public EditModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
-            _context = context;
         }
 
         [BindProperty]

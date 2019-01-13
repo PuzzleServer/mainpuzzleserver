@@ -32,24 +32,19 @@ namespace ServerCore.ModelBases
             {
                 if (loggedInUser == null)
                 {
-                    loggedInUser = PuzzleUser.GetPuzzleUserForCurrentUser(puzzleServerContext, User, userManager).Result;
+                    loggedInUser = PuzzleUser.GetPuzzleUserForCurrentUser(_context, User, userManager).Result;
                 }
 
                 return loggedInUser;
             }
         }
 
-        private readonly PuzzleServerContext puzzleServerContext;
+        protected readonly PuzzleServerContext _context;
         private readonly UserManager<IdentityUser> userManager;
-
-        public EventSpecificPageModel()
-        {
-            // Default constructor - note that pages that use this constructor won't know what PuzzleUser is signed in
-        }
 
         public EventSpecificPageModel(PuzzleServerContext serverContext, UserManager<IdentityUser> manager)
         {
-            puzzleServerContext = serverContext;
+            _context = serverContext;
             userManager = manager;
         }
 

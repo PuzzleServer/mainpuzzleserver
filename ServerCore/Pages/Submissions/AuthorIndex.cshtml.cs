@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 using ServerCore.ModelBases;
@@ -11,11 +12,8 @@ namespace ServerCore.Pages.Submissions
     [Authorize(Policy = "IsEventAdminOrAuthorOfPuzzle")]
     public class AuthorIndexModel : EventSpecificPageModel
     {
-        private readonly PuzzleServerContext _context;
-
-        public AuthorIndexModel(PuzzleServerContext context)
+        public AuthorIndexModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
-            _context = context;
         }
 
         public IList<Submission> Submissions { get; set; }

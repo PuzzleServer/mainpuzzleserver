@@ -3,7 +3,9 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
@@ -14,13 +16,11 @@ namespace ServerCore.Pages.Puzzles
     /// <summary>
     /// Page for managing the files associated with a puzzle
     /// </summary>
+    [Authorize(Policy = "IsEventAdminOrAuthorOfPuzzle")]
     public class FileManagementModel : EventSpecificPageModel
     {
-        private readonly PuzzleServerContext _context;
-
-        public FileManagementModel(PuzzleServerContext context)
+        public FileManagementModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
-            _context = context;
         }
 
         //[BindProperty]

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -13,15 +14,12 @@ namespace ServerCore.Pages.Teams
 {
     public class AddMemberModel : EventSpecificPageModel
     {
-        private readonly ServerCore.DataModel.PuzzleServerContext _context;
-
         public Team Team { get; set; }
 
         public IList<PuzzleUser> Users { get; set; }
 
-        public AddMemberModel(ServerCore.DataModel.PuzzleServerContext context)
+        public AddMemberModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
-            _context = context;
         }
 
         public async Task<IActionResult> OnGetAsync(int teamId)

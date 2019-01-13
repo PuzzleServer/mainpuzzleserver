@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 using ServerCore.ModelBases;
@@ -10,13 +11,10 @@ namespace ServerCore.Pages.Events
 {
     public class StandingsModel : EventSpecificPageModel
     {
-        private readonly PuzzleServerContext _context;
-
         public List<TeamStats> Teams { get; private set; }
 
-        public StandingsModel(PuzzleServerContext context)
+        public StandingsModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
-            _context = context;
         }
 
         public async Task OnGetAsync()
