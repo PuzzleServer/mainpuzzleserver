@@ -146,10 +146,8 @@
                             </ul>
                         </li>
                     </ul>
-
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-                        <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login/out</a></li>
+                        <partial name="/Pages/Shared/_LoginPartial.cshtml" />
                     </ul>
                 </div>
             </div>
@@ -171,13 +169,6 @@
                         <a asp-page="/." class="navbar-brand" data-toggle="dropdown">
                             @Event.Name - Admin
                         </a>
-                        <!-- Get this to work & add it to the other header bars
-                        <ul class="dropdown-menu">
-                            <li><a asp-page="/." asp-route-eventRole="@ModelBases.EventRole.admin">Admin</a></li>
-                            <li><a asp-page="/." asp-route-eventRole="@ModelBases.EventRole.author">Author</a></li>
-                            <li><a asp-page="/." asp-route-eventRole="@ModelBases.EventRole.play">Player</a></li>
-                        </ul>
-                        -->
                     </div>
                     <div class="navbar-collapse collapse">
                         <ul class="nav navbar-nav">

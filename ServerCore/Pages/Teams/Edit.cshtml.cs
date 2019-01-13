@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,8 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Teams
 {
+    // TODO: Get working
+    //[Authorize(Policy = "IsEventAdminOrPlayerOnTeam")]
     public class EditModel : EventSpecificPageModel
     {
         public EditModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
@@ -17,9 +20,9 @@ namespace ServerCore.Pages.Teams
         [BindProperty]
         public Team Team { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int id)
+        public async Task<IActionResult> OnGetAsync(int teamId)
         {
-            Team = await _context.Teams.FirstOrDefaultAsync(m => m.ID == id);
+            Team = await _context.Teams.FirstOrDefaultAsync(m => m.ID == teamId);
 
             if (Team == null)
             {
@@ -56,9 +59,9 @@ namespace ServerCore.Pages.Teams
             return RedirectToPage("./Index");
         }
 
-        private bool TeamExists(int id)
+        private bool TeamExists(int teamId)
         {
-            return _context.Teams.Any(e => e.ID == id);
+            return _context.Teams.Any(e => e.ID == teamId);
         }
     }
 }

@@ -34,7 +34,6 @@ namespace ServerCore.ModelBases
                 {
                     loggedInUser = PuzzleUser.GetPuzzleUserForCurrentUser(_context, User, userManager).Result;
                 }
-
                 return loggedInUser;
             }
         }
