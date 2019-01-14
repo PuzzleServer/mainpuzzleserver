@@ -15,7 +15,7 @@ namespace Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.1-rtm-30846")
+                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -231,17 +231,9 @@ namespace Data.Migrations
 
                     b.Property<bool>("IsInternEvent");
 
-                    b.Property<double>("LockoutDurationMultiplier");
-
-                    b.Property<int>("LockoutIncorrectGuessLimit");
-
-                    b.Property<double>("LockoutIncorrectGuessPeriod");
-
                     b.Property<int>("MaxExternalsPerTeam");
 
                     b.Property<int>("MaxNumberOfTeams");
-
-                    b.Property<long>("MaxSubmissionCount");
 
                     b.Property<int>("MaxTeamSize");
 
@@ -512,10 +504,6 @@ namespace Data.Migrations
 
                     b.Property<int>("TeamID");
 
-                    b.Property<bool>("IsEmailOnlyMode");
-
-                    b.Property<DateTime?>("LockoutExpiryTime");
-
                     b.Property<string>("Notes");
 
                     b.Property<bool>("Printed");
@@ -523,8 +511,6 @@ namespace Data.Migrations
                     b.Property<DateTime?>("SolvedTime");
 
                     b.Property<DateTime?>("UnlockedTime");
-
-                    b.Property<long>("WrongSubmissionCountBuffer");
 
                     b.HasKey("PuzzleID", "TeamID");
 
@@ -596,8 +582,7 @@ namespace Data.Migrations
 
                     b.Property<int?>("ResponseID");
 
-                    b.Property<string>("SubmissionText")
-                        .IsRequired();
+                    b.Property<string>("SubmissionText");
 
                     b.Property<int?>("SubmitterID");
 
@@ -853,7 +838,7 @@ namespace Data.Migrations
             modelBuilder.Entity("ServerCore.DataModel.Submission", b =>
                 {
                     b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
-                        .WithMany("Submissions")
+                        .WithMany()
                         .HasForeignKey("PuzzleID");
 
                     b.HasOne("ServerCore.DataModel.Response", "Response")
@@ -865,7 +850,7 @@ namespace Data.Migrations
                         .HasForeignKey("SubmitterID");
 
                     b.HasOne("ServerCore.DataModel.Team", "Team")
-                        .WithMany("Submissions")
+                        .WithMany()
                         .HasForeignKey("TeamID");
                 });
 
