@@ -1,24 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
+using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Events
 {
-    public class ImportModel : PageModel
+    [Authorize(Policy = "IsEventAdmin")]
+    public class ImportModel : EventSpecificPageModel
     {
-        private readonly PuzzleServerContext _context;
-
-        public ImportModel(PuzzleServerContext context)
+        public ImportModel(PuzzleServerContext context, UserManager<IdentityUser> userManager) : base(context, userManager)
         {
-            _context = context;
         }
-
-        [BindProperty]
-        public Event Event { get; set; }
 
         public IList<Event> Events { get; set; }
 
@@ -27,13 +24,6 @@ namespace ServerCore.Pages.Events
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            Event = await _context.Events.SingleOrDefaultAsync(m => m.ID == id);
-
-            if (Event == null)
-            {
-                return NotFound();
-            }
-
             Events = await _context.Events.Where(e => e != Event).ToListAsync();
 
             return Page();
@@ -42,9 +32,7 @@ namespace ServerCore.Pages.Events
         public async Task<IActionResult> OnPostImportAsync()
         {
             // the BindProperty only binds the event ID, let's get the rest
-            Event = await _context.Events.Where((e) => e.ID == Event.ID).FirstOrDefaultAsync();
-
-            if (Event == null || await _context.Events.Where((e) => e.ID == ImportEventID).FirstOrDefaultAsync() == null)
+            if (await _context.Events.Where((e) => e.ID == ImportEventID).FirstOrDefaultAsync() == null)
             {
                 return NotFound();
             }

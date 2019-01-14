@@ -1,5 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
@@ -7,13 +9,11 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Responses
 {
+    [Authorize(Policy = "IsEventAdminOrAuthorOfPuzzle")]
     public class EditModel : EventSpecificPageModel
     {
-        private readonly ServerCore.DataModel.PuzzleServerContext _context;
-
-        public EditModel(ServerCore.DataModel.PuzzleServerContext context)
+        public EditModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
-            _context = context;
         }
 
         [BindProperty]

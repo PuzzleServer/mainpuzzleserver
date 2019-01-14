@@ -1,4 +1,6 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
@@ -6,13 +8,11 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Responses
 {
+    [Authorize(Policy = "IsEventAdminOrAuthorOfPuzzle")]
     public class DetailsModel : EventSpecificPageModel
     {
-        private readonly ServerCore.DataModel.PuzzleServerContext _context;
-
-        public DetailsModel(ServerCore.DataModel.PuzzleServerContext context)
+        public DetailsModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
-            _context = context;
         }
 
         public Response PuzzleResponse { get; set; }

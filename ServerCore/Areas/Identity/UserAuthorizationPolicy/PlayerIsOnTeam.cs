@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
+using ServerCore.ModelBases;
 
 namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
 {
@@ -27,14 +28,7 @@ namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
                                                        PlayerIsOnTeamRequirement requirement)
         {
-            PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
-            Team team = await AuthorizationHelper.GetTeamFromContext(authContext);
-            Event thisEvent = await AuthorizationHelper.GetEventFromContext(authContext);
-
-            if (thisEvent != null && (await UserEventHelper.GetTeamForPlayer(dbContext, thisEvent, puzzleUser)).ID == team.ID)
-            {
-                authContext.Succeed(requirement);
-            }
+            await AuthorizationHelper.IsPlayerOnTeamCheck(authContext, dbContext, userManager, requirement);
         }
     }
 }

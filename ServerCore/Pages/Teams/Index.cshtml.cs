@@ -1,19 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Teams
 {
+    [Authorize(Policy = "IsEventAdminOrEventAuthor")]
     public class IndexModel : EventSpecificPageModel
     {
-        private readonly PuzzleServerContext _context;
-
-        public IndexModel(PuzzleServerContext context)
+        public IndexModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
-            _context = context;
         }
 
         public IList<Team> Team { get;set; }

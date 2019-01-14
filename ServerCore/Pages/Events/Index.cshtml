@@ -30,7 +30,7 @@
 @foreach (var item in Model.Events) {
         <tr>
             <td>
-                <a asp-page="/EventSpecific/Index" asp-route-eventId="@item.ID">
+                <a asp-page="/EventSpecific/Index" asp-route-eventId="@item.EventID">
                     @Html.DisplayFor(modelItem => item.Name)
                 </a>
             </td>
@@ -41,16 +41,16 @@
                 @Html.DisplayFor(modelItem => item.IsInternEvent)
             </td>
             <td>
-                <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.ID">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.ID">Delete</a> |
-                <a asp-page="./Import" asp-route-id="@item.ID" asp-route-eventRole="admin">Import</a> |
-                <a asp-page="/Puzzles/Index" asp-route-eventId="@item.ID" asp-route-eventRole="admin">Puzzles</a> |
-                <a asp-page="/Teams/Index" asp-route-eventId="@item.ID" asp-route-eventRole="admin">Teams</a> |
-                <a asp-page="./Players" asp-route-eventId="@item.ID" asp-route-eventRole="admin">Players</a> |
-                <a asp-page="/Events/Standings" asp-route-eventId="@item.ID" asp-route-eventRole="admin">Standings</a> |
-                <a asp-page="/Events/FastestSolves" asp-route-eventId="@item.ID" asp-route-eventRole="admin">Fastest</a> |
-                <a asp-page="/Events/Map" asp-route-eventId="@item.ID" asp-route-eventRole="admin">Map</a>
+                <a asp-page="./Edit" asp-route-eventId="@item.EventID" asp-route-eventRole="admin">Edit</a> |
+                <a asp-page="./Details" asp-route-eventId="@item.EventID" asp-route-eventRole="admin">Details</a> |
+                <a asp-page="./Delete" asp-route-eventId="@item.EventID" asp-route-eventRole="admin">Delete</a> |
+                <a asp-page="./Import" asp-route-eventId="@item.EventID" asp-route-eventRole="admin">Import</a> |
+                <a asp-page="/Puzzles/Index" asp-route-eventId="@item.EventID" asp-route-eventRole="admin">Puzzles</a> |
+                <a asp-page="/Teams/Index" asp-route-eventId="@item.EventID" asp-route-eventRole="admin">Teams</a> |
+                <a asp-page="./Players" asp-route-eventId="@item.EventID" asp-route-eventRole="admin">Players</a> |
+                <a asp-page="./Standings" asp-route-eventId="@item.EventID" asp-route-eventRole="admin">Standings</a> |
+                <a asp-page="./FastestSolves" asp-route-eventId="@item.EventID" asp-route-eventRole="admin">Fastest</a> |
+                <a asp-page="./Map" asp-route-eventId="@item.EventID" asp-route-eventRole="admin">Map</a>
             </td>
         </tr>
 }

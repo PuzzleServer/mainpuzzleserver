@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
@@ -8,19 +9,16 @@ namespace ServerCore.Pages.Teams
 {
     public class DeleteModel : EventSpecificPageModel
     {
-        private readonly PuzzleServerContext _context;
-
-        public DeleteModel(PuzzleServerContext context)
+        public DeleteModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
-            _context = context;
         }
 
         [BindProperty]
         public Team Team { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int id)
+        public async Task<IActionResult> OnGetAsync(int teamId)
         {
-            Team = await _context.Teams.FirstOrDefaultAsync(m => m.ID == id);
+            Team = await _context.Teams.FirstOrDefaultAsync(m => m.ID == teamId);
 
             if (Team == null)
             {
@@ -29,9 +27,9 @@ namespace ServerCore.Pages.Teams
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(int id)
+        public async Task<IActionResult> OnPostAsync(int teamId)
         {
-            Team = await _context.Teams.FindAsync(id);
+            Team = await _context.Teams.FindAsync(teamId);
 
             if (Team != null)
             {

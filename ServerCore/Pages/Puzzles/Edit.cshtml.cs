@@ -1,23 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
+using ServerCore.Helpers;
 using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Puzzles
 {
+    [Authorize(Policy = "IsEventAdminOrAuthorOfPuzzle")]
     public class EditModel : EventSpecificPageModel
     {
-        private readonly PuzzleServerContext _context;
-
-        public EditModel(PuzzleServerContext context)
+        public EditModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
-            _context = context;
         }
 
         [BindProperty]
@@ -44,9 +42,9 @@ namespace ServerCore.Pages.Puzzles
 
         public List<Puzzle> CurrentPrerequisitesOf { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int id)
+        public async Task<IActionResult> OnGetAsync(int puzzleId)
         {
-            Puzzle = await _context.Puzzles.Where(m => m.ID == id).FirstOrDefaultAsync();
+            Puzzle = await _context.Puzzles.Where(m => m.ID == puzzleId).FirstOrDefaultAsync();
 
             if (Puzzle == null)
             {
@@ -59,14 +57,30 @@ namespace ServerCore.Pages.Puzzles
             CurrentAuthors = await currentAuthorsQ.OrderBy(p => p.Name).ToListAsync();
             PotentialAuthors = await potentialAuthorsQ.OrderBy(p => p.Name).ToListAsync();
 
+            IQueryable<Puzzle> allVisiblePuzzles;
+            IQueryable<Puzzle> allVisiblePuzzlesAndGlobalPrerequisites;
+
+            if (EventRole == EventRole.admin)
+            {
+                allVisiblePuzzles = allVisiblePuzzlesAndGlobalPrerequisites = _context.Puzzles.Where(m => m.Event == Event && m != Puzzle);
+            }
+            else
+            {
+                IQueryable<Puzzle> authorPuzzles = UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser);
+                Puzzle[] thisPuzzle = new Puzzle[] { Puzzle };
+
+                allVisiblePuzzles = authorPuzzles.Except(thisPuzzle);
+                allVisiblePuzzlesAndGlobalPrerequisites = authorPuzzles.Union(_context.Puzzles.Where(m => m.Event == Event && m.IsGloballyVisiblePrerequisite)).Except(thisPuzzle);
+            }
+
             IQueryable<Puzzle> currentPrerequisitesQ = _context.Prerequisites.Where(m => m.Puzzle == Puzzle).Select(m => m.Prerequisite);
-            IQueryable<Puzzle> potentialPrerequitesQ = _context.Puzzles.Where(m => m.Event == Event && m != Puzzle).Except(currentPrerequisitesQ);
+            IQueryable<Puzzle> potentialPrerequitesQ = allVisiblePuzzlesAndGlobalPrerequisites.Except(currentPrerequisitesQ);
 
             CurrentPrerequisites = await currentPrerequisitesQ.OrderBy(p => p.Name).ToListAsync();
             PotentialPrerequisites = await potentialPrerequitesQ.OrderBy(p => p.Name).ToListAsync();
 
             IQueryable<Puzzle> currentPrerequisitesOfQ = _context.Prerequisites.Where(m => m.Prerequisite == Puzzle).Select(m => m.Puzzle);
-            IQueryable<Puzzle> potentialPrerequitesOfQ = _context.Puzzles.Where(m => m.Event == Event && m != Puzzle).Except(currentPrerequisitesOfQ);
+            IQueryable<Puzzle> potentialPrerequitesOfQ = allVisiblePuzzles.Except(currentPrerequisitesOfQ);
 
             CurrentPrerequisitesOf = await currentPrerequisitesOfQ.OrderBy(p => p.Name).ToListAsync();
             PotentialPrerequisitesOf = await potentialPrerequitesOfQ.OrderBy(p => p.Name).ToListAsync();
@@ -150,9 +164,9 @@ namespace ServerCore.Pages.Puzzles
             return RedirectToPage();
         }
 
-        public async Task<IActionResult> OnGetRemoveAuthorAsync(int id, int author)
+        public async Task<IActionResult> OnGetRemoveAuthorAsync(int puzzleId, int author)
         {
-            PuzzleAuthors toRemove = await _context.PuzzleAuthors.Where(m => m.PuzzleID == id && m.AuthorID == author).FirstOrDefaultAsync();
+            PuzzleAuthors toRemove = await _context.PuzzleAuthors.Where(m => m.PuzzleID == puzzleId && m.AuthorID == author).FirstOrDefaultAsync();
 
             if (toRemove != null)
             {
@@ -161,12 +175,12 @@ namespace ServerCore.Pages.Puzzles
             }
 
             // redirect without the prerequisite info to keep the URL clean
-            return RedirectToPage(new { id });
+            return RedirectToPage(new { puzzleId });
         }
 
-        public async Task<IActionResult> OnGetRemovePrerequisiteAsync(int id, int prerequisite)
+        public async Task<IActionResult> OnGetRemovePrerequisiteAsync(int puzzleId, int prerequisite)
         {
-            Prerequisites toRemove = await _context.Prerequisites.Where(m => m.PuzzleID == id && m.PrerequisiteID == prerequisite).FirstOrDefaultAsync();
+            Prerequisites toRemove = await _context.Prerequisites.Where(m => m.PuzzleID == puzzleId && m.PrerequisiteID == prerequisite).FirstOrDefaultAsync();
 
             if (toRemove != null)
             {
@@ -175,12 +189,12 @@ namespace ServerCore.Pages.Puzzles
             }
 
             // redirect without the prerequisite info to keep the URL clean
-            return RedirectToPage(new { id });
+            return RedirectToPage(new { puzzleId });
         }
 
-        public async Task<IActionResult> OnGetRemovePrerequisiteOfAsync(int id, int prerequisiteOf)
+        public async Task<IActionResult> OnGetRemovePrerequisiteOfAsync(int puzzleId, int prerequisiteOf)
         {
-            Prerequisites toRemove = await _context.Prerequisites.Where(m => m.PuzzleID == prerequisiteOf && m.PrerequisiteID == id).FirstOrDefaultAsync();
+            Prerequisites toRemove = await _context.Prerequisites.Where(m => m.PuzzleID == prerequisiteOf && m.PrerequisiteID == puzzleId).FirstOrDefaultAsync();
 
             if (toRemove != null)
             {
@@ -189,12 +203,12 @@ namespace ServerCore.Pages.Puzzles
             }
 
             // redirect without the prerequisite info to keep the URL clean
-            return RedirectToPage(new { id });
+            return RedirectToPage(new { puzzleId });
         }
 
-        private bool PuzzleExists(int id)
+        private bool PuzzleExists(int puzzleId)
         {
-            return _context.Puzzles.Any(e => e.ID == id);
+            return _context.Puzzles.Any(e => e.ID == puzzleId);
         }
 
         private bool PrerequisiteExists(int puzzleId, int prerequisiteId)

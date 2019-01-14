@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
@@ -12,13 +14,11 @@ namespace ServerCore.Pages.Puzzles
     /// Model for the author/admin's view of the feedback items for a specific puzzle
     /// /used for viewing and aggregating feedback for a specific puzzle
     /// </summary>
+    [Authorize(Policy = "IsEventAdminOrAuthorOfPuzzle")]
     public class FeedbackModel : EventSpecificPageModel
     {
-        private readonly PuzzleServerContext _context;
-
-        public FeedbackModel(PuzzleServerContext context)
+        public FeedbackModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
-            _context = context;
         }
 
         public IList<Feedback> Feedbacks { get; set; }
@@ -27,15 +27,15 @@ namespace ServerCore.Pages.Puzzles
         /// <summary>
         /// Gets the feedback and puzzle associated with the given ID
         /// </summary>
-        public async Task<IActionResult> OnGetAsync(int id)
+        public async Task<IActionResult> OnGetAsync(int puzzleId)
         {
-            Feedbacks = await _context.Feedback.Where((f) => f.Puzzle.ID == id).ToListAsync();
-            Puzzle = await _context.Puzzles.Where((p) => p.ID == id).FirstOrDefaultAsync();
+            Feedbacks = await _context.Feedback.Where((f) => f.Puzzle.ID == puzzleId).ToListAsync();
+            Puzzle = await _context.Puzzles.Where((p) => p.ID == puzzleId).FirstOrDefaultAsync();
 
             if (Puzzle == null) 
             { 
                 return NotFound(); 
-            } 
+            }
 
             return Page();
         }

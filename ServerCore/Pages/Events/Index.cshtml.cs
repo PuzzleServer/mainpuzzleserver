@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 
 namespace ServerCore.Pages.Events
 {
+    [Authorize(Policy = "IsGlobalAdmin")]
     public class IndexModel : PageModel
     {
         private readonly PuzzleServerContext _context;

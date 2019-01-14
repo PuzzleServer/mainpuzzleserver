@@ -13,12 +13,12 @@
     <thead>
         <tr>
             <th>
-                <a asp-page="./Play" asp-route-id="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(PlayModel.SortOrder.PuzzleAscending, PlayModel.SortOrder.PuzzleDescending))">
+                <a asp-page="./Play" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(PlayModel.SortOrder.PuzzleAscending, PlayModel.SortOrder.PuzzleDescending))">
                     @Html.DisplayNameFor(model => model.PuzzlesWithState[0].Puzzle.Name)
                 </a>
             </th>
             <th>
-                <a asp-page="./Play" asp-route-id="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(PlayModel.SortOrder.GroupAscending, PlayModel.SortOrder.GroupDescending))">
+                <a asp-page="./Play" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(PlayModel.SortOrder.GroupAscending, PlayModel.SortOrder.GroupDescending))">
                     @Html.DisplayNameFor(model => model.PuzzlesWithState[0].Puzzle.Group)
                 </a>
             </th>
@@ -34,7 +34,7 @@
                 </th>
             }
             <th>
-                <a asp-page="./Play" asp-route-id="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(PlayModel.SortOrder.SolveAscending, PlayModel.SortOrder.SolveDescending))">
+                <a asp-page="./Play" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(PlayModel.SortOrder.SolveAscending, PlayModel.SortOrder.SolveDescending))">
                     Solve
                 </a>
             </th>
@@ -64,9 +64,9 @@
                 @if (showAnswers)
                 {
                     <td>        
-                        if (item.Puzzle.AnswerFile != null)
+                        @if (item.Puzzle.AnswerFile != null)
                         {
-                            @Html.ActionLink(item.Puzzle.AnswerFile.ShortName, "Index", "Files", new { eventId = Model.Event.ID, filename = item.Puzzle.AnswerFile.ShortName })
+                           @Html.ActionLink(item.Puzzle.AnswerFile.ShortName, "Index", "Files", new { eventId = Model.Event.ID, filename = item.Puzzle.AnswerFile.ShortName })
                         }
                     </td>
                 }
@@ -87,7 +87,7 @@
                 </a>
             </td>
             <td>
-                <a asp-page="./Hints" asp-route-puzzleid="@item.Puzzle.ID" asp-route-teamid="@Model.TeamID">Hints</a>
+                <a asp-page="./Hints" asp-route-puzzleid="@item.Puzzle.ID" asp-route-teamId="@Model.TeamID">Hints</a>
             </td>
         </tr>
     }

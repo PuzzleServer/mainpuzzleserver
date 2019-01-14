@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
@@ -11,11 +12,8 @@ namespace ServerCore.Pages.Teams
 {
     public class MembersModel : EventSpecificPageModel
     {
-        private readonly ServerCore.DataModel.PuzzleServerContext _context;
- 
-        public MembersModel(ServerCore.DataModel.PuzzleServerContext context)
+        public MembersModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
-            _context = context;
         }
 
         public Team Team { get; set; }
@@ -24,21 +22,21 @@ namespace ServerCore.Pages.Teams
 
         public string Emails { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int id)
+        public async Task<IActionResult> OnGetAsync(int teamId)
         {
-            Team = await _context.Teams.FirstOrDefaultAsync(m => m.ID == id);
+            Team = await _context.Teams.FirstOrDefaultAsync(m => m.ID == teamId);
 
             if (Team == null)
             {
-                return NotFound("Could not find team with ID '" + id + "'. Check to make sure you're accessing this page in the context of a team.");
+                return NotFound("Could not find team with ID '" + teamId + "'. Check to make sure you're accessing this page in the context of a team.");
             }
             
-            Members = await _context.TeamMembers.Where(members => members.Team == Team).ToListAsync();
+            Members = await _context.TeamMembers.Where(members => members.Team.ID == Team.ID).ToListAsync();
             
             StringBuilder emailList = new StringBuilder("");
             foreach (TeamMembers Member in Members)
             {
-                //TODO - figure out why this isn't working: emailList.Append(Member.Member.Email + "; ");
+                emailList.Append(Member.Member.Email + "; ");
             }
             Emails = emailList.ToString();
 

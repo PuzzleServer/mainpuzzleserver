@@ -1,4 +1,4 @@
-﻿@page "/{eventId}/{eventRole}/Responses"
+﻿@page "/{eventId}/{eventRole}/Responses/{puzzleId}"
 @model ServerCore.Pages.Responses.IndexModel
 
 @{
@@ -34,25 +34,25 @@
     <tbody>
         @foreach (var item in Model.Responses)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.IsSolution)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.SubmittedText)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ResponseText)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Note)
-                </td>
-                <td>
-                    <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |
-                    <a asp-page="./Details" asp-route-id="@item.ID">Details</a> |
-                    <a asp-page="./Delete" asp-route-id="@item.ID">Delete</a>
-                </td>
-            </tr>
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsSolution)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SubmittedText)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ResponseText)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Note)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-puzzleId="@Model.PuzzleId" asp-route-id="@item.ID">Edit</a> |
+                <a asp-page="./Details" asp-route-puzzleId="@Model.PuzzleId" asp-route-id="@item.ID">Details</a> |
+                <a asp-page="./Delete" asp-route-puzzleId="@Model.PuzzleId" asp-route-id="@item.ID">Delete</a>
+            </td>
+        </tr>
         }
     </tbody>
 </table>

@@ -26,10 +26,12 @@ namespace ServerCore.Pages
         }
 
         [Route("{eventId}/Files/{filename}")]
-        public async Task<IActionResult> Index(int eventId, string filename)
+        public async Task<IActionResult> Index(string eventId, string filename)
         {
+            Event eventObj = await EventHelper.GetEventFromEventId(context, eventId);
+
             ContentFile content = await (from contentFile in context.ContentFiles
-                                         where contentFile.EventID == eventId &&
+                                         where contentFile.Event == eventObj &&
                                          contentFile.ShortName == filename
                                          select contentFile).SingleOrDefaultAsync();
             if (content == null)
@@ -44,7 +46,7 @@ namespace ServerCore.Pages
             // * Players can see puzzles and materials on puzzles they've unlocked
             // * Players can see answers after the event's AnswersAvailable time
             // * Players can see solve tokens on puzzles they've solved
-            if (!await IsAuthorized(eventId, content.Puzzle, content))
+            if (!await IsAuthorized(eventObj.ID, content.Puzzle, content))
             {
                 return Unauthorized();
             }

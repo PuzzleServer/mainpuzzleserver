@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -8,9 +9,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ServerCore.DataModel;
+using ServerCore.Helpers;
 
 namespace ServerCore.ModelBases
 {
+    [Authorize(Policy = "IsRegisteredForEvent")]
     public abstract class EventSpecificPageModel : PageModel
     {
         [FromRoute]
@@ -29,24 +32,18 @@ namespace ServerCore.ModelBases
             {
                 if (loggedInUser == null)
                 {
-                    loggedInUser = PuzzleUser.GetPuzzleUserForCurrentUser(puzzleServerContext, User, userManager).Result;
+                    loggedInUser = PuzzleUser.GetPuzzleUserForCurrentUser(_context, User, userManager).Result;
                 }
-
                 return loggedInUser;
             }
         }
 
-        private PuzzleServerContext puzzleServerContext;
-        private UserManager<IdentityUser> userManager;
-
-        public EventSpecificPageModel()
-        {
-            // Default constructor - note that pages that use this constructor won't know what PuzzleUser is signed in
-        }
+        protected readonly PuzzleServerContext _context;
+        private readonly UserManager<IdentityUser> userManager;
 
         public EventSpecificPageModel(PuzzleServerContext serverContext, UserManager<IdentityUser> manager)
         {
-            puzzleServerContext = serverContext;
+            _context = serverContext;
             userManager = manager;
         }
 
@@ -54,17 +51,15 @@ namespace ServerCore.ModelBases
         {
             public async Task BindModelAsync(ModelBindingContext bindingContext)
             {
-                string eventIdAsString = bindingContext.ActionContext.RouteData.Values["eventId"] as string;
+                string eventId = bindingContext.ActionContext.RouteData.Values["eventId"] as string;
 
-                if (int.TryParse(eventIdAsString, out int eventId))
+                PuzzleServerContext puzzleServerContext = bindingContext.HttpContext.RequestServices.GetService<PuzzleServerContext>();
+
+                Event eventObj = await EventHelper.GetEventFromEventId(puzzleServerContext, eventId);
+
+                if (eventObj != null)
                 {
-                    var puzzleServerContext = bindingContext.HttpContext.RequestServices.GetService<PuzzleServerContext>();
-                    Event eventObj = await puzzleServerContext.Events.Where(e => e.ID == eventId).FirstOrDefaultAsync();
-
-                    if (eventObj != null)
-                    {
-                        bindingContext.Result = ModelBindingResult.Success(eventObj);
-                    }
+                    bindingContext.Result = ModelBindingResult.Success(eventObj);
                 }
             }
         }
