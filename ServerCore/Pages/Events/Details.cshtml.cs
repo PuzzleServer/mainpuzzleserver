@@ -1,32 +1,20 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
+using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Events
 {
-    [Authorize(Policy = "IsGlobalAdmin")]
-    public class DetailsModel : PageModel
+    [Authorize(Policy = "IsEventAdmin")]
+    public class DetailsModel : EventSpecificPageModel
     {
-        private readonly PuzzleServerContext _context;
-
-        public DetailsModel(PuzzleServerContext context)
+        public DetailsModel(PuzzleServerContext context, UserManager<IdentityUser> userManager) : base(context, userManager)
         {
-            _context = context;
         }
 
-        public Event Event { get; set; }
-
-        public async Task<IActionResult> OnGetAsync(int id)
+        public IActionResult OnGet()
         {
-            Event = await _context.Events.SingleOrDefaultAsync(m => m.ID == id);
-
-            if (Event == null)
-            {
-                return NotFound();
-            }
             return Page();
         }
     }

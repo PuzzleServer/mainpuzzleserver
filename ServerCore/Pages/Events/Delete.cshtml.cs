@@ -1,40 +1,26 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
+using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Events
 {
-    [Authorize(Policy = "IsGlobalAdmin")]
-    public class DeleteModel : PageModel
+    [Authorize(Policy = "IsEventAdmin")]
+    public class DeleteModel : EventSpecificPageModel
     {
-        private readonly PuzzleServerContext _context;
-
-        public DeleteModel(PuzzleServerContext context)
+        public DeleteModel(PuzzleServerContext context, UserManager<IdentityUser> userManager) : base(context, userManager)
         {
-            _context = context;
         }
 
-        [BindProperty]
-        public Event Event { get; set; }
-
-        public async Task<IActionResult> OnGetAsync(int id)
+        public IActionResult OnGet()
         {
-            Event = await _context.Events.SingleOrDefaultAsync(m => m.ID == id);
-
-            if (Event == null)
-            {
-                return NotFound();
-            }
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(int id)
+        public async Task<IActionResult> OnPostAsync()
         {
-            Event = await _context.Events.FindAsync(id);
-
             if (Event != null)
             {
                 _context.Events.Remove(Event);
