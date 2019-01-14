@@ -118,6 +118,26 @@
                 </div>
             </div>
             <div class="form-group">
+                <label asp-for="Event.LockoutIncorrectGuessLimit" class="control-label"></label>
+                <input asp-for="Event.LockoutIncorrectGuessLimit" class="form-control" />
+                <span asp-validation-for="Event.LockoutIncorrectGuessLimit" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Event.LockoutIncorrectGuessPeriod" class="control-label"></label>
+                <input asp-for="Event.LockoutIncorrectGuessPeriod" class="form-control" />
+                <span asp-validation-for="Event.LockoutIncorrectGuessPeriod" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Event.LockoutDurationMultiplier" class="control-label"></label>
+                <input asp-for="Event.LockoutDurationMultiplier" class="form-control" />
+                <span asp-validation-for="Event.LockoutDurationMultiplier" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Event.MaxSubmissionCount" class="control-label"></label>
+                <input asp-for="Event.MaxSubmissionCount" class="form-control" />
+                <span asp-validation-for="Event.MaxSubmissionCount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-default" />
             </div>
         </form>

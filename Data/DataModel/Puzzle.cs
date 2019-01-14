@@ -115,6 +115,12 @@ namespace ServerCore.DataModel
         public virtual ICollection<Hint> Hints { get; set; }
 
         /// <summary>
+        /// The email alias that players should use if they require support on the puzzle.
+        /// If null, the event email address should be used instead.
+        /// </summary>
+        public string SupportEmailAlias { get; set; }
+
+        /// <summary>
         /// File for the main puzzle (typically a PDF containing the puzzle)
         /// </summary>
         [NotMapped]
@@ -174,5 +180,7 @@ namespace ServerCore.DataModel
                        select contentFile;
             }
         }        
+
+        public virtual List<Submission> Submissions { get; set; }
     }
 }

@@ -75,6 +75,11 @@ namespace ServerCore.DataModel
         /// <returns>The formatted submission</returns>
         public static string FormatSubmission(string submission)
         {
+            if (submission == null)
+            {
+                return string.Empty;
+            }
+
             return Regex.Replace(submission, @"[^a-zA-Z\d]", string.Empty).ToUpper();
         }
     }

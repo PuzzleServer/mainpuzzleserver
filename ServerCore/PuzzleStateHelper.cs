@@ -155,13 +155,28 @@ namespace ServerCore
         /// </summary>
         /// <param name="context">The puzzle DB context</param>
         /// <param name="eventObj">The event we are querying from</param>
-        /// <param name="puzzle">The puzzle; if null, get all puzzles in the event.</param>
-        /// <param name="team">The team; if null, get all the teams in the event.</param>
+        /// <param name="puzzle">
+        ///     The puzzle; if null, get all puzzles in the event.
+        /// </param>
+        /// <param name="team">
+        ///     The team; if null, get all the teams in the event.
+        /// </param>
         /// <param name="value">The solve time (null if unsolving)</param>
-        /// <returns>A task that can be awaited for the solve/unsolve operation</returns>
-        public static async Task SetSolveStateAsync(PuzzleServerContext context, Event eventObj, Puzzle puzzle, Team team, DateTime? value, PuzzleUser author = null)
+        /// <param name="author"></param>
+        /// <returns>
+        ///     A task that can be awaited for the solve/unsolve operation
+        /// </returns>
+        public static async Task SetSolveStateAsync(
+            PuzzleServerContext context,
+            Event eventObj,
+            Puzzle puzzle,
+            Team team,
+            DateTime? value,
+            PuzzleUser author = null)
         {
-            IQueryable<PuzzleStatePerTeam> statesQ = await PuzzleStateHelper.GetFullReadWriteQueryAsync(context, eventObj, puzzle, team, author);
+            IQueryable<PuzzleStatePerTeam> statesQ = await PuzzleStateHelper
+                .GetFullReadWriteQueryAsync(context, eventObj, puzzle, team, author);
+
             List<PuzzleStatePerTeam> states = await statesQ.ToListAsync();
 
             for (int i = 0; i < states.Count; i++)
@@ -193,8 +208,90 @@ namespace ServerCore
             // if this puzzle got solved, look for others to unlock
             if (value != null)
             {
-                await UnlockAnyPuzzlesThatThisSolveUnlockedAsync(context, eventObj, puzzle, team, value.Value);
+                await UnlockAnyPuzzlesThatThisSolveUnlockedAsync(context,
+                    eventObj,
+                    puzzle,
+                    team,
+                    value.Value);
             }
+        }
+
+        /// <summary>
+        /// Set the email only mode of some puzzle state records. In the course
+        /// of setting the state, instantiate any state records that are
+        /// missing on the server.
+        /// </summary>
+        /// <param name="context">The puzzle DB context</param>
+        /// <param name="eventObj">The event we are querying from</param>
+        /// <param name="puzzle">
+        ///     The puzzle; if null, get all puzzles in the event.
+        /// </param>
+        /// <param name="team">
+        ///     The team; if null, get all the teams in the event.
+        /// </param>
+        /// <param name="value">The new email only state for the puzzle</param>
+        /// <param name="author"></param>
+        /// <returns>
+        ///     A task that can be awaited for the lockout operation
+        /// </returns>
+        public static async Task SetEmailOnlyModeAsync(
+            PuzzleServerContext context,
+            Event eventObj,
+            Puzzle puzzle,
+            Team team,
+            bool value,
+            PuzzleUser author = null)
+        {
+            IQueryable<PuzzleStatePerTeam> statesQ = await PuzzleStateHelper
+                .GetFullReadWriteQueryAsync(context, eventObj, puzzle, team, author);
+
+            List<PuzzleStatePerTeam> states = await statesQ.ToListAsync();
+
+            for (int i = 0; i < states.Count; i++)
+            {
+                states[i].IsEmailOnlyMode = value;
+            }
+
+            await context.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Set the lockout expiry time of some puzzle state records. In the
+        /// course of setting the state, instantiate any state records that are
+        /// missing on the server.
+        /// </summary>
+        /// <param name="context">The puzzle DB context</param>
+        /// <param name="eventObj">The event we are querying from</param>
+        /// <param name="puzzle">
+        ///     The puzzle; if null, get all puzzles in the event.
+        /// </param>
+        /// <param name="team">
+        ///     The team; if null, get all the teams in the event.
+        /// </param>
+        /// <param name="value">The Lockout expiry time<param>
+        /// <param name="author"></param>
+        /// <returns>
+        ///     A task that can be awaited for the lockout operation
+        /// </returns>
+        public static async Task SetLockoutExpiryTimeAsync(
+            PuzzleServerContext context,
+            Event eventObj,
+            Puzzle puzzle,
+            Team team,
+            DateTime? value,
+            PuzzleUser author = null)
+        {
+            IQueryable<PuzzleStatePerTeam> statesQ = await PuzzleStateHelper
+                .GetFullReadWriteQueryAsync(context, eventObj, puzzle, team, author);
+
+            List<PuzzleStatePerTeam> states = await statesQ.ToListAsync();
+
+            for (int i = 0; i < states.Count; i++)
+            {
+                states[i].LockoutExpiryTime = value;
+            }
+
+            await context.SaveChangesAsync();
         }
 
         /// <summary>
