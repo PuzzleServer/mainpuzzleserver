@@ -169,6 +169,21 @@ namespace ServerCore.Pages.Events
             _context.Responses.Add(new Response() { Puzzle = other, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
             _context.Responses.Add(new Response() { Puzzle = other, SubmittedText = "ANSWER", ResponseText = "Correct!", IsSolution = true });
 
+            string hint1Description = "Tell me about the rabbits, George.";
+            string hint1Content = "O.K. Some day – we’re gonna get the jack together and we’re gonna have a little house and a couple of acres an’ a cow and some pigs and...";
+            string hint2Description = "Go on... George. How I get to tend the rabbits.";
+            string hint2Content = "Well, we’ll have a big vegetable patch and a rabbit-hutch and chickens.";
+            _context.Hints.Add(new Hint() { Puzzle = easy, Description = hint1Description, DisplayOrder = 0, Cost = 0, Content = hint1Content });
+            _context.Hints.Add(new Hint() { Puzzle = easy, Description = hint2Description, DisplayOrder = 1, Cost = 1, Content = hint2Content });
+            _context.Hints.Add(new Hint() { Puzzle = intermediate, Description = hint1Description, DisplayOrder = 0, Cost = 0, Content = hint1Content });
+            _context.Hints.Add(new Hint() { Puzzle = intermediate, Description = hint2Description, DisplayOrder = 1, Cost = 1, Content = hint2Content });
+            _context.Hints.Add(new Hint() { Puzzle = hard, Description = hint1Description, DisplayOrder = 0, Cost = 0, Content = hint1Content });
+            _context.Hints.Add(new Hint() { Puzzle = hard, Description = hint2Description, DisplayOrder = 1, Cost = 1, Content = hint2Content });
+            _context.Hints.Add(new Hint() { Puzzle = meta, Description = hint1Description, DisplayOrder = 0, Cost = 0, Content = hint1Content });
+            _context.Hints.Add(new Hint() { Puzzle = meta, Description = hint2Description, DisplayOrder = 1, Cost = 1, Content = hint2Content });
+            _context.Hints.Add(new Hint() { Puzzle = other, Description = hint1Description, DisplayOrder = 0, Cost = 0, Content = hint1Content });
+            _context.Hints.Add(new Hint() { Puzzle = other, Description = hint2Description, DisplayOrder = 1, Cost = 1, Content = hint2Content });
+
             await _context.SaveChangesAsync();
 
             //
