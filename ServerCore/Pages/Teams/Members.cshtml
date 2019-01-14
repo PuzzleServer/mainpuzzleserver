@@ -1,11 +1,11 @@
 ﻿@page "/{eventId}/{eventRole}/Teams/Members"
 @model ServerCore.Pages.Teams.MembersModel
 @{
-    ViewData["Title"] = "Members";
+    ViewData["Title"] = "Team Members";
     Layout = "_teamLayout.cshtml";
 }
 
-<h2>@Html.DisplayFor(model => model.Team.Name) - Members</h2>
+<h2>@Html.DisplayFor(model => model.Team.Name): Members</h2>
 
 <div>
     <a asp-page="./AddMember" asp-route-teamId="@Model.Team.ID">Add a member</a>

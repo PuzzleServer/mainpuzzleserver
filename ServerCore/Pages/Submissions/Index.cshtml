@@ -2,10 +2,10 @@
 @model ServerCore.Pages.Submissions.IndexModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Submissions";
 }
 
-<h2>Submissions</h2>
+<h2>Submissions for @Model.Puzzle.Name</h2>
 <hr />
 <div>
     <a asp-page="/Teams/Play" asp-route-id="@Model.TeamId">Back to Puzzle List</a>

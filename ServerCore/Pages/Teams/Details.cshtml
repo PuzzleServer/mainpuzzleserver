@@ -2,7 +2,7 @@
 @model ServerCore.Pages.Teams.DetailsModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Team Details";
     Layout = "_teamLayout.cshtml";
 }
 
@@ -10,7 +10,7 @@
 <!-- TEAM VIEW -->
 @if (Model.HasTeam)
 {
-    <h2>@Html.DisplayFor(model => model.Team.Name) - Details</h2>
+    <h2>@Html.DisplayFor(model => model.Team.Name): Details</h2>
 
     <div>
         @if (Model.EventRole != ModelBases.EventRole.author)

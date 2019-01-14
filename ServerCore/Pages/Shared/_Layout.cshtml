@@ -175,7 +175,19 @@
                             <li><a asp-page="/EventSpecific/Index">Event</a></li>
                             <li><a asp-page="/Puzzles/Index">Puzzles</a></li>
                             <li><a asp-page="/Teams/Index">Teams</a></li>
-                            <li><a asp-page="/Events/Standings">Standings</a></li>
+                            <li class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                    Leaderboards
+                                    <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a asp-page="/Events/Standings">Standings</a></li>
+                                    <li class="divider"></li>
+                                    <li><a asp-page="/Events/FastestSolves">Fastest solves</a></li>
+                                    <li class="divider"></li>
+                                    <li><a asp-page="/Events/Map">Puzzle state map</a></li>
+                                </ul>
+                            </li>
                             <li><a asp-page="/Events/Players">Users</a></li>
                             <li class="dropdown">
                                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
@@ -219,7 +231,19 @@
                             <li><a asp-page="/EventSpecific/Index">Event</a></li>
                             <li><a asp-page="/Puzzles/Index">Puzzles</a></li>
                             <li><a asp-page="/Teams/Index">Teams</a></li>
-                            <li><a asp-page="/Events/Standings">Standings</a></li>
+                            <li class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                    Leaderboards
+                                    <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a asp-page="/Events/Standings">Standings</a></li>
+                                    <li class="divider"></li>
+                                    <li><a asp-page="/Events/FastestSolves">Fastest solves</a></li>
+                                    <li class="divider"></li>
+                                    <li><a asp-page="/Events/Map">Puzzle state map</a></li>
+                                </ul>
+                            </li>
                             <li class="dropdown">
                                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                                     Resources
@@ -262,7 +286,17 @@
                             <li><a asp-page="/EventSpecific/Index">Event</a></li>
                             <li><a asp-page="/Teams/Play">Puzzles</a></li>
                             <li><a asp-page="/Teams/Details">Team</a></li>
-                            <li><a asp-page="/Events/Standings">Standings</a></li>
+                            <li class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                    Leaderboards
+                                    <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a asp-page="/Events/Standings">Standings</a></li>
+                                    <li class="divider"></li>
+                                    <li><a asp-page="/Events/FastestSolves">Fastest solves</a></li>
+                                </ul>
+                            </li>
                             <li class="dropdown">
                                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                                     Resources

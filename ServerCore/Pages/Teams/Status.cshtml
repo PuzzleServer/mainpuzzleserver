@@ -2,11 +2,11 @@
 @model ServerCore.Pages.Teams.StatusModel
 
 @{
-    ViewData["Title"] = "Status";
+    ViewData["Title"] = "Team Status";
     Layout = "_teamLayout.cshtml";
 }
 
-<h2>@Html.DisplayFor(model => model.Team.Name) - Status</h2>
+<h2>@Html.DisplayFor(model => model.Team.Name): Status</h2>
 
 <table class="table">
     <thead>

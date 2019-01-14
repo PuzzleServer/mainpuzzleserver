@@ -2,11 +2,11 @@
 @model ServerCore.Pages.Teams.EditModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Team";
     Layout = "_teamLayout.cshtml";
 }
 
-<h2>@Html.DisplayFor(model => model.Team.Name) - Edit</h2>
+<h2>@Html.DisplayFor(model => model.Team.Name): Edit</h2>
 <div>
     <a asp-page="./Details" asp-route-teamId="@Model.Team.ID">Cancel</a>
 </div>

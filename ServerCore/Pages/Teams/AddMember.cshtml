@@ -2,11 +2,11 @@
 @model ServerCore.Pages.Teams.AddMemberModel
 
 @{
-    ViewData["Title"] = "AddMember";
+    ViewData["Title"] = "Add Member";
     Layout = "_teamLayout.cshtml";
 }
 
-<h2>@Html.DisplayFor(model => model.Team.Name) - Add Member</h2>
+<h2>@Html.DisplayFor(model => model.Team.Name): Add member</h2>
 
 <div>
     <a asp-page="./Members" asp-route-teamId="@Model.Team.ID">Cancel</a>

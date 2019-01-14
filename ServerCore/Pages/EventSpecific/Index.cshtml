@@ -8,9 +8,13 @@
 
 <p>Yay! Puzzles! Excitement!</p>
 
-<div>
-    <a asp-page="/Events/Details">View event properties</a> |
-    <a asp-page="/Events/Edit">Edit event properties</a> |
-    <a asp-page="/Events/Import">Import from another event</a> |
-    <a asp-page="/Events/Delete">Delete the event</a>
-</div>
+@if (Model.EventRole == ModelBases.EventRole.admin)
+{
+    <div>
+        <h4>Admin actions:</h4>
+        <a asp-page="/Events/Details">View event properties</a> |
+        <a asp-page="/Events/Edit">Edit event properties</a> |
+        <a asp-page="/Events/Import">Import from another event</a> |
+        <a asp-page="/Events/Delete">Delete the event</a>
+    </div>
+}
