@@ -172,20 +172,20 @@
                     </div>
                     <div class="navbar-collapse collapse">
                         <ul class="nav navbar-nav">
-                            <li><a asp-page="/Events/Details" asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.admin">Event</a></li>
+                            <li><a asp-page="/EventSpecific/Index" asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.admin">Event</a></li>
                             <li><a asp-page="/Puzzles/Index" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.admin">Puzzles</a></li>
                             <li><a asp-page="/Teams/Index" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.admin">Teams</a></li>
                             <li><a asp-page="/Events/Standings" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.admin">Standings</a></li>
                             <li><a asp-page="/Events/Players" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.admin">Users</a></li>
                             <li class="dropdown">
                                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                                    Resources (not implemented)
+                                    Resources
                                     <span class="caret"></span>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="#">FAQ</a></li>
+                                    <li><a asp-page="/EventSpecific/Rules" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.admin">Rules</a></li>
                                     <li class="divider"></li>
-                                    <li><a href="#">Other things</a></li>
+                                    <li><a asp-page="/EventSpecific/FAQ" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.admin">FAQ</a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -216,19 +216,19 @@
                     </div>
                     <div class="navbar-collapse collapse">
                         <ul class="nav navbar-nav">
-                            <li><a asp-page="/Events/Details" asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.author">Event</a></li>
+                            <li><a asp-page="/EventSpecific/Index" asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.author">Event</a></li>
                             <li><a asp-page="/Puzzles/Index" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.author">Puzzles</a></li>
                             <li><a asp-page="/Teams/Index" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.author">Teams</a></li>
                             <li><a asp-page="/Events/Standings" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.author">Standings</a></li>
                             <li class="dropdown">
                                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                                    Resources (not implemented)
+                                    Resources
                                     <span class="caret"></span>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="#">FAQ</a></li>
+                                    <li><a asp-page="/EventSpecific/Rules" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.author">Rules</a></li>
                                     <li class="divider"></li>
-                                    <li><a href="#">Other things</a></li>
+                                    <li><a asp-page="/EventSpecific/FAQ" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.author">FAQ</a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -259,19 +259,19 @@
                     </div>
                     <div class="navbar-collapse collapse">
                         <ul class="nav navbar-nav">
-                            <li><a asp-page="/Events/Details" asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play">Event</a></li>
+                            <li><a asp-page="/EventSpecific/Index" asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play">Event</a></li>
                             <li><a asp-page="/Teams/Play" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.play">Puzzles</a></li>
                             <li><a asp-page="/Teams/Details" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.play">Team</a></li>
                             <li><a asp-page="/Events/Standings" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.play">Standings</a></li>
                             <li class="dropdown">
                                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                                    Resources (not implemented)
+                                    Resources
                                     <span class="caret"></span>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="#">FAQ</a></li>
+                                    <li><a asp-page="/EventSpecific/Rules" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.play">Rules</a></li>
                                     <li class="divider"></li>
-                                    <li><a href="#">Other things</a></li>
+                                    <li><a asp-page="/EventSpecific/FAQ" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.play">FAQ</a></li>
                                 </ul>
                             </li>
                         </ul>
