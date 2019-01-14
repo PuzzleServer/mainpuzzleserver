@@ -1,0 +1,64 @@
+﻿@page "/{eventId}/{eventRole}/Responses/CreateBulk/{puzzleId}"
+@model ServerCore.Pages.Responses.CreateBulkModel
+
+@{
+    ViewData["Title"] = "Bulk Create";
+}
+
+<h2>Bulk Create</h2>
+
+<h4>Response</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <div>
+            <p>Intended usage: Enter data for each response in Excel, one line per response. Then copy each column into the correct box below and click Bulk Create.</p>
+            <br />
+            <p>IsSolution and Note can be blank when unused. IsSolution will be checked if you supply Y, Yes, T, or True (case insensitive).</p>
+            <br />
+        </div>
+        <form method="post">
+            <table>
+                <thead>
+                    <tr>
+                        <th>IsSolution</th>
+                        <th>SubmittedText</th>
+                        <th>ResponseText</th>
+                        <th>Note</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <textarea asp-for="IsSolution"></textarea>
+                            <span asp-validation-for="IsSolution" class="text-danger"></span>
+                        </td>
+                        <td>
+                            <textarea asp-for="SubmittedText"></textarea>
+                            <span asp-validation-for="SubmittedText" class="text-danger"></span>
+                        </td>
+                        <td>
+                            <textarea asp-for="ResponseText"></textarea>
+                            <span asp-validation-for="ResponseText" class="text-danger"></span>
+                        </td>
+                        <td>
+                            <textarea asp-for="Note"></textarea>
+                            <span asp-validation-for="Note" class="text-danger"></span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="form-group">
+                <input type="submit" value="Bulk Create" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index" asp-route-puzzleid="@Model.PuzzleId">Back to Response List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
