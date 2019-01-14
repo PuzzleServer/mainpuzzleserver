@@ -181,8 +181,6 @@ namespace ServerCore.Pages.Events
             _context.Hints.Add(new Hint() { Puzzle = hard, Description = hint2Description, DisplayOrder = 1, Cost = 1, Content = hint2Content });
             _context.Hints.Add(new Hint() { Puzzle = meta, Description = hint1Description, DisplayOrder = 0, Cost = 0, Content = hint1Content });
             _context.Hints.Add(new Hint() { Puzzle = meta, Description = hint2Description, DisplayOrder = 1, Cost = 1, Content = hint2Content });
-            _context.Hints.Add(new Hint() { Puzzle = other, Description = hint1Description, DisplayOrder = 0, Cost = 0, Content = hint1Content });
-            _context.Hints.Add(new Hint() { Puzzle = other, Description = hint2Description, DisplayOrder = 1, Cost = 1, Content = hint2Content });
 
             await _context.SaveChangesAsync();
 
