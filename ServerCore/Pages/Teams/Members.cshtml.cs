@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Teams
 {
+    [Authorize("IsEventAdminOrPlayerOnTeam")]
     public class MembersModel : EventSpecificPageModel
     {
         public MembersModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
@@ -45,15 +47,31 @@ namespace ServerCore.Pages.Teams
 
         public async Task<IActionResult> OnGetRemoveMemberAsync(int teamId, int teamMemberId)
         {
-            TeamMembers member = await _context.TeamMembers.FirstOrDefaultAsync(m => m.ID == teamMemberId);
+            if (EventRole == EventRole.play && !Event.IsTeamRegistrationActive)
+            {
+                return NotFound("Membership changes are not open.");
+            }
+
+            TeamMembers member = await _context.TeamMembers.FirstOrDefaultAsync(m => m.ID == teamMemberId && m.Team.ID == teamId);
             if (member == null)
             {
                 return NotFound("Could not find team member with ID '" + teamMemberId + "'. They may have already been removed from the team.");
             }
 
+            if (EventRole == EventRole.play)
+            {
+                int teamCount = await (from count in _context.TeamMembers
+                                       where count.Team.ID == teamId
+                                       select count).CountAsync();
+                if (teamCount == 1)
+                {
+                    return NotFound("Cannot remove the last member of a team. Delete the team instead.");
+                }
+            }
+
             _context.TeamMembers.Remove(member);
             await _context.SaveChangesAsync();
-            return RedirectToPage("./Members", new { id = teamId });
+            return RedirectToPage("./Members", new { teamId = teamId });
         }
     }
 }

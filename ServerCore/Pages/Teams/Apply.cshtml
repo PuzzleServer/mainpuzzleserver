@@ -1,27 +1,21 @@
-﻿@page
+﻿@page  "/{eventId}/{eventRole}/Teams/Apply"
 @model ServerCore.Pages.Teams.ApplyModel
 
 @{
     ViewData["Title"] = "Apply";
 }
 
-<h2>Apply</h2>
+<h2>Apply to a Team</h2>
 
-<h4>TeamApplication</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-default" />
-            </div>
-        </form>
+        You have applied to <strong>@{@Model.Team.Name}</strong>. Once they accept you, you will be on the team.
     </div>
 </div>
 
 <div>
-    <a asp-page="Index">Back to List</a>
+    <a asp-page="List">Back to List</a>
 </div>
 
 @section Scripts {

@@ -16,12 +16,14 @@ namespace ServerCore.DataModel
 
         /// <summary>
         /// The team the player wants to join
-        /// </summary>]
+        /// </summary>
+        [Required]
         public virtual Team Team { get; set; }
 
         /// <summary>
         /// The user who wants to join the team
         /// </summary>
+        [Required]
         public virtual PuzzleUser Player { get; set; }
     }
 }
