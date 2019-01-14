@@ -7,8 +7,7 @@ using ServerCore.DataModel;
 
 namespace ServerCore.Pages.Events
 {
-    // TODO: Can't turn on this attribute because authorization fails before login is requested
-    //[Authorize(Policy = "IsGlobalAdmin")]
+    [Authorize(Policy = "IsGlobalAdmin")]
     public class IndexModel : PageModel
     {
         private readonly PuzzleServerContext _context;

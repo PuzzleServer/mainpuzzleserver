@@ -1,4 +1,4 @@
-﻿@page
+﻿@page "/{eventId}/{eventRole}/Events/Edit"
 @model ServerCore.Pages.Events.EditModel
 
 @{
@@ -13,107 +13,107 @@
     <div class="col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Event.ID" />
+            <input type="hidden" asp-for="EditableEvent.ID" />
             <div class="form-group">
-                <label asp-for="Event.Name" class="control-label"></label>
-                <input asp-for="Event.Name" class="form-control" />
-                <span asp-validation-for="Event.Name" class="text-danger"></span>
+                <label asp-for="EditableEvent.Name" class="control-label"></label>
+                <input asp-for="EditableEvent.Name" class="form-control" />
+                <span asp-validation-for="EditableEvent.Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Event.UrlString" class="control-label"></label>
-                <input asp-for="Event.UrlString" class="form-control" />
-                <span asp-validation-for="Event.UrlString" class="text-danger"></span>
+                <label asp-for="EditableEvent.UrlString" class="control-label"></label>
+                <input asp-for="EditableEvent.UrlString" class="form-control" />
+                <span asp-validation-for="EditableEvent.UrlString" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Event.MaxNumberOfTeams" class="control-label"></label>
-                <input asp-for="Event.MaxNumberOfTeams" class="form-control" />
-                <span asp-validation-for="Event.MaxNumberOfTeams" class="text-danger"></span>
+                <label asp-for="EditableEvent.MaxNumberOfTeams" class="control-label"></label>
+                <input asp-for="EditableEvent.MaxNumberOfTeams" class="form-control" />
+                <span asp-validation-for="EditableEvent.MaxNumberOfTeams" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Event.MaxTeamSize" class="control-label"></label>
-                <input asp-for="Event.MaxTeamSize" class="form-control" />
-                <span asp-validation-for="Event.MaxTeamSize" class="text-danger"></span>
+                <label asp-for="EditableEvent.MaxTeamSize" class="control-label"></label>
+                <input asp-for="EditableEvent.MaxTeamSize" class="form-control" />
+                <span asp-validation-for="EditableEvent.MaxTeamSize" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Event.MaxExternalsPerTeam" class="control-label"></label>
-                <input asp-for="Event.MaxExternalsPerTeam" class="form-control" />
-                <span asp-validation-for="Event.MaxExternalsPerTeam" class="text-danger"></span>
+                <label asp-for="EditableEvent.MaxExternalsPerTeam" class="control-label"></label>
+                <input asp-for="EditableEvent.MaxExternalsPerTeam" class="form-control" />
+                <span asp-validation-for="EditableEvent.MaxExternalsPerTeam" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <div class="checkbox">
                     <label>
-                        <input asp-for="Event.IsInternEvent" /> @Html.DisplayNameFor(model => model.Event.IsInternEvent)
+                        <input asp-for="EditableEvent.IsInternEvent" /> @Html.DisplayNameFor(model => model.EditableEvent.IsInternEvent)
                     </label>
                 </div>
             </div>
             <div class="form-group">
-                <label asp-for="Event.TeamRegistrationBegin" class="control-label"></label>
-                <input asp-for="Event.TeamRegistrationBegin" class="form-control" />
-                <span asp-validation-for="Event.TeamRegistrationBegin" class="text-danger"></span>
+                <label asp-for="EditableEvent.TeamRegistrationBegin" class="control-label"></label>
+                <input asp-for="EditableEvent.TeamRegistrationBegin" class="form-control" />
+                <span asp-validation-for="EditableEvent.TeamRegistrationBegin" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Event.TeamRegistrationEnd" class="control-label"></label>
-                <input asp-for="Event.TeamRegistrationEnd" class="form-control" />
-                <span asp-validation-for="Event.TeamRegistrationEnd" class="text-danger"></span>
+                <label asp-for="EditableEvent.TeamRegistrationEnd" class="control-label"></label>
+                <input asp-for="EditableEvent.TeamRegistrationEnd" class="form-control" />
+                <span asp-validation-for="EditableEvent.TeamRegistrationEnd" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Event.TeamNameChangeEnd" class="control-label"></label>
-                <input asp-for="Event.TeamNameChangeEnd" class="form-control" />
-                <span asp-validation-for="Event.TeamNameChangeEnd" class="text-danger"></span>
+                <label asp-for="EditableEvent.TeamNameChangeEnd" class="control-label"></label>
+                <input asp-for="EditableEvent.TeamNameChangeEnd" class="form-control" />
+                <span asp-validation-for="EditableEvent.TeamNameChangeEnd" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Event.TeamMembershipChangeEnd" class="control-label"></label>
-                <input asp-for="Event.TeamMembershipChangeEnd" class="form-control" />
-                <span asp-validation-for="Event.TeamMembershipChangeEnd" class="text-danger"></span>
+                <label asp-for="EditableEvent.TeamMembershipChangeEnd" class="control-label"></label>
+                <input asp-for="EditableEvent.TeamMembershipChangeEnd" class="form-control" />
+                <span asp-validation-for="EditableEvent.TeamMembershipChangeEnd" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Event.TeamMiscDataChangeEnd" class="control-label"></label>
-                <input asp-for="Event.TeamMiscDataChangeEnd" class="form-control" />
-                <span asp-validation-for="Event.TeamMiscDataChangeEnd" class="text-danger"></span>
+                <label asp-for="EditableEvent.TeamMiscDataChangeEnd" class="control-label"></label>
+                <input asp-for="EditableEvent.TeamMiscDataChangeEnd" class="form-control" />
+                <span asp-validation-for="EditableEvent.TeamMiscDataChangeEnd" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Event.TeamDeleteEnd" class="control-label"></label>
-                <input asp-for="Event.TeamDeleteEnd" class="form-control" />
-                <span asp-validation-for="Event.TeamDeleteEnd" class="text-danger"></span>
+                <label asp-for="EditableEvent.TeamDeleteEnd" class="control-label"></label>
+                <input asp-for="EditableEvent.TeamDeleteEnd" class="form-control" />
+                <span asp-validation-for="EditableEvent.TeamDeleteEnd" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Event.EventBegin" class="control-label"></label>
-                <input asp-for="Event.EventBegin" class="form-control" />
-                <span asp-validation-for="Event.EventBegin" class="text-danger"></span>
+                <label asp-for="EditableEvent.EventBegin" class="control-label"></label>
+                <input asp-for="EditableEvent.EventBegin" class="form-control" />
+                <span asp-validation-for="EditableEvent.EventBegin" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Event.AnswerSubmissionEnd" class="control-label"></label>
-                <input asp-for="Event.AnswerSubmissionEnd" class="form-control" />
-                <span asp-validation-for="Event.AnswerSubmissionEnd" class="text-danger"></span>
+                <label asp-for="EditableEvent.AnswerSubmissionEnd" class="control-label"></label>
+                <input asp-for="EditableEvent.AnswerSubmissionEnd" class="form-control" />
+                <span asp-validation-for="EditableEvent.AnswerSubmissionEnd" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Event.AnswersAvailableBegin" class="control-label"></label>
-                <input asp-for="Event.AnswersAvailableBegin" class="form-control" />
-                <span asp-validation-for="Event.AnswersAvailableBegin" class="text-danger"></span>
+                <label asp-for="EditableEvent.AnswersAvailableBegin" class="control-label"></label>
+                <input asp-for="EditableEvent.AnswersAvailableBegin" class="form-control" />
+                <span asp-validation-for="EditableEvent.AnswersAvailableBegin" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Event.StandingsAvailableBegin" class="control-label"></label>
-                <input asp-for="Event.StandingsAvailableBegin" class="form-control" />
-                <span asp-validation-for="Event.StandingsAvailableBegin" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        <input asp-for="Event.StandingsOverride" /> @Html.DisplayNameFor(model => model.Event.StandingsOverride)
-                    </label>
-                </div>
+                <label asp-for="EditableEvent.StandingsAvailableBegin" class="control-label"></label>
+                <input asp-for="EditableEvent.StandingsAvailableBegin" class="form-control" />
+                <span asp-validation-for="EditableEvent.StandingsAvailableBegin" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <div class="checkbox">
                     <label>
-                        <input asp-for="Event.ShowFastestSolves" /> @Html.DisplayNameFor(model => model.Event.ShowFastestSolves)
+                        <input asp-for="EditableEvent.StandingsOverride" /> @Html.DisplayNameFor(model => model.EditableEvent.StandingsOverride)
                     </label>
                 </div>
             </div>
             <div class="form-group">
                 <div class="checkbox">
                     <label>
-                        <input asp-for="Event.AllowFeedback" /> @Html.DisplayNameFor(model => model.Event.AllowFeedback)
+                        <input asp-for="EditableEvent.ShowFastestSolves" /> @Html.DisplayNameFor(model => model.EditableEvent.ShowFastestSolves)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="EditableEvent.AllowFeedback" /> @Html.DisplayNameFor(model => model.EditableEvent.AllowFeedback)
                     </label>
                 </div>
             </div>

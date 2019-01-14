@@ -40,7 +40,7 @@ namespace ServerCore.Pages.Puzzles
             var puzzle = await _context.Puzzles.FirstAsync(m => m.ID == puzzleId);
             var team = teamId == null ? null : await _context.Teams.FirstAsync(m => m.ID == teamId.Value);
 
-            if (Puzzle == null)
+            if (puzzle == null)
             {
                 return NotFound();
             }
@@ -56,7 +56,7 @@ namespace ServerCore.Pages.Puzzles
             var puzzle = await _context.Puzzles.FirstAsync(m => m.ID == puzzleId);
             var team = teamId == null ? null : await _context.Teams.FirstAsync(m => m.ID == teamId.Value);
 
-            if (Puzzle == null)
+            if (puzzle == null)
             {
                 return NotFound();
             }

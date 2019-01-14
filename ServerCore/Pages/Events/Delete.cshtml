@@ -1,4 +1,4 @@
-﻿@page
+﻿@page "/{eventId}/{eventRole}/Events/Delete"
 @model ServerCore.Pages.Events.DeleteModel
 
 @{
@@ -127,7 +127,7 @@
             @Html.DisplayFor(model => model.Event.AllowFeedback)
         </dd>
     </dl>
-    
+
     <form method="post">
         <input type="hidden" asp-for="Event.ID" />
         <input type="submit" value="Delete" class="btn btn-default" /> |
