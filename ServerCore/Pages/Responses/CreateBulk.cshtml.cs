@@ -60,15 +60,15 @@ namespace ServerCore.Pages.Responses
                 {
                     if (responseText != null)
                     {
-                        throw new ArgumentException("Unmatched response without submission");
+                        ModelState.AddModelError("ResponseText", "Unmatched Response without Submission");
                     }
                     if (isSolution != null)
                     {
-                        throw new ArgumentException("Unmatched IsSolution without submission");
+                        ModelState.AddModelError("IsSolution", "Unmatched IsSolution without Submission");
                     }
                     if (note != null)
                     {
-                        throw new ArgumentException("Unmatched note without submission");
+                        ModelState.AddModelError("Note", "Unmatched Note without Submission");
                     }
 
                     // we're done
@@ -77,7 +77,8 @@ namespace ServerCore.Pages.Responses
 
                 if (responseText == null)
                 {
-                    throw new ArgumentException("Unmatched submission without response");
+                    ModelState.AddModelError("SubmittedText", "Unmatched Submission without Response");
+                    break;
                 }
 
                 isSolution = isSolution == null ? string.Empty : isSolution.ToLower();
@@ -92,6 +93,11 @@ namespace ServerCore.Pages.Responses
                 };
 
                 _context.Responses.Add(response);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return Page();
             }
 
             await _context.SaveChangesAsync();

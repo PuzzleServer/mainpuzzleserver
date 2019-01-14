@@ -31,15 +31,19 @@
                     <tr>
                         <td>
                             <textarea asp-for="IsSolution"></textarea>
+                            <span asp-validation-for="IsSolution" class="text-danger"></span>
                         </td>
                         <td>
                             <textarea asp-for="SubmittedText"></textarea>
+                            <span asp-validation-for="SubmittedText" class="text-danger"></span>
                         </td>
                         <td>
                             <textarea asp-for="ResponseText"></textarea>
+                            <span asp-validation-for="ResponseText" class="text-danger"></span>
                         </td>
                         <td>
                             <textarea asp-for="Note"></textarea>
+                            <span asp-validation-for="Note" class="text-danger"></span>
                         </td>
                     </tr>
                 </tbody>
