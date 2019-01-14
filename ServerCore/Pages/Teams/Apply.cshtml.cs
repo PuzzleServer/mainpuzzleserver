@@ -42,7 +42,8 @@ namespace ServerCore.Pages.Teams
 
             if (await (from member in _context.TeamMembers
                        where member.Member == LoggedInUser &&
-                       member.Team.Event == Event).AnyAsync())
+                       member.Team.Event == Event
+                       select member).AnyAsync())
             {
                 return NotFound("You're already on a team!");
             }

@@ -11,7 +11,8 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Teams
 {
-    [Authorize("IsEventAdminOrPlayerOnTeam")]
+    // TODO: Uncomment when auth can successfully get teamId from the route
+    //[Authorize("IsEventAdminOrPlayerOnTeam")]
     public class MembersModel : EventSpecificPageModel
     {
         public MembersModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)

@@ -14,7 +14,8 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Teams
 {
-    [Authorize("IsEventAdminOrPlayerOnTeam")]
+    // TODO: Uncomment when auth can read teamId from the route
+    //[Authorize("IsEventAdminOrPlayerOnTeam")]
     public class AddMemberModel : EventSpecificPageModel
     {
         public Team Team { get; set; }
