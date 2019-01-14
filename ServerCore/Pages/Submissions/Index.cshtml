@@ -117,7 +117,7 @@
                 }
                 var minutesLeft = Math.floor(timeDeltaSeconds / 60);
                 var secondsLeft = timeDeltaSeconds % 60;
-                timer.innerText = minutesLeft + ":" + secondsLeft;
+                timer.innerText = minutesLeft + ":" + (secondsLeft < 10 ? "0" + secondsLeft : secondsLeft);
             }, 1000);
         </script>
     }
