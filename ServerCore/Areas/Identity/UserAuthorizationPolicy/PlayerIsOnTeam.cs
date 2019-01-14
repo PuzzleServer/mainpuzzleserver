@@ -28,15 +28,7 @@ namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
                                                        PlayerIsOnTeamRequirement requirement)
         {
-            PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
-            Team team = await AuthorizationHelper.GetTeamFromContext(authContext);
-            Event thisEvent = await AuthorizationHelper.GetEventFromContext(authContext);
-            EventRole role = AuthorizationHelper.GetEventRoleFromContext(authContext);
-
-            if (thisEvent != null && role == EventRole.play && (await UserEventHelper.GetTeamForPlayer(dbContext, thisEvent, puzzleUser)).ID == team.ID)
-            {
-                authContext.Succeed(requirement);
-            }
+            await AuthorizationHelper.IsPlayerOnTeamCheck(authContext, dbContext, userManager, requirement);
         }
     }
 }
