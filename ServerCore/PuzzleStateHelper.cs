@@ -294,22 +294,24 @@ namespace ServerCore
             await context.SaveChangesAsync();
         }
 
+        private static DateTime LastGlobalExpiry;
         private static Dictionary<int, DateTime> TimedUnlockExpiryCache = new Dictionary<int, DateTime>();
-#if DEBUG
-        private static readonly TimeSpan TimedUnlockExpiryInterval = TimeSpan.FromMinutes(1);
-#else
-        private static readonly TimeSpan TimedUnlockExpiryInterval = TimeSpan.FromMinutes(10);
-#endif
+        private static TimeSpan ClosestExpirySpacing = TimeSpan.FromSeconds(2);
 
         public static async Task CheckForTimedUnlocksAsync(
             PuzzleServerContext context,
             Event eventObj,
             Team team)
         {
-            // throttle this by an expiry interval before we do anything even remotely expensive
-            if (TimedUnlockExpiryCache.TryGetValue(team.ID, out DateTime expiry) && expiry >= DateTime.UtcNow)
+            DateTime expiry;
+
+            lock (TimedUnlockExpiryCache)
             {
-                return;
+                // throttle this by an expiry interval before we do anything even remotely expensive
+                if (TimedUnlockExpiryCache.TryGetValue(team.ID, out expiry) && expiry >= DateTime.UtcNow)
+                {
+                    return;
+                }
             }
 
             DateTime now = DateTime.UtcNow;
@@ -323,7 +325,19 @@ namespace ServerCore
                 await PuzzleStateHelper.SetSolveStateAsync(context, eventObj, puzzle, team, DateTime.UtcNow);
             }
 
-            TimedUnlockExpiryCache[team.ID] = DateTime.UtcNow + TimedUnlockExpiryInterval;
+            lock (TimedUnlockExpiryCache)
+            {
+                // effectively, expiry = Math.Max(DateTime.UtcNow, LastGlobalExpiry) + ClosestExpirySpacing - if you could use Math.Max on DateTime
+                expiry = DateTime.UtcNow;
+                if (expiry < LastGlobalExpiry)
+                {
+                    expiry = LastGlobalExpiry;
+                }
+                expiry += ClosestExpirySpacing;
+
+                TimedUnlockExpiryCache[team.ID] = expiry;
+                LastGlobalExpiry = expiry;
+            }
         }
 
         /// <summary>
