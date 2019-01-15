@@ -1,0 +1,23 @@
+﻿@page  "/{eventId}/{eventRole}/Teams/Apply"
+@model ServerCore.Pages.Teams.ApplyModel
+
+@{
+    ViewData["Title"] = "Apply";
+}
+
+<h2>Apply to a Team</h2>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        You have applied to <strong>@{@Model.Team.Name}</strong>. Once they accept you, you will be on the team (make sure to contact somebody on the team and ask them to add you!). If you've previously requested to join to another team, that request has been removed.
+    </div>
+</div>
+
+<div>
+    <a asp-page="List">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

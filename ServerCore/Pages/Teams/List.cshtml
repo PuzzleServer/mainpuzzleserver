@@ -1,0 +1,56 @@
+﻿@page "/{eventId}/{eventRole}/Teams/List"
+@model ServerCore.Pages.Teams.ListModel
+
+@{
+    ViewData["Title"] = "List";
+}
+
+<h2>All Teams</h2>
+
+<p>
+    @if (Model.Event.IsTeamRegistrationActive || Model.EventRole == ModelBases.EventRole.admin)
+    {
+        <a asp-page="Create">Create New</a>
+    }
+    else
+    {
+        <div class="alert alert-danger" role="alert">
+            This event is not currently open for registration.
+        </div>
+    }
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Teams.FirstOrDefault().Key.Name)
+            </th>
+            <th>
+                Size
+            </th>
+            @if (Model.EventRole == ModelBases.EventRole.play && !Model.UserOnTeam && Model.Event.IsTeamMembershipChangeActive)
+            {
+                <th>Join</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Teams)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Key.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Value)
+                </td>
+                @if (Model.EventRole == ModelBases.EventRole.play && !Model.UserOnTeam && Model.Event.IsTeamMembershipChangeActive)
+                {
+                    <td>
+                        <a asp-page="./Apply" asp-route-teamId="@item.Key.ID">Join</a>
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>

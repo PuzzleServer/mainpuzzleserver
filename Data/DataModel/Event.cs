@@ -36,8 +36,22 @@ namespace ServerCore.DataModel
         {
             get
             {
-                return DateTime.UtcNow.CompareTo(TeamRegistrationBegin) > 0 &&
-                    DateTime.UtcNow.CompareTo(TeamRegistrationEnd) < 0;
+                return DateTime.UtcNow >= TeamRegistrationBegin &&
+                    DateTime.UtcNow <= TeamRegistrationEnd;
+            }
+        }
+
+        /// <summary>
+        /// Returns whether or not teams are allowed to change their members
+        /// </summary>
+        /// <returns>True if the current date is between the team registration begin and membership change end times.</returns>
+        [NotMapped]
+        public bool IsTeamMembershipChangeActive
+        {
+            get
+            {
+                return DateTime.UtcNow >= TeamRegistrationBegin &&
+                    DateTime.UtcNow <= TeamMembershipChangeEnd;
             }
         }
 

@@ -133,9 +133,13 @@ namespace ServerCore.Areas.Identity
             Event thisEvent = await AuthorizationHelper.GetEventFromContext(authContext);
             EventRole role = AuthorizationHelper.GetEventRoleFromContext(authContext);
 
-            if (thisEvent != null && role == EventRole.play && (await UserEventHelper.GetTeamForPlayer(dbContext, thisEvent, puzzleUser)).ID == team.ID)
+            if (thisEvent != null && role == EventRole.play)
             {
-                authContext.Succeed(requirement);
+                Team userTeam = await UserEventHelper.GetTeamForPlayer(dbContext, thisEvent, puzzleUser);
+                if (userTeam != null && userTeam.ID == team.ID)
+                {
+                    authContext.Succeed(requirement);
+                }
             }
         }
     }
