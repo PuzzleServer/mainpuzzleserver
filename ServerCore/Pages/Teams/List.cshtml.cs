@@ -18,7 +18,6 @@ namespace ServerCore.Pages.Teams
     [AllowAnonymous]
     public class ListModel : EventSpecificPageModel
     {
-
         public ListModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
         }
@@ -26,7 +25,7 @@ namespace ServerCore.Pages.Teams
         /// <summary>
         /// All teams
         /// </summary>
-        public IList<Team> Teams { get;set; }
+        public Dictionary<Team, int> Teams { get;set; }
 
         /// <summary>
         /// True if the current user is on a team
@@ -49,7 +48,25 @@ namespace ServerCore.Pages.Teams
                 UserOnTeam = false;
             }
 
-            Teams = await _context.Teams.ToListAsync();
+            //Teams = await _context.Teams.ToListAsync();
+            List<Team> allTeams = await (from team in _context.Teams
+                                      where team.Event == Event
+                                      select team).ToListAsync();
+
+            Teams = await (from team in _context.Teams
+                           where team.Event == Event
+                           join teamMember in _context.TeamMembers on team equals teamMember.Team
+                           group teamMember by teamMember.Team into teamCounts
+                           select new { Team = teamCounts.Key, Count = teamCounts.Count() }).ToDictionaryAsync(x => x.Team, x => x.Count);
+
+            foreach (Team team in allTeams)
+            {
+                if (!Teams.ContainsKey(team))
+                {
+                    Teams[team] = 0;
+                }
+            }
+
             return Page();
         }
     }

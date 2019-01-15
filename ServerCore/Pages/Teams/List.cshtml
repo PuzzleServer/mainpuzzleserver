@@ -23,7 +23,10 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Teams[0].Name)
+                @Html.DisplayNameFor(model => model.Teams.FirstOrDefault().Key.Name)
+            </th>
+            <th>
+                Size
             </th>
             @if (Model.EventRole == ModelBases.EventRole.play && !Model.UserOnTeam && Model.Event.IsTeamMembershipChangeActive)
             {
@@ -36,12 +39,15 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Name)
+                    @Html.DisplayFor(modelItem => item.Key.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Value)
                 </td>
                 @if (Model.EventRole == ModelBases.EventRole.play && !Model.UserOnTeam && Model.Event.IsTeamMembershipChangeActive)
                 {
                     <td>
-                        <a asp-page="./Apply" asp-route-teamId="@item.ID">Join</a>
+                        <a asp-page="./Apply" asp-route-teamId="@item.Key.ID">Join</a>
                     </td>
                 }
             </tr>
