@@ -5,14 +5,11 @@
     //Needs route data - ViewData["AdminRoute"] = "/Submissions/AuthorIndex";
     //Needs route data - ViewData["AuthorRoute"] = "/Submissions/AuthorIndex";
     //Needs route data - ViewData["PlayRoute"] = "/Submissions/Index";
+    Layout = "../Puzzles/_puzzleManagementLayout.cshtml";
 }
 
-<h2>Team Submissions</h2>
-</hr>
+<h2>@Model.Puzzle.Name: Submissions</h2>
 
-<div>
-    <a asp-page="/Puzzles/Index">Back to Puzzle List</a>
-</div>
 <br />
 <div>
     <table class="table">
