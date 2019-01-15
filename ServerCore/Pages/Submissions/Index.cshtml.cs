@@ -11,7 +11,7 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Submissions
 {
-    [Authorize(Policy = "IsEventAdminOrAuthorOfPuzzle")]
+    //TODO: Not working [Authorize(Policy = "PlayerCanSeePuzzle")]
     public class IndexModel : EventSpecificPageModel
     {
         public IndexModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
@@ -27,13 +27,14 @@ namespace ServerCore.Pages.Submissions
 
         public int PuzzleId { get; set; }
 
+        public Puzzle Puzzle { get; set; }
+
         public int TeamId { get; set; }
 
         public string AnswerToken { get; set; }
 
         public async Task<IActionResult> OnPostAsync(int puzzleId, int teamId)
         {
-
             if (!this.Event.IsAnswerSubmissionActive)
             {
                 return RedirectToPage("/Submissions/Index", new { puzzleid = puzzleId, teamid = teamId });
@@ -127,7 +128,8 @@ namespace ServerCore.Pages.Submissions
             // to this puzzle.
 
             await SetupContext(puzzleId, teamId);
-            
+            Puzzle = await _context.Puzzles.Where(m => m.ID == puzzleId).FirstOrDefaultAsync();
+
             if (PuzzleState.SolvedTime != null)
             {
                 Submission correctSubmission = this.Submissions?.Last();

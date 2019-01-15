@@ -14,12 +14,15 @@ namespace ServerCore.Pages.Hints
 {
     public class CreateModel : EventSpecificPageModel
     {
+        public Puzzle Puzzle { get; set; }
+
         public CreateModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
         }
 
-        public IActionResult OnGet()
+        public async Task<IActionResult> OnGetAsync(int puzzleId)
         {
+            Puzzle = await _context.Puzzles.Where(m => m.ID == puzzleId).FirstOrDefaultAsync();
             return Page();
         }
 

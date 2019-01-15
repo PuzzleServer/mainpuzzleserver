@@ -2,13 +2,20 @@
 @model ServerCore.Pages.Responses.DetailsModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Response details";
+    //Needs route data - ViewData["AdminRoute"] = "/Responses/Details";
+    //Needs route data - ViewData["AuthorRoute"] = "/Responses/Details";
+    //Needs route data - ViewData["PlayRoute"] = "/Submissions/Index";
 }
 
-<h2>Details</h2>
+<h2>@Model.PuzzleResponse.Puzzle.Name: Response details</h2>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.PuzzleResponse.ID" asp-route-puzzleid="@Model.PuzzleId">Edit</a> |
+    <a asp-page="./Delete" asp-route-id="@Model.PuzzleResponse.ID" asp-route-puzzleid="@Model.PuzzleId">Delete</a> |
+    <a asp-page="./Index" asp-route-puzzleid="@Model.PuzzleId">Back to response list</a>
+</div>
 
 <div>
-    <h4>Response</h4>
     <hr />
     <dl class="dl-horizontal">
         <dt>
@@ -36,8 +43,4 @@
             @Html.DisplayFor(model => model.PuzzleResponse.Note)
         </dd>
     </dl>
-</div>
-<div>
-    <a asp-page="./Edit" asp-route-id="@Model.PuzzleResponse.ID" asp-route-puzzleid="@Model.PuzzleId">Edit</a> |
-    <a asp-page="./Index" asp-route-puzzleid="@Model.PuzzleId">Back to List</a>
 </div>

@@ -3,9 +3,13 @@
 
 @{
     ViewData["Title"] = "Responses";
+    //Needs route data - ViewData["AdminRoute"] = "/Responses/Index";
+    //Needs route data - ViewData["AuthorRoute"] = "/Responses/Index";
+    //Needs route data - ViewData["PlayRoute"] = "/Submissions/Index";
+    Layout = "../Puzzles/_puzzleManagementLayout.cshtml";
 }
 
-<h2>Index</h2>
+<h2>@Model.Puzzle.Name: Responses</h2>
 
 <p>
     <a asp-page="Create" asp-route-puzzleId="@Model.PuzzleId">Create New</a>
@@ -56,7 +60,3 @@
         }
     </tbody>
 </table>
-
-<div>
-    <a asp-page="/Puzzles/Index">Back to Puzzle List</a>
-</div>

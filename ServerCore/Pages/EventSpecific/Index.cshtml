@@ -1,7 +1,23 @@
-﻿@page "/{eventId}"
+﻿@page "/{eventId}/{eventRole}"
 @model ServerCore.Pages.EventSpecific.IndexModel
 @{
     ViewData["Title"] = Model.Event.Name;
+    ViewData["AdminRoute"] = "/EventSpecific/Index";
+    ViewData["AuthorRoute"] = "/EventSpecific/Index";
+    ViewData["PlayRoute"] = "/EventSpecific/Index";
 }
 
-<h2>@Model.Event.Name</h2>
+<h2>Welcome to @Model.Event.Name!</h2>
+
+<p>Yay! Puzzles! Excitement!</p>
+
+@if (Model.EventRole == ModelBases.EventRole.admin)
+{
+    <div>
+        <h4>Admin actions:</h4>
+        <a asp-page="/Events/Details">View event properties</a> |
+        <a asp-page="/Events/Edit">Edit event properties</a> |
+        <a asp-page="/Events/Import">Import from another event</a> |
+        <a asp-page="/Events/Delete">Delete the event</a>
+    </div>
+}

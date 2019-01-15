@@ -2,12 +2,20 @@
 @model ServerCore.Pages.Puzzles.DeleteModel
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Delete puzzle";
+    //Needs route data - ViewData["AdminRoute"] = "/Puzzles/Delete";
+    //Needs route data - ViewData["AuthorRoute"] = "/Puzzles/Delete";
+    ViewData["PlayRoute"] = "/Teams/Play";
+    Layout = "_puzzleManagementLayout.cshtml";
 }
 
-<h2>Delete</h2>
+<h2>@Model.Puzzle.Name: Delete</h2>
 
-<h3>Are you sure you want to delete this?</h3>
+<div>
+    <a asp-page="./Details" asp-route-puzzleId="@Model.Puzzle.ID">Cancel</a>
+</div>
+
+<h3>Are you sure you want to delete this puzzle?</h3>
 <div>
     <h4>Puzzle</h4>
     <hr />

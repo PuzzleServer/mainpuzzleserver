@@ -3,11 +3,16 @@
 
 @{
     ViewData["Title"] = "Create";
+    //Needs route data - ViewData["AdminRoute"] = "/Responses/Create";
+    //Needs route data - ViewData["AuthorRoute"] = "/Responses/Create";
+    //Needs route data - ViewData["PlayRoute"] = "/Submissions/Index";
 }
 
-<h2>Create</h2>
+<h2>@Model.PuzzleResponse.Puzzle.Name: Create response</h2>
+<div>
+    <a asp-page="./Index" asp-route-puzzleid="@Model.PuzzleId">Cancel</a>
+</div>
 
-<h4>Response</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -41,10 +46,6 @@
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-page="Index" asp-route-puzzleid="@Model.PuzzleId">Back to Response List</a>
 </div>
 
 @section Scripts {

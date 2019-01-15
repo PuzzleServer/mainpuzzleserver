@@ -2,10 +2,21 @@
 @model ServerCore.Pages.Puzzles.DetailsModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Puzzle details";
+    //Needs route data - ViewData["AdminRoute"] = "/Puzzles/Details/"
+    //Needs route data - ViewData["AuthorRoute"] = "/Puzzles/Details/";
+    ViewData["PlayRoute"] = "/Teams/Play";
+    Layout = "_puzzleManagementLayout.cshtml";
 }
 
-<h2>Details</h2>
+<h2>@Model.Puzzle.Name: Details</h2>
+
+<div>
+    <a asp-page="./Edit" asp-route-puzzleId="@Model.Puzzle.ID">Edit</a> |
+    <a asp-page="./Delete" asp-route-puzzleId="@Model.Puzzle.ID">Delete</a>
+</div>
+
+<p>@ViewData["AdminRoute"]</p>
 
 <div>
     <h4>Puzzle</h4>
@@ -92,8 +103,4 @@
             </a>
         </dd>
     </dl>
-</div>
-<div>
-    <a asp-page="./Edit" asp-route-id="@Model.Puzzle.ID">Edit</a> |
-    <a asp-page="./Index">Back to List</a>
 </div>

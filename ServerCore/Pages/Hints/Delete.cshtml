@@ -2,12 +2,16 @@
 @model ServerCore.Pages.Hints.DeleteModel
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Delete hint";
+    //Needs route data - ViewData["AdminRoute"] = "/Hints/Delete";
+    //Needs route data - ViewData["AuthorRoute"] = "/Hints/Delete";
+    //Needs route data - ViewData["PlayRoute"] = "/Teams/Hints";
 }
 
-<h2>Delete</h2>
+<h2>@Model.Hint.Puzzle.Name: Delete hint</h2>
+<a asp-page="./Index">Cancel</a>
 
-<h3>Are you sure you want to delete this?</h3>
+<h3>Are you sure you want to delete this hint?</h3>
 <div>
     <h4>Hint</h4>
     <hr />
@@ -35,6 +39,5 @@
     <form method="post">
         <input type="hidden" asp-for="Hint.Id" />
         <input type="submit" value="Delete" class="btn btn-default" /> |
-        <a asp-page="./Index">Back to List</a>
     </form>
 </div>
