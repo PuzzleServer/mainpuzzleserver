@@ -166,9 +166,17 @@
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                         </button>
-                        <a asp-page="/." class="navbar-brand" data-toggle="dropdown">
+                        <a class="navbar-brand" data-toggle="dropdown" href="#">
                             @Event.Name - Admin
                         </a>
+                        <!-- TODO: Check for permissions / route to same page if possible -->
+                        <ul class="dropdown-menu">
+                            <li><a asp-page="/EventSpecific/Index" asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.admin">Admin mode</a></li>
+                            <li class="divider"></li>
+                            <li><a asp-page="/EventSpecific/Index" asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.author">Author mode</a></li>
+                            <li class="divider"></li>
+                            <li><a asp-page="/EventSpecific/Index" asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play">Player mode</a></li>
+                        </ul>
                     </div>
                     <div class="navbar-collapse collapse">
                         <ul class="nav navbar-nav">
@@ -222,9 +230,17 @@
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                         </button>
-                        <a asp-page="/Index" class="navbar-brand">
+                        <a class="navbar-brand" data-toggle="dropdown" href="#">
                             @Event.Name - Author
                         </a>
+                        <!-- TODO: Check for permissions / route to same page if possible -->
+                        <ul class="dropdown-menu">
+                            <li><a asp-page="/EventSpecific/Index" asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.admin">Admin mode</a></li>
+                            <li class="divider"></li>
+                            <li><a asp-page="/EventSpecific/Index" asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.author">Author mode</a></li>
+                            <li class="divider"></li>
+                            <li><a asp-page="/EventSpecific/Index" asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play">Player mode</a></li>
+                        </ul>
                     </div>
                     <div class="navbar-collapse collapse">
                         <ul class="nav navbar-nav">
@@ -277,9 +293,17 @@
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                         </button>
-                        <a asp-page="/Index" class="navbar-brand">
+                        <a class="navbar-brand" data-toggle="dropdown" href="#">
                             @Event.Name
                         </a>
+                        <!-- TODO: Check for permissions / route to same page if possible -->
+                        <ul class="dropdown-menu">
+                            <li><a asp-page="/EventSpecific/Index" asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.admin">Admin mode</a></li>
+                            <li class="divider"></li>
+                            <li><a asp-page="/EventSpecific/Index" asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.author">Author mode</a></li>
+                            <li class="divider"></li>
+                            <li><a asp-page="/EventSpecific/Index" asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play">Player mode</a></li>
+                        </ul>
                     </div>
                     <div class="navbar-collapse collapse">
                         <ul class="nav navbar-nav">
