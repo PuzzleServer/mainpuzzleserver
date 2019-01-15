@@ -77,6 +77,11 @@
                 <span asp-validation-for="Puzzle.MinPrerequisiteCount" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="Puzzle.MinutesToAutomaticallySolve" class="control-label"></label>
+                <input asp-for="Puzzle.MinutesToAutomaticallySolve" class="form-control" />
+                <span asp-validation-for="Puzzle.MinutesToAutomaticallySolve" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="Puzzle.SupportEmailAlias" class="control-label"></label>
                 <input asp-for="Puzzle.SupportEmailAlias" class="form-control" />
                 <span asp-validation-for="Puzzle.SupportEmailAlias" class="text-danger"></span>

@@ -103,14 +103,15 @@ namespace ServerCore.Pages.Events
 
             Puzzle intermediate = new Puzzle
             {
-                Name = "Rabbit Run",
+                Name = "Rabbit Run (automatically solves itself)",
                 Event = Event,
                 IsPuzzle = true,
                 SolveValue = 10,
                 HintCoinsForSolve = 2,
                 Group = "Thumper's Stumpers",
                 OrderInGroup = 2,
-                MinPrerequisiteCount = 1
+                MinPrerequisiteCount = 1,
+                MinutesToAutomaticallySolve = 3
             };
             _context.Puzzles.Add(intermediate);
 

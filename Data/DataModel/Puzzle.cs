@@ -32,6 +32,7 @@ namespace ServerCore.DataModel
             OrderInGroup = source.OrderInGroup;
             IsGloballyVisiblePrerequisite = source.IsGloballyVisiblePrerequisite;
             MinPrerequisiteCount = source.MinPrerequisiteCount;
+            MinutesToAutomaticallySolve = source.MinutesToAutomaticallySolve;
         }
 
         /// <summary>
@@ -103,6 +104,12 @@ namespace ServerCore.DataModel
         /// TODO: When the system is mature, set the default to 1 so new puzzles are not accidentally displayed.
         /// </summary>
         public int MinPrerequisiteCount { get; set; } = 0;
+
+        /// <summary>
+        /// Minutes from the time a puzzle is unlocked until it is automatically marked as solved.
+        /// Note that the actual solve time may be different, as the computation of unlocks is somewhat throttled.
+        /// </summary>
+        public int? MinutesToAutomaticallySolve { get; set; } = null;
 
         /// <summary>
         /// All of the content files associated with this puzzle

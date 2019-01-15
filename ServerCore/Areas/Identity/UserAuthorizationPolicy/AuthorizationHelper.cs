@@ -96,6 +96,8 @@ namespace ServerCore.Areas.Identity
             {
                 authContext.Succeed(requirement);
             }
+
+            dbContext.Entry(puzzle).State = EntityState.Detached;
         }
 
         public static async Task IsEventAuthorCheck(AuthorizationHandlerContext authContext, PuzzleServerContext dbContext, UserManager<IdentityUser> userManager, IAuthorizationRequirement requirement)

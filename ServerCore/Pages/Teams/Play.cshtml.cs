@@ -33,6 +33,8 @@ namespace ServerCore.Pages.Teams
             this.TeamID = teamId;
             this.Sort = sort;
 
+            await PuzzleStateHelper.CheckForTimedUnlocksAsync(_context, Event, teamId);
+
             // all puzzles for this event that are real puzzles
             var puzzlesInEventQ = _context.Puzzles.Where(puzzle => puzzle.Event.ID == this.Event.ID && puzzle.IsPuzzle);
 
