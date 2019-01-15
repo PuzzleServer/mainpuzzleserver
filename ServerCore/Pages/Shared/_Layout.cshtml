@@ -28,6 +28,15 @@
     @{
         var Event = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Event;
         var EventRole = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.EventRole;
+        var AdminRoute = "/EventSpecific/Index";
+        if (ViewData["AdminRoute"] as string != null)
+        { AdminRoute = ViewData["AdminRoute"] as string; }
+        var AuthorRoute = "/EventSpecific/Index";
+        if (ViewData["AuthorRoute"] as string != null)
+        { AuthorRoute = ViewData["AuthorRoute"] as string; }
+        var PlayRoute = "/EventSpecific/Index";
+        if (ViewData["PlayRoute"] as string != null)
+        { PlayRoute = ViewData["PlayRoute"] as string; }
     }
     <!--CURRENT NAV BAR-->
     @if (Event == null)
@@ -169,13 +178,13 @@
                         <a class="navbar-brand" data-toggle="dropdown" href="#">
                             @Event.Name - Admin
                         </a>
-                        <!-- TODO: Check for permissions / route to same page if possible -->
+                        <!-- TODO: Check for permissions / make partial -->
                         <ul class="dropdown-menu">
-                            <li><a asp-page="/EventSpecific/Index" asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.admin">Admin mode</a></li>
+                            <li><a asp-page=@AdminRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.admin">Admin mode</a></li>
                             <li class="divider"></li>
-                            <li><a asp-page="/EventSpecific/Index" asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.author">Author mode</a></li>
+                            <li><a asp-page=@AuthorRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.author">Author mode</a></li>
                             <li class="divider"></li>
-                            <li><a asp-page="/EventSpecific/Index" asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play">Player mode</a></li>
+                            <li><a asp-page=@PlayRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play">Player mode</a></li>
                         </ul>
                     </div>
                     <div class="navbar-collapse collapse">
@@ -233,13 +242,13 @@
                         <a class="navbar-brand" data-toggle="dropdown" href="#">
                             @Event.Name - Author
                         </a>
-                        <!-- TODO: Check for permissions / route to same page if possible -->
+                        <!-- TODO: Check for permissions / make partial -->
                         <ul class="dropdown-menu">
-                            <li><a asp-page="/EventSpecific/Index" asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.admin">Admin mode</a></li>
+                            <li><a asp-page=@AdminRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.admin">Admin mode</a></li>
                             <li class="divider"></li>
-                            <li><a asp-page="/EventSpecific/Index" asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.author">Author mode</a></li>
+                            <li><a asp-page=@AuthorRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.author">Author mode</a></li>
                             <li class="divider"></li>
-                            <li><a asp-page="/EventSpecific/Index" asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play">Player mode</a></li>
+                            <li><a asp-page=@PlayRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play">Player mode</a></li>
                         </ul>
                     </div>
                     <div class="navbar-collapse collapse">
@@ -296,13 +305,13 @@
                         <a class="navbar-brand" data-toggle="dropdown" href="#">
                             @Event.Name
                         </a>
-                        <!-- TODO: Check for permissions / route to same page if possible -->
+                        <!-- TODO: Check for permissions / make partial -->
                         <ul class="dropdown-menu">
-                            <li><a asp-page="/EventSpecific/Index" asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.admin">Admin mode</a></li>
+                            <li><a asp-page=@AdminRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.admin">Admin mode</a></li>
                             <li class="divider"></li>
-                            <li><a asp-page="/EventSpecific/Index" asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.author">Author mode</a></li>
+                            <li><a asp-page=@AuthorRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.author">Author mode</a></li>
                             <li class="divider"></li>
-                            <li><a asp-page="/EventSpecific/Index" asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play">Player mode</a></li>
+                            <li><a asp-page=@PlayRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play">Player mode</a></li>
                         </ul>
                     </div>
                     <div class="navbar-collapse collapse">

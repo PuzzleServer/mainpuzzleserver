@@ -3,12 +3,15 @@
 
 @{
     ViewData["Title"] = "Create Submissions";
+    //Needs route data - ViewData["AdminRoute"] = "/Submissions/AuthorIndex";
+    //Needs route data - ViewData["AuthorRoute"] = "/Submissions/AuthorIndex";
+    //Needs route data - ViewData["PlayRoute"] = "/Submissions/Index";
 }
 
 <h2>Submissions for @Model.Puzzle.Name</h2>
 <hr />
 <div>
-    <a asp-page="/Teams/Play" asp-route-id="@Model.TeamId">Back to Puzzle List</a>
+    <a asp-page="/Teams/Play" asp-route-id="@Model.TeamId">Back to puzzle List</a>
 </div>
 <br />
 <div class="row">

@@ -3,6 +3,9 @@
 
 @{
     ViewData["Title"] = "Puzzle details";
+    //Needs route data - ViewData["AdminRoute"] = "/Puzzles/Details/"
+    //Needs route data - ViewData["AuthorRoute"] = "/Puzzles/Details/";
+    ViewData["PlayRoute"] = "/Teams/Play";
     Layout = "_puzzleManagementLayout.cshtml";
 }
 
@@ -12,6 +15,8 @@
     <a asp-page="./Edit" asp-route-puzzleId="@Model.Puzzle.ID">Edit</a> |
     <a asp-page="./Delete" asp-route-puzzleId="@Model.Puzzle.ID">Delete</a>
 </div>
+
+<p>@ViewData["AdminRoute"]</p>
 
 <div>
     <h4>Puzzle</h4>
