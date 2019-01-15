@@ -5,7 +5,7 @@
 @if (Model.EventRole == ModelBases.EventRole.admin)
 {
     <div>
-        <a asp-page="./Index">Back to team list</a> ||
+        <a asp-page="./Index">Back to puzzle list</a> ||
         <a asp-page="./Details" asp-route-teamId="@Model.Team.ID">Details</a> |
         <a asp-page="./Members" asp-route-teamId="@Model.Team.ID">Members</a> |
         <a asp-page="./Status" asp-route-teamId="@Model.Team.ID">Status</a>

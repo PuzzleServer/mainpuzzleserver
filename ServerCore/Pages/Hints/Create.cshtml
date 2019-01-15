@@ -2,10 +2,11 @@
 @model ServerCore.Pages.Hints.CreateModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create hint";
 }
 
-<h2>Create</h2>
+<h2>@Model.Puzzle.Name: Create hint</h2>
+<a asp-page="./Index">Cancel</a>
 
 <h4>Hint</h4>
 <hr />
@@ -38,10 +39,6 @@
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-page="./Index">Back to List</a>
 </div>
 
 @section Scripts {

@@ -2,12 +2,14 @@
 @model ServerCore.Pages.Responses.EditModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit response";
 }
 
-<h2>Edit</h2>
+<h2>@Model.PuzzleResponse.Puzzle.Name: Edit response</h2>
+<div>
+    <a asp-page="./Index" asp-route-puzzleid="@Model.PuzzleId">Cancel</a>
+</div>
 
-<h4>Response</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -42,10 +44,6 @@
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-page="./Index" asp-route-puzzleid="@Model.PuzzleId">Back to List</a>
 </div>
 
 @section Scripts {

@@ -2,12 +2,14 @@
 @model ServerCore.Pages.Hints.EditModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit hint";
 }
 
-<h2>Edit</h2>
+<h2>@Model.Hint.Puzzle.Name: Edit hint</h2>
+<div>
+    <a asp-page="./Index">Cancel</a>
+</div>
 
-<h4>Hint</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -40,10 +42,6 @@
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-page="./Index">Back to List</a>
 </div>
 
 @section Scripts {

@@ -2,10 +2,11 @@
 @model ServerCore.Pages.Hints.IndexModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Hints";
+    Layout = "../Puzzles/_puzzleManagementLayout.cshtml";
 }
 
-<h2>Hints for @Model.PuzzleName</h2>
+<h2>@Model.PuzzleName: Hints</h2>
 
 <p>
     <a asp-page="Create" asp-route-puzzleID="@Model.PuzzleId">Create New</a>

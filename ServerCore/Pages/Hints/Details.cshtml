@@ -2,10 +2,16 @@
 @model ServerCore.Pages.Hints.DetailsModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Hint details";
 }
 
-<h2>Details</h2>
+<h2>@Model.Hint.Puzzle.Name: Hint details</h2>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.Hint.Id">Edit</a> |
+    <a asp-page="./Delete" asp-route-id="@Model.Hint.Id">Delete</a> |
+    <a asp-page="./Index">Back to List</a>
+</div>
+
 
 <div>
     <h4>Hint</h4>
@@ -36,8 +42,4 @@
             @Html.DisplayFor(model => model.Hint.DisplayOrder)
         </dd>
     </dl>
-</div>
-<div>
-    <a asp-page="./Edit" asp-route-id="@Model.Hint.Id">Edit</a> |
-    <a asp-page="./Index">Back to List</a>
 </div>
