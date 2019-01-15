@@ -17,6 +17,8 @@ namespace ServerCore.Pages.Submissions
         }
 
         public IList<Submission> Submissions { get; set; }
+
+        public Puzzle Puzzle { get; set; }
                         
         public async Task OnGetAsync(int? puzzleId)
         {
@@ -27,6 +29,7 @@ namespace ServerCore.Pages.Submissions
             else
             {
                 Submissions = await _context.Submissions.Where((s) => s.Puzzle != null && s.Puzzle.ID == puzzleId).ToListAsync();
+                Puzzle = await _context.Puzzles.Where(m => m.ID == puzzleId).FirstOrDefaultAsync();
             }
         }
     }

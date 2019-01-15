@@ -2,11 +2,14 @@
 @model ServerCore.Pages.Teams.DeleteModel
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Delete Team";
+    //Needs route data - ViewData["AdminRoute"] = "/Teams/Delete";
+    //Needs route data - ViewData["AuthorRoute"] = "/Teams/Status";
+    //Needs route data - ViewData["PlayRoute"] = "/Teams/Delete";
     Layout = "_teamLayout.cshtml";
 }
 
-<h2>@Html.DisplayFor(model => model.Team.Name) - Delete</h2>
+<h2>@Html.DisplayFor(model => model.Team.Name): Delete</h2>
 <div>
     <a asp-page="./Details" asp-route-teamId="@Model.Team.ID">Cancel</a>
 </div>

@@ -3,10 +3,16 @@
 
 @{
     ViewData["Title"] = "Submit Feedback";
+    //Needs route data - ViewData["AdminRoute"] = "/Puzzles/Feedback";
+    //Needs route data - ViewData["AuthorRoute"] = "/Puzzles/Feedback";
+    //Needs route data - ViewData["PlayRoute"] = "/Puzzles/SubmitFeedback";
     var id = ViewContext.RouteData.Values["puzzleId"];
 }
 
-<h2>Submit Feedback for @Html.DisplayFor(model => model.Puzzle.Name)</h2> 
+<h2>Submit feedback for @Html.DisplayFor(model => model.Puzzle.Name)</h2> 
+<div>
+    <a asp-page="/Teams/Play">Back to puzzles</a>
+</div>
 
 <div class="row">
     <div class="col-md-4">
@@ -52,10 +58,6 @@
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-page="./Index">Back to Puzzles</a>
 </div>
 
 @section Scripts {

@@ -2,11 +2,14 @@
 @model ServerCore.Pages.Teams.AddMemberModel
 
 @{
-    ViewData["Title"] = "AddMember";
+    ViewData["Title"] = "Add Member";
+    //Needs route data - ViewData["AdminRoute"] = "/Teams/AddMember";
+    //Needs route data - ViewData["AuthorRoute"] = "/Teams/Status";
+    //Needs route data - ViewData["PlayRoute"] = "/Teams/AddMember";
     Layout = "_teamLayout.cshtml";
 }
 
-<h2>@Html.DisplayFor(model => model.Team.Name) - Add Member</h2>
+<h2>@Html.DisplayFor(model => model.Team.Name): Add member</h2>
 
 <div>
     <a asp-page="./Members" asp-route-teamId="@Model.Team.ID">Cancel</a>

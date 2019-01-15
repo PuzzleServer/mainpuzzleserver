@@ -2,12 +2,19 @@
 @model ServerCore.Pages.Puzzles.EditModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit puzzle";
+    //Needs route data - ViewData["AdminRoute"] = "/Puzzles/Edit";
+    //Needs route data - ViewData["AuthorRoute"] = "/Puzzles/Edit";
+    ViewData["PlayRoute"] = "/Teams/Play";
+    Layout = "_puzzleManagementLayout.cshtml";
 }
 
-<h2>Edit</h2>
+<h2>@Model.Puzzle.Name: Edit</h2>
 
-<h4>Puzzle</h4>
+<div>
+    <a asp-page="./Details" asp-route-puzzleId="@Model.Puzzle.ID">Cancel</a>
+</div>
+
 <hr />
 <h3>Properties</h3>
 <div class="row">
@@ -193,10 +200,6 @@
             </table>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-page="./Index">Back to List</a>
 </div>
 
 @section Scripts {

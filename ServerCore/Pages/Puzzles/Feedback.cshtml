@@ -2,11 +2,15 @@
 @model ServerCore.Pages.Puzzles.FeedbackModel
 
 @{
-    ViewData["Title"] = "Feedback";
+    ViewData["Title"] = "Puzzle feedback";
+    //Needs route data - ViewData["AdminRoute"] = "/Puzzles/Feedback";
+    //Needs route data - ViewData["AuthorRoute"] = "/Puzzles/Feedback";
+    //Needs route data - ViewData["PlayRoute"] = "/Puzzles/SubmitFeedback";
+    Layout = "_puzzleManagementLayout.cshtml";
     var id = ViewContext.RouteData.Values["id"];
 }
 
-<h2>Feedback for @Html.DisplayFor(model => model.Puzzle.Name)</h2>
+<h2>@Html.DisplayFor(model => model.Puzzle.Name): Feedback</h2>
 
 <table class="table">
     <thead>
@@ -50,7 +54,3 @@
 }
     </tbody>
 </table>
-
-<div>
-    <a asp-page="./Index">Back to Puzzles</a>
-</div>

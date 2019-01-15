@@ -21,8 +21,11 @@ namespace ServerCore.Pages.Responses
         
         public int PuzzleId { get; set; }
 
+        public Puzzle Puzzle { get; set; }
+
         public async Task OnGetAsync(int puzzleId)
         {
+            Puzzle = await _context.Puzzles.Where(m => m.ID == puzzleId).FirstOrDefaultAsync();
             Responses = await _context.Responses.Where((r) => r.Puzzle != null && r.Puzzle.ID == puzzleId).ToListAsync();
             PuzzleId = puzzleId;
         }

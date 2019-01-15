@@ -2,11 +2,14 @@
 @model ServerCore.Pages.Teams.StatusModel
 
 @{
-    ViewData["Title"] = "Status";
+    ViewData["Title"] = "Team Status";
+    //Needs route data - ViewData["AdminRoute"] = "/Teams/Status";
+    //Needs route data - ViewData["AuthorRoute"] = "/Teams/Status";
+    ViewData["PlayRoute"] = "/Teams/Play";
     Layout = "_teamLayout.cshtml";
 }
 
-<h2>@Html.DisplayFor(model => model.Team.Name) - Status</h2>
+<h2>@Html.DisplayFor(model => model.Team.Name): Status</h2>
 
 <table class="table">
     <thead>

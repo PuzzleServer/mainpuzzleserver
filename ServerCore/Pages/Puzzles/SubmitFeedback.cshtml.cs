@@ -55,7 +55,7 @@ namespace ServerCore.Pages.Puzzles
             _context.Feedback.Add(Feedback);
             await _context.SaveChangesAsync();
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("/Teams/Play");
         }
     }
 }
