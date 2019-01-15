@@ -28,15 +28,9 @@
     @{
         var Event = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Event;
         var EventRole = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.EventRole;
-        var AdminRoute = "/EventSpecific/Index";
-        if (ViewData["AdminRoute"] as string != null)
-        { AdminRoute = ViewData["AdminRoute"] as string; }
-        var AuthorRoute = "/EventSpecific/Index";
-        if (ViewData["AuthorRoute"] as string != null)
-        { AuthorRoute = ViewData["AuthorRoute"] as string; }
-        var PlayRoute = "/EventSpecific/Index";
-        if (ViewData["PlayRoute"] as string != null)
-        { PlayRoute = ViewData["PlayRoute"] as string; }
+        var AdminRoute = ViewData["AdminRoute"] as string ?? "/EventSpecific/Index";
+        var AuthorRoute = ViewData["AuthorRoute"] as string ?? "/EventSpecific/Index";
+        var PlayRoute = ViewData["PlayRoute"] as string ?? "/EventSpecific/Index";
     }
     <!--CURRENT NAV BAR-->
     @if (Event == null)
