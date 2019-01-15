@@ -304,19 +304,17 @@ namespace ServerCore
         public static async Task CheckForTimedUnlocksAsync(
             PuzzleServerContext context,
             Event eventObj,
-            int teamId)
+            Team team)
         {
             // throttle this by an expiry interval before we do anything even remotely expensive
-            if (TimedUnlockExpiryCache.TryGetValue(teamId, out DateTime expiry) && expiry >= DateTime.UtcNow)
+            if (TimedUnlockExpiryCache.TryGetValue(team.ID, out DateTime expiry) && expiry >= DateTime.UtcNow)
             {
                 return;
             }
 
-            Team team = await context.Teams.Where(t => t.ID == teamId).FirstOrDefaultAsync();
-
             DateTime now = DateTime.UtcNow;
             var puzzlesToSolveByTime = await PuzzleStateHelper.GetSparseQuery(context, eventObj, null, team)
-                .Where(state => state.SolvedTime == null && state.UnlockedTime != null && state.Puzzle.MinutesToAutomaticallySolve != null && state.UnlockedTime.Value + TimeSpan.FromMinutes(state.Puzzle.MinutesToAutomaticallySolve.Value) >= now)
+                .Where(state => state.SolvedTime == null && state.UnlockedTime != null && state.Puzzle.MinutesToAutomaticallySolve != null && state.UnlockedTime.Value + TimeSpan.FromMinutes(state.Puzzle.MinutesToAutomaticallySolve.Value) <= now)
                 .Select(state => state.Puzzle)
                 .ToListAsync();
 
@@ -325,7 +323,7 @@ namespace ServerCore
                 await PuzzleStateHelper.SetSolveStateAsync(context, eventObj, puzzle, team, DateTime.UtcNow);
             }
 
-            TimedUnlockExpiryCache[teamId] = DateTime.UtcNow + TimedUnlockExpiryInterval;
+            TimedUnlockExpiryCache[team.ID] = DateTime.UtcNow + TimedUnlockExpiryInterval;
         }
 
         /// <summary>

@@ -103,7 +103,7 @@ namespace ServerCore.Pages.Events
 
             Puzzle intermediate = new Puzzle
             {
-                Name = "Rabbit Run (automatically solves itself)",
+                Name = "Rabbit Run (automatically solves in ~3 mins)",
                 Event = Event,
                 IsPuzzle = true,
                 SolveValue = 10,
