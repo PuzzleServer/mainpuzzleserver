@@ -31,6 +31,8 @@
         var AdminRoute = ViewData["AdminRoute"] as string ?? "/EventSpecific/Index";
         var AuthorRoute = ViewData["AuthorRoute"] as string ?? "/EventSpecific/Index";
         var PlayRoute = ViewData["PlayRoute"] as string ?? "/EventSpecific/Index";
+        var RoutingPuzzleId = ViewData["RoutingPuzzleId"] as string;
+        var RoutingTeamId = ViewData["RoutingTeamId"] as string;
     }
     <!--CURRENT NAV BAR-->
     @if (Event == null)
@@ -174,11 +176,11 @@
                         </a>
                         <!-- TODO: Check for permissions / make partial -->
                         <ul class="dropdown-menu">
-                            <li><a asp-page=@AdminRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.admin">Admin mode</a></li>
+                            <li><a asp-page=@AdminRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.admin" asp-route-teamId=@RoutingTeamId  asp-route-puzzleId=@RoutingPuzzleId>Admin mode - @RoutingPuzzleId x</a></li>
                             <li class="divider"></li>
-                            <li><a asp-page=@AuthorRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.author">Author mode</a></li>
+                            <li><a asp-page=@AuthorRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.author" asp-route-teamId=@RoutingTeamId  asp-route-puzzleId=@RoutingPuzzleId>Author mode</a></li>
                             <li class="divider"></li>
-                            <li><a asp-page=@PlayRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play">Player mode</a></li>
+                            <li><a asp-page=@PlayRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play" asp-route-teamId=@RoutingTeamId  asp-route-puzzleId=@RoutingPuzzleId>Player mode</a></li>
                         </ul>
                     </div>
                     <div class="navbar-collapse collapse">
@@ -238,11 +240,11 @@
                         </a>
                         <!-- TODO: Check for permissions / make partial -->
                         <ul class="dropdown-menu">
-                            <li><a asp-page=@AdminRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.admin">Admin mode</a></li>
+                            <li><a asp-page=@AdminRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.admin" asp-route-teamId=@RoutingTeamId  asp-route-puzzleId=@RoutingPuzzleId>Admin mode</a></li>
                             <li class="divider"></li>
-                            <li><a asp-page=@AuthorRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.author">Author mode</a></li>
+                            <li><a asp-page=@AuthorRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.author" asp-route-teamId=@RoutingTeamId  asp-route-puzzleId=@RoutingPuzzleId>Author mode</a></li>
                             <li class="divider"></li>
-                            <li><a asp-page=@PlayRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play">Player mode</a></li>
+                            <li><a asp-page=@PlayRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play" asp-route-teamId=@RoutingTeamId  asp-route-puzzleId=@RoutingPuzzleId>Player mode</a></li>
                         </ul>
                     </div>
                     <div class="navbar-collapse collapse">
@@ -301,11 +303,11 @@
                         </a>
                         <!-- TODO: Check for permissions / make partial -->
                         <ul class="dropdown-menu">
-                            <li><a asp-page=@AdminRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.admin">Admin mode</a></li>
+                            <li><a asp-page=@AdminRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.admin" asp-route-teamId=@RoutingTeamId  asp-route-puzzleId=@RoutingPuzzleId>Admin mode</a></li>
                             <li class="divider"></li>
-                            <li><a asp-page=@AuthorRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.author">Author mode</a></li>
+                            <li><a asp-page=@AuthorRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.author" asp-route-teamId=@RoutingTeamId  asp-route-puzzleId=@RoutingPuzzleId>Author mode</a></li>
                             <li class="divider"></li>
-                            <li><a asp-page=@PlayRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play">Player mode</a></li>
+                            <li><a asp-page=@PlayRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play" asp-route-teamId=@RoutingTeamId  asp-route-puzzleId=@RoutingPuzzleId>Player mode</a></li>
                         </ul>
                     </div>
                     <div class="navbar-collapse collapse">

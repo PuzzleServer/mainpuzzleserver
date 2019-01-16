@@ -3,20 +3,20 @@
 
 @{
     ViewData["Title"] = "Responses";
-    //Needs route data - ViewData["AdminRoute"] = "/Responses/Index";
-    //Needs route data - ViewData["AuthorRoute"] = "/Responses/Index";
-    //Needs route data - ViewData["PlayRoute"] = "/Submissions/Index";
+    ViewData["AdminRoute"] = "../Responses/Index";
+    ViewData["AuthorRoute"] = "../Responses/Index";
+    ViewData["PlayRoute"] = "../Submissions/Index";
+    ViewData["RoutingPuzzleId"] = ViewContext.RouteData.Values["puzzleId"];
     Layout = "../Puzzles/_puzzleManagementLayout.cshtml";
 }
 
 <h2>@Model.Puzzle.Name: Responses</h2>
 
 <p>
-    <a asp-page="Create" asp-route-puzzleId="@Model.PuzzleId">Create New</a>
-</p>
-<p>
+    <a asp-page="Create" asp-route-puzzleId="@Model.PuzzleId">Create New</a> |
     <a asp-page="CreateBulk" asp-route-puzzleId="@Model.PuzzleId">Bulk Create</a>
 </p>
+
 <table class="table">
     <thead>
         <tr>

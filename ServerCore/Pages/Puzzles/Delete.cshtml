@@ -3,9 +3,10 @@
 
 @{
     ViewData["Title"] = "Delete puzzle";
-    //Needs route data - ViewData["AdminRoute"] = "/Puzzles/Delete";
-    //Needs route data - ViewData["AuthorRoute"] = "/Puzzles/Delete";
+    ViewData["AdminRoute"] = "../Puzzles/Delete";
+    ViewData["AuthorRoute"] = "../Puzzles/Delete";
     ViewData["PlayRoute"] = "/Teams/Play";
+    ViewData["RoutingPuzzleId"] = ViewContext.RouteData.Values["puzzleId"];
     Layout = "_puzzleManagementLayout.cshtml";
 }
 

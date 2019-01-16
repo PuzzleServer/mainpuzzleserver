@@ -2,12 +2,18 @@
 @model ServerCore.Pages.Responses.CreateBulkModel
 
 @{
-    ViewData["Title"] = "Bulk Create";
+    ViewData["Title"] = "Create bulk response";
+    ViewData["AdminRoute"] = "../Responses/CreateBulk";
+    ViewData["AuthorRoute"] = "../Responses/CreateBulk";
+    ViewData["PlayRoute"] = "../Submissions/Index";
+    ViewData["RoutingPuzzleId"] = ViewContext.RouteData.Values["puzzleId"];
 }
 
-<h2>Bulk Create</h2>
+<h2>@Model.Puzzle.Name: Create responses (bulk)</h2>
+<div>
+    <a asp-page="./Index" asp-route-puzzleid="@Model.PuzzleId">Cancel</a>
+</div>
 
-<h4>Response</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
