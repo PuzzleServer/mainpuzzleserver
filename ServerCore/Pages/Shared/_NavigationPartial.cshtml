@@ -1,7 +1,7 @@
 ﻿@{
     var Event = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Event;
     var EventRole = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.EventRole;
-    var IsRegistered = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.IsRegisteredUser().Result;
+    var IsRegistered = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.IsRegisteredUser().Result ?? false;
 }
 
 <!--ADMIN NAV BAR-->
@@ -118,7 +118,7 @@
 }
 <!--AUTHOR NAV BAR END-->
 <!--REGISTERED PLAYER NAV BAR-->
-@if (Event != null && (EventRole == null || (EventRole != ModelBases.EventRole.admin && EventRole != ModelBases.EventRole.author)) && (IsRegistered == true))
+@if (Event != null && (EventRole == null || (EventRole != ModelBases.EventRole.admin && EventRole != ModelBases.EventRole.author)) && IsRegistered)
 {
     <nav class="navbar navbar-inverse navbar-fixed-top player-menu">
         <div class="container">
@@ -172,7 +172,7 @@
 }
 <!--REGISTERED PLAYER NAV BAR END-->
 <!--UNREGISTERED PLAYER NAV BAR-->
-@if (Event != null && (EventRole == null || (EventRole != ModelBases.EventRole.admin && EventRole != ModelBases.EventRole.author)) && (IsRegistered != true))
+@if (Event != null && (EventRole == null || (EventRole != ModelBases.EventRole.admin && EventRole != ModelBases.EventRole.author)) && !IsRegistered)
 {
     <nav class="navbar navbar-inverse navbar-fixed-top player-menu">
         <div class="container">
