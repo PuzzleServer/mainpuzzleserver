@@ -111,6 +111,10 @@ namespace ServerCore.Pages.Teams
                 transaction.Commit();
             }
 
+            if(EventRole == ModelBases.EventRole.play)
+            {
+                return RedirectToPage("./Details");
+            }
             return RedirectToPage("./Index");
         }
     }
