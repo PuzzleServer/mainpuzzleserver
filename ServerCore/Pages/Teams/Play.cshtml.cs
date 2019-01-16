@@ -37,6 +37,7 @@ namespace ServerCore.Pages.Teams
             if (myTeam != null)
             {
                 this.TeamID = myTeam.ID;
+                await PuzzleStateHelper.CheckForTimedUnlocksAsync(_context, Event, myTeam);
             }
             else
             {

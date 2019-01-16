@@ -294,6 +294,52 @@ namespace ServerCore
             await context.SaveChangesAsync();
         }
 
+        private static DateTime LastGlobalExpiry;
+        private static Dictionary<int, DateTime> TimedUnlockExpiryCache = new Dictionary<int, DateTime>();
+        private static TimeSpan ClosestExpirySpacing = TimeSpan.FromSeconds(2);
+
+        public static async Task CheckForTimedUnlocksAsync(
+            PuzzleServerContext context,
+            Event eventObj,
+            Team team)
+        {
+            DateTime expiry;
+
+            lock (TimedUnlockExpiryCache)
+            {
+                // throttle this by an expiry interval before we do anything even remotely expensive
+                if (TimedUnlockExpiryCache.TryGetValue(team.ID, out expiry) && expiry >= DateTime.UtcNow)
+                {
+                    return;
+                }
+            }
+
+            DateTime now = DateTime.UtcNow;
+            var puzzlesToSolveByTime = await PuzzleStateHelper.GetSparseQuery(context, eventObj, null, team)
+                .Where(state => state.SolvedTime == null && state.UnlockedTime != null && state.Puzzle.MinutesToAutomaticallySolve != null && state.UnlockedTime.Value + TimeSpan.FromMinutes(state.Puzzle.MinutesToAutomaticallySolve.Value) <= now)
+                .Select(state => state.Puzzle)
+                .ToListAsync();
+
+            foreach (Puzzle puzzle in puzzlesToSolveByTime)
+            {
+                await PuzzleStateHelper.SetSolveStateAsync(context, eventObj, puzzle, team, DateTime.UtcNow);
+            }
+
+            lock (TimedUnlockExpiryCache)
+            {
+                // effectively, expiry = Math.Max(DateTime.UtcNow, LastGlobalExpiry) + ClosestExpirySpacing - if you could use Math.Max on DateTime
+                expiry = DateTime.UtcNow;
+                if (expiry < LastGlobalExpiry)
+                {
+                    expiry = LastGlobalExpiry;
+                }
+                expiry += ClosestExpirySpacing;
+
+                TimedUnlockExpiryCache[team.ID] = expiry;
+                LastGlobalExpiry = expiry;
+            }
+        }
+
         /// <summary>
         /// Get a writable query of puzzle state. In the course of constructing the query, it will instantiate any state records that are missing on the server.
         /// </summary>
