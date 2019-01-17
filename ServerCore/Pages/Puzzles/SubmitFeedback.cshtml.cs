@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Puzzles
 {
+//    [Authorize(Policy = "PlayerIsOnTeam, PlayerCanSeePuzzle")] // TODO: These auth checks not working currently.
     public class SubmitFeedbackModel : EventSpecificPageModel
     {
         public SubmitFeedbackModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
@@ -31,6 +33,15 @@ namespace ServerCore.Pages.Puzzles
                 return NotFound();
             }
 
+            // Seed existing feedback page
+            Feedback = await _context.Feedback.Where((f) => f.Puzzle.ID == puzzleId && f.Submitter == LoggedInUser).FirstOrDefaultAsync();
+            if (Feedback == null)
+            {
+                Feedback = new Feedback();
+                Feedback.Fun = 5;
+                Feedback.Difficulty = 5;
+            }
+
             return Page();
         }
         
@@ -44,15 +55,33 @@ namespace ServerCore.Pages.Puzzles
                 return Page();
             }
 
-            Feedback.Puzzle = await _context.Puzzles.Where(m => m.ID == puzzleId).FirstOrDefaultAsync();
+            Feedback editableFeedback = await _context.Feedback.Where((f) => f.Puzzle.ID == puzzleId && f.Submitter == LoggedInUser).FirstOrDefaultAsync();
+            if (editableFeedback == null)
+            {
+                Feedback.SubmissionTime = DateTime.UtcNow;
+                Feedback.Submitter = LoggedInUser;
+                Feedback.Puzzle = await _context.Puzzles.Where(m => m.ID == puzzleId).FirstOrDefaultAsync();
+                if (Feedback.Puzzle == null)
+                {
+                    return NotFound();
+                }
+                _context.Feedback.Add(Feedback);
+            }
+            else
+            {
+                editableFeedback.SubmissionTime = DateTime.UtcNow;
+                editableFeedback.Submitter = LoggedInUser;
+                editableFeedback.Difficulty = Feedback.Difficulty;
+                editableFeedback.Fun = Feedback.Fun;
+                editableFeedback.WrittenFeedback = Feedback.WrittenFeedback;
+                editableFeedback.Puzzle = await _context.Puzzles.Where(m => m.ID == puzzleId).FirstOrDefaultAsync();
+                if (editableFeedback.Puzzle == null)
+                {
+                    return NotFound();
+                }
+                _context.Attach(editableFeedback).State = EntityState.Modified;
+            }
 
-            if (Feedback.Puzzle == null) 
-            { 
-                return NotFound(); 
-            } 
-
-            Feedback.SubmissionTime = DateTime.UtcNow;
-            _context.Feedback.Add(Feedback);
             await _context.SaveChangesAsync();
 
             return RedirectToPage("/Teams/Play");

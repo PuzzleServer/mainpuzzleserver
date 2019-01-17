@@ -29,7 +29,7 @@ namespace ServerCore.Pages.Puzzles
         /// </summary>
         public async Task<IActionResult> OnGetAsync(int puzzleId)
         {
-            Feedbacks = await _context.Feedback.Where((f) => f.Puzzle.ID == puzzleId).ToListAsync();
+            Feedbacks = await _context.Feedback.Where((f) => f.Puzzle.ID == puzzleId).Include("Submitter").ToListAsync();
             Puzzle = await _context.Puzzles.Where((p) => p.ID == puzzleId).FirstOrDefaultAsync();
 
             if (Puzzle == null) 
