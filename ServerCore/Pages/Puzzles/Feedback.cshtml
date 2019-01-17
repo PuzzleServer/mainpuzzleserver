@@ -3,9 +3,10 @@
 
 @{
     ViewData["Title"] = "Puzzle feedback";
-    //Needs route data - ViewData["AdminRoute"] = "/Puzzles/Feedback";
-    //Needs route data - ViewData["AuthorRoute"] = "/Puzzles/Feedback";
-    //Needs route data - ViewData["PlayRoute"] = "/Puzzles/SubmitFeedback";
+    ViewData["AdminRoute"] = "../Puzzles/Feedback";
+    ViewData["AuthorRoute"] = "../Puzzles/Feedback";
+    ViewData["PlayRoute"] = "../Puzzles/SubmitFeedback";
+    ViewData["RoutingPuzzleId"] = ViewContext.RouteData.Values["puzzleId"];
     Layout = "_puzzleManagementLayout.cshtml";
     var id = ViewContext.RouteData.Values["id"];
 }

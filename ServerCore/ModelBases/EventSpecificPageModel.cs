@@ -47,6 +47,11 @@ namespace ServerCore.ModelBases
             userManager = manager;
         }
 
+        public async Task<bool> IsRegisteredUser()
+        {
+            return await LoggedInUser.IsPlayerInEvent(_context, Event);
+        }
+
         public class EventBinder : IModelBinder
         {
             public async Task BindModelAsync(ModelBindingContext bindingContext)

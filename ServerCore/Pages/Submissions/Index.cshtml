@@ -1,11 +1,12 @@
-﻿@page "/{eventId}/{eventRole}/Submissions"
+﻿@page "/{eventId}/{eventRole}/Submissions/{puzzleId}"
 @model ServerCore.Pages.Submissions.IndexModel
 
 @{
     ViewData["Title"] = "Create submissions";
-    //Needs route data - ViewData["AdminRoute"] = "/Submissions/AuthorIndex";
-    //Needs route data - ViewData["AuthorRoute"] = "/Submissions/AuthorIndex";
-    //Needs route data - ViewData["PlayRoute"] = "/Submissions/Index";
+    ViewData["AdminRoute"] = "../Submissions/AuthorIndex";
+    ViewData["AuthorRoute"] = "../Submissions/AuthorIndex";
+    // TODO: Needs to handle implicit teams - ViewData["PlayRoute"] = "../Submissions/Index";
+    ViewData["RoutingPuzzleId"] = ViewContext.RouteData.Values["puzzleId"];
 }
 
 <h2>Submissions for @Model.Puzzle.Name</h2>

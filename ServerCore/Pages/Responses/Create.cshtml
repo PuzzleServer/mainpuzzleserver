@@ -2,13 +2,14 @@
 @model ServerCore.Pages.Responses.CreateModel
 
 @{
-    ViewData["Title"] = "Create";
-    //Needs route data - ViewData["AdminRoute"] = "/Responses/Create";
-    //Needs route data - ViewData["AuthorRoute"] = "/Responses/Create";
-    //Needs route data - ViewData["PlayRoute"] = "/Submissions/Index";
+    ViewData["Title"] = "Create response";
+    ViewData["AdminRoute"] = "../Responses/Create";
+    ViewData["AuthorRoute"] = "../Responses/Create";
+    ViewData["PlayRoute"] = "../Submissions/Index";
+    ViewData["RoutingPuzzleId"] = ViewContext.RouteData.Values["puzzleId"];
 }
 
-<h2>@Model.PuzzleResponse.Puzzle.Name: Create response</h2>
+<h2>@Model.Puzzle.Name: Create response</h2>
 <div>
     <a asp-page="./Index" asp-route-puzzleid="@Model.PuzzleId">Cancel</a>
 </div>

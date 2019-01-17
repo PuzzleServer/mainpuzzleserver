@@ -3,9 +3,10 @@
 
 @{
     ViewData["Title"] = "Hints";
-    ViewData["AdminRoute"] = "/Hints/Index";
-    ViewData["AuthorRoute"] = "/Hints/Index";
-    //Needs route data - ViewData["PlayRoute"] = "/Teams/Hints";
+    ViewData["AdminRoute"] = "../Hints/Index";
+    ViewData["AuthorRoute"] = "../Hints/Index";
+    // TODO: Needs to handle implicit teams - ViewData["PlayRoute"] = "../Teams/Hints";
+    ViewData["RoutingPuzzleId"] = ViewContext.RouteData.Values["puzzleId"];
     Layout = "../Puzzles/_puzzleManagementLayout.cshtml";
 }
 

@@ -1,0 +1,215 @@
+﻿@{
+    var Event = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Event;
+    var EventRole = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.EventRole;
+    var IsRegistered = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.IsRegisteredUser().Result ?? false;
+}
+
+<!--ADMIN NAV BAR-->
+@if (Event != null && EventRole != null && EventRole == ModelBases.EventRole.admin)
+{
+    <nav class="navbar navbar-inverse navbar-fixed-top admin-menu">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" data-toggle="dropdown" href="#">
+                    @Event.Name - Admin
+                </a>
+                <partial name="/Pages/Shared/_RoleSwitcherPartial.cshtml" />
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a asp-page="/EventSpecific/Index">Event</a></li>
+                    <li><a asp-page="/Puzzles/Index">Puzzles</a></li>
+                    <li><a asp-page="/Teams/Index">Teams</a></li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            Leaderboards
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a asp-page="/Events/Standings">Standings</a></li>
+                            <li class="divider"></li>
+                            <li><a asp-page="/Events/FastestSolves">Fastest solves</a></li>
+                            <li class="divider"></li>
+                            <li><a asp-page="/Events/Map">Puzzle state map</a></li>
+                        </ul>
+                    </li>
+                    <li><a asp-page="/Events/Players">Users</a></li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            Resources
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a asp-page="/EventSpecific/Rules">Rules</a></li>
+                            <li class="divider"></li>
+                            <li><a asp-page="/EventSpecific/FAQ">FAQ</a></li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <partial name="/Pages/Shared/_LoginPartial.cshtml" />
+                </ul>
+            </div>
+        </div>
+    </nav>
+}
+<!--ADMIN NAV BAR END-->
+<!--AUTHOR NAV BAR-->
+@if (Event != null && EventRole != null && EventRole == ModelBases.EventRole.author)
+{
+    <nav class="navbar navbar-inverse navbar-fixed-top author-menu">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" data-toggle="dropdown" href="#">
+                    @Event.Name - Author
+                </a>
+                <partial name="/Pages/Shared/_RoleSwitcherPartial.cshtml" />
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a asp-page="/EventSpecific/Index">Event</a></li>
+                    <li><a asp-page="/Puzzles/Index">Puzzles</a></li>
+                    <li><a asp-page="/Teams/Index">Teams</a></li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            Leaderboards
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a asp-page="/Events/Standings">Standings</a></li>
+                            <li class="divider"></li>
+                            <li><a asp-page="/Events/FastestSolves">Fastest solves</a></li>
+                            <li class="divider"></li>
+                            <li><a asp-page="/Events/Map">Puzzle state map</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            Resources
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a asp-page="/EventSpecific/Rules">Rules</a></li>
+                            <li class="divider"></li>
+                            <li><a asp-page="/EventSpecific/FAQ">FAQ</a></li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <partial name="/Pages/Shared/_LoginPartial.cshtml" />
+                </ul>
+            </div>
+        </div>
+    </nav>
+}
+<!--AUTHOR NAV BAR END-->
+<!--REGISTERED PLAYER NAV BAR-->
+@if (Event != null && (EventRole == null || (EventRole != ModelBases.EventRole.admin && EventRole != ModelBases.EventRole.author)) && IsRegistered)
+{
+    <nav class="navbar navbar-inverse navbar-fixed-top player-menu">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" data-toggle="dropdown" href="#">
+                    @Event.Name
+                </a>
+                <partial name="/Pages/Shared/_RoleSwitcherPartial.cshtml" />
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a asp-page="/EventSpecific/Index">Event</a></li>
+                    <li><a asp-page="/Teams/Play">Puzzles</a></li>
+                    <li><a asp-page="/Teams/Details">Team</a></li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            Leaderboards
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a asp-page="/Events/Standings">Standings</a></li>
+                            <li class="divider"></li>
+                            <li><a asp-page="/Events/FastestSolves">Fastest solves</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            Resources
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a asp-page="/EventSpecific/Rules">Rules</a></li>
+                            <li class="divider"></li>
+                            <li><a asp-page="/EventSpecific/FAQ">FAQ</a></li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <partial name="/Pages/Shared/_LoginPartial.cshtml" />
+                </ul>
+            </div>
+        </div>
+    </nav>
+}
+<!--REGISTERED PLAYER NAV BAR END-->
+<!--UNREGISTERED PLAYER NAV BAR-->
+@if (Event != null && (EventRole == null || (EventRole != ModelBases.EventRole.admin && EventRole != ModelBases.EventRole.author)) && !IsRegistered)
+{
+    <nav class="navbar navbar-inverse navbar-fixed-top player-menu">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" data-toggle="dropdown" href="#">
+                    @Event.Name
+                </a>
+                <partial name="/Pages/Shared/_RoleSwitcherPartial.cshtml" />
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a asp-page="/EventSpecific/Index">Event</a></li>
+                    <li><a asp-page="/Teams/List">Register</a></li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            Resources
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a asp-page="/EventSpecific/Rules">Rules</a></li>
+                            <li class="divider"></li>
+                            <li><a asp-page="/EventSpecific/FAQ">FAQ</a></li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <partial name="/Pages/Shared/_LoginPartial.cshtml" />
+                </ul>
+            </div>
+        </div>
+    </nav>
+}
+<!--UNREGISTERED PLAYER NAV BAR END-->

@@ -3,9 +3,10 @@
 
 @{
     ViewData["Title"] = "Create hint";
-    //Needs route data - ViewData["AdminRoute"] = "/Hints/Create";
-    //Needs route data - ViewData["AuthorRoute"] = "/Hints/Create";
-    //Needs route data - ViewData["PlayRoute"] = "/Teams/Hints";
+    ViewData["AdminRoute"] = "../Hints/Create";
+    ViewData["AuthorRoute"] = "../Hints/Create";
+    ViewData["PlayRoute"] = "../Teams/Hints";
+    ViewData["RoutingPuzzleId"] = ViewContext.RouteData.Values["puzzleId"];
 }
 
 <h2>@Model.Puzzle.Name: Create hint</h2>
