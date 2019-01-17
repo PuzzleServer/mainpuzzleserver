@@ -1,4 +1,4 @@
-﻿@page "/{eventId}/{eventRole}/AuthorSubmissions/{puzzleId}"
+﻿@page "/{eventId}/{eventRole}/AuthorIndex/{puzzleId?}"
 @model ServerCore.Pages.Submissions.AuthorIndexModel
 @{
     ViewData["Title"] = "AuthorIndex";
@@ -6,10 +6,26 @@
     ViewData["AuthorRoute"] = "../Submissions/AuthorIndex";
     // TODO: Needs to handle implicit teams - ViewData["PlayRoute"] = "../Submissions/Index";
     ViewData["RoutingPuzzleId"] = ViewContext.RouteData.Values["puzzleId"];
-    Layout = "../Puzzles/_puzzleManagementLayout.cshtml";
+
+    if (Model.Puzzle != null)
+    {
+        Layout = "../Puzzles/_puzzleManagementLayout.cshtml";
+    }
+    else if (Model.Team != null)
+    {
+        Layout = "../Teams/_teamLayout.cshtml";
+    }
+    // TODO: Do we need a combined layout, or is that rare enough as to be unnecessary? Maybe those bar layouts should be sections/components?
 }
 
-<h2>@Model.Puzzle.Name: Submissions</h2>
+<h2>@if (Model.Puzzle != null) { <text>@Model.Puzzle.Name:</text> } Submissions @if (Model.Team != null) { <text>by @Model.Team.Name</text> }</h2>
+
+<div>
+    @if(Model.Puzzle != null) { <a asp-page="./AuthorIndex" asp-route-puzzleId="" asp-route-teamId="@Model.Team?.ID">Clear Puzzle Filter</a> }
+    @if(Model.Puzzle != null && Model.Team != null) { <text>|</text> }  
+    @if(Model.Team != null) { <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="">Clear Team Filter</a> }  
+    @if(Model.Puzzle != null && Model.Team != null) { <text>|</text> <a asp-page="./AuthorIndex" asp-route-puzzleId="" asp-route-teamId="">Clear All Filters</a> }  
+</div>
 
 <br />
 <div>
@@ -21,6 +37,9 @@
                 </th>
                 <th>
                     Team Name
+                </th>
+                <th>
+                    Puzzle
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.Submissions[0].Response.ResponseText)
@@ -42,7 +61,10 @@
                     @Html.DisplayFor(modelItem => item.Submitter.Name)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Team.Name)
+                    <a asp-page="AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@item.Team.ID">@Html.DisplayFor(modelItem => item.Team.Name)</a>
+                </td>
+                <td>
+                    <a asp-page="AuthorIndex" asp-route-puzzleId="@item.Puzzle.ID" asp-route-teamId="@Model.Team?.ID">@Html.DisplayFor(modelItem => item.Puzzle.Name)</a>
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Response.ResponseText)
