@@ -73,5 +73,31 @@ namespace ServerCore.Pages.Events
 
             return Page();
         }
+
+        public async Task<IActionResult> OnGetRemoveAdminAsync(int userId)
+        {
+            EventAdmins Admin = await _context.EventAdmins.FirstOrDefaultAsync(admin => admin.Admin.ID == userId && admin.Event == Event);
+            if (Admin == null)
+            {
+                return NotFound("Could not find event admin with ID '" + userId + "'. They may have already been removed from the admin role.");
+            }
+
+            _context.EventAdmins.Remove(Admin);
+            await _context.SaveChangesAsync();
+            return RedirectToPage("/Events/Players");
+        }
+
+        public async Task<IActionResult> OnGetRemoveAuthorAsync(int userId)
+        {
+            EventAuthors Author = await _context.EventAuthors.FirstOrDefaultAsync(author => author.Author.ID == userId && author.Event == Event);
+            if (Author == null)
+            {
+                return NotFound("Could not find event author with ID '" + userId + "'. They may have already been removed from the author role.");
+            }
+
+            _context.EventAuthors.Remove(Author);
+            await _context.SaveChangesAsync();
+            return RedirectToPage("/Events/Players");
+        }
     }
 }
