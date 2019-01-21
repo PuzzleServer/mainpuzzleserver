@@ -1,20 +1,117 @@
 ﻿@page "/{eventId}/{eventRole}/Events/Players"
 @model ServerCore.Pages.Events.PlayersModel
 @{
-    ViewData["Title"] = "Players";
+    ViewData["Title"] = "Users";
     ViewData["AdminRoute"] = "/Events/Players";
     ViewData["AuthorRoute"] = "/EventSpecific/Index";
     ViewData["PlayRoute"] = "/EventSpecific/Index";
 }
 
-<h2>Players</h2>
+<h2>Users</h2>
+
+<h3>Admins</h3>
 
 <table class="table">
     <thead>
         <tr>
             <th>
-                Player @Html.DisplayNameFor(model => model.Players[0].Member.ID)
+                Player @Html.DisplayNameFor(model => model.Admins[0].Name)
             </th>
+            <th>
+                Player @Html.DisplayNameFor(model => model.Admins[0].Email)
+            </th>
+            <th>
+                Player @Html.DisplayNameFor(model => model.Admins[0].EmployeeAlias)
+            </th>
+            <th>
+                Remove as admin...?
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Admins)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EmployeeAlias)
+                </td>
+                <td>
+                    hi
+                </td>
+                <td></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h4>All admin e-mails</h4>
+
+<p>@Model.AdminEmails</p>
+
+<h3>Authors</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Player @Html.DisplayNameFor(model => model.Authors[0].Name)
+            </th>
+            <th>
+                Player @Html.DisplayNameFor(model => model.Authors[0].Email)
+            </th>
+            <th>
+                Player @Html.DisplayNameFor(model => model.Authors[0].EmployeeAlias)
+            </th>
+            <th>
+                Puzzle count...?
+            </th>
+            <th>
+                Remove as author...?
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Authors)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EmployeeAlias)
+                </td>
+                <td>
+                    hi
+                </td>
+                <td>
+                    hi
+                </td>
+                <td></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h4>All author e-mails</h4>
+
+<p>@Model.AuthorEmails</p>
+
+<h3>Players</h3>
+
+<table class="table">
+    <thead>
+        <tr>
             <th>
                 Player @Html.DisplayNameFor(model => model.Players[0].Member.Name)
             </th>
@@ -22,7 +119,7 @@
                 Player @Html.DisplayNameFor(model => model.Players[0].Member.Email)
             </th>
             <th>
-                Team @Html.DisplayNameFor(model => model.Players[0].Team.ID)
+                Player @Html.DisplayNameFor(model => model.Players[0].Member.EmployeeAlias)
             </th>
             <th>
                 Team @Html.DisplayNameFor(model => model.Players[0].Team.Name)
@@ -35,19 +132,16 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Member.ID)
-                </td>
-                <td>
                     @Html.DisplayFor(modelItem => item.Member.Name)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Member.Email)
                 </td>
                 <td>
-                    <a asp-page="/Teams/Details" asp-route-id="@item.Team.ID">@Html.DisplayFor(modelItem => item.Team.ID)</a>
+                    @Html.DisplayFor(modelItem => item.Member.EmployeeAlias)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Team.Name)
+                    <a asp-page="/Teams/Members" asp-route-id="@item.Team.ID">@Html.DisplayFor(modelItem => item.Team.Name)</a>
                 </td>
                 <td></td>
             </tr>
@@ -55,9 +149,9 @@
     </tbody>
 </table>
 
-<h3>All player e-mails</h3>
+<h4>All player e-mails</h4>
 
-<p>@Model.Emails</p>
+<p>@Model.PlayerEmails</p>
 
 <div>
     <a asp-page="./Index">Back to event list</a>
