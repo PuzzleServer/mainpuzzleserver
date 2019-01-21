@@ -16,13 +16,13 @@
     <thead>
         <tr>
             <th>
-                Player @Html.DisplayNameFor(model => model.Admins[0].Name)
+                @Html.DisplayNameFor(model => model.Admins[0].Name)
             </th>
             <th>
-                Player @Html.DisplayNameFor(model => model.Admins[0].Email)
+                @Html.DisplayNameFor(model => model.Admins[0].Email)
             </th>
             <th>
-                Player @Html.DisplayNameFor(model => model.Admins[0].EmployeeAlias)
+                @Html.DisplayNameFor(model => model.Admins[0].EmployeeAlias)
             </th>
             <th>
             </th>
@@ -62,16 +62,16 @@
     <thead>
         <tr>
             <th>
-                Player @Html.DisplayNameFor(model => model.Authors[0].Name)
+                @Html.DisplayNameFor(model => model.Authors[0].Item1.Name)
             </th>
             <th>
-                Player @Html.DisplayNameFor(model => model.Authors[0].Email)
+                @Html.DisplayNameFor(model => model.Authors[0].Item1.Email)
             </th>
             <th>
-                Player @Html.DisplayNameFor(model => model.Authors[0].EmployeeAlias)
+                @Html.DisplayNameFor(model => model.Authors[0].Item1.EmployeeAlias)
             </th>
             <th>
-                Puzzle count...?
+                Puzzle count
             </th>
             <th>
             </th>
@@ -83,19 +83,19 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Name)
+                    @Html.DisplayFor(modelItem => item.Item1.Name)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Email)
+                    @Html.DisplayFor(modelItem => item.Item1.Email)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.EmployeeAlias)
+                    @Html.DisplayFor(modelItem => item.Item1.EmployeeAlias)
                 </td>
                 <td>
-                    hi
+                    @Html.DisplayFor(modelItem => item.Item2)
                 </td>
                 <td>
-                    <a asp-page-handler="RemoveAuthor" asp-route-userId=@item.ID>Remove</a>
+                    <a asp-page-handler="RemoveAuthor" asp-route-userId=@item.Item1.ID>Remove</a>
                 </td>
                 <td></td>
             </tr>
@@ -113,16 +113,16 @@
     <thead>
         <tr>
             <th>
-                Player @Html.DisplayNameFor(model => model.Players[0].Member.Name)
+                @Html.DisplayNameFor(model => model.Players[0].Member.Name)
             </th>
             <th>
-                Player @Html.DisplayNameFor(model => model.Players[0].Member.Email)
+                @Html.DisplayNameFor(model => model.Players[0].Member.Email)
             </th>
             <th>
-                Player @Html.DisplayNameFor(model => model.Players[0].Member.EmployeeAlias)
+                @Html.DisplayNameFor(model => model.Players[0].Member.EmployeeAlias)
             </th>
             <th>
-                Team @Html.DisplayNameFor(model => model.Players[0].Team.Name)
+                @Html.DisplayNameFor(model => model.Players[0].Team.Name)
             </th>
             <th></th>
         </tr>

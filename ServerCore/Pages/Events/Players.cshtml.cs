@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +17,7 @@ namespace ServerCore.Pages.Events
 
         public string AdminEmails { get; set; }
 
-        public IList<PuzzleUser> Authors { get; set; }
+        public IList<Tuple<PuzzleUser, int>> Authors { get; set; }
 
         public string AuthorEmails { get; set; }
 
@@ -45,14 +46,30 @@ namespace ServerCore.Pages.Events
 
             // Get authors
 
-            Authors = await _context.EventAuthors
-                .Where(author => author.Event == Event).Select(author => author.Author)
-                .ToListAsync();
+            IList<PuzzleUser> allAuthors = await (from author in _context.EventAuthors
+                                                  where author.Event == Event
+                                                  select author.Author).ToListAsync();
+
+            // note - if there's a faster way to count the puzzles / join all this data please let me know - Jenna
+            IList<IGrouping<int, PuzzleAuthors>> allPuzzles = await (from puzzleAuthor in _context.PuzzleAuthors
+                                                     where puzzleAuthor.Puzzle.Event == Event
+                                                     group puzzleAuthor by puzzleAuthor.Author.ID into puzzleGroup
+                                                     select puzzleGroup)
+                                                     .ToListAsync();
+
+            Dictionary<int, int> allPuzzlesDict = new Dictionary<int, int>();
+            foreach (IGrouping<int, PuzzleAuthors> puzzles in allPuzzles)
+            {
+                allPuzzlesDict.Add(puzzles.Key, puzzles.Count());
+            }
 
             StringBuilder authorEmailList = new StringBuilder("");
-            foreach (PuzzleUser author in Authors)
+            Authors = new List<Tuple<PuzzleUser, int>>();
+            foreach (PuzzleUser author in allAuthors)
             {
                 authorEmailList.Append(author.Email + "; ");
+                int puzzleCount = allPuzzlesDict.ContainsKey(author.ID) ? allPuzzlesDict[author.ID] : 0;
+                Authors.Add(new Tuple<PuzzleUser, int>(author, puzzleCount));
             }
             AuthorEmails = authorEmailList.ToString();
 
