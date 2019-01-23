@@ -1,0 +1,137 @@
+﻿@page
+
+<div class="container">
+    <h1>Sample Encodings</h1>
+    <p>
+        Over time, some encoding schemes have been used so frequently that they've
+        formed a kind of basic vocabulary for Puzzlehunters.  Here are some things
+        to look out for as you try to determine how to extract a final answer.
+    </p>
+
+    <h3>Number to Letter Conversion</h3>
+    <p>
+        Numbers between 1 and 26 often represent indices into the alphabet, where
+        1=A, 2=B, and so on through 26=Z.  If a puzzle solved to the following list
+        of values: 3, 15, 18, 18, 5, 3, 20, you would translate that into the final
+        answer CORRECT.  If numbers are outside this range, sometimes you need to
+        bring them into that range via a mod 26 operation: divide the number by 26
+        and use the remainder, treating 0 as 26.
+    </p>
+    <img src="~/images/AlphaNumbers.png" />
+
+    <h3>ASCII to Letter Conversion</h3>
+    <p>
+        Numbers in the 65-90 range often represent the ASCII code values for the
+        alphabet, where 65=A and 90=Z.  97-122 can represent lower-case ASCII
+        codes. You can see it <a href="http://en.wikipedia.org/wiki/ASCII#ASCII_printable_characters">here</a>
+    </p>
+
+    <h3>Indexing</h3>
+    <p>
+        Another extremely common use of numbers in puzzles is as an index into other
+        text.  A clue with a number 5 next to it might mean that after solving the
+        clue, the important thing is the fifth letter of the answer.  Typically, a
+        puzzle using indexing will require you to index multiple times, often using
+        a different answer and number each tim  e, to extract a series of letters
+        which can then be read as something meaningful.
+    </p>
+
+    <h3>Implied Indexing</h3>
+    <p>
+        If the puzzle resolves to a list of answers and there is no numeric data
+        to suggest indexing, the answer may be an acrostic, which is essentially an
+        implied index of 1 for each answer.  Try reading only the first letters of
+        the answers.  Another common implied index is the "diagonal read"-an index of
+        1 for the first answer, 2 for the second, 3 for the third, and so forth.
+    </p>
+
+    <h3>Binary</h3>
+    <p>
+        A stream of data with only two different values-black and white, true and
+        false, dead or alive, 1 or 0-often represents binary values.  The most useful
+        binary values are 5-bits long, since that's the smallest number of bits
+        required to represent the numbers 1-26 (which can in turn be converted into
+        the letters A-Z).
+    </p>
+
+    <h3>Morse Code</h3>
+    <p>
+        The other choice for a stream of binary data is Morse code.  Data with
+        three different values can also be Morse, with the third value used for
+        letter breaks.  A puzzle might be encode Morse more visually, by containing
+        dots and dashes in the puzzle (for example, as the stripes or emblems on
+        national flags).
+    </p>
+    <img src="~/images/MorseCode.png" />
+
+    <h3>Semaphore</h3>
+    <p>
+        Semaphore is a flag signaling system in which the alphabet is represented
+        by holding two flags at various angles from the body.  In puzzles, if a data
+        stream consists of compass directions, angles, or lines emanating from a
+        common center, it might be semaphore.
+    </p>
+    <img src="~/images/Semaphore.png" />
+
+    <h3>Braille</h3>
+    <p>
+        Braille is a system of raised dots used to allow non-sighted people to
+        read by touch.  Each letter in the Braille alphabet is composed of a 2x3 grid
+        of dots, some of which are "on" and some "off".  Any time your data can be
+        subdivided evenly into a 2x3 grid, consider trying to treat it as
+        Braille.
+    </p>
+    <img src="~/images/Braille.gif" />
+
+    <h3>Nautical Signal Flags</h3>
+    <p>
+        The system of international maritime signal flags is a way of representing
+        every number and every letter of the alphabet in signals to or from ships.
+        Each flag features a simple pattern in a palette of five colors: red, white,
+        blue, black, and yellow.
+    </p>
+    <img src="~/images/MaritimeSignalFlags.png" />
+
+    <h3>NATO Phonetic Alphabet</h3>
+    <p>
+        The NATO alphabet assigns code words to letters of the alphabet (ALPHA,
+        BRAVO, CHARLIE, etc) so that critical combinations of letters can be
+        pronounced and understood via radio or telephone.
+    </p>
+
+    <h3>Pigpen Cipher</h3>
+    <p>The Pigpen Cipher, developed by the Freemasons for secret communication, encodes each letter as a symbol. The encoding is described by the grids below: each letter is encoded by replacing it with the symbol corresponding to the part of the grid that contains the letter.</p>
+    <img src="~/images/Pigpen.gif" />
+    <p>For example:</p>
+    <img src="~/images/PigpenExamples.gif" />
+
+    <h3>Rainbow Order</h3>
+    <p>Rainbow order is the order that colors appear in the color spectrum. A common mnemonic to remember the order is <a href="http://en.wikipedia.org/wiki/Roy_G._Biv">Roy G. Biv</a>: Red, Orange, Yellow, Green, Blue, Indigo, Violet. </p>
+
+    <h3>Color Wheel</h3>
+    <p>When color pigments are combined, new colors are created.</p>
+    <img src="~/images/ColorMix.png" />
+
+    <h3>Resistor Color Codes</h3>
+    <p>Electrical resistors use color bands on them to indicate their resistance values. <a href="http://en.wikipedia.org/wiki/Resistor_colors">Here</a> is a good reference.</p>
+
+    <h3>Base Encodings</h3>
+    <p>
+        Base 10 encoding is used most often, but you'll frequently see other base encodings in puzzles. Base 2, 8, and 16 are common.
+        An example: suppose you have the number or a representation of the number "00010". This is 10 in decimal (Base 10), 16 in hexadecimal (Base 16), 8 in octal (Base 8), and 2 in binary (Base 2). Remember, the value of the number may map to another encoding, for example "01010" (Base 2) --> "10" (Base 10) --> 'J', the 10th letter of the alphabet.
+
+        <table class="table table-bordered">
+            <tr><th>Base 2</th><th>Base 8</th><th>Base 10</th><th>Letter</th></tr>
+            <tr><td>00001</td> <td>00001</td> <td>1</td> <td>A</td></tr>
+            <tr><td>00101</td> <td>00005</td> <td>5</td> <td>E</td></tr>
+            <tr><td>01001</td> <td>00011</td> <td>9</td> <td>I</td></tr>
+            <tr><td>01111</td> <td>00017</td> <td>15</td> <td>O</td></tr>
+            <tr><td>10101</td> <td>00025</td> <td>21</td> <td>U</td></tr>
+        </table>
+
+    </p>
+
+
+
+</div>
+
