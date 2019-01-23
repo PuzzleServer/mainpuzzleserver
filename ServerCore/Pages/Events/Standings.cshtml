@@ -14,16 +14,24 @@
             <thead>
                 <tr>
                     <th>
-                        Rank
+                        <a asp-page="./Standings" asp-route-sort="@(Model.SortForColumnLink(StandingsModel.SortOrder.RankAscending, StandingsModel.SortOrder.RankDescending))">
+                            Rank
+                        </a>
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Teams[0].Team.Name)
+                        <a asp-page="./Standings" asp-route-sort="@(Model.SortForColumnLink(StandingsModel.SortOrder.NameAscending, StandingsModel.SortOrder.NameDescending))">
+                            @Html.DisplayNameFor(model => model.Teams[0].Team.Name)
+                        </a>
                     </th>
                     <th>
-                        Puzzles
+                        <a asp-page="./Standings" asp-route-sort="@(Model.SortForColumnLink(StandingsModel.SortOrder.PuzzlesAscending, StandingsModel.SortOrder.PuzzlesDescending))">
+                            Puzzles
+                        </a>
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Teams[0].Score)
+                        <a asp-page="./Standings" asp-route-sort="@(Model.SortForColumnLink(StandingsModel.SortOrder.ScoreAscending, StandingsModel.SortOrder.ScoreDescending))">
+                            @Html.DisplayNameFor(model => model.Teams[0].Score)
+                        </a>
                     </th>
                 </tr>
             </thead>
