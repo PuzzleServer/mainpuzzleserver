@@ -8,25 +8,14 @@
     ViewData["PlayRoute"] = "../Puzzles/SubmitFeedback";
     ViewData["RoutingPuzzleId"] = ViewContext.RouteData.Values["puzzleId"];
     Layout = "_puzzleManagementLayout.cshtml";
-
-    var sumFun = 0.0;
-    var sumDiff = 0.0;
-    var count = 0;
-    foreach (var item in Model.Feedbacks) {
-        sumFun += item.Fun;
-        sumDiff += item.Difficulty;
-        count++;
-    }
-    sumFun /= count;
-    sumDiff /= count;
 }
 
 <h2>@Html.DisplayFor(model => model.Puzzle.Name): Feedback</h2>
 
 <div>
-    <h3><b>Avg Fun Rating:</b> @sumFun</h3>
+    <h3><b>Avg Fun Rating:</b> @Model.FunScore</h3>
     <br>
-    <h3><b>Avg Difficulty Rating:</b> @sumDiff</h3>
+    <h3><b>Avg Difficulty Rating:</b> @Model.DiffScore</h3>
 </div>
 
 <br>

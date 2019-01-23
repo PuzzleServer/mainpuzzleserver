@@ -20,6 +20,8 @@ namespace ServerCore.Pages.Puzzles
         [BindProperty]
         public Feedback Feedback { get; set; }  
         public Puzzle Puzzle { get; set; }
+        public int MinRating = 0;
+        public int MaxRating = 10;
 
         /// <summary>
         /// Gets the submit feedback page for a puzzle
@@ -55,6 +57,15 @@ namespace ServerCore.Pages.Puzzles
                 return Page();
             }
 
+            if (Feedback.Fun < MinRating)
+                Feedback.Fun = MinRating;
+            if (Feedback.Fun > MaxRating)
+                Feedback.Fun = MaxRating;
+            if (Feedback.Difficulty < MinRating)
+                Feedback.Difficulty = MinRating;
+            if (Feedback.Difficulty > MaxRating)
+                Feedback.Difficulty = MaxRating;
+
             Feedback editableFeedback = await _context.Feedback.Where((f) => f.Puzzle.ID == puzzleId && f.Submitter == LoggedInUser).FirstOrDefaultAsync();
             if (editableFeedback == null)
             {
@@ -63,7 +74,7 @@ namespace ServerCore.Pages.Puzzles
                 Feedback.Puzzle = await _context.Puzzles.Where(m => m.ID == puzzleId).FirstOrDefaultAsync();
                 if (Feedback.Puzzle == null)
                 {
-                    return NotFound();
+                    return NotFound("Could not find puzzle for this feedback submission.");
                 }
                 _context.Feedback.Add(Feedback);
             }
