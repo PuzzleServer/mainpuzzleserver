@@ -1,11 +1,14 @@
-﻿@page
+﻿@page "/{eventId}/{eventRole}/Events/Import"
 @model ServerCore.Pages.Events.ImportModel
 
 @{
-    ViewData["Title"] = "Import";
+    ViewData["Title"] = "Import event";
+    ViewData["AdminRoute"] = "/Events/Import";
+    ViewData["AuthorRoute"] = "/EventSpecific/Index";
+    ViewData["PlayRoute"] = "/EventSpecific/Index";
 }
 
-<h2>Import</h2>
+<h2>@Model.Event.Name: Import</h2>
 
 <form method="post" enctype="multipart/form-data">
     <input type="hidden" asp-for="Event.ID" />

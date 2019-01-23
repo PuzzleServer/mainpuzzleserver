@@ -1,14 +1,16 @@
-﻿@page
+﻿@page "/{eventId}/{eventRole}/Events/Details"
 @model ServerCore.Pages.Events.DetailsModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Event details";
+    ViewData["AdminRoute"] = "/Events/Details";
+    ViewData["AuthorRoute"] = "/EventSpecific/Index";
+    ViewData["PlayRoute"] = "/EventSpecific/Index";
 }
 
-<h2>Details</h2>
+<h2>@Model.Event.Name: Details</h2>
 
 <div>
-    <h4>Event</h4>
     <hr />
     <dl class="dl-horizontal">
         <dt>

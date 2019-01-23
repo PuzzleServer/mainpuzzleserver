@@ -8,8 +8,7 @@ using ServerCore.DataModel;
 
 namespace ServerCore.Pages.Events
 {
-    // TODO: Turn this on when it's easy to make yourself a global admin
-    //[Authorize(Policy = "IsGlobalAdmin")]
+    [Authorize(Policy = "IsGlobalAdmin")]
     public class CreateModel : PageModel
     {
         private readonly PuzzleServerContext _context;
@@ -38,6 +37,10 @@ namespace ServerCore.Pages.Events
             Event.AnswerSubmissionEnd= DateTime.UtcNow.AddDays(2);
             Event.AnswersAvailableBegin = DateTime.UtcNow.AddDays(2);
             Event.StandingsAvailableBegin = DateTime.UtcNow.AddDays(2);
+            Event.LockoutIncorrectGuessLimit = 5;
+            Event.LockoutIncorrectGuessPeriod = 1;
+            Event.LockoutDurationMultiplier = 2;
+            Event.MaxSubmissionCount = 50;
 
             return Page();
         }
@@ -65,3 +68,4 @@ namespace ServerCore.Pages.Events
         }
     }
 }
+

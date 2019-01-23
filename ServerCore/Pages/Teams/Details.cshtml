@@ -2,18 +2,21 @@
 @model ServerCore.Pages.Teams.DetailsModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Team Details";
+    //Needs route data - ViewData["AdminRoute"] = "/Teams/Details";
+    //Needs route data - ViewData["AuthorRoute"] = "/Teams/Status";
+    //Needs route data - ViewData["PlayRoute"] = "/Teams/Details";
     Layout = "_teamLayout.cshtml";
 }
 
-<h2>@Html.DisplayFor(model => model.Team.Name) - Details</h2>
+<h2>@Html.DisplayFor(model => model.Team.Name): Details</h2>
 
 <div>
-    @if(Model.EventRole != ModelBases.EventRole.author)
+    @if (Model.EventRole != ModelBases.EventRole.author)
     {
         <div>
-            <a asp-page="./Edit" asp-route-id="@Model.Team.ID">Edit</a> |
-            <a asp-page="./Delete">Delete</a>
+            <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID">Edit</a> |
+            <a asp-page="./Delete" asp-route-teamId="@Model.Team.ID">Delete</a>
         </div>
     }
     <hr />

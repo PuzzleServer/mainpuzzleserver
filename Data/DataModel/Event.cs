@@ -36,8 +36,22 @@ namespace ServerCore.DataModel
         {
             get
             {
-                return DateTime.UtcNow.CompareTo(TeamRegistrationBegin) > 0 &&
-                    DateTime.UtcNow.CompareTo(TeamRegistrationEnd) < 0;
+                return DateTime.UtcNow >= TeamRegistrationBegin &&
+                    DateTime.UtcNow <= TeamRegistrationEnd;
+            }
+        }
+
+        /// <summary>
+        /// Returns whether or not teams are allowed to change their members
+        /// </summary>
+        /// <returns>True if the current date is between the team registration begin and membership change end times.</returns>
+        [NotMapped]
+        public bool IsTeamMembershipChangeActive
+        {
+            get
+            {
+                return DateTime.UtcNow >= TeamRegistrationBegin &&
+                    DateTime.UtcNow <= TeamMembershipChangeEnd;
             }
         }
 
@@ -120,5 +134,29 @@ namespace ServerCore.DataModel
         public virtual EventTeams Teams { get; set; }
         public virtual EventAuthors Authors { get; set; }
         public virtual EventAdmins Admins { get; set; }
+
+        /// <summary>
+        /// The window of time where if a team enters a certain number of
+        /// incorrect answers would cause the team to be locked out of
+        /// submitting additional answers for a brief amount of time.
+        /// </summary>
+        public double LockoutIncorrectGuessPeriod { get; set; }
+
+        /// <summary>
+        /// The amount of incorrect submissions required to initiate a lockout.
+        /// </summary>
+        public int LockoutIncorrectGuessLimit { get; set; }
+
+        /// <summary>
+        /// The multiplier for the lockout duration for consecutive lockouts.
+        /// </summary>
+        public double LockoutDurationMultiplier { get; set; }
+
+        /// <summary>
+        /// The maximum number of incorrect submissions a team can have for
+        /// a single puzzle before being locked out entirely and being placed
+        /// in email-only mode.
+        /// </summary>
+        public uint MaxSubmissionCount { get; set; }
     }
 }

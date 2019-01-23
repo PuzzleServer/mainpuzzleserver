@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
+using ServerCore.Helpers;
 using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Teams
@@ -12,6 +14,7 @@ namespace ServerCore.Pages.Teams
     /// <summary>
     /// Model for the player's "Puzzles" page. Shows a list of the team's unsolved puzzles, with sorting options.
     /// </summary>
+    [Authorize(Policy = "IsPlayer")]
     public class PlayModel : EventSpecificPageModel
     {
         // see https://docs.microsoft.com/en-us/aspnet/core/data/ef-rp/sort-filter-page?view=aspnetcore-2.1 to make this sortable!
@@ -28,9 +31,18 @@ namespace ServerCore.Pages.Teams
 
         private const SortOrder DefaultSort = SortOrder.PuzzleAscending;
 
-        public async Task OnGetAsync(int id, SortOrder? sort)
+        public async Task OnGetAsync(SortOrder? sort)
         {
-            this.TeamID = id;
+            Team myTeam = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
+            if (myTeam != null)
+            {
+                this.TeamID = myTeam.ID;
+                await PuzzleStateHelper.CheckForTimedUnlocksAsync(_context, Event, myTeam);
+            }
+            else
+            {
+                throw new Exception("Not currently registered for a team");
+            }
             this.Sort = sort;
 
             // all puzzles for this event that are real puzzles
@@ -38,7 +50,7 @@ namespace ServerCore.Pages.Teams
 
             // all puzzle states for this team that are unlocked (note: IsUnlocked bool is going to harm perf, just null check the time here)
             // Note that it's OK if some puzzles do not yet have a state record; those puzzles are clearly still locked and hence invisible.
-            var stateForTeamQ = _context.PuzzleStatePerTeam.Where(state => state.TeamID == id && state.UnlockedTime != null);
+            var stateForTeamQ = _context.PuzzleStatePerTeam.Where(state => state.TeamID == this.TeamID && state.UnlockedTime != null);
 
             // join 'em (note: just getting all properties for max flexibility, can pick and choose columns for perf later)
             // Note: EF gotcha is that you have to join into anonymous types in order to not lose valuable stuff

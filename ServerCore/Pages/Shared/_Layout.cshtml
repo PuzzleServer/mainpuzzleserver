@@ -146,153 +146,17 @@
                             </ul>
                         </li>
                     </ul>
-
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-                        <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login/out</a></li>
+                        <partial name="/Pages/Shared/_LoginPartial.cshtml" />
                     </ul>
                 </div>
             </div>
         </nav>
     }
         <!--CURRENT NAV BAR END-->
-        <!--ADMIN NAV BAR-->
-        @if (Event != null && EventRole != null && EventRole == ModelBases.EventRole.admin)
-        {
-            <nav class="navbar navbar-inverse navbar-fixed-top admin-menu">
-                <div class="container">
-                    <div class="navbar-header">
-                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                            <span class="sr-only">Toggle navigation</span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                        </button>
-                        <a asp-page="/." class="navbar-brand" data-toggle="dropdown">
-                            @Event.Name - Admin
-                        </a>
-                        <!-- Get this to work & add it to the other header bars
-                        <ul class="dropdown-menu">
-                            <li><a asp-page="/." asp-route-eventRole="@ModelBases.EventRole.admin">Admin</a></li>
-                            <li><a asp-page="/." asp-route-eventRole="@ModelBases.EventRole.author">Author</a></li>
-                            <li><a asp-page="/." asp-route-eventRole="@ModelBases.EventRole.play">Player</a></li>
-                        </ul>
-                        -->
-                    </div>
-                    <div class="navbar-collapse collapse">
-                        <ul class="nav navbar-nav">
-                            <li><a asp-page="/Events/Details" asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.admin">Event</a></li>
-                            <li><a asp-page="/Puzzles/Index" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.admin">Puzzles</a></li>
-                            <li><a asp-page="/Teams/Index" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.admin">Teams</a></li>
-                            <li><a asp-page="/Events/Standings" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.admin">Standings</a></li>
-                            <li><a asp-page="/Events/Players" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.admin">Users</a></li>
-                            <li class="dropdown">
-                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                                    Resources (not implemented)
-                                    <span class="caret"></span>
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="#">FAQ</a></li>
-                                    <li class="divider"></li>
-                                    <li><a href="#">Other things</a></li>
-                                </ul>
-                            </li>
-                        </ul>
+        <!-- Navigation header -->
+        <partial name="/Pages/Shared/_NavigationPartial.cshtml" />    
 
-                        <ul class="nav navbar-nav navbar-right">
-                            <partial name="/Pages/Shared/_LoginPartial.cshtml" />
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-        }
-        <!--ADMIN NAV BAR END-->
-        <!--AUTHOR NAV BAR-->
-        @if (Event != null && EventRole != null && EventRole == ModelBases.EventRole.author)
-        {
-            <nav class="navbar navbar-inverse navbar-fixed-top author-menu">
-                <div class="container">
-                    <div class="navbar-header">
-                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                            <span class="sr-only">Toggle navigation</span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                        </button>
-                        <a asp-page="/Index" class="navbar-brand">
-                            @Event.Name - Author
-                        </a>
-                    </div>
-                    <div class="navbar-collapse collapse">
-                        <ul class="nav navbar-nav">
-                            <li><a asp-page="/Events/Details" asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.author">Event</a></li>
-                            <li><a asp-page="/Puzzles/Index" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.author">Puzzles</a></li>
-                            <li><a asp-page="/Teams/Index" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.author">Teams</a></li>
-                            <li><a asp-page="/Events/Standings" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.author">Standings</a></li>
-                            <li class="dropdown">
-                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                                    Resources (not implemented)
-                                    <span class="caret"></span>
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="#">FAQ</a></li>
-                                    <li class="divider"></li>
-                                    <li><a href="#">Other things</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-
-                        <ul class="nav navbar-nav navbar-right">
-                            <partial name="/Pages/Shared/_LoginPartial.cshtml" />
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-        }
-        <!--AUTHOR NAV BAR END-->
-        <!--PLAYER NAV BAR-->
-        @if (Event != null && (EventRole == null || (EventRole != ModelBases.EventRole.admin && EventRole != ModelBases.EventRole.author)))
-        {
-            <nav class="navbar navbar-inverse navbar-fixed-top player-menu">
-                <div class="container">
-                    <div class="navbar-header">
-                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                            <span class="sr-only">Toggle navigation</span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                        </button>
-                        <a asp-page="/Index" class="navbar-brand">
-                            @Event.Name
-                        </a>
-                    </div>
-                    <div class="navbar-collapse collapse">
-                        <ul class="nav navbar-nav">
-                            <li><a asp-page="/Events/Details" asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play">Event</a></li>
-                            <li><a asp-page="/Puzzles/Index" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.play">Puzzles</a></li>
-                            <li><a asp-page="/Teams/Details" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.play">Team</a></li>
-                            <li><a asp-page="/Events/Standings" asp-route-eventId="@Event.EventID" asp-route-eventRole="@ModelBases.EventRole.play">Standings</a></li>
-                            <li class="dropdown">
-                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                                    Resources (not implemented)
-                                    <span class="caret"></span>
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="#">FAQ</a></li>
-                                    <li class="divider"></li>
-                                    <li><a href="#">Other things</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-
-                        <ul class="nav navbar-nav navbar-right">
-                            <partial name="/Pages/Shared/_LoginPartial.cshtml" />
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-        }
-        <!--PLAYER NAV BAR END-->
         <div class="container body-content">
             @RenderBody()
             <hr />

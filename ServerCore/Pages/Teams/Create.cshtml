@@ -3,9 +3,25 @@
 
 @{
     ViewData["Title"] = "Create";
+    ViewData["AdminRoute"] = "/Teams/Create";
+    ViewData["AuthorRoute"] = "/Teams/Index";
+    ViewData["PlayRoute"] = "/Teams/Create";
 }
 
 <h2>Create a new team</h2>
+
+@if (Model.EventRole == ModelBases.EventRole.play)
+{
+<div>
+    <a asp-page="List">Cancel</a>
+</div>
+}
+else
+{
+<div>
+    <a asp-page="Index">Cancel</a>
+</div>
+}
 
 <h4>Team</h4>
 <hr />
@@ -48,10 +64,6 @@
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-page="Index">Back to List</a>
 </div>
 
 @section Scripts {

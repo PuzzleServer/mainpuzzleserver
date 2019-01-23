@@ -34,7 +34,6 @@ namespace ServerCore.ModelBases
                 {
                     loggedInUser = PuzzleUser.GetPuzzleUserForCurrentUser(_context, User, userManager).Result;
                 }
-
                 return loggedInUser;
             }
         }
@@ -46,6 +45,11 @@ namespace ServerCore.ModelBases
         {
             _context = serverContext;
             userManager = manager;
+        }
+
+        public async Task<bool> IsRegisteredUser()
+        {
+            return await LoggedInUser.IsPlayerInEvent(_context, Event);
         }
 
         public class EventBinder : IModelBinder

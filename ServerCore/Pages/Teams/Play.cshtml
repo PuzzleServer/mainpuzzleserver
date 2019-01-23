@@ -2,23 +2,25 @@
 @model ServerCore.Pages.Teams.PlayModel
 
 @{
-    ViewData["Title"] = "Play";
-
+    ViewData["Title"] = "Puzzles";
+    ViewData["AdminRoute"] = "/Puzzles/Index";
+    ViewData["AuthorRoute"] = "/Puzzles/Index";
+    ViewData["PlayRoute"] = "/Teams/Play";
     bool showAnswers = Model.Event.AnswersAvailableBegin <= DateTime.UtcNow;
 }
 
-<h2>Play</h2>
+<h2>Puzzles</h2>
 
 <table class="table">
     <thead>
         <tr>
             <th>
-                <a asp-page="./Play" asp-route-id="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(PlayModel.SortOrder.PuzzleAscending, PlayModel.SortOrder.PuzzleDescending))">
+                <a asp-page="./Play" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(PlayModel.SortOrder.PuzzleAscending, PlayModel.SortOrder.PuzzleDescending))">
                     @Html.DisplayNameFor(model => model.PuzzlesWithState[0].Puzzle.Name)
                 </a>
             </th>
             <th>
-                <a asp-page="./Play" asp-route-id="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(PlayModel.SortOrder.GroupAscending, PlayModel.SortOrder.GroupDescending))">
+                <a asp-page="./Play" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(PlayModel.SortOrder.GroupAscending, PlayModel.SortOrder.GroupDescending))">
                     @Html.DisplayNameFor(model => model.PuzzlesWithState[0].Puzzle.Group)
                 </a>
             </th>
@@ -28,18 +30,22 @@
             <th>
                 Puzzle
             </th>
-            @if (showAnswers) {
+            @if (showAnswers)
+            {
                 <th>
                     Answer
                 </th>
             }
             <th>
-                <a asp-page="./Play" asp-route-id="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(PlayModel.SortOrder.SolveAscending, PlayModel.SortOrder.SolveDescending))">
+                <a asp-page="./Play" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(PlayModel.SortOrder.SolveAscending, PlayModel.SortOrder.SolveDescending))">
                     Solve
                 </a>
             </th>
             <th>
                 Hints
+            </th>
+            <th>
+                Feedback
             </th>
         </tr>
     </thead>
@@ -61,17 +67,17 @@
                     @Html.ActionLink(item.Puzzle.PuzzleFile.ShortName, "Index", "Files", new { eventId = Model.Event.ID, filename = item.Puzzle.PuzzleFile.ShortName })
                 }
             </td>
-                @if (showAnswers)
-                {
-                    <td>        
-                        if (item.Puzzle.AnswerFile != null)
-                        {
-                            @Html.ActionLink(item.Puzzle.AnswerFile.ShortName, "Index", "Files", new { eventId = Model.Event.ID, filename = item.Puzzle.AnswerFile.ShortName })
-                        }
-                    </td>
-                }
+            @if (showAnswers)
+            {
+                <td>
+                    @if (item.Puzzle.AnswerFile != null)
+                    {
+                        @Html.ActionLink(item.Puzzle.AnswerFile.ShortName, "Index", "Files", new { eventId = Model.Event.ID, filename = item.Puzzle.AnswerFile.ShortName })
+                    }
+                </td>
+            }
             <td>
-                <a asp-page="/Submissions/Index" asp-route-puzzleid="@item.Puzzle.ID" asp-route-teamid="@Model.TeamID">
+                <a asp-page="/Submissions/Index" asp-route-puzzleId="@item.Puzzle.ID" asp-route-teamId="@Model.TeamID">
                     @if (item.State.SolvedTime != null)
                     {
                         <text>Solved at </text>@item.State.SolvedTime
@@ -87,12 +93,12 @@
                 </a>
             </td>
             <td>
-                <a asp-page="./Hints" asp-route-puzzleid="@item.Puzzle.ID" asp-route-teamid="@Model.TeamID">Hints</a>
+                <a asp-page="./Hints" asp-route-puzzleid="@item.Puzzle.ID" asp-route-teamId="@Model.TeamID">Hints</a>
+            </td>
+            <td>
+                <a asp-Page="/Puzzles/SubmitFeedback" asp-route-puzzleid="@item.Puzzle.ID">Submit feedback</a>
             </td>
         </tr>
     }
     </tbody>
 </table>
-<div>
-    <a asp-page="/Teams/Index">Back to Team List</a>
-</div>

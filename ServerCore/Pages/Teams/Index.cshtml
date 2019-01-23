@@ -3,12 +3,15 @@
 
 @{
     ViewData["Title"] = "Team Index";
+    ViewData["AdminRoute"] = "/Teams/Index";
+    ViewData["AuthorRoute"] = "/Teams/Index";
+    ViewData["PlayRoute"] = "/Teams/Details";
 }
 
 <h2>All Teams</h2>
 
 <p>
-    @if (Model.Event.IsTeamRegistrationActive) // Or current user is admin
+    @if (Model.Event.IsTeamRegistrationActive && Model.EventRole == ModelBases.EventRole.admin)
     {
         <a asp-page="Create">Create New</a>
     }
@@ -23,28 +26,28 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Team[0].Name)
+                @Html.DisplayNameFor(model => model.Teams[0].Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Team[0].RoomID)
+                @Html.DisplayNameFor(model => model.Teams[0].RoomID)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Team[0].CustomRoom)
+                @Html.DisplayNameFor(model => model.Teams[0].CustomRoom)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Team[0].PrimaryContactEmail)
+                @Html.DisplayNameFor(model => model.Teams[0].PrimaryContactEmail)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Team[0].PrimaryPhoneNumber)
+                @Html.DisplayNameFor(model => model.Teams[0].PrimaryPhoneNumber)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Team[0].SecondaryPhoneNumber)
+                @Html.DisplayNameFor(model => model.Teams[0].SecondaryPhoneNumber)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.Team) {
+@foreach (var item in Model.Teams) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
@@ -65,13 +68,16 @@
                 @Html.DisplayFor(modelItem => item.SecondaryPhoneNumber)
             </td>
             <td>
-                <a asp-page="./Status" asp-route-id="@item.ID">Status</a>
+
+            </td>
+            <td>
+                <a asp-page="./Status" asp-route-teamId="@item.ID">Status</a>
                 @if (Model.EventRole == ModelBases.EventRole.admin)
                 {
                 <div>
                     |
-                    <a asp-page="./Details" asp-route-id="@item.ID">View</a> |
-                    <a asp-page="./Members" asp-route-id="@item.ID">Members</a>
+                    <a asp-page="./Details" asp-route-teamId="@item.ID">View</a> |
+                    <a asp-page="./Members" asp-route-teamId="@item.ID">Members</a>
                 </div>
                 }
             </td>

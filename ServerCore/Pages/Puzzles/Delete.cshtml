@@ -2,12 +2,21 @@
 @model ServerCore.Pages.Puzzles.DeleteModel
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Delete puzzle";
+    ViewData["AdminRoute"] = "../Puzzles/Delete";
+    ViewData["AuthorRoute"] = "../Puzzles/Delete";
+    ViewData["PlayRoute"] = "/Teams/Play";
+    ViewData["RoutingPuzzleId"] = ViewContext.RouteData.Values["puzzleId"];
+    Layout = "_puzzleManagementLayout.cshtml";
 }
 
-<h2>Delete</h2>
+<h2>@Model.Puzzle.Name: Delete</h2>
 
-<h3>Are you sure you want to delete this?</h3>
+<div>
+    <a asp-page="./Details" asp-route-puzzleId="@Model.Puzzle.ID">Cancel</a>
+</div>
+
+<h3>Are you sure you want to delete this puzzle?</h3>
 <div>
     <h4>Puzzle</h4>
     <hr />
@@ -71,6 +80,12 @@
         </dt>
         <dd>
             @Html.DisplayFor(model => model.Puzzle.MinPrerequisiteCount)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Puzzle.MinutesToAutomaticallySolve)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Puzzle.MinutesToAutomaticallySolve)
         </dd>
     </dl>
 

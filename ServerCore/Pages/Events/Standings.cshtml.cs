@@ -13,14 +13,20 @@ namespace ServerCore.Pages.Events
     {
         public List<TeamStats> Teams { get; private set; }
 
+        public SortOrder? Sort { get; set; }
+
+        private const SortOrder DefaultSort = SortOrder.RankAscending;
+
         public StandingsModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
         }
 
-        public async Task OnGetAsync()
+        public async Task OnGetAsync(SortOrder? sort)
         {
+            Sort = sort;
+
             var teamsData = await PuzzleStateHelper.GetSparseQuery(_context, this.Event, null, null)
-                .Where(s => s.SolvedTime != null)
+                .Where(s => s.SolvedTime != null && s.Puzzle.IsPuzzle)
                 .GroupBy(state => state.Team)
                 .Select(g => new {
                     Team = g.Key,
@@ -48,12 +54,60 @@ namespace ServerCore.Pages.Events
                 {
                     stats.Rank = i + 1;
                 }
+                else
+                {
+                    stats.Rank = prevStats.Rank;
+                }
 
                 teams.Add(stats);
                 prevStats = stats;
             }
 
+            switch(sort)
+            {
+                case SortOrder.RankAscending:
+                    break;
+                case SortOrder.RankDescending:
+                    teams.Reverse();
+                    break;
+                case SortOrder.NameAscending:
+                    teams.Sort((a, b) => a.Team.Name.CompareTo(b.Team.Name));
+                    break;
+                case SortOrder.NameDescending:
+                    teams.Sort((a, b) => -a.Team.Name.CompareTo(b.Team.Name));
+                    break;
+                case SortOrder.PuzzlesAscending:
+                    teams.Sort((a, b) => a.SolveCount.CompareTo(b.SolveCount));
+                    break;
+                case SortOrder.PuzzlesDescending:
+                    teams.Sort((a, b) => -a.SolveCount.CompareTo(b.SolveCount));
+                    break;
+                case SortOrder.ScoreAscending:
+                    teams.Sort((a, b) => a.Score.CompareTo(b.Score));
+                    break;
+                case SortOrder.ScoreDescending:
+                    teams.Sort((a, b) => -a.Score.CompareTo(b.Score));
+                    break;
+            }
+
             this.Teams = teams;
+        }
+
+        public SortOrder? SortForColumnLink(SortOrder ascendingSort, SortOrder descendingSort)
+        {
+            SortOrder result = ascendingSort;
+
+            if (result == (this.Sort ?? DefaultSort))
+            {
+                result = descendingSort;
+            }
+
+            if (result == DefaultSort)
+            {
+                return null;
+            }
+
+            return result;
         }
 
         public class TeamStats
@@ -63,6 +117,18 @@ namespace ServerCore.Pages.Events
             public int Score;
             public int? Rank;
             public DateTime FinalMetaSolveTime = DateTime.MaxValue;
+        }
+
+        public enum SortOrder
+        {
+            RankAscending,
+            RankDescending,
+            NameAscending,
+            NameDescending,
+            PuzzlesAscending,
+            PuzzlesDescending,
+            ScoreAscending,
+            ScoreDescending
         }
     }
 }

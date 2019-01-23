@@ -28,6 +28,7 @@ namespace ServerCore.DataModel
         public DbSet<Response> Responses { get; set; }
         public DbSet<Submission> Submissions { get; set; }
         public DbSet<Team> Teams { get; set; }
+        public DbSet<TeamApplication> TeamApplications { get; set; }
         public DbSet<TeamMembers> TeamMembers { get; set; }
         public DbSet<PuzzleUser> PuzzleUsers { get; set; }
         public DbSet<Hint> Hints { get; set; }

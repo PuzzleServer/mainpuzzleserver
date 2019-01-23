@@ -2,12 +2,20 @@
 @model ServerCore.Pages.Puzzles.EditModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit puzzle";
+    ViewData["AdminRoute"] = "../Puzzles/Edit";
+    ViewData["AuthorRoute"] = "../Puzzles/Edit";
+    ViewData["PlayRoute"] = "/Teams/Play";
+    ViewData["RoutingPuzzleId"] = ViewContext.RouteData.Values["puzzleId"];
+    Layout = "_puzzleManagementLayout.cshtml";
 }
 
-<h2>Edit</h2>
+<h2>@Model.Puzzle.Name: Edit</h2>
 
-<h4>Puzzle</h4>
+<div>
+    <a asp-page="./Details" asp-route-puzzleId="@Model.Puzzle.ID">Cancel</a>
+</div>
+
 <hr />
 <h3>Properties</h3>
 <div class="row">
@@ -77,6 +85,16 @@
                 <label asp-for="Puzzle.MinPrerequisiteCount" class="control-label"></label>
                 <input asp-for="Puzzle.MinPrerequisiteCount" class="form-control" />
                 <span asp-validation-for="Puzzle.MinPrerequisiteCount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Puzzle.MinutesToAutomaticallySolve" class="control-label"></label>
+                <input asp-for="Puzzle.MinutesToAutomaticallySolve" class="form-control" />
+                <span asp-validation-for="Puzzle.MinutesToAutomaticallySolve" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Puzzle.SupportEmailAlias" class="control-label"></label>
+                <input asp-for="Puzzle.SupportEmailAlias" class="form-control" />
+                <span asp-validation-for="Puzzle.SupportEmailAlias" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-default" />
@@ -183,10 +201,6 @@
             </table>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-page="./Index">Back to List</a>
 </div>
 
 @section Scripts {

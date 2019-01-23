@@ -1,34 +1,29 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
+using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Events
 {
-    [Authorize(Policy = "IsGlobalAdmin")]
-    public class EditModel : PageModel
+    [Authorize(Policy = "IsEventAdmin")]
+    public class EditModel : EventSpecificPageModel
     {
-        private readonly PuzzleServerContext _context;
-
-        public EditModel(PuzzleServerContext context)
+        public EditModel(PuzzleServerContext context, UserManager<IdentityUser> userManager) : base(context, userManager)
         {
-            _context = context;
         }
 
+        // Admittedly unusual pattern, with the noble purpose of putting the [BindProperty] attribute on here without leaving it permanently on for every page.
+        // Note that naming this property "Event" and using the "new" keyword was sadly insufficient.
         [BindProperty]
-        public Event Event { get; set; }
+        public Event EditableEvent { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int id)
+
+        public IActionResult OnGet(int id)
         {
-            Event = await _context.Events.SingleOrDefaultAsync(m => m.ID == id);
-
-            if (Event == null)
-            {
-                return NotFound();
-            }
+            EditableEvent = Event;
             return Page();
         }
 
@@ -39,30 +34,13 @@ namespace ServerCore.Pages.Events
                 return Page();
             }
 
-            _context.Attach(Event).State = EntityState.Modified;
+            // not using attach here because Event is already attached
+            _context.Entry(Event).State = EntityState.Detached;
+            _context.Attach(EditableEvent).State = EntityState.Modified;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EventExists(Event.ID))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");
-        }
-
-        private bool EventExists(int id)
-        {
-            return _context.Events.Any(e => e.ID == id);
         }
     }
 }

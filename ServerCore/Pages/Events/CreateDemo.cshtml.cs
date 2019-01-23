@@ -9,8 +9,7 @@ using ServerCore.DataModel;
 
 namespace ServerCore.Pages.Events
 {
-    // TODO: Turn this on when it's easy to make yourself a global admin
-    //[Authorize(Policy = "IsGlobalAdmin")]
+    [Authorize(Policy = "IsGlobalAdmin")]
     public class CreateDemoModel : PageModel
     {
         private readonly PuzzleServerContext _context;
@@ -48,7 +47,6 @@ namespace ServerCore.Pages.Events
             Event.StandingsAvailableBegin = now;
             Event.EventBegin = now;
             Event.AnswerSubmissionEnd = now.AddDays(1);
-
             return Page();
         }
 
@@ -62,12 +60,18 @@ namespace ServerCore.Pages.Events
             //
             // Add the event and save, so the event gets an ID.
             //
+            Event.TeamRegistrationBegin = DateTime.UtcNow;
             Event.TeamRegistrationEnd = Event.AnswerSubmissionEnd;
             Event.TeamNameChangeEnd = Event.AnswerSubmissionEnd;
             Event.TeamMembershipChangeEnd = Event.AnswerSubmissionEnd;
             Event.TeamMiscDataChangeEnd = Event.AnswerSubmissionEnd;
             Event.TeamDeleteEnd = Event.AnswerSubmissionEnd;
             Event.AnswersAvailableBegin = Event.AnswerSubmissionEnd;
+            Event.StandingsAvailableBegin = DateTime.UtcNow;
+            Event.LockoutIncorrectGuessLimit = 5;
+            Event.LockoutIncorrectGuessPeriod = 1;
+            Event.LockoutDurationMultiplier = 2;
+            Event.MaxSubmissionCount = 50;
             _context.Events.Add(Event);
 
             await _context.SaveChangesAsync();
@@ -99,14 +103,15 @@ namespace ServerCore.Pages.Events
 
             Puzzle intermediate = new Puzzle
             {
-                Name = "Rabbit Run",
+                Name = "Rabbit Run (automatically solves in ~3 mins)",
                 Event = Event,
                 IsPuzzle = true,
                 SolveValue = 10,
                 HintCoinsForSolve = 2,
                 Group = "Thumper's Stumpers",
                 OrderInGroup = 2,
-                MinPrerequisiteCount = 1
+                MinPrerequisiteCount = 1,
+                MinutesToAutomaticallySolve = 3
             };
             _context.Puzzles.Add(intermediate);
 
@@ -164,6 +169,19 @@ namespace ServerCore.Pages.Events
             _context.Responses.Add(new Response() { Puzzle = meta, SubmittedText = "ANSWER", ResponseText = "Correct!", IsSolution = true });
             _context.Responses.Add(new Response() { Puzzle = other, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
             _context.Responses.Add(new Response() { Puzzle = other, SubmittedText = "ANSWER", ResponseText = "Correct!", IsSolution = true });
+
+            string hint1Description = "Tell me about the rabbits, George.";
+            string hint1Content = "O.K. Some day – we’re gonna get the jack together and we’re gonna have a little house and a couple of acres an’ a cow and some pigs and...";
+            string hint2Description = "Go on... George. How I get to tend the rabbits.";
+            string hint2Content = "Well, we’ll have a big vegetable patch and a rabbit-hutch and chickens.";
+            _context.Hints.Add(new Hint() { Puzzle = easy, Description = hint1Description, DisplayOrder = 0, Cost = 0, Content = hint1Content });
+            _context.Hints.Add(new Hint() { Puzzle = easy, Description = hint2Description, DisplayOrder = 1, Cost = 1, Content = hint2Content });
+            _context.Hints.Add(new Hint() { Puzzle = intermediate, Description = hint1Description, DisplayOrder = 0, Cost = 0, Content = hint1Content });
+            _context.Hints.Add(new Hint() { Puzzle = intermediate, Description = hint2Description, DisplayOrder = 1, Cost = 1, Content = hint2Content });
+            _context.Hints.Add(new Hint() { Puzzle = hard, Description = hint1Description, DisplayOrder = 0, Cost = 0, Content = hint1Content });
+            _context.Hints.Add(new Hint() { Puzzle = hard, Description = hint2Description, DisplayOrder = 1, Cost = 1, Content = hint2Content });
+            _context.Hints.Add(new Hint() { Puzzle = meta, Description = hint1Description, DisplayOrder = 0, Cost = 0, Content = hint1Content });
+            _context.Hints.Add(new Hint() { Puzzle = meta, Description = hint2Description, DisplayOrder = 1, Cost = 1, Content = hint2Content });
 
             await _context.SaveChangesAsync();
 

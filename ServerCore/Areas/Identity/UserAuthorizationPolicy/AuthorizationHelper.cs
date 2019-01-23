@@ -96,6 +96,11 @@ namespace ServerCore.Areas.Identity
             {
                 authContext.Succeed(requirement);
             }
+
+            if (puzzle != null)
+            {
+                dbContext.Entry(puzzle).State = EntityState.Detached;
+            }
         }
 
         public static async Task IsEventAuthorCheck(AuthorizationHandlerContext authContext, PuzzleServerContext dbContext, UserManager<IdentityUser> userManager, IAuthorizationRequirement requirement)
@@ -123,6 +128,23 @@ namespace ServerCore.Areas.Identity
             if (thisEvent != null && role == EventRole.play && await puzzleUser.IsPlayerInEvent(dbContext, thisEvent))
             {
                 authContext.Succeed(requirement);
+            }
+        }
+
+        public static async Task IsPlayerOnTeamCheck(AuthorizationHandlerContext authContext, PuzzleServerContext dbContext, UserManager<IdentityUser> userManager, IAuthorizationRequirement requirement)
+        {
+            PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
+            Team team = await AuthorizationHelper.GetTeamFromContext(authContext);
+            Event thisEvent = await AuthorizationHelper.GetEventFromContext(authContext);
+            EventRole role = AuthorizationHelper.GetEventRoleFromContext(authContext);
+
+            if (thisEvent != null && role == EventRole.play)
+            {
+                Team userTeam = await UserEventHelper.GetTeamForPlayer(dbContext, thisEvent, puzzleUser);
+                if (userTeam != null && userTeam.ID == team.ID)
+                {
+                    authContext.Succeed(requirement);
+                }
             }
         }
     }

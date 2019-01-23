@@ -1,0 +1,65 @@
+﻿@page "/{eventId}/{eventRole}/Teams/List"
+@model ServerCore.Pages.Teams.ListModel
+
+@{
+    ViewData["Title"] = "Team registration";
+    ViewData["AdminRoute"] = "/Teams/Index";
+    ViewData["AuthorRoute"] = "/Teams/Index";
+    ViewData["PlayRoute"] = "/Teams/List";
+}
+
+<p>
+    @if (Model.Event.IsTeamRegistrationActive)
+    {
+        <h2>Register for @Model.Event.Name</h2>
+        <div>
+            You are not yet part of a team for this event. Create a new team or request to join one below!
+        </div>
+        <a asp-page="Create">Create a new team</a>
+    }
+    else
+    {
+        <h2>Registration closed</h2>
+        <div>
+            You are not part of a team for this event, and unfortuantely we're no longer accepting new teams into the event. :(
+        </div>
+    }
+</p>
+@if (Model.Event.IsTeamRegistrationActive)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Teams.FirstOrDefault().Key.Name)
+                </th>
+                <th>
+                    Size
+                </th>
+                @if (Model.EventRole == ModelBases.EventRole.play && !Model.UserOnTeam && Model.Event.IsTeamMembershipChangeActive)
+                {
+                    <th>Join</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Teams)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Key.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Value)
+                    </td>
+                    @if (Model.EventRole == ModelBases.EventRole.play && !Model.UserOnTeam && Model.Event.IsTeamMembershipChangeActive)
+                    {
+                        <td>
+                            <a asp-page="./Apply" asp-route-teamId="@item.Key.ID">Join</a>
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+}

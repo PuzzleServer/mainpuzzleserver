@@ -32,6 +32,7 @@ namespace ServerCore.DataModel
             OrderInGroup = source.OrderInGroup;
             IsGloballyVisiblePrerequisite = source.IsGloballyVisiblePrerequisite;
             MinPrerequisiteCount = source.MinPrerequisiteCount;
+            MinutesToAutomaticallySolve = source.MinutesToAutomaticallySolve;
         }
 
         /// <summary>
@@ -105,6 +106,12 @@ namespace ServerCore.DataModel
         public int MinPrerequisiteCount { get; set; } = 0;
 
         /// <summary>
+        /// Minutes from the time a puzzle is unlocked until it is automatically marked as solved.
+        /// Note that the actual solve time may be different, as the computation of unlocks is somewhat throttled.
+        /// </summary>
+        public int? MinutesToAutomaticallySolve { get; set; } = null;
+
+        /// <summary>
         /// All of the content files associated with this puzzle
         /// </summary>
         public virtual ICollection<ContentFile> Contents { get; set; }
@@ -113,6 +120,12 @@ namespace ServerCore.DataModel
         /// This puzzle's hints
         /// </summary>
         public virtual ICollection<Hint> Hints { get; set; }
+
+        /// <summary>
+        /// The email alias that players should use if they require support on the puzzle.
+        /// If null, the event email address should be used instead.
+        /// </summary>
+        public string SupportEmailAlias { get; set; }
 
         /// <summary>
         /// File for the main puzzle (typically a PDF containing the puzzle)
@@ -174,5 +187,7 @@ namespace ServerCore.DataModel
                        select contentFile;
             }
         }        
+
+        public virtual List<Submission> Submissions { get; set; }
     }
 }

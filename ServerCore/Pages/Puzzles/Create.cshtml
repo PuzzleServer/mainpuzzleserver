@@ -2,10 +2,16 @@
 @model ServerCore.Pages.Puzzles.CreateModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create puzzle";
+    ViewData["AdminRoute"] = "/Puzzles/Create";
+    ViewData["AuthorRoute"] = "/Puzzles/Create";
+    ViewData["PlayRoute"] = "/Teams/Play";
 }
 
-<h2>Create</h2>
+<h2>Create a new puzzle</h2>
+<div>
+    <a asp-page="Index">Back to puzzle list</a>
+</div>
 
 <h4>Puzzle</h4>
 <hr />
@@ -77,15 +83,23 @@
                 <span asp-validation-for="Puzzle.MinPrerequisiteCount" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="Puzzle.MinutesToAutomaticallySolve" class="control-label"></label>
+                <input asp-for="Puzzle.MinutesToAutomaticallySolve" class="form-control" />
+                <span asp-validation-for="Puzzle.MinutesToAutomaticallySolve" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Puzzle.SupportEmailAlias" class="control-label"></label>
+                <input asp-for="Puzzle.SupportEmailAlias" class="form-control" />
+                <span asp-validation-for="Puzzle.SupportEmailAlias" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-default" />
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-page="Index">Back to List</a>
-</div>
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

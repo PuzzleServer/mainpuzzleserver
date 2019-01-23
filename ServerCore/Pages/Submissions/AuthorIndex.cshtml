@@ -1,34 +1,66 @@
-﻿@page "/{eventId}/{eventRole}/AuthorSubmissions/{puzzleId}"
+﻿@page "/{eventId}/{eventRole}/AuthorIndex/{puzzleId?}"
 @model ServerCore.Pages.Submissions.AuthorIndexModel
 @{
     ViewData["Title"] = "AuthorIndex";
+    ViewData["AdminRoute"] = "../Submissions/AuthorIndex";
+    ViewData["AuthorRoute"] = "../Submissions/AuthorIndex";
+    // TODO: Needs to handle implicit teams - ViewData["PlayRoute"] = "../Submissions/Index";
+    ViewData["RoutingPuzzleId"] = ViewContext.RouteData.Values["puzzleId"];
+
+    if (Model.Puzzle != null)
+    {
+        Layout = "../Puzzles/_puzzleManagementLayout.cshtml";
+    }
+    else if (Model.Team != null)
+    {
+        Layout = "../Teams/_teamLayout.cshtml";
+    }
+    // TODO: Do we need a combined layout, or is that rare enough as to be unnecessary? Maybe those bar layouts should be sections/components?
 }
 
-<h2>Team Submissions</h2>
-</hr>
+<h2>@if (Model.Puzzle != null) { <text>@Model.Puzzle.Name:</text> } Submissions @if (Model.Team != null) { <text>by @Model.Team.Name</text> }</h2>
 
 <div>
-    <a asp-page="/Puzzles/Index">Back to Puzzle List</a>
+    @if(Model.Puzzle != null) { <a asp-page="./AuthorIndex" asp-route-puzzleId="" asp-route-teamId="@Model.Team?.ID">Clear Puzzle Filter</a> }
+    @if(Model.Puzzle != null && Model.Team != null) { <text>|</text> }  
+    @if(Model.Team != null) { <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="">Clear Team Filter</a> }  
+    @if(Model.Puzzle != null && Model.Team != null) { <text>|</text> <a asp-page="./AuthorIndex" asp-route-puzzleId="" asp-route-teamId="">Clear All Filters</a> }  
 </div>
+
 <br />
 <div>
     <table class="table">
         <thead>
             <tr>
                 <th>
-                    Player
+                    <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.PlayerAscending, AuthorIndexModel.SortOrder.PlayerDescending))">
+                        Player
+                    </a>
                 </th>
                 <th>
-                    Team Name
+                    <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.TeamAscending, AuthorIndexModel.SortOrder.TeamDescending))">
+                        Team Name
+                    </a>
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Submissions[0].Response.ResponseText)
+                    <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.PuzzleAscending, AuthorIndexModel.SortOrder.PuzzleDescending))">
+                        Puzzle
+                    </a>
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Submissions[0].SubmissionText)
+                    <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.ResponseAscending, AuthorIndexModel.SortOrder.ResponseDescending))">
+                        @Html.DisplayNameFor(model => model.Submissions[0].Response.ResponseText)
+                    </a>
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Submissions[0].TimeSubmitted)
+                    <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.SubmissionAscending, AuthorIndexModel.SortOrder.SubmissionDescending))">
+                        @Html.DisplayNameFor(model => model.Submissions[0].SubmissionText)
+                    </a>
+                </th>
+                <th>
+                    <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.TimeAscending, AuthorIndexModel.SortOrder.TimeDescending))">
+                        @Html.DisplayNameFor(model => model.Submissions[0].TimeSubmitted)
+                    </a>
                 </th>
                 <th></th>
             </tr>
@@ -41,7 +73,10 @@
                     @Html.DisplayFor(modelItem => item.Submitter.Name)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Team.Name)
+                    <a asp-page="AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@item.Team.ID">@Html.DisplayFor(modelItem => item.Team.Name)</a>
+                </td>
+                <td>
+                    <a asp-page="AuthorIndex" asp-route-puzzleId="@item.Puzzle.ID" asp-route-teamId="@Model.Team?.ID">@Html.DisplayFor(modelItem => item.Puzzle.Name)</a>
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Response.ResponseText)
