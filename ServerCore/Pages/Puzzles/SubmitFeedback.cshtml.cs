@@ -20,7 +20,7 @@ namespace ServerCore.Pages.Puzzles
         [BindProperty]
         public Feedback Feedback { get; set; }  
         public Puzzle Puzzle { get; set; }
-        public int MinRating = 0;
+        public int MinRating = 1;
         public int MaxRating = 10;
 
         /// <summary>
