@@ -67,5 +67,21 @@ namespace ServerCore.Pages.Teams
             // redirect without the solve info to keep the URL clean
             return RedirectToPage(new { teamId, sort });
         }
+
+        public async Task<IActionResult> OnGetEmailModeAsync(int teamId, int? puzzleId, bool value, string sort)
+        {
+            var puzzle = puzzleId == null ? null : await _context.Puzzles.FirstAsync(m => m.ID == puzzleId);
+            var team = await _context.Teams.FirstAsync(m => m.ID == teamId);
+
+            if (team == null)
+            {
+                return NotFound();
+            }
+
+            await SetEmailModeAsync(puzzle, team, value);
+
+            // redirect without the solve info to keep the URL clean
+            return RedirectToPage(new { teamId, sort });
+        }
     }
 }

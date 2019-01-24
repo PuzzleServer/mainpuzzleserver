@@ -62,7 +62,8 @@ namespace ServerCore
                            UnlockedTime = teamstate == null ? null : teamstate.UnlockedTime,
                            SolvedTime = teamstate == null ? null : teamstate.SolvedTime,
                            Printed = teamstate == null ? false : teamstate.Printed,
-                           Notes = teamstate == null ? null : teamstate.Notes
+                           Notes = teamstate == null ? null : teamstate.Notes,
+                           IsEmailOnlyMode = teamstate == null ? false : teamstate.IsEmailOnlyMode
                        };
             }
 
@@ -83,7 +84,8 @@ namespace ServerCore
                            UnlockedTime = teamstate == null ? null : teamstate.UnlockedTime,
                            SolvedTime = teamstate == null ? null : teamstate.SolvedTime,
                            Printed = teamstate == null ? false : teamstate.Printed,
-                           Notes = teamstate == null ? null : teamstate.Notes
+                           Notes = teamstate == null ? null : teamstate.Notes,
+                           IsEmailOnlyMode = teamstate == null ? false : teamstate.IsEmailOnlyMode
                        };
             }
 #pragma warning restore IDE0031
@@ -250,6 +252,10 @@ namespace ServerCore
             for (int i = 0; i < states.Count; i++)
             {
                 states[i].IsEmailOnlyMode = value;
+                if (value == true)
+                {
+                    states[i].WrongSubmissionCountBuffer += 50;
+                }
             }
 
             await context.SaveChangesAsync();

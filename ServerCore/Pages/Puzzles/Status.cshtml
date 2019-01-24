@@ -36,6 +36,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.PuzzleStatePerTeam[0].Notes)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PuzzleStatePerTeam[0].IsEmailOnlyMode)
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -43,7 +46,7 @@
         {
             <tr>
                 <td>
-                    <a asp-page="../Teams/Status" asp-route-id="@item.Team.ID">@Html.DisplayFor(modelItem => item.Team.Name)</a>
+                    <a asp-page="../Teams/Status" asp-route-teamId="@item.Team.ID">@Html.DisplayFor(modelItem => item.Team.Name)</a>
                 </td>
                 <td>
                     @if (item.UnlockedTime == null)
@@ -73,6 +76,16 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Notes)
                 </td>
+                <td>
+                    @if (item.IsEmailOnlyMode == true)
+                    {
+                        <a asp-page-handler="EmailMode" asp-route-sort="@Model.Sort" asp-route-teamId="@item.Team.ID" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-value="false" onclick="return confirm('Are you sure you want to release @(item.Team.Name) from email-only mode?')">Release</a>
+                    }
+                    else
+                    {
+                        <a asp-page-handler="EmailMode" asp-route-sort="@Model.Sort" asp-route-teamId="@item.Team.ID" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-value="true" onclick="return confirm('Are you sure you want to restrict @(item.Team.Name) to email-only mode?')">Restrict</a>
+                    }
+                </td>
             </tr>
         }
 
@@ -94,6 +107,17 @@
             </td>
             <td>
                 <a asp-page-handler="SolveState" asp-route-sort="@Model.Sort" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-value="false" onclick="return confirm('Are you sure you want to mark all teams as unsolved?')">Unsolve All</a>
+            </td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                    <a asp-page-handler="EmailMode" asp-route-sort="@Model.Sort" asp-route-puzzleId="@Model.Puzzle.ID" asp-route-value="false" onclick="return confirm('Are you sure you want to release all teams from email-only mode?')">Release all</a>
+            </td>
+            <td>
+                    <a asp-page-handler="EmailMode" asp-route-sort="@Model.Sort" asp-route-puzzleId="@Model.Puzzle.ID"  asp-route-value="true" onclick="return confirm('Are you sure you want to restrict all teams to email-only mode?')">Restrict all</a>
             </td>
             <td></td>
             <td></td>
