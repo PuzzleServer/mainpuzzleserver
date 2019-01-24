@@ -1,7 +1,8 @@
 ﻿@{
-    var Event = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Event;
-    var EventRole = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.EventRole;
-    var IsRegistered = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.IsRegisteredUser().Result ?? false;
+    var eventPage = Model as ServerCore.ModelBases.EventSpecificPageModel;
+    var Event = eventPage?.Event;
+    var EventRole = eventPage?.EventRole;
+    var IsRegistered = eventPage?.IsRegisteredUser().Result ?? false;
 }
 
 <!--ADMIN NAV BAR-->
