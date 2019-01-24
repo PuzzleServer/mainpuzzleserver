@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 using ServerCore.ModelBases;
-
+using System.ComponentModel.DataAnnotations;
 namespace ServerCore.Pages.Puzzles
 {
     /// <summary>
@@ -23,19 +23,34 @@ namespace ServerCore.Pages.Puzzles
 
         public IList<Feedback> Feedbacks { get; set; }
         public Puzzle Puzzle { get; set; }
+        [DisplayFormat(DataFormatString = "{0:n2}", ApplyFormatInEditMode = true)]
+        public double FunScore;
+        [DisplayFormat(DataFormatString = "{0:n2}", ApplyFormatInEditMode = true)]
+        public double DiffScore;
 
         /// <summary>
         /// Gets the feedback and puzzle associated with the given ID
         /// </summary>
         public async Task<IActionResult> OnGetAsync(int puzzleId)
         {
-            Feedbacks = await _context.Feedback.Where((f) => f.Puzzle.ID == puzzleId).ToListAsync();
+            Feedbacks = await _context.Feedback.Where((f) => f.Puzzle.ID == puzzleId).Include("Submitter").ToListAsync();
             Puzzle = await _context.Puzzles.Where((p) => p.ID == puzzleId).FirstOrDefaultAsync();
 
             if (Puzzle == null) 
             { 
-                return NotFound(); 
+                return NotFound("Could not find puzzle for this feedback page."); 
             }
+            
+            FunScore = 0.0;
+            DiffScore = 0.0;
+            var count = 0;
+            foreach (var item in Feedbacks) {
+                FunScore += item.Fun;
+                DiffScore += item.Difficulty;
+                count++;
+            }
+            FunScore /= count;
+            DiffScore /= count;
 
             return Page();
         }
