@@ -8,10 +8,17 @@
     ViewData["PlayRoute"] = "../Puzzles/SubmitFeedback";
     ViewData["RoutingPuzzleId"] = ViewContext.RouteData.Values["puzzleId"];
     Layout = "_puzzleManagementLayout.cshtml";
-    var id = ViewContext.RouteData.Values["id"];
 }
 
 <h2>@Html.DisplayFor(model => model.Puzzle.Name): Feedback</h2>
+
+<div>
+    <h3><b>Avg Fun Rating:</b> @Model.FunScore</h3>
+    <br>
+    <h3><b>Avg Difficulty Rating:</b> @Model.DiffScore</h3>
+</div>
+
+<br>
 
 <table class="table">
     <thead>
