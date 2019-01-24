@@ -50,25 +50,18 @@ namespace ServerCore.Pages.Events
                                                   where author.Event == Event
                                                   select author.Author).ToListAsync();
 
-            // note - if there's a faster way to count the puzzles / join all this data please let me know - Jenna
-            IList<IGrouping<int, PuzzleAuthors>> allPuzzles = await (from puzzleAuthor in _context.PuzzleAuthors
+            Dictionary<int, int> allPuzzles = await (from puzzleAuthor in _context.PuzzleAuthors
                                                      where puzzleAuthor.Puzzle.Event == Event
                                                      group puzzleAuthor by puzzleAuthor.Author.ID into puzzleGroup
-                                                     select puzzleGroup)
-                                                     .ToListAsync();
-
-            Dictionary<int, int> allPuzzlesDict = new Dictionary<int, int>();
-            foreach (IGrouping<int, PuzzleAuthors> puzzles in allPuzzles)
-            {
-                allPuzzlesDict.Add(puzzles.Key, puzzles.Count());
-            }
+                                                     select new { authorId = puzzleGroup.Key, count = puzzleGroup.Count() })
+                                                     .ToDictionaryAsync(x => x.authorId, x => x.count);
 
             StringBuilder authorEmailList = new StringBuilder("");
             Authors = new List<Tuple<PuzzleUser, int>>();
             foreach (PuzzleUser author in allAuthors)
             {
                 authorEmailList.Append(author.Email + "; ");
-                int puzzleCount = allPuzzlesDict.ContainsKey(author.ID) ? allPuzzlesDict[author.ID] : 0;
+                int puzzleCount = allPuzzles.ContainsKey(author.ID) ? allPuzzles[author.ID] : 0;
                 Authors.Add(new Tuple<PuzzleUser, int>(author, puzzleCount));
             }
             AuthorEmails = authorEmailList.ToString();
