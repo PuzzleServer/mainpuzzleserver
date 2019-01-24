@@ -1,0 +1,10 @@
+﻿@page "/{eventId}/{eventRole}/encodings"
+@model ServerCore.Pages.EventSpecific.EncodingsModel
+@{
+    ViewData["Title"] = "Encodings";
+    ViewData["AdminRoute"] = "/EventSpecific/Encodings";
+    ViewData["AuthorRoute"] = "/EventSpecific/Encodings";
+    ViewData["PlayRoute"] = "/EventSpecific/Encodings";
+}
+
+<partial name="../Resources/EncodingsPartial.cshtml" />

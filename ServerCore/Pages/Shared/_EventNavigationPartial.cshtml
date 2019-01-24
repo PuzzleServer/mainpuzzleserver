@@ -1,7 +1,8 @@
 ﻿@{
-    var Event = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Event;
-    var EventRole = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.EventRole;
-    var IsRegistered = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.IsRegisteredUser().Result ?? false;
+    var eventPage = Model as ServerCore.ModelBases.EventSpecificPageModel;
+    var Event = eventPage?.Event;
+    var EventRole = eventPage?.EventRole;
+    var IsRegistered = eventPage?.IsRegisteredUser().Result ?? false;
 }
 
 <!--ADMIN NAV BAR-->
@@ -49,6 +50,10 @@
                             <li><a asp-page="/EventSpecific/Rules">Rules</a></li>
                             <li class="divider"></li>
                             <li><a asp-page="/EventSpecific/FAQ">FAQ</a></li>
+                            <li class="divider"></li>
+                            <li><a asp-page="/EventSpecific/Encodings">Encodings</a></li>
+                            <li class="divider"></li>
+                            <li><a asp-page="/EventSpecific/Tools">Tools</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -105,6 +110,10 @@
                             <li><a asp-page="/EventSpecific/Rules">Rules</a></li>
                             <li class="divider"></li>
                             <li><a asp-page="/EventSpecific/FAQ">FAQ</a></li>
+                            <li class="divider"></li>
+                            <li><a asp-page="/EventSpecific/Encodings">Encodings</a></li>
+                            <li class="divider"></li>
+                            <li><a asp-page="/EventSpecific/Tools">Tools</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -159,6 +168,10 @@
                             <li><a asp-page="/EventSpecific/Rules">Rules</a></li>
                             <li class="divider"></li>
                             <li><a asp-page="/EventSpecific/FAQ">FAQ</a></li>
+                            <li class="divider"></li>
+                            <li><a asp-page="/EventSpecific/Encodings">Encodings</a></li>
+                            <li class="divider"></li>
+                            <li><a asp-page="/EventSpecific/Tools">Tools</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -201,6 +214,10 @@
                             <li><a asp-page="/EventSpecific/Rules">Rules</a></li>
                             <li class="divider"></li>
                             <li><a asp-page="/EventSpecific/FAQ">FAQ</a></li>
+                            <li class="divider"></li>
+                            <li><a asp-page="/EventSpecific/Encodings">Encodings</a></li>
+                            <li class="divider"></li>
+                            <li><a asp-page="/EventSpecific/Tools">Tools</a></li>
                         </ul>
                     </li>
                 </ul>

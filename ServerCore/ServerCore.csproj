@@ -56,7 +56,7 @@
     <Content Update="Pages\Shared\_RoleSwitcherPartial.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-    <Content Update="Pages\Shared\_NavigationPartial.cshtml">
+    <Content Update="Pages\Shared\_EventNavigationPartial.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
   </ItemGroup>

@@ -131,8 +131,8 @@
                                     <li><a href="#">FAQ</a></li>
                                     <li><a href="#">Rules</a></li>
                                 }
-                                <li><a href="#">Encodings</a></li>
-                                <li><a href="#">Tools</a></li>
+                                <li><a href="/Resources/Encodings">Encodings</a></li>
+                                <li><a href="/Resources/Tools">Tools</a></li>
                                 <li class="divider"></li>
                                 <li><a href="#">My Events</a></li>
                                 @if (Event != null)
@@ -153,45 +153,48 @@
             </div>
         </nav>
     }
-        <!--CURRENT NAV BAR END-->
-        <!-- Navigation header -->
-        <partial name="/Pages/Shared/_NavigationPartial.cshtml" />    
+    else
+    {
+        <!-- Navigation header for event specific pages -->
+        <partial name="/Pages/Shared/_EventNavigationPartial.cshtml" />
 
-        <div class="container body-content">
-            @RenderBody()
-            <hr />
-            <footer>
-                <ul class="list-inline text-right">
-                    <li><a href="mailto:@(Event?.ContactEmail ?? "puzzhunt@microsoft.com")">Contact Us</a></li>
-                    <li><a href="https://go.microsoft.com/fwlink/?LinkID=206977">Terms Of Use</a></li>
-                    <li><a href="https://go.microsoft.com/fwlink/?LinkId=506942">Trademarks</a></li>
-                    <li><a href="http://go.microsoft.com/fwlink/?LinkId=521839">Privacy &amp; Cookies</a></li>
-                    <li>© 2018 ServerCore</li>
-                </ul>
-            </footer>
-        </div>
+    }
 
-        <environment include="Development">
-            <script src="~/lib/jquery/dist/jquery.js"></script>
-            <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
-            <script src="~/js/site.js" asp-append-version="true"></script>
-        </environment>
-        <environment exclude="Development">
-            <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"
-                    asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
-                    asp-fallback-test="window.jQuery"
-                    crossorigin="anonymous"
-                    integrity="sha384-K+ctZQ+LL8q6tP7I94W+qzQsfRV2a+AfHIi9k8z8l9ggpc8X+Ytst4yBo/hH+8Fk">
-            </script>
-            <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
-                    asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
-                    asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
-                    crossorigin="anonymous"
-                    integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa">
-            </script>
-            <script src="~/js/site.min.js" asp-append-version="true"></script>
-        </environment>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <ul class="list-inline text-right">
+                <li><a href="mailto:@(Event?.ContactEmail ?? "puzzhunt@microsoft.com")">Contact Us</a></li>
+                <li><a href="https://go.microsoft.com/fwlink/?LinkID=206977">Terms Of Use</a></li>
+                <li><a href="https://go.microsoft.com/fwlink/?LinkId=506942">Trademarks</a></li>
+                <li><a href="http://go.microsoft.com/fwlink/?LinkId=521839">Privacy &amp; Cookies</a></li>
+                <li>© 2018 ServerCore</li>
+            </ul>
+        </footer>
+    </div>
 
-        @RenderSection("Scripts", required: false)
-    </body>
+    <environment include="Development">
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"
+                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                asp-fallback-test="window.jQuery"
+                crossorigin="anonymous"
+                integrity="sha384-K+ctZQ+LL8q6tP7I94W+qzQsfRV2a+AfHIi9k8z8l9ggpc8X+Ytst4yBo/hH+8Fk">
+        </script>
+        <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
+                asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
+                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
+                crossorigin="anonymous"
+                integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa">
+        </script>
+        <script src="~/js/site.min.js" asp-append-version="true"></script>
+    </environment>
+
+    @RenderSection("Scripts", required: false)
+</body>
 </html>
