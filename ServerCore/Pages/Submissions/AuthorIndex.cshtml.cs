@@ -75,7 +75,7 @@ namespace ServerCore.Pages.Submissions
             {
                 Puzzle = await _context.Puzzles.Where(m => m.ID == puzzleId).FirstOrDefaultAsync();
 
-                if (!await UserEventHelper.IsAuthorOfPuzzle(_context, Puzzle, LoggedInUser))
+                if (EventRole == EventRole.author && !await UserEventHelper.IsAuthorOfPuzzle(_context, Puzzle, LoggedInUser))
                 {
                     return Forbid();
                 }

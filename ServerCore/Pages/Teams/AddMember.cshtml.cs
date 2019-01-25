@@ -53,15 +53,13 @@ namespace ServerCore.Pages.Teams
                 Users = await (from user in _context.PuzzleUsers
                                where !((from teamMember in _context.TeamMembers
                                         where teamMember.Team.Event == Event
+                                        where teamMember.Member == user
                                         select teamMember).Any())
                                select new Tuple<PuzzleUser, int>(user, -1)).ToListAsync();
             }
 
             return Page();
         }
-
-        [BindProperty]
-        public TeamMembers Member { get; set; }
 
         public async Task<IActionResult> OnGetAddMemberAsync(int teamId, int userId, int applicationId)
         {
