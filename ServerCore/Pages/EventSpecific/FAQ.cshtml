@@ -7,7 +7,4 @@
     ViewData["PlayRoute"] = "/EventSpecific/FAQ";
 }
 
-<h2>FAQ</h2>
-
-<p>Question: Best animal ever?</p>
-<p>Answer: Rabbits</p>
+<partial name="../Resources/@(Model.Event.HomePartial ?? "Default")/FAQPartial.cshtml" />

@@ -12,10 +12,18 @@ namespace ServerCore.DataModel
         [Required]
         public string Name { get; set; }
 
+        /// <summary>
+        /// The URL prefix of the event, as in: www.puzzlehunt.org/urlString
+        /// </summary>
         public string UrlString { get; set; }
 
         [NotMapped]
         public string EventID => UrlString ?? ID.ToString();
+
+        /// <summary>
+        /// The prefix of the partial files that provide the Home, FAQ, and Rules content.
+        /// </summary>
+        public string HomePartial { get; set; }
 
         [DataType(DataType.EmailAddress)]
         public string ContactEmail { get; set; }
