@@ -661,6 +661,25 @@ namespace Data.Migrations
                     b.ToTable("Teams");
                 });
 
+            modelBuilder.Entity("ServerCore.DataModel.TeamApplication", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("PlayerID");
+
+                    b.Property<int>("TeamID");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("PlayerID");
+
+                    b.HasIndex("TeamID");
+
+                    b.ToTable("TeamApplications");
+                });
+
             modelBuilder.Entity("ServerCore.DataModel.TeamMembers", b =>
                 {
                     b.Property<int>("ID")
@@ -888,6 +907,19 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Event", "Event")
                         .WithMany()
                         .HasForeignKey("EventID");
+                });
+
+            modelBuilder.Entity("ServerCore.DataModel.TeamApplication", b =>
+                {
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Player")
+                        .WithMany()
+                        .HasForeignKey("PlayerID")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("ServerCore.DataModel.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamID")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.TeamMembers", b =>
