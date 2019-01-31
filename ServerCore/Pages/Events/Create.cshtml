@@ -24,6 +24,11 @@
                 <span asp-validation-for="Event.UrlString" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="Event.HomePartial" class="control-label"></label>
+                <input asp-for="Event.HomePartial" class="form-control" />
+                <span asp-validation-for="Event.HomePartial" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="Event.ContactEmail" class="control-label"></label>
                 <input asp-for="Event.ContactEmail" class="form-control" />
                 <span asp-validation-for="Event.ContactEmail" class="text-danger"></span>
