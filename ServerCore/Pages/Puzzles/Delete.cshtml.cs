@@ -38,20 +38,7 @@ namespace ServerCore.Pages.Puzzles
 
             if (Puzzle != null)
             {
-                // Delete all files associated with this puzzle
-                foreach (ContentFile content in Puzzle.Contents)
-                {
-                    await FileManager.DeleteBlobAsync(content.Url);
-                }
-
-                // Delete all Prerequisites where this puzzle depends on or is depended upon by another puzzle
-                foreach (Prerequisites thisPrerequisite in _context.Prerequisites.Where((r) => r.Puzzle == Puzzle || r.Prerequisite == Puzzle))
-                {
-                    _context.Prerequisites.Remove(thisPrerequisite);
-                }
-
-                _context.Puzzles.Remove(Puzzle);
-                await _context.SaveChangesAsync();
+                await PuzzleHelper.DeletePuzzleAsync(_context, Puzzle);
             }
 
             return RedirectToPage("./Index");
