@@ -161,5 +161,10 @@ namespace ServerCore.DataModel
         /// in email-only mode.
         /// </summary>
         public uint MaxSubmissionCount { get; set; }
+
+        /// <summary>
+        /// All of the content files in this event
+        /// </summary>
+        public virtual IList<ContentFile> ContentFiles { get; set; }
     }
 }
