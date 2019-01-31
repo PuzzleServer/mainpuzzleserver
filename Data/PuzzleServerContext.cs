@@ -57,7 +57,7 @@ namespace ServerCore.DataModel
             modelBuilder.Entity<PuzzleStatePerTeam>().HasKey(state => new { state.PuzzleID, state.TeamID });
             modelBuilder.Entity<HintStatePerTeam>().HasKey(state => new { state.TeamID, state.HintID });
             modelBuilder.Entity<Event>().HasIndex(eventObj => new { eventObj.UrlString }).IsUnique();
-
+            modelBuilder.Entity<ContentFile>().HasOne(contentFile => contentFile.Event).WithMany(ev => ev.ContentFiles).OnDelete(DeleteBehavior.Restrict);
             base.OnModelCreating(modelBuilder);
         }
     }
