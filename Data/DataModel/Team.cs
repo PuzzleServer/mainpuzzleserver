@@ -32,6 +32,15 @@ namespace ServerCore.DataModel
         /// <summary>
         /// The number of hint coins this team currently has
         /// </summary>
+
+        /// <summary>
+        /// The number of hint coins this team currently has
+        /// </summary>
         public int HintCoinCount { get; set; }
+
+        /// <summary>
+        /// The number of hint coins this team currently has
+        /// </summary>
+        public int HintCoinsUsed { get; set; }
     }
 }

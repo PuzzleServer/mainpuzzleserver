@@ -88,6 +88,12 @@ namespace ServerCore.Pages.Events
                 case SortOrder.ScoreDescending:
                     teams.Sort((a, b) => -a.Score.CompareTo(b.Score));
                     break;
+                case SortOrder.HintsUsedAscending:
+                    teams.Sort((a, b) => a.Score.CompareTo(b.Team.HintCoinsUsed));
+                    break;
+                case SortOrder.HintsUsedDescending:
+                    teams.Sort((a, b) => -a.Score.CompareTo(b.Team.HintCoinsUsed));
+                    break;
             }
 
             this.Teams = teams;
@@ -128,7 +134,9 @@ namespace ServerCore.Pages.Events
             PuzzlesAscending,
             PuzzlesDescending,
             ScoreAscending,
-            ScoreDescending
+            ScoreDescending,
+            HintsUsedAscending,
+            HintsUsedDescending
         }
     }
 }
