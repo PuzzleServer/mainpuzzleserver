@@ -52,6 +52,16 @@ namespace ServerCore.ModelBases
             return await LoggedInUser.IsPlayerInEvent(_context, Event);
         }
 
+        public async Task<bool> IsEventAuthor()
+        {
+            return await LoggedInUser.IsAuthorForEvent(_context, Event);
+        }
+
+        public async Task<bool> IsEventAdmin()
+        {
+            return await LoggedInUser.IsAdminForEvent(_context, Event);
+        }
+
         public class EventBinder : IModelBinder
         {
             public async Task BindModelAsync(ModelBindingContext bindingContext)
