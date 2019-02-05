@@ -9,7 +9,21 @@
 }
 
 <p>
-    @if (Model.Event.IsTeamRegistrationActive)
+    @if (!Model.Event.IsTeamRegistrationActive)
+    {
+        <h2>Registration closed</h2>
+        <div>
+            You are not part of a team for this event, and unfortuantely we're no longer accepting new teams into the event. :(
+        </div>
+    }
+    else if (Model.Event.MaxNumberOfTeams <= Model.Teams.Count)
+    {
+        <h2>Registration full</h2>
+        <div>
+            You are not part of a team for this event, and unfortuantely we're no longer accepting new teams into the event. :(
+        </div>
+    }
+    else
     {
         <h2>Register for @Model.Event.Name</h2>
         <div>
@@ -17,14 +31,8 @@
         </div>
         <a asp-page="Create">Create a new team</a>
     }
-    else
-    {
-        <h2>Registration closed</h2>
-        <div>
-            You are not part of a team for this event, and unfortuantely we're no longer accepting new teams into the event. :(
-        </div>
-    }
 </p>
+<h4>Registered Teams: @Model.Teams.Count/@Model.Event.MaxNumberOfTeams, Registered Players: @Model.PlayerCount/@(Model.Event.MaxNumberOfTeams * Model.Event.MaxTeamSize)</h4>
 @if (Model.Event.IsTeamRegistrationActive)
 {
     <table class="table">

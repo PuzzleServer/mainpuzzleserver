@@ -41,6 +41,9 @@ namespace ServerCore.Pages.Events
             Event.LockoutIncorrectGuessPeriod = 1;
             Event.LockoutDurationMultiplier = 2;
             Event.MaxSubmissionCount = 50;
+            Event.MaxNumberOfTeams = 120;
+            Event.MaxExternalsPerTeam = 9;
+            Event.MaxTeamSize = 12;
 
             return Page();
         }

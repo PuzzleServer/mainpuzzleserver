@@ -11,77 +11,90 @@
 <h2>All Teams</h2>
 
 <p>
-    @if (Model.Event.IsTeamRegistrationActive && Model.EventRole == ModelBases.EventRole.admin)
+    @if (Model.EventRole == ModelBases.EventRole.admin)
     {
+        if (!Model.Event.IsTeamRegistrationActive)
+        {
+            <div class="alert alert-danger" role="alert">
+                This event is not currently open for registration.
+            </div>
+        }
+        else if (Model.Event.MaxNumberOfTeams <= Model.Teams.Count)
+        {
+            <div class="alert alert-danger" role="alert">
+                This event is full.
+            </div>
+        }
+
         <a asp-page="Create">Create New</a>
     }
-    else
-    {
-        <div class="alert alert-danger" role="alert">
-            This event is not currently open for registration.
-        </div>
-    }
 </p>
+<h4>Registered Teams: @Model.Teams.Count/@Model.Event.MaxNumberOfTeams, Registered Players: @Model.PlayerCount/@(Model.Event.MaxNumberOfTeams * Model.Event.MaxTeamSize)</h4>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Teams[0].Name)
+                @Html.DisplayNameFor(model => model.Teams.FirstOrDefault().Key.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Teams[0].RoomID)
+                Size
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Teams[0].CustomRoom)
+                @Html.DisplayNameFor(model => model.Teams.FirstOrDefault().Key.RoomID)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Teams[0].PrimaryContactEmail)
+                @Html.DisplayNameFor(model => model.Teams.FirstOrDefault().Key.CustomRoom)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Teams[0].PrimaryPhoneNumber)
+                @Html.DisplayNameFor(model => model.Teams.FirstOrDefault().Key.PrimaryContactEmail)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Teams[0].SecondaryPhoneNumber)
+                @Html.DisplayNameFor(model => model.Teams.FirstOrDefault().Key.PrimaryPhoneNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Teams.FirstOrDefault().Key.SecondaryPhoneNumber)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.Teams) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RoomID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CustomRoom)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PrimaryContactEmail)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PrimaryPhoneNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SecondaryPhoneNumber)
-            </td>
-            <td>
-
-            </td>
-            <td>
-                <a asp-page="./Status" asp-route-teamId="@item.ID">Status</a>
-                @if (Model.EventRole == ModelBases.EventRole.admin)
-                {
-                <div>
-                    |
-                    <a asp-page="./Details" asp-route-teamId="@item.ID">View</a> |
-                    <a asp-page="./Members" asp-route-teamId="@item.ID">Members</a>
-                </div>
-                }
-            </td>
-        </tr>
-}
+        @foreach (var item in Model.Teams)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Key.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Value)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Key.RoomID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Key.CustomRoom)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Key.PrimaryContactEmail)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Key.PrimaryPhoneNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Key.SecondaryPhoneNumber)
+                </td>
+                <td></td>
+                <td>
+                    <a asp-page="./Status" asp-route-teamId="@item.Key.ID">Status</a>
+                    @if (Model.EventRole == ModelBases.EventRole.admin)
+                    {
+                        <div>
+                            |
+                            <a asp-page="./Details" asp-route-teamId="@item.Key.ID">View</a> |
+                            <a asp-page="./Members" asp-route-teamId="@item.Key.ID">Members</a>
+                        </div>
+                    }
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
