@@ -19,6 +19,9 @@ namespace ServerCore.Pages.Teams
         /// </summary>
         public Dictionary<Team, int> Teams { get; set; }
 
+        /// <summary>
+        /// Count of all players on teams
+        /// </summary>
         public int PlayerCount { get; set; }
 
         protected async Task LoadTeamDataAsync()
