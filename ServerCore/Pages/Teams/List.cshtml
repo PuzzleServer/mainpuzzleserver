@@ -63,7 +63,14 @@
                     @if (Model.EventRole == ModelBases.EventRole.play && !Model.UserOnTeam && Model.Event.IsTeamMembershipChangeActive)
                     {
                         <td>
-                            <a asp-page="./Apply" asp-route-teamId="@item.Key.ID">Join</a>
+                            @if (item.Key == Model.AppliedTeam)
+                            {
+                                <span><b>Applied</b></span>
+                            }
+                            else
+                            {
+                                <a asp-page="./Apply" asp-route-teamId="@item.Key.ID">Join</a>
+                            }
                         </td>
                     }
                 </tr>
