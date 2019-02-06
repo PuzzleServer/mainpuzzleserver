@@ -8,21 +8,33 @@
     Layout = "_teamLayout.cshtml";
 }
 
-<h2>@Html.DisplayFor(model => model.Team.Name): Members</h2>
+<h2>@Html.DisplayFor(model => model.Team.Name): @(Model.Members.Count) Members</h2>
 
 <p>
-    @if (Model.Event.IsTeamMembershipChangeActive || Model.EventRole == ModelBases.EventRole.admin)
-    {
-    <div>
-        <a asp-page="./AddMember" asp-route-teamId="@Model.Team.ID">Add a member</a> |
-        <a asp-page="./Apply" asp-route-eventRole="play" asp-route-teamId="@Model.Team.ID">Application link (copy me and email me!)</a>
-    </div>
+    @{ bool canAdd = Model.EventRole == ModelBases.EventRole.admin; }
 
-    }
-    else
+    @if (!Model.Event.IsTeamMembershipChangeActive)
     {
         <div class="alert alert-danger" role="alert">
             This event is not currently open for registration.
+        </div>
+    }
+    else if (Model.Members.Count >= Model.Event.MaxTeamSize)
+    {
+        <div class="alert alert-danger" role="alert">
+            This team is full.
+        </div>
+    }
+    else
+    {
+        canAdd = true;
+    }
+
+    @if (canAdd)
+    {
+        <div>
+            <a asp-page="./AddMember" asp-route-teamId="@Model.Team.ID">Add a member</a> |
+            <a asp-page="./Apply" asp-route-eventRole="play" asp-route-teamId="@Model.Team.ID">Application link (copy me and email me!)</a>
         </div>
     }
 </p>
@@ -36,6 +48,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Members[0].Member.Email)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Members[0].Member.EmployeeAlias)
+            </th>
             <th>Remove</th>
         </tr>
     </thead>
@@ -48,6 +63,9 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Member.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Member.EmployeeAlias)
             </td>
 
             @if (Model.EventRole == ModelBases.EventRole.play && Model.Members.Count == 1)

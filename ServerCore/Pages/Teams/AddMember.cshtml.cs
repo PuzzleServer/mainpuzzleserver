@@ -76,29 +76,40 @@ namespace ServerCore.Pages.Teams
                 return NotFound("Team membership change is not currently active.");
             }
 
-            TeamMembers Member = new TeamMembers();
-
             Team team = await _context.Teams.FirstOrDefaultAsync(m => m.ID == teamId);
             if (team == null)
             {
-                return NotFound("Could not find team with ID '" + teamId + "'. Check to make sure the team hasn't been removed.");
+                return NotFound($"Could not find team with ID '{teamId}'. Check to make sure the team hasn't been removed.");
             }
-            Member.Team = team;
+
+            var currentTeamMembers = await _context.TeamMembers.Where(members => members.Team.ID == team.ID).ToListAsync();
+            if (currentTeamMembers.Count >= Event.MaxTeamSize && EventRole != EventRole.admin)
+            {
+                return NotFound($"The team '{team.Name}' is full.");
+            }
 
             PuzzleUser user = await _context.PuzzleUsers.FirstOrDefaultAsync(m => m.ID == userId);
             if (user == null)
             {
-                return NotFound("Could not find user with ID '" + userId + "'. Check to make sure the user hasn't been removed.");
+                return NotFound($"Could not find user with ID '{userId}'. Check to make sure the user hasn't been removed.");
             }
-            Member.Member = user;
+
+            if (user.EmployeeAlias == null && currentTeamMembers.Where((m) => m.Member.EmployeeAlias == null).Count() >= Event.MaxExternalsPerTeam)
+            {
+                return NotFound($"The team '{team.Name}' is already at its maximum count of non-employee players, and '{user.Email}' has no registered alias.");
+            }
 
             if (await (from teamMember in _context.TeamMembers
                        where teamMember.Member == user &&
                        teamMember.Team.Event == Event
                        select teamMember).AnyAsync())
             {
-                return NotFound("User is already on a team in this event.");
+                return NotFound($"'{user.Email}' is already on a team in this event.");
             }
+
+            TeamMembers Member = new TeamMembers();
+            Member.Team = team;
+            Member.Member = user;
 
             if (applicationId != -1)
             {
