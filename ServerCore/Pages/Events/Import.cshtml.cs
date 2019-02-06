@@ -38,7 +38,7 @@ namespace ServerCore.Pages.Events
             }
 
             // verify that we're an admin of the import event. current event administratorship is already validated.
-            if (await _context.EventAdmins.Where(ea => ea.Event.ID == ImportEventID && ea.Admin == LoggedInUser).FirstOrDefaultAsync() == null)
+            if (!await _context.EventAdmins.Where(ea => ea.Event.ID == ImportEventID && ea.Admin == LoggedInUser).AnyAsync())
             {
                 return Forbid();
             }
