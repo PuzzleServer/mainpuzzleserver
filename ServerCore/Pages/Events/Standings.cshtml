@@ -33,6 +33,11 @@
                             @Html.DisplayNameFor(model => model.Teams[0].Score)
                         </a>
                     </th>
+                    <th>
+                        <a asp-page="./Standings" asp-route-sort="@(Model.SortForColumnLink(StandingsModel.SortOrder.HintsUsedAscending, StandingsModel.SortOrder.HintsUsedDescending))">
+                            Hint Tickets Used
+                        </a>
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -50,6 +55,9 @@
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => team.Score)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => team.Team.HintCoinsUsed)
                     </td>
                 </tr>
         }
