@@ -19,7 +19,7 @@
                 This event is not currently open for registration.
             </div>
         }
-        else if (Model.Event.MaxNumberOfTeams <= Model.Teams.Count)
+        else if (Model.Teams.Count >= Model.Event.MaxNumberOfTeams)
         {
             <div class="alert alert-danger" role="alert">
                 This event is full.

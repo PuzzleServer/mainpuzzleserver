@@ -16,7 +16,7 @@
             You are not part of a team for this event, and unfortuantely we're no longer accepting new teams into the event. :(
         </div>
     }
-    else if (Model.Event.MaxNumberOfTeams <= Model.Teams.Count)
+    else if (Model.Teams.Count >= Model.Event.MaxNumberOfTeams)
     {
         <h2>Registration full</h2>
         <div>
