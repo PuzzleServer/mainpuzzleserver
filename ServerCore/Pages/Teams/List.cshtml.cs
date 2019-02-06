@@ -32,6 +32,8 @@ namespace ServerCore.Pages.Teams
         /// </summary>
         public bool UserOnTeam { get; set; }
 
+        public Team AppliedTeam { get; set; }
+
         public async Task<IActionResult> OnGetAsync()
         {
             if (LoggedInUser == null)
@@ -47,6 +49,11 @@ namespace ServerCore.Pages.Teams
             {
                 UserOnTeam = false;
             }
+
+            var applications = from TeamApplication application in _context.TeamApplications
+                                                           where application.Player == LoggedInUser && application.Team.Event == Event
+                                                           select application.Team;
+            AppliedTeam = await applications.FirstOrDefaultAsync();
 
             //Teams = await _context.Teams.ToListAsync();
             List<Team> allTeams = await (from team in _context.Teams

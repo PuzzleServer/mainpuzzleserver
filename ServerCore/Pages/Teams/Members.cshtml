@@ -13,9 +13,10 @@
 <p>
     @if (Model.Event.IsTeamMembershipChangeActive || Model.EventRole == ModelBases.EventRole.admin)
     {
-        <div>
-            <a asp-page="./AddMember" asp-route-teamId="@Model.Team.ID">Add a member</a>
-        </div>
+    <div>
+        <a asp-page="./AddMember" asp-route-teamId="@Model.Team.ID">Add a member</a> |
+        <a asp-page="./Apply" asp-route-eventRole="play" asp-route-teamId="@Model.Team.ID">Application link (copy me and email me!)</a>
+    </div>
 
     }
     else
