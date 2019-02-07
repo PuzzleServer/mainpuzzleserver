@@ -44,7 +44,14 @@ You have @Model.Team.HintCoinCount hint ticket(s).
                 <td>
                     @if (!hint.IsUnlocked)
                     {
-                        @Html.DisplayFor(modelItem => hint.Hint.Cost)
+                        if (hint.Hint.Cost == 0)
+                        {
+                            <text>FREE</text>
+                        }
+                        else
+                        {
+                            @Html.DisplayFor(modelItem => hint.Hint.Cost)
+                        }
                     }
                 </td>
                 <td>

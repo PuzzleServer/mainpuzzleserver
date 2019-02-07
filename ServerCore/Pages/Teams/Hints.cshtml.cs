@@ -99,7 +99,7 @@ namespace ServerCore.Pages.Teams
 
             await PopulateUI(puzzleID, teamID);
             
-            return Page();
+            return RedirectToPage(new { puzzleID, teamID });
         }
     }
 }
