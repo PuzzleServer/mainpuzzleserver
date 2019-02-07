@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 
 namespace ServerCore.Pages.Events
@@ -254,6 +255,18 @@ namespace ServerCore.Pages.Events
                 {
                     _context.TeamMembers.Add(new TeamMembers() { Team = teamLoneWolf, Member = demoCreatorUser });
                     await _context.SaveChangesAsync();
+                }
+
+                // line up all hints
+                var teams = await _context.Teams.Where((t) => t.Event == Event).ToListAsync();
+                var hints = await _context.Hints.Where((h) => h.Puzzle.Event == Event).ToListAsync();
+
+                foreach (Team team in teams)
+                {
+                    foreach (Hint hint in hints)
+                    {
+                        _context.HintStatePerTeam.Add(new HintStatePerTeam() { Hint = hint, Team = team });
+                    }
                 }
 
                 //
