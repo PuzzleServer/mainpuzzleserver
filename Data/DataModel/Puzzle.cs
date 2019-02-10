@@ -112,6 +112,16 @@ namespace ServerCore.DataModel
         public int? MinutesToAutomaticallySolve { get; set; } = null;
 
         /// <summary>
+        /// Some puzzles let teams store annotations describing their ongoing work, so they can share those
+        /// with their teammates.  However, we don't want to let teams store arbitrary annotation data,
+        /// since this could overwhelm our storage.  So this field says the maximum annotation key they
+        /// may use.  So, for instance, if MaxAnnotationKey is 400, teams may only use annotation keys 1-400.
+        /// In the common case, this value is 0, meaning teams aren't allowed to store annotations for
+        /// this puzzle.
+        /// </summary>
+        public int MaxAnnotationKey { get; set; } = 0;
+
+        /// <summary>
         /// All of the content files associated with this puzzle
         /// </summary>
         public virtual ICollection<ContentFile> Contents { get; set; }
