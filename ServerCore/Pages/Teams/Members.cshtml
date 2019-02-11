@@ -7,6 +7,7 @@
     //Needs route data - ViewData["PlayRoute"] = "/Teams/Members";
     Layout = "_teamLayout.cshtml";
 }
+@using Microsoft.AspNetCore.Http.Extensions @* for GetEncodedUrl *@
 
 <h2>@Html.DisplayFor(model => model.Team.Name): @(Model.Members.Count) Members</h2>
 
@@ -57,30 +58,37 @@
     <tbody>
         @foreach (var item in Model.Members)
         {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Member.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Member.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Member.EmployeeAlias)
-            </td>
+            <tr>
+                <td>
+                    @if (item.Member.ID == Model.LoggedInUser.ID || Model.LoggedInUser.IsGlobalAdmin)
+                    {
+                        <a asp-area="Identity" asp-page="/Account/Edit" asp-route-userId="@item.Member.ID" asp-route-returnUrl="@Request.GetEncodedUrl()">@Html.DisplayFor(modelItem => item.Member.Name)</a>
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(modelItem => item.Member.Name)
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Member.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Member.EmployeeAlias)
+                </td>
 
-            @if (Model.EventRole == ModelBases.EventRole.play && Model.Members.Count == 1)
-            {
-                <td>
-                    (Can't remove last member)
-                </td>
-            }
-            else
-            {
-                <td>
-                    <a asp-page-handler="RemoveMember" asp-route-teamId="@Model.Team.ID" asp-route-teamMemberId="@item.ID" onclick="return confirm('Are you sure you want to remove @item.Member.Name from @Model.Team.Name?')">Remove</a>
-                </td>
-            }
-        </tr>
+                @if (Model.EventRole == ModelBases.EventRole.play && Model.Members.Count == 1)
+                {
+                    <td>
+                        (Can't remove last member)
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        <a asp-page-handler="RemoveMember" asp-route-teamId="@Model.Team.ID" asp-route-teamMemberId="@item.ID" onclick="return confirm('Are you sure you want to remove @item.Member.Name from @Model.Team.Name?')">Remove</a>
+                    </td>
+                }
+            </tr>
         }
     </tbody>
 </table>

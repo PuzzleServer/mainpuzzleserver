@@ -1,0 +1,62 @@
+﻿@page
+@model EditModel
+@{
+    ViewData["Title"] = "Edit User Properties";
+}
+
+<h2>@ViewData["Title"]</h2>
+<h4>Edit Properties for @Model.PuzzleUser.Name</h4>
+<hr />
+
+<p class="text-info">
+    This profile is shared between all events.
+</p>
+
+<div class="row">
+    <div class="col-md-4">
+        <form method="post" asp-route-returnUrl="@Model.ReturnUrl">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="PuzzleUser.ID" />
+            <input type="hidden" asp-for="PuzzleUser.IdentityUserId" />
+            <input type="hidden" asp-for="PuzzleUser.IsGlobalAdmin" />
+            <div class="form-group">
+                <label asp-for="PuzzleUser.Email"></label>
+                <input asp-for="PuzzleUser.Email" class="form-control" />
+                <span asp-validation-for="PuzzleUser.Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PuzzleUser.Name"></label>
+                <input asp-for="PuzzleUser.Name" class="form-control" />
+                <span asp-validation-for="PuzzleUser.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PuzzleUser.EmployeeAlias"></label>
+                <input asp-for="PuzzleUser.EmployeeAlias" class="form-control" />
+                <span asp-validation-for="PuzzleUser.EmployeeAlias" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PuzzleUser.PhoneNumber"></label>
+                <input asp-for="PuzzleUser.PhoneNumber" class="form-control" />
+                <span asp-validation-for="PuzzleUser.PhoneNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PuzzleUser.VisibleToOthers"></label>
+                <input asp-for="PuzzleUser.VisibleToOthers" class="form-control" />
+                <span asp-validation-for="PuzzleUser.VisibleToOthers" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PuzzleUser.TShirtSize"></label>
+                <input asp-for="PuzzleUser.TShirtSize" class="form-control" />
+                <span asp-validation-for="PuzzleUser.TShirtSize" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
