@@ -57,7 +57,7 @@
         {
             <tr>
                 <td>
-                    <a asp-Page="./Details" asp-route-puzzleid="4">@Html.DisplayFor(modelItem => item.Name)</a>
+                    <a asp-Page="./Details" asp-route-puzzleid=@item.ID>@Html.DisplayFor(modelItem => item.Name)</a>
                 </td>
                 <td>
                     @if (item.PuzzleFile != null)
@@ -105,15 +105,15 @@
                     <div class="shortcut-menu-dropdown">
                         <span><a>Jump to...</a></span>
                         <div class="shortcut-menu-dropdown-content">
-                            <a asp-Page="./Details" asp-route-puzzleid="4">Details</a><br />
-                            <a asp-Page="./Edit" asp-route-puzzleid="4">Edit</a><br />
-                            <a asp-Page="./FileManagement" asp-route-puzzleid="4">Files</a><br />
-                            <a asp-page="/Responses/Index" asp-route-puzzleid="4">Responses</a><br />
-                            <a asp-page="/Hints/Index" asp-route-puzzleid="4">Hints</a><br />
+                            <a asp-Page="./Details" asp-route-puzzleid=@item.ID>Details</a><br />
+                            <a asp-Page="./Edit" asp-route-puzzleid=@item.ID>Edit</a><br />
+                            <a asp-Page="./FileManagement" asp-route-puzzleid=@item.ID>Files</a><br />
+                            <a asp-page="/Responses/Index" asp-route-puzzleid=@item.ID>Responses</a><br />
+                            <a asp-page="/Hints/Index" asp-route-puzzleid=@item.ID>Hints</a><br />
                             ------<br />
-                            <a asp-page="./Status" asp-route-puzzleid="4">Status</a><br />
-                            <a asp-page="/Submissions/AuthorIndex" asp-route-puzzleid="4">Submissions</a><br />
-                            <a asp-Page="./Feedback" asp-route-puzzleid="4">Feedback</a><br />
+                            <a asp-page="./Status" asp-route-puzzleid=@item.ID>Status</a><br />
+                            <a asp-page="/Submissions/AuthorIndex" asp-route-puzzleid=@item.ID>Submissions</a><br />
+                            <a asp-Page="./Feedback" asp-route-puzzleid=@item.ID>Feedback</a><br />
                             ------<br />
                             <a asp-Page="./Delete" asp-route-puzzleid="@item.ID">Delete</a>
                         </div>
