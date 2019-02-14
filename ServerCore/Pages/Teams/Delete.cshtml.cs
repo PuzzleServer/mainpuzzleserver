@@ -37,7 +37,7 @@ namespace ServerCore.Pages.Teams
                 await TeamHelper.DeleteTeamAsync(_context, Team);
             }
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("./List");
         }
     }
 }
