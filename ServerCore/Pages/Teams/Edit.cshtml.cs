@@ -33,11 +33,23 @@ namespace ServerCore.Pages.Teams
 
         public async Task<IActionResult> OnPostAsync()
         {
+            ModelState.Remove("Team.Event");
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
+            Team existingTeam = await (from team in _context.Teams
+                                where team.ID == Team.ID
+                                select team).SingleOrDefaultAsync();
+            if (existingTeam == null)
+            {
+                return NotFound();
+            }
+
+            // Avoid letting the team tamper with their hint coin count
+            Team.HintCoinCount = existingTeam.HintCoinCount;
+            _context.Entry(existingTeam).State = EntityState.Detached;
             _context.Attach(Team).State = EntityState.Modified;
 
             try
@@ -56,7 +68,7 @@ namespace ServerCore.Pages.Teams
                 }
             }
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("./Details", new { eventId = Event.ID, eventRole = EventRole, teamId = Team.ID });
         }
 
         private bool TeamExists(int teamId)
