@@ -50,7 +50,13 @@ namespace ServerCore.Pages.Puzzles
             {
                 return NotFound();
             }
+            await PopulateUIAsync();
 
+            return Page();
+        }
+
+        private async Task PopulateUIAsync()
+        {
             IQueryable<PuzzleUser> currentAuthorsQ = _context.PuzzleAuthors.Where(m => m.Puzzle == Puzzle).Select(m => m.Author);
             IQueryable<PuzzleUser> potentialAuthorsQ = _context.EventAuthors.Where(m => m.Event == Event).Select(m => m.Author).Except(currentAuthorsQ);
 
@@ -84,14 +90,14 @@ namespace ServerCore.Pages.Puzzles
 
             CurrentPrerequisitesOf = await currentPrerequisitesOfQ.OrderBy(p => p.Name).ToListAsync();
             PotentialPrerequisitesOf = await potentialPrerequitesOfQ.OrderBy(p => p.Name).ToListAsync();
-
-            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
+            ModelState.Remove("Puzzle.Event");
             if (!ModelState.IsValid)
             {
+                await PopulateUIAsync();
                 return Page();
             }
 
