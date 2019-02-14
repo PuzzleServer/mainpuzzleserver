@@ -33,6 +33,8 @@ namespace ServerCore.Pages.Submissions
 
         public string AnswerToken { get; set; }
 
+        public IList<Puzzle> PuzzlesCausingGlobalLockout { get; set; }
+
         public async Task<IActionResult> OnPostAsync(int puzzleId, int teamId)
         {
             if (!this.Event.IsAnswerSubmissionActive)
@@ -168,6 +170,8 @@ namespace ServerCore.Pages.Submissions
                        s.Puzzle.ID == puzzleId)
                 .OrderBy(submission => submission.TimeSubmitted)
                 .ToListAsync();
+
+            PuzzlesCausingGlobalLockout = await PuzzleStateHelper.PuzzlesCausingGlobalLockout(_context, Event, team).ToListAsync();
         }
 
         /// <summary>
