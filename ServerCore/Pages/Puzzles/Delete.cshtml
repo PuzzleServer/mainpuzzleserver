@@ -87,11 +87,16 @@
         <dd>
             @Html.DisplayFor(model => model.Puzzle.MinutesToAutomaticallySolve)
         </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Puzzle.MaxAnnotationKey)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Puzzle.MaxAnnotationKey)
+        </dd>
     </dl>
 
     <form method="post">
         <input type="hidden" asp-for="Puzzle.ID" />
-        <input type="submit" value="Delete" class="btn btn-default" /> |
-        <a asp-page="./Index">Back to List</a>
+        <input type="submit" value="Delete" class="btn btn-default" />
     </form>
 </div>
