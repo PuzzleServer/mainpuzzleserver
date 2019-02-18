@@ -32,7 +32,9 @@ namespace ServerCore.Pages.Events
                     Team = g.Key,
                     SolveCount = g.Count(),
                     Score = g.Sum(s => s.Puzzle.SolveValue),
-                    FinalMetaSolveTime = g.Where(s => s.Puzzle.IsFinalPuzzle).Select(s => s.SolvedTime).FirstOrDefault() ?? DateTime.MaxValue
+                    FinalMetaSolveTime = g.Where(s => s.Puzzle.IsCheatCode).Any() ?
+                        DateTime.MaxValue :
+                        (g.Where(s => s.Puzzle.IsFinalPuzzle).Select(s => s.SolvedTime).FirstOrDefault() ?? DateTime.MaxValue)
                 })
                 .OrderBy(t => t.FinalMetaSolveTime).ThenByDescending(t => t.Score).ThenBy(t => t.Team.Name)
                 .ToListAsync();

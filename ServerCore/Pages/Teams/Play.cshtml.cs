@@ -48,6 +48,13 @@ namespace ServerCore.Pages.Teams
             // all puzzles for this event that are real puzzles
             var puzzlesInEventQ = _context.Puzzles.Where(puzzle => puzzle.Event.ID == this.Event.ID && puzzle.IsPuzzle);
 
+            // unless we're in a global lockout, then filter to those!
+            var puzzlesCausingGlobalLockoutQ = PuzzleStateHelper.PuzzlesCausingGlobalLockout(_context, Event, myTeam);
+            if (await puzzlesCausingGlobalLockoutQ.AnyAsync())
+            {
+                puzzlesInEventQ = puzzlesCausingGlobalLockoutQ;
+            }
+
             // all puzzle states for this team that are unlocked (note: IsUnlocked bool is going to harm perf, just null check the time here)
             // Note that it's OK if some puzzles do not yet have a state record; those puzzles are clearly still locked and hence invisible.
             var stateForTeamQ = _context.PuzzleStatePerTeam.Where(state => state.TeamID == this.TeamID && state.UnlockedTime != null);

@@ -185,7 +185,7 @@ namespace ServerCore
             }
 
             // Award hint coins
-            if (value != null && puzzle.HintCoinsForSolve != 0)
+            if (value != null && puzzle != null && puzzle.HintCoinsForSolve != 0)
             {
                 if (team != null)
                 {
@@ -338,6 +338,17 @@ namespace ServerCore
                 TimedUnlockExpiryCache[team.ID] = expiry;
                 LastGlobalExpiry = expiry;
             }
+        }
+
+        public static IQueryable<Puzzle> PuzzlesCausingGlobalLockout(
+            PuzzleServerContext context, 
+            Event eventObj, 
+            Team team)
+        {
+            DateTime now = DateTime.UtcNow;
+            return PuzzleStateHelper.GetSparseQuery(context, eventObj, null, team)
+                .Where(state => state.SolvedTime == null && state.UnlockedTime != null && state.Puzzle.MinutesOfEventLockout != 0 && state.UnlockedTime.Value + TimeSpan.FromMinutes(state.Puzzle.MinutesOfEventLockout) > now)
+                .Select((s) => s.Puzzle);
         }
 
         /// <summary>
