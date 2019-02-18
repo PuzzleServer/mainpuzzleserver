@@ -15,20 +15,14 @@
     <thead>
         <tr>
             <th>
-                <a asp-page="./Play" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(PlayModel.SortOrder.PuzzleAscending, PlayModel.SortOrder.PuzzleDescending))">
-                    @Html.DisplayNameFor(model => model.PuzzlesWithState[0].Puzzle.Name)
-                </a>
-            </th>
-            <th>
                 <a asp-page="./Play" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(PlayModel.SortOrder.GroupAscending, PlayModel.SortOrder.GroupDescending))">
                     @Html.DisplayNameFor(model => model.PuzzlesWithState[0].Puzzle.Group)
                 </a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.PuzzlesWithState[0].Puzzle.OrderInGroup)
-            </th>
-            <th>
-                Puzzle
+                <a asp-page="./Play" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(PlayModel.SortOrder.PuzzleAscending, PlayModel.SortOrder.PuzzleDescending))">
+                    Puzzle
+                </a>
             </th>
             @if (showAnswers)
             {
@@ -53,18 +47,16 @@
 @foreach (var item in Model.PuzzlesWithState) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Puzzle.Name)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.Puzzle.Group)
-            </td>
-            <td>
-                @((item.Puzzle.IsMetaPuzzle || item.Puzzle.IsFinalPuzzle) ? "Meta" : item.Puzzle.OrderInGroup.ToString())
             </td>
             <td>
                 @if (item.Puzzle.PuzzleFile != null)
                 {
-                    @Html.ActionLink(item.Puzzle.PuzzleFile.ShortName, "Index", "Files", new { eventId = Model.Event.ID, filename = item.Puzzle.PuzzleFile.ShortName })
+                    @Html.ActionLink(item.Puzzle.Name, "Index", "Files", new { eventId = Model.Event.ID, filename = item.Puzzle.PuzzleFile.ShortName })
+                }
+                else
+                {
+                    @Html.DisplayFor(modelItem => item.Puzzle.Name)
                 }
             </td>
             @if (showAnswers)

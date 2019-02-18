@@ -35,6 +35,7 @@ namespace ServerCore.DataModel
             MinPrerequisiteCount = source.MinPrerequisiteCount;
             MinutesToAutomaticallySolve = source.MinutesToAutomaticallySolve;
             MinutesOfEventLockout = source.MinutesOfEventLockout;
+            MaxAnnotationKey = source.MaxAnnotationKey;
             SupportEmailAlias = source.SupportEmailAlias;
         }
 
@@ -123,6 +124,16 @@ namespace ServerCore.DataModel
         /// How long to lock solvers out of the rest of the event
         /// </summary>
         public int MinutesOfEventLockout { get; set; }
+
+        /// <summary>
+        /// Some puzzles let teams store annotations describing their ongoing work, so they can share those
+        /// with their teammates.  However, we don't want to let teams store arbitrary annotation data,
+        /// since this could overwhelm our storage.  So this field says the maximum annotation key they
+        /// may use.  So, for instance, if MaxAnnotationKey is 400, teams may only use annotation keys 1-400.
+        /// In the common case, this value is 0, meaning teams aren't allowed to store annotations for
+        /// this puzzle.
+        /// </summary>
+        public int MaxAnnotationKey { get; set; } = 0;
 
         /// <summary>
         /// All of the content files associated with this puzzle

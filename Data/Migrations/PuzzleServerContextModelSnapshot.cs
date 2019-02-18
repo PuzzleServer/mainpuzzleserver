@@ -15,7 +15,7 @@ namespace Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.8-servicing-32085")
+                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -470,6 +470,8 @@ namespace Data.Migrations
                     b.Property<bool>("IsMetaPuzzle");
 
                     b.Property<bool>("IsPuzzle");
+
+                    b.Property<int>("MaxAnnotationKey");
 
                     b.Property<int>("MinPrerequisiteCount");
 
