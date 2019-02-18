@@ -35,7 +35,7 @@
         {
             <tr>
                 <td>
-                    @if (item.ID == Model.LoggedInUser.ID || Model.LoggedInUser.IsGlobalAdmin)
+                    @if (Model.LoggedInUser.IsGlobalAdmin)
                     {
                         <a asp-area="Identity" asp-page="/Account/Edit" asp-route-userId="@item.ID" asp-route-returnUrl="@Request.GetEncodedUrl()">@Html.DisplayFor(modelItem => item.Name)</a>
                     }
@@ -91,7 +91,7 @@
         {
             <tr>
                 <td>
-                    @if (item.Item1.ID == Model.LoggedInUser.ID || Model.LoggedInUser.IsGlobalAdmin)
+                    @if (Model.LoggedInUser.IsGlobalAdmin)
                     {
                         <a asp-area="Identity" asp-page="/Account/Edit" asp-route-userId="@item.Item1.ID" asp-route-returnUrl="@Request.GetEncodedUrl()">@Html.DisplayFor(modelItem => item.Item1.Name)</a>
                     }
@@ -147,7 +147,7 @@
         {
             <tr>
                 <td>
-                    @if (item.Member.ID == Model.LoggedInUser.ID || Model.LoggedInUser.IsGlobalAdmin)
+                    @if (Model.LoggedInUser.IsGlobalAdmin)
                     {
                         <a asp-area="Identity" asp-page="/Account/Edit" asp-route-userId="@item.Member.ID" asp-route-returnUrl="@Request.GetEncodedUrl()">@Html.DisplayFor(modelItem => item.Member.Name)</a>
                     }

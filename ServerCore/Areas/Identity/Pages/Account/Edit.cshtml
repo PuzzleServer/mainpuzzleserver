@@ -16,6 +16,7 @@
     <div class="col-md-4">
         <form method="post" asp-route-returnUrl="@Model.ReturnUrl">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @* NOTE: If you add more properties here, please add them to ExternalLogin.cshtml as well! *@
             <input type="hidden" asp-for="PuzzleUser.ID" />
             <input type="hidden" asp-for="PuzzleUser.IdentityUserId" />
             <input type="hidden" asp-for="PuzzleUser.IsGlobalAdmin" />
@@ -49,6 +50,7 @@
                 <input asp-for="PuzzleUser.TShirtSize" class="form-control" />
                 <span asp-validation-for="PuzzleUser.TShirtSize" class="text-danger"></span>
             </div>
+            @* NOTE: If you add more properties here, please add them to ExternalLogin.cshtml as well! *@
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-default" />
             </div>

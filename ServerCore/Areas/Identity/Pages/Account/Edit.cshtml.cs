@@ -9,7 +9,7 @@ using ServerCore.DataModel;
 
 namespace ServerCore.Areas.Identity.Pages.Account
 {
-    [AllowAnonymous]
+    [Authorize(Policy = "IsGlobalAdmin")]
     public class EditModel : PageModel
     {
         private readonly UserManager<IdentityUser> _userManager;
@@ -30,20 +30,7 @@ namespace ServerCore.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnGetAsync(int userId, string returnUrl = null)
         {
-            var thisPuzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(_context, User, _userManager);
-
-            if (thisPuzzleUser == null)
-            {
-                return Forbid();
-            }
-
             PuzzleUser = await _context.PuzzleUsers.Where((p) => p.ID == userId).FirstOrDefaultAsync();
-
-            if (thisPuzzleUser.ID != PuzzleUser.ID && !thisPuzzleUser.IsGlobalAdmin)
-            {
-                return Forbid();
-            }
-
             ReturnUrl = returnUrl;
 
             return Page();
@@ -53,23 +40,16 @@ namespace ServerCore.Areas.Identity.Pages.Account
         {
             if (!ModelState.IsValid)
             {
-                // TODO: For some reason the ID property is not reported as valid. No clue how validation works and all other properties are strings anyway. Ignore for now?
                 return Page();
             }
 
             var thisPuzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(_context, User, _userManager);
 
-            if (thisPuzzleUser == null)
+            if (thisPuzzleUser != null)
             {
-                return Forbid();
+                _context.Entry(thisPuzzleUser).State = EntityState.Detached;
             }
 
-            if (thisPuzzleUser.ID != PuzzleUser.ID && !thisPuzzleUser.IsGlobalAdmin)
-            {
-                return Forbid();
-            }
-
-            _context.Entry(thisPuzzleUser).State = EntityState.Detached;
             _context.Attach(PuzzleUser).State = EntityState.Modified;
 
             await _context.SaveChangesAsync();
