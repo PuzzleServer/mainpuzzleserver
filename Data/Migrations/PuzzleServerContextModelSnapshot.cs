@@ -463,8 +463,6 @@ namespace Data.Migrations
 
                     b.Property<int>("HintCoinsForSolve");
 
-                    b.Property<bool>("IsCheatCode");
-
                     b.Property<bool>("IsFinalPuzzle");
 
                     b.Property<bool>("IsGloballyVisiblePrerequisite");
@@ -474,8 +472,6 @@ namespace Data.Migrations
                     b.Property<bool>("IsPuzzle");
 
                     b.Property<int>("MinPrerequisiteCount");
-
-                    b.Property<int>("MinutesOfEventLockout");
 
                     b.Property<int?>("MinutesToAutomaticallySolve");
 
