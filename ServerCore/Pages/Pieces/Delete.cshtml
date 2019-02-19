@@ -1,0 +1,42 @@
+﻿@page "/{eventId}/{eventRole}/Pieces/Delete/{puzzleId}"
+@model ServerCore.Pages.Pieces.DeleteModel
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h2>@Model.Piece.Puzzle.Name:  Delete piece</h2>
+<div>
+    <a asp-page="./Index" asp-route-puzzleid="@Model.PuzzleId">Cancel</a>
+</div>
+
+<h3>Are you sure you want to delete this piece?</h3>
+<div>
+    <h4>Piece</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Piece.Puzzle)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Piece.Puzzle.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Piece.ProgressLevel)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Piece.ProgressLevel)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Piece.Contents)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Piece.Contents)
+        </dd>
+    </dl>
+    
+    <form method="post">
+        <input type="hidden" asp-for="Piece.ID" />
+        <input type="submit" value="Delete" class="btn btn-default" />
+    </form>
+</div>

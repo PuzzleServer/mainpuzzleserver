@@ -15,7 +15,7 @@ namespace Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.8-servicing-32085")
+                .HasAnnotation("ProductVersion", "2.2.2-servicing-10034")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -184,6 +184,29 @@ namespace Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("ServerCore.DataModel.Annotation", b =>
+                {
+                    b.Property<int>("PuzzleID");
+
+                    b.Property<int>("TeamID");
+
+                    b.Property<int>("Key");
+
+                    b.Property<string>("Contents")
+                        .IsRequired()
+                        .HasMaxLength(255);
+
+                    b.Property<DateTime>("Timestamp");
+
+                    b.Property<int>("Version");
+
+                    b.HasKey("PuzzleID", "TeamID", "Key");
+
+                    b.HasIndex("TeamID");
+
+                    b.ToTable("Annotations");
+                });
+
             modelBuilder.Entity("ServerCore.DataModel.ContentFile", b =>
                 {
                     b.Property<int>("ID")
@@ -194,8 +217,7 @@ namespace Data.Migrations
 
                     b.Property<int>("FileType");
 
-                    b.Property<int?>("PuzzleID")
-                        .IsRequired();
+                    b.Property<int>("PuzzleID");
 
                     b.Property<string>("ShortName")
                         .IsRequired();
@@ -405,6 +427,27 @@ namespace Data.Migrations
                     b.HasIndex("TeamID");
 
                     b.ToTable("Invitations");
+                });
+
+            modelBuilder.Entity("ServerCore.DataModel.Piece", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Contents")
+                        .IsRequired()
+                        .HasMaxLength(4096);
+
+                    b.Property<int>("ProgressLevel");
+
+                    b.Property<int>("PuzzleID");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("PuzzleID");
+
+                    b.ToTable("Pieces");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Prerequisites", b =>
@@ -725,6 +768,19 @@ namespace Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("ServerCore.DataModel.Annotation", b =>
+                {
+                    b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
+                        .WithMany()
+                        .HasForeignKey("PuzzleID")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("ServerCore.DataModel.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamID")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("ServerCore.DataModel.ContentFile", b =>
                 {
                     b.HasOne("ServerCore.DataModel.Event", "Event")
@@ -803,6 +859,14 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Team")
                         .WithMany("Invitations")
                         .HasForeignKey("TeamID");
+                });
+
+            modelBuilder.Entity("ServerCore.DataModel.Piece", b =>
+                {
+                    b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
+                        .WithMany()
+                        .HasForeignKey("PuzzleID")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Prerequisites", b =>
