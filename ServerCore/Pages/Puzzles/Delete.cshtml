@@ -46,6 +46,12 @@
             @Html.DisplayFor(model => model.Puzzle.IsFinalPuzzle)
         </dd>
         <dt>
+            @Html.DisplayNameFor(model => model.Puzzle.IsCheatCode)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Puzzle.IsCheatCode)
+        </dd>
+        <dt>
             @Html.DisplayNameFor(model => model.Puzzle.SolveValue)
         </dt>
         <dd>
@@ -86,6 +92,12 @@
         </dt>
         <dd>
             @Html.DisplayFor(model => model.Puzzle.MinutesToAutomaticallySolve)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Puzzle.MinutesOfEventLockout)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Puzzle.MinutesOfEventLockout)
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.Puzzle.MaxAnnotationKey)

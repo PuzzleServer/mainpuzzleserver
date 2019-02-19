@@ -163,6 +163,44 @@ namespace ServerCore.Pages.Events
                 };
                 _context.Puzzles.Add(other);
 
+                Puzzle cheat = new Puzzle
+                {
+                    Name = "You're Despicable (cheat code)",
+                    Event = Event,
+                    IsPuzzle = true,
+                    IsCheatCode = true,
+                    SolveValue = -1,
+                    Group = "Daffy's Delights",
+                    OrderInGroup = 2,
+                    MinPrerequisiteCount = 1
+                };
+                _context.Puzzles.Add(cheat);
+
+                Puzzle lockIntro = new Puzzle
+                {
+                    Name = "Wouldn't you know... (whistle stop intro)",
+                    Event = Event,
+                    IsPuzzle = true,
+                    SolveValue = 0,
+                    Group = "Roger's Railway",
+                    OrderInGroup = 1,
+                    MinPrerequisiteCount = 1
+                };
+                _context.Puzzles.Add(lockIntro);
+
+                Puzzle lockPuzzle = new Puzzle
+                {
+                    Name = "...Locked! (whistle stop, lasts 5 minutes)",
+                    Event = Event,
+                    IsPuzzle = true,
+                    SolveValue = 0,
+                    Group = "Roger's Railway",
+                    OrderInGroup = 2,
+                    MinPrerequisiteCount = 1,
+                    MinutesOfEventLockout = 5
+                };
+                _context.Puzzles.Add(lockPuzzle);
+
                 await _context.SaveChangesAsync();
 
                 //
@@ -178,6 +216,12 @@ namespace ServerCore.Pages.Events
                 _context.Responses.Add(new Response() { Puzzle = meta, SubmittedText = "ANSWER", ResponseText = "Correct!", IsSolution = true });
                 _context.Responses.Add(new Response() { Puzzle = other, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
                 _context.Responses.Add(new Response() { Puzzle = other, SubmittedText = "ANSWER", ResponseText = "Correct!", IsSolution = true });
+                _context.Responses.Add(new Response() { Puzzle = cheat, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
+                _context.Responses.Add(new Response() { Puzzle = cheat, SubmittedText = "ANSWER", ResponseText = "Correct!", IsSolution = true });
+                _context.Responses.Add(new Response() { Puzzle = lockIntro, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
+                _context.Responses.Add(new Response() { Puzzle = lockIntro, SubmittedText = "ANSWER", ResponseText = "Correct!", IsSolution = true });
+                _context.Responses.Add(new Response() { Puzzle = lockPuzzle, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
+                _context.Responses.Add(new Response() { Puzzle = lockPuzzle, SubmittedText = "ANSWER", ResponseText = "Correct!", IsSolution = true });
 
                 string hint1Description = "Tell me about the rabbits, George.";
                 string hint1Content = "O.K. Some day – we’re gonna get the jack together and we’re gonna have a little house and a couple of acres an’ a cow and some pigs and...";
@@ -206,6 +250,9 @@ namespace ServerCore.Pages.Events
                 _context.Prerequisites.Add(new Prerequisites() { Puzzle = meta, Prerequisite = intermediate });
                 _context.Prerequisites.Add(new Prerequisites() { Puzzle = meta, Prerequisite = hard });
                 _context.Prerequisites.Add(new Prerequisites() { Puzzle = other, Prerequisite = start });
+                _context.Prerequisites.Add(new Prerequisites() { Puzzle = cheat, Prerequisite = start });
+                _context.Prerequisites.Add(new Prerequisites() { Puzzle = lockIntro, Prerequisite = start });
+                _context.Prerequisites.Add(new Prerequisites() { Puzzle = lockPuzzle, Prerequisite = lockIntro });
 
                 await _context.SaveChangesAsync();
 

@@ -16,17 +16,17 @@
     <thead>
         <tr>
             <th>
-                <a asp-page="./Status" asp-route-id="@Model.Puzzle.ID" asp-route-sort="@(Model.SortForColumnLink(StatusModel.SortOrder.TeamAscending, StatusModel.SortOrder.TeamDescending))">
+                <a asp-page="./Status" asp-route-puzzleId="@Model.Puzzle.ID" asp-route-sort="@(Model.SortForColumnLink(StatusModel.SortOrder.TeamAscending, StatusModel.SortOrder.TeamDescending))">
                     @Html.DisplayNameFor(model => model.PuzzleStatePerTeam[0].Team) @Html.DisplayNameFor(model => model.PuzzleStatePerTeam[0].Team.Name)
                 </a>
             </th>
             <th>
-                <a asp-page="./Status" asp-route-id="@Model.Puzzle.ID" asp-route-sort="@(Model.SortForColumnLink(StatusModel.SortOrder.UnlockAscending, StatusModel.SortOrder.UnlockDescending))">
+                <a asp-page="./Status" asp-route-puzzleId="@Model.Puzzle.ID" asp-route-sort="@(Model.SortForColumnLink(StatusModel.SortOrder.UnlockAscending, StatusModel.SortOrder.UnlockDescending))">
                     @Html.DisplayNameFor(model => model.PuzzleStatePerTeam[0].UnlockedTime)
                 </a>
             </th>
             <th>
-                <a asp-page="./Status" asp-route-id="@Model.Puzzle.ID" asp-route-sort="@(Model.SortForColumnLink(StatusModel.SortOrder.SolveAscending, StatusModel.SortOrder.SolveDescending))">
+                <a asp-page="./Status" asp-route-puzzleId="@Model.Puzzle.ID" asp-route-sort="@(Model.SortForColumnLink(StatusModel.SortOrder.SolveAscending, StatusModel.SortOrder.SolveDescending))">
                     @Html.DisplayNameFor(model => model.PuzzleStatePerTeam[0].SolvedTime)
                 </a>
             </th>
@@ -43,7 +43,7 @@
         {
             <tr>
                 <td>
-                    <a asp-page="../Teams/Status" asp-route-id="@item.Team.ID">@Html.DisplayFor(modelItem => item.Team.Name)</a>
+                    <a asp-page="../Teams/Status" asp-route-teamId="@item.Team.ID">@Html.DisplayFor(modelItem => item.Team.Name)</a>
                 </td>
                 <td>
                     @if (item.UnlockedTime == null)

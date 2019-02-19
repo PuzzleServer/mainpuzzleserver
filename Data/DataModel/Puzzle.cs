@@ -25,6 +25,7 @@ namespace ServerCore.DataModel
             IsPuzzle = source.IsPuzzle;
             IsMetaPuzzle = source.IsMetaPuzzle;
             IsFinalPuzzle = source.IsFinalPuzzle;
+            IsCheatCode = source.IsCheatCode;
             SolveValue = source.SolveValue;
             HintCoinsForSolve = source.HintCoinsForSolve;
             Token = source.Token;
@@ -33,6 +34,9 @@ namespace ServerCore.DataModel
             IsGloballyVisiblePrerequisite = source.IsGloballyVisiblePrerequisite;
             MinPrerequisiteCount = source.MinPrerequisiteCount;
             MinutesToAutomaticallySolve = source.MinutesToAutomaticallySolve;
+            MinutesOfEventLockout = source.MinutesOfEventLockout;
+            MaxAnnotationKey = source.MaxAnnotationKey;
+            SupportEmailAlias = source.SupportEmailAlias;
         }
 
         /// <summary>
@@ -66,6 +70,11 @@ namespace ServerCore.DataModel
         /// True if this is the final puzzle that would lock a team's rank in the standings
         /// </summary>
         public bool IsFinalPuzzle { get; set; } = false;
+
+        /// <summary>
+        /// True if this puzzle is a "cheat code" (nee "Fast Forward") that should impact standings
+        /// </summary>
+        public bool IsCheatCode { get; set; }
 
         /// <summary>
         /// The solve value
@@ -112,6 +121,11 @@ namespace ServerCore.DataModel
         public int? MinutesToAutomaticallySolve { get; set; } = null;
 
         /// <summary>
+        /// How long to lock solvers out of the rest of the event
+        /// </summary>
+        public int MinutesOfEventLockout { get; set; }
+
+        /// <summary>
         /// Some puzzles let teams store annotations describing their ongoing work, so they can share those
         /// with their teammates.  However, we don't want to let teams store arbitrary annotation data,
         /// since this could overwhelm our storage.  So this field says the maximum annotation key they
@@ -136,6 +150,10 @@ namespace ServerCore.DataModel
         /// If null, the event email address should be used instead.
         /// </summary>
         public string SupportEmailAlias { get; set; }
+
+        //
+        // WARNING: If you add new properties add them to the constructor as well so importing will work.
+        //
 
         /// <summary>
         /// File for the main puzzle (typically a PDF containing the puzzle)
@@ -199,5 +217,9 @@ namespace ServerCore.DataModel
         }        
 
         public virtual List<Submission> Submissions { get; set; }
+
+        //
+        // WARNING: If you add new properties add them to the constructor as well so importing will work.
+        //
     }
 }
