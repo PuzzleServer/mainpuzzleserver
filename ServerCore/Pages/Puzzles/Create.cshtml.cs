@@ -31,6 +31,7 @@ namespace ServerCore.Pages.Puzzles
 
         public async Task<IActionResult> OnPostAsync()
         {
+            ModelState.Remove("Puzzle.Event");
             if (!ModelState.IsValid)
             {
                 return Page();
