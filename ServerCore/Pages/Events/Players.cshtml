@@ -6,6 +6,7 @@
     ViewData["AuthorRoute"] = "/EventSpecific/Index";
     ViewData["PlayRoute"] = "/EventSpecific/Index";
 }
+@using Microsoft.AspNetCore.Http.Extensions @* for GetEncodedUrl *@
 
 <h2>Users</h2>
 
@@ -34,7 +35,14 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Name)
+                    @if (Model.LoggedInUser.IsGlobalAdmin)
+                    {
+                        <a asp-area="Identity" asp-page="/Account/Edit" asp-route-userId="@item.ID" asp-route-returnUrl="@Request.GetEncodedUrl()">@Html.DisplayFor(modelItem => item.Name)</a>
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(modelItem => item.Name)
+                    }
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Email)
@@ -83,7 +91,14 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Item1.Name)
+                    @if (Model.LoggedInUser.IsGlobalAdmin)
+                    {
+                        <a asp-area="Identity" asp-page="/Account/Edit" asp-route-userId="@item.Item1.ID" asp-route-returnUrl="@Request.GetEncodedUrl()">@Html.DisplayFor(modelItem => item.Item1.Name)</a>
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(modelItem => item.Item1.Name)
+                    }
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Item1.Email)
@@ -132,7 +147,14 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Member.Name)
+                    @if (Model.LoggedInUser.IsGlobalAdmin)
+                    {
+                        <a asp-area="Identity" asp-page="/Account/Edit" asp-route-userId="@item.Member.ID" asp-route-returnUrl="@Request.GetEncodedUrl()">@Html.DisplayFor(modelItem => item.Member.Name)</a>
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(modelItem => item.Member.Name)
+                    }
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Member.Email)
