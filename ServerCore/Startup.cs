@@ -15,6 +15,8 @@ namespace ServerCore
 {
     public class Startup
     {
+        private IHostingEnvironment hostingEnvironment;
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -29,6 +31,8 @@ namespace ServerCore
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = configBuilder.Build();
+
+            hostingEnvironment = env;
         }
 
         public IConfiguration Configuration { get; }
@@ -52,7 +56,7 @@ namespace ServerCore
                     options.Conventions.AuthorizeFolder("/ModelBases");
                 });
 
-            DeploymentConfiguration.ConfigureDatabase(Configuration, services);
+            DeploymentConfiguration.ConfigureDatabase(Configuration, services, hostingEnvironment);
 
             //services.AddDbContext<PuzzleServerContext>
             //    (options => options.UseLazyLoadingProxies()

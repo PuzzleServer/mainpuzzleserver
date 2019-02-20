@@ -23,7 +23,7 @@ namespace ServerCore.Areas.Identity
                     .AddEnvironmentVariables();
                 context.Configuration = configBuilder.Build();
 
-                DeploymentConfiguration.ConfigureDatabase(context.Configuration, services);
+                DeploymentConfiguration.ConfigureDatabase(context.Configuration, services, env);
 
                 //services.AddDbContext<PuzzleServerContext>(options =>
                 //    options.UseLazyLoadingProxies()
