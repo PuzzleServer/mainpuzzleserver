@@ -104,6 +104,7 @@
         <h3>Prerequisites</h3>
         <h4>These puzzles help to unlock me:</h4>
         <form method="post" enctype="multipart/form-data">
+            <input type="hidden" asp-for="Puzzle.ID" />
             <table>
                 <thead>
                     <tr>
@@ -112,17 +113,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                @foreach (var pre in Model.CurrentPrerequisites)
-                {
-                    <tr>
-                        <td>
-                            <a asp-page="./Edit" asp-route-id="@(pre.ID)">@(pre.Name)</a>
-                        </td>
-                        <td>
-                            <a asp-page-handler="RemovePrerequisite" asp-route-id="@Model.Puzzle.ID" asp-route-prerequisite="@(pre.ID)">Remove</a>
-                        </td>
-                    </tr>
-                }
+                    @foreach (var pre in Model.CurrentPrerequisites)
+                    {
+                        <tr>
+                            <td>
+                                <a asp-page="./Edit" asp-route-id="@(pre.ID)">@(pre.Name)</a>
+                            </td>
+                            <td>
+                                <a asp-page-handler="RemovePrerequisite" asp-route-id="@Model.Puzzle.ID" asp-route-prerequisite="@(pre.ID)">Remove</a>
+                            </td>
+                        </tr>
+                    }
                     <tr>
                         <td>
                             <select class="form-control" asp-for="NewPrerequisiteID" asp-items="@(new SelectList(Model.PotentialPrerequisites, "ID", "Name"))"></select>
@@ -137,6 +138,7 @@
         <br />
         <h4>I help to unlock these puzzles:</h4>
         <form method="post" enctype="multipart/form-data">
+            <input type="hidden" asp-for="Puzzle.ID" />
             <table>
                 <thead>
                     <tr>
@@ -145,17 +147,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                @foreach (var p in Model.CurrentPrerequisitesOf)
-                {
-                    <tr>
-                        <td>
-                            <a asp-page="./Edit" asp-route-id="@(p.ID)">@(p.Name)</a>
-                        </td>
-                        <td>
-                            <a asp-page-handler="RemovePrerequisiteOf" asp-route-id="@Model.Puzzle.ID" asp-route-prerequisiteOf="@(p.ID)">Remove</a>
-                        </td>
-                    </tr>
-                }
+                    @foreach (var p in Model.CurrentPrerequisitesOf)
+                    {
+                        <tr>
+                            <td>
+                                <a asp-page="./Edit" asp-route-id="@(p.ID)">@(p.Name)</a>
+                            </td>
+                            <td>
+                                <a asp-page-handler="RemovePrerequisiteOf" asp-route-id="@Model.Puzzle.ID" asp-route-prerequisiteOf="@(p.ID)">Remove</a>
+                            </td>
+                        </tr>
+                    }
                     <tr>
                         <td>
                             <select class="form-control" asp-for="NewPrerequisiteOfID" asp-items="@(new SelectList(Model.PotentialPrerequisitesOf, "ID", "Name"))"></select>
@@ -170,6 +172,7 @@
 		<hr/>
         <h3>Authors</h3>
         <form method="post" enctype="multipart/form-data">
+            <input type="hidden" asp-for="Puzzle.ID" />
             <table>
                 <thead>
                     <tr>
@@ -178,17 +181,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                @foreach (var author in Model.CurrentAuthors)
-                {
-                    <tr>
-                        <td>
-                            @(author.Name)
-                        </td>
-                        <td>
-                            <a asp-page-handler="RemoveAuthor" asp-route-id="@Model.Puzzle.ID" asp-route-author="@(author.ID)">Remove</a>
-                        </td>
-                    </tr>
-                }
+                    @foreach (var author in Model.CurrentAuthors)
+                    {
+                        <tr>
+                            <td>
+                                @(author.Name)
+                            </td>
+                            <td>
+                                <a asp-page-handler="RemoveAuthor" asp-route-id="@Model.Puzzle.ID" asp-route-author="@(author.ID)">Remove</a>
+                            </td>
+                        </tr>
+                    }
                     <tr>
                         <td>
                             <select class="form-control" asp-for="NewAuthorID" asp-items="@(new SelectList(Model.PotentialAuthors, "ID", "Name"))"></select>

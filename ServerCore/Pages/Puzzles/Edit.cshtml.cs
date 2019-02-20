@@ -118,12 +118,12 @@ namespace ServerCore.Pages.Puzzles
 
         public async Task<IActionResult> OnPostAddAuthorAsync()
         {
-            if (!(await _context.EventAuthors.Select(m => m.Author.ID == NewAuthorID && m.Event == Event).AnyAsync()))
+            if (!(await _context.EventAuthors.Where(m => m.Author.ID == NewAuthorID && m.Event == Event).AnyAsync()))
             {
                 return NotFound();
             }
 
-            if (!(await _context.PuzzleAuthors.Select(m => m.PuzzleID == Puzzle.ID && m.AuthorID == NewAuthorID).AnyAsync()))
+            if (!(await _context.PuzzleAuthors.Where(m => m.PuzzleID == Puzzle.ID && m.AuthorID == NewAuthorID).AnyAsync()))
             {
                 _context.PuzzleAuthors.Add(new PuzzleAuthors() { PuzzleID = Puzzle.ID, AuthorID = NewAuthorID });
                 await _context.SaveChangesAsync();
