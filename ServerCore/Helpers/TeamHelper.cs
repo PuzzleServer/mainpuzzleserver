@@ -30,6 +30,11 @@ namespace ServerCore.Helpers
                               select submission;
             context.Submissions.RemoveRange(submissions);
 
+            var annotations = from annotation in context.Annotations
+                              where annotation.Team == team
+                              select annotation;
+            context.Annotations.RemoveRange(annotations);
+
             context.Teams.Remove(team);
 
             await context.SaveChangesAsync();

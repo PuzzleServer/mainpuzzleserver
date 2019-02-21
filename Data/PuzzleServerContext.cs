@@ -66,6 +66,7 @@ namespace ServerCore.DataModel
             modelBuilder.Entity<PuzzleStatePerTeam>().HasOne(state => state.Team).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<HintStatePerTeam>().HasOne(state => state.Team).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Submission>().HasOne(submission => submission.Team).WithMany().OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Annotation>().HasOne(annotation => annotation.Team).WithMany().OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(modelBuilder);
         }
