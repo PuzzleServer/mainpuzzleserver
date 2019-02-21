@@ -88,12 +88,14 @@ namespace ServerCore.Pages.Puzzles
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(int puzzleId)
         {
             if (!ModelState.IsValid)
             {
                 return Page();
             }
+
+            Puzzle.ID = puzzleId; // to be safe
 
             _context.Attach(Puzzle).State = EntityState.Modified;
 
@@ -116,48 +118,48 @@ namespace ServerCore.Pages.Puzzles
             return RedirectToPage("./Index");
         }
 
-        public async Task<IActionResult> OnPostAddAuthorAsync()
+        public async Task<IActionResult> OnPostAddAuthorAsync(int puzzleId)
         {
             if (!(await _context.EventAuthors.Where(m => m.Author.ID == NewAuthorID && m.Event == Event).AnyAsync()))
             {
                 return NotFound();
             }
 
-            if (!(await _context.PuzzleAuthors.Where(m => m.PuzzleID == Puzzle.ID && m.AuthorID == NewAuthorID).AnyAsync()))
+            if (!(await _context.PuzzleAuthors.Where(m => m.PuzzleID == puzzleId && m.AuthorID == NewAuthorID).AnyAsync()))
             {
-                _context.PuzzleAuthors.Add(new PuzzleAuthors() { PuzzleID = Puzzle.ID, AuthorID = NewAuthorID });
+                _context.PuzzleAuthors.Add(new PuzzleAuthors() { PuzzleID = puzzleId, AuthorID = NewAuthorID });
                 await _context.SaveChangesAsync();
             }
 
             return RedirectToPage();
         }
 
-        public async Task<IActionResult> OnPostAddPrerequisiteAsync()
+        public async Task<IActionResult> OnPostAddPrerequisiteAsync(int puzzleId)
         {
             if (!PuzzleExists(NewPrerequisiteID))
             {
                 return NotFound();
             }
 
-            if (!PrerequisiteExists(Puzzle.ID, NewPrerequisiteID))
+            if (!PrerequisiteExists(puzzleId, NewPrerequisiteID))
             {
-                _context.Prerequisites.Add(new Prerequisites() { PuzzleID = Puzzle.ID, PrerequisiteID = NewPrerequisiteID });
+                _context.Prerequisites.Add(new Prerequisites() { PuzzleID = puzzleId, PrerequisiteID = NewPrerequisiteID });
                 await _context.SaveChangesAsync();
             }
 
             return RedirectToPage();
         }
 
-        public async Task<IActionResult> OnPostAddPrerequisiteOfAsync()
+        public async Task<IActionResult> OnPostAddPrerequisiteOfAsync(int puzzleId)
         {
             if (!PuzzleExists(NewPrerequisiteOfID))
             {
                 return NotFound();
             }
 
-            if (!PrerequisiteExists(NewPrerequisiteOfID, Puzzle.ID))
+            if (!PrerequisiteExists(NewPrerequisiteOfID, puzzleId))
             {
-                _context.Prerequisites.Add(new Prerequisites() { PuzzleID = NewPrerequisiteOfID, PrerequisiteID = Puzzle.ID });
+                _context.Prerequisites.Add(new Prerequisites() { PuzzleID = NewPrerequisiteOfID, PrerequisiteID = puzzleId });
                 await _context.SaveChangesAsync();
             }
 
