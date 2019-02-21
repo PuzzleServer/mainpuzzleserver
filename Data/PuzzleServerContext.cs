@@ -32,6 +32,8 @@ namespace ServerCore.DataModel
         public DbSet<PuzzleUser> PuzzleUsers { get; set; }
         public DbSet<Hint> Hints { get; set; }
         public DbSet<HintStatePerTeam> HintStatePerTeam { get; set; }
+        public DbSet<Annotation> Annotations { get; set; }
+        public DbSet<Piece> Pieces { get; set; }
 
         public static void UpdateDatabase(IApplicationBuilder app)
         {
@@ -57,12 +59,14 @@ namespace ServerCore.DataModel
             modelBuilder.Entity<PuzzleStatePerTeam>().HasKey(state => new { state.PuzzleID, state.TeamID });
             modelBuilder.Entity<HintStatePerTeam>().HasKey(state => new { state.TeamID, state.HintID });
             modelBuilder.Entity<Event>().HasIndex(eventObj => new { eventObj.UrlString }).IsUnique();
+            modelBuilder.Entity<Annotation>().HasKey(state => new { state.PuzzleID, state.TeamID, state.Key });
 
             // SQL doesn't allow multiple cacasding delete paths from one entity to another, so cut links that cause those
             modelBuilder.Entity<ContentFile>().HasOne(contentFile => contentFile.Event).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<PuzzleStatePerTeam>().HasOne(state => state.Team).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<HintStatePerTeam>().HasOne(state => state.Team).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Submission>().HasOne(submission => submission.Team).WithMany().OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Annotation>().HasOne(annotation => annotation.Team).WithMany().OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(modelBuilder);
         }
