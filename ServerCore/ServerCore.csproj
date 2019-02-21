@@ -44,10 +44,10 @@
     <WCFMetadata Include="Connected Services" />
   </ItemGroup>
   <ItemGroup>
-    <Content Update="Pages\EventSpecific\FAQ.cshtml">
+    <Content Update="Pages\EventGeneral\FAQ.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-    <Content Update="Pages\EventSpecific\Rules.cshtml">
+    <Content Update="Pages\EventGeneral\Rules.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
     <Content Update="Pages\Events\AddAdminOrAuthor.cshtml">

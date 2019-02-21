@@ -2,9 +2,9 @@
 @model ServerCore.Pages.EventSpecific.IndexModel
 @{
     ViewData["Title"] = "Rules";
-    ViewData["AdminRoute"] = "/EventSpecific/Rules";
-    ViewData["AuthorRoute"] = "/EventSpecific/Rules";
-    ViewData["PlayRoute"] = "/EventSpecific/Rules";
+    ViewData["AdminRoute"] = "/EventGeneral/Rules";
+    ViewData["AuthorRoute"] = "/EventGeneral/Rules";
+    ViewData["PlayRoute"] = "/EventGeneral/Rules";
 }
 
 <partial name="../Resources/@(Model.Event.HomePartial ?? "Default")/RulesPartial.cshtml" />
