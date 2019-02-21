@@ -69,6 +69,8 @@ namespace ServerCore.Pages.Teams
                 return NotFound();
             }
 
+            ModelState.Remove("Team.Event");
+
             if (!ModelState.IsValid)
             {
                 return Page();
