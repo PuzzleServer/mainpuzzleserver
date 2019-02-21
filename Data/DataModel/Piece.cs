@@ -5,13 +5,13 @@ using System.Text;
 
 namespace ServerCore.DataModel
 {
-    //
-    // A puzzle may have additional information associated with it
-    // that isn't made available to a team just because they have the
-    // puzzle unlocked.  For instance, they may not get to see some
-    // pieces of the puzzle until they've made a certain amount of
-    // progress in the event.  A "piece" is such a piece of a puzzle.
-    //
+    /// <summary>
+    /// A puzzle may have additional information associated with it
+    /// that isn't made available to a team just because they have the
+    /// puzzle unlocked.  For instance, they may not get to see some
+    /// pieces of the puzzle until they've made a certain amount of
+    /// progress in the event.  A "piece" is such a piece of a puzzle.
+    /// </summary>
 
     public class Piece
     {
