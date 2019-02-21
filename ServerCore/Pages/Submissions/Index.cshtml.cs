@@ -45,12 +45,15 @@ namespace ServerCore.Pages.Submissions
             // TODO: Once auth exists, we need to check if the team has access
             // to this puzzle.
 
+            await SetupContext(puzzleId, teamId);
+
+            ModelState.Remove("Submission.Puzzle");
+            ModelState.Remove("Submission.Team");
+            ModelState.Remove("Submission.Submitter");
             if (!ModelState.IsValid)
             {
                 return Page();
             }
-
-            await SetupContext(puzzleId, teamId);
 
             // Don't allow submissions after the answer has been found.
             if (PuzzleState.SolvedTime != null)
@@ -58,11 +61,11 @@ namespace ServerCore.Pages.Submissions
                 return Page();
             }
 
-
             // Create submission and add it to list
             Submission.TimeSubmitted = DateTime.UtcNow;
             Submission.Puzzle = PuzzleState.Puzzle;
             Submission.Team = PuzzleState.Team;
+            Submission.Submitter = LoggedInUser;
             Submission.Response = await _context.Responses.Where(
                 r => r.Puzzle.ID == puzzleId &&
                      Submission.SubmissionText == r.SubmittedText)
@@ -121,7 +124,6 @@ namespace ServerCore.Pages.Submissions
             return RedirectToPage(
                 "/Submissions/Index",
                 new { puzzleid = puzzleId, teamid = teamId });
-
         }
 
         public async Task<IActionResult> OnGetAsync(int puzzleId, int teamId)
@@ -130,7 +132,6 @@ namespace ServerCore.Pages.Submissions
             // to this puzzle.
 
             await SetupContext(puzzleId, teamId);
-            Puzzle = await _context.Puzzles.Where(m => m.ID == puzzleId).FirstOrDefaultAsync();
 
             if (PuzzleState.SolvedTime != null)
             {
@@ -149,7 +150,7 @@ namespace ServerCore.Pages.Submissions
             PuzzleId = puzzleId;
             TeamId = teamId;
 
-            Puzzle puzzle = await _context.Puzzles.Where(
+            Puzzle = await _context.Puzzles.Where(
                 (p) => p.ID == puzzleId).FirstOrDefaultAsync();
 
             Team team = await _context.Teams.Where(
@@ -159,7 +160,7 @@ namespace ServerCore.Pages.Submissions
                 .GetFullReadOnlyQuery(
                     _context,
                     Event,
-                    puzzle,
+                    Puzzle,
                     team))
                 .FirstOrDefaultAsync();
 
