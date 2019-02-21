@@ -22,8 +22,7 @@ namespace ServerCore.Pages.Pieces
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            Piece = await _context.Pieces
-                .Include(p => p.Puzzle).FirstOrDefaultAsync(m => m.ID == id);
+            Piece = await _context.Pieces.FirstOrDefaultAsync(m => m.ID == id);
 
             if (Piece == null)
             {
