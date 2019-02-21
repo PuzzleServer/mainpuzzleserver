@@ -9,8 +9,7 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Teams
 {
-    // TODO: Get working
-    //[Authorize(Policy = "IsEventAdminOrPlayerOnTeam")]
+    [Authorize(Policy = "IsEventAdminOrPlayerOnTeam")]
     public class EditModel : EventSpecificPageModel
     {
         public EditModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
@@ -31,12 +30,21 @@ namespace ServerCore.Pages.Teams
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(int teamId)
         {
+            ModelState.Remove("Team.ID");
+            ModelState.Remove("Team.Event");
+
             if (!ModelState.IsValid)
             {
                 return Page();
             }
+
+            Team.ID = teamId;
+            Team.Event = Event;
+
+            var teamToDetach = await _context.Teams.FirstOrDefaultAsync(m => m.ID == teamId);
+            _context.Entry(teamToDetach).State = EntityState.Detached;
 
             _context.Attach(Team).State = EntityState.Modified;
 
@@ -56,6 +64,10 @@ namespace ServerCore.Pages.Teams
                 }
             }
 
+            if (EventRole == ModelBases.EventRole.play)
+            {
+                return RedirectToPage("./Details");
+            }
             return RedirectToPage("./Index");
         }
 
