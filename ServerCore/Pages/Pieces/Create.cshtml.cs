@@ -11,7 +11,7 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Pieces
 {
-    [Authorize(Policy = "IsAuthorOfPuzzle")]
+    [Authorize(Policy = "IsEventAdminOrAuthorOfPuzzle")]
     public class CreateModel : EventSpecificPageModel
     {
         public CreateModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)

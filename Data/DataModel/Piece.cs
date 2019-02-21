@@ -25,7 +25,7 @@ namespace ServerCore.DataModel
 
         /// <summary>
         /// The minimum progress level for a team at which this piece should be
-	/// revealed to that team
+        /// revealed to that team
         /// </summary>
         [Required]
         public int ProgressLevel { get; set; }
@@ -34,7 +34,6 @@ namespace ServerCore.DataModel
         /// The contents of the piece
         /// </summary>
         [Required]
-        [StringLength(4096)]
         public string Contents { get; set; }
     }
 }

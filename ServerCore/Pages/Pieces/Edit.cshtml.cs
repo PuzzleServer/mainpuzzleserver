@@ -9,7 +9,7 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Pieces
 {
-    [Authorize(Policy = "IsAuthorOfPuzzle")]
+    [Authorize(Policy = "IsEventAdminOrAuthorOfPuzzle")]
     public class EditModel : EventSpecificPageModel
     {
         public EditModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)

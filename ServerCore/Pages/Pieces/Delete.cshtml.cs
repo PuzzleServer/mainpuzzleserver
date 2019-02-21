@@ -8,7 +8,7 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Pieces
 {
-    [Authorize(Policy = "IsAuthorOfPuzzle")]
+    [Authorize(Policy = "IsEventAdminOrAuthorOfPuzzle")]
     public class DeleteModel : EventSpecificPageModel
     {
         public DeleteModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
@@ -20,13 +20,8 @@ namespace ServerCore.Pages.Pieces
         
         public int PuzzleId { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task<IActionResult> OnGetAsync(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             Piece = await _context.Pieces
                 .Include(p => p.Puzzle).FirstOrDefaultAsync(m => m.ID == id);
 
@@ -37,13 +32,8 @@ namespace ServerCore.Pages.Pieces
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(int? id)
+        public async Task<IActionResult> OnPostAsync(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             Piece = await _context.Pieces.FindAsync(id);
 
             if (Piece != null)

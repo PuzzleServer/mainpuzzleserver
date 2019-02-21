@@ -14,12 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="DataModel\Annotation.cs~" />
-    <None Remove="DataModel\Piece.cs~" />
-    <None Remove="PuzzleServerContext.cs~" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="2.1.0" />
   </ItemGroup>
