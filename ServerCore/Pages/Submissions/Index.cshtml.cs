@@ -7,11 +7,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
+using ServerCore.Helpers;
 using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Submissions
 {
-    //TODO: Not working [Authorize(Policy = "PlayerCanSeePuzzle")]
+    [Authorize(Policy = "PlayerCanSeePuzzle")]
     public class IndexModel : EventSpecificPageModel
     {
         public IndexModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
@@ -25,32 +26,30 @@ namespace ServerCore.Pages.Submissions
 
         public IList<Submission> Submissions { get; set; }
 
-        public int PuzzleId { get; set; }
-
         public Puzzle Puzzle { get; set; }
 
-        public int TeamId { get; set; }
+        public Team Team { get; set; }
 
         public string AnswerToken { get; set; }
 
         public IList<Puzzle> PuzzlesCausingGlobalLockout { get; set; }
 
-        public async Task<IActionResult> OnPostAsync(int puzzleId, int teamId)
+        public async Task<IActionResult> OnPostAsync(int puzzleId)
         {
             if (!this.Event.IsAnswerSubmissionActive)
             {
-                return RedirectToPage("/Submissions/Index", new { puzzleid = puzzleId, teamid = teamId });
+                return RedirectToPage("/Submissions/Index", new { puzzleid = puzzleId });
             }
 
-            // TODO: Once auth exists, we need to check if the team has access
-            // to this puzzle.
+            await SetupContext(puzzleId);
 
+            ModelState.Remove("Submission.Puzzle");
+            ModelState.Remove("Submission.Team");
+            ModelState.Remove("Submission.Submitter");
             if (!ModelState.IsValid)
             {
                 return Page();
             }
-
-            await SetupContext(puzzleId, teamId);
 
             // Don't allow submissions after the answer has been found.
             if (PuzzleState.SolvedTime != null)
@@ -58,11 +57,11 @@ namespace ServerCore.Pages.Submissions
                 return Page();
             }
 
-
             // Create submission and add it to list
             Submission.TimeSubmitted = DateTime.UtcNow;
             Submission.Puzzle = PuzzleState.Puzzle;
             Submission.Team = PuzzleState.Team;
+            Submission.Submitter = LoggedInUser;
             Submission.Response = await _context.Responses.Where(
                 r => r.Puzzle.ID == puzzleId &&
                      Submission.SubmissionText == r.SubmittedText)
@@ -120,17 +119,15 @@ namespace ServerCore.Pages.Submissions
 
             return RedirectToPage(
                 "/Submissions/Index",
-                new { puzzleid = puzzleId, teamid = teamId });
-
+                new { puzzleid = puzzleId });
         }
 
-        public async Task<IActionResult> OnGetAsync(int puzzleId, int teamId)
+        public async Task<IActionResult> OnGetAsync(int puzzleId)
         {
             // TODO: Once auth exists, we need to check if the team has access
             // to this puzzle.
 
-            await SetupContext(puzzleId, teamId);
-            Puzzle = await _context.Puzzles.Where(m => m.ID == puzzleId).FirstOrDefaultAsync();
+            await SetupContext(puzzleId);
 
             if (PuzzleState.SolvedTime != null)
             {
@@ -144,34 +141,28 @@ namespace ServerCore.Pages.Submissions
             return Page();
         }
 
-        private async Task SetupContext(int puzzleId, int teamId)
+        private async Task SetupContext(int puzzleId)
         {
-            PuzzleId = puzzleId;
-            TeamId = teamId;
+            Team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
 
-            Puzzle puzzle = await _context.Puzzles.Where(
+            Puzzle = await _context.Puzzles.Where(
                 (p) => p.ID == puzzleId).FirstOrDefaultAsync();
-
-            Team team = await _context.Teams.Where(
-                (t) => t.ID == teamId).FirstOrDefaultAsync();
 
             PuzzleState = await (PuzzleStateHelper
                 .GetFullReadOnlyQuery(
                     _context,
                     Event,
-                    puzzle,
-                    team))
+                    Puzzle,
+                    Team))
                 .FirstOrDefaultAsync();
 
             Submissions = await _context.Submissions.Where(
-                (s) => s.Team != null &&
-                       s.Team.ID == teamId &&
-                       s.Puzzle != null &&
-                       s.Puzzle.ID == puzzleId)
+                (s) => s.Team == Team &&
+                       s.Puzzle == Puzzle)
                 .OrderBy(submission => submission.TimeSubmitted)
                 .ToListAsync();
 
-            PuzzlesCausingGlobalLockout = await PuzzleStateHelper.PuzzlesCausingGlobalLockout(_context, Event, team).ToListAsync();
+            PuzzlesCausingGlobalLockout = await PuzzleStateHelper.PuzzlesCausingGlobalLockout(_context, Event, Team).ToListAsync();
         }
 
         /// <summary>
