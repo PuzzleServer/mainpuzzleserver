@@ -4,11 +4,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using ServerCore.Areas.Identity.UserAuthorizationPolicy;
 using ServerCore.Areas.Deployment;
+using ServerCore.Areas.Identity.UserAuthorizationPolicy;
 using ServerCore.DataModel;
 
 namespace ServerCore
@@ -17,9 +16,10 @@ namespace ServerCore
     {
         private IHostingEnvironment hostingEnvironment;
 
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             Configuration = configuration;
+            hostingEnvironment = env;
         }
 
         public Startup(IHostingEnvironment env)
