@@ -48,6 +48,7 @@ namespace ServerCore.DataModel
         /// <summary>
         /// The event the puzzle is a part of
         /// </summary>
+        [Required]
         public virtual Event Event { get; set; }
 
         /// <summary>
@@ -139,11 +140,6 @@ namespace ServerCore.DataModel
         /// All of the content files associated with this puzzle
         /// </summary>
         public virtual ICollection<ContentFile> Contents { get; set; }
-
-        /// <summary>
-        /// This puzzle's hints
-        /// </summary>
-        public virtual ICollection<Hint> Hints { get; set; }
 
         /// <summary>
         /// The email alias that players should use if they require support on the puzzle.

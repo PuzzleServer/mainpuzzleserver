@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
+using ServerCore.Helpers;
 using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Events
@@ -74,16 +75,7 @@ namespace ServerCore.Pages.Events
                     {
                         foreach (Puzzle p in _context.Puzzles.Where((p) => p.Event == Event && p.Name == sourcePuzzle.Name))
                         {
-                            // TODO why do I need a null check here? Does that mean something is improperly wired up?
-                            if (p.Contents != null)
-                            {
-                                foreach (ContentFile content in p.Contents)
-                                {
-                                    await FileManager.DeleteBlobAsync(content.Url);
-                                }
-                            }
-
-                            _context.Puzzles.Remove(p);
+                            await PuzzleHelper.DeletePuzzleAsync(_context, p);
                         }
                     }
 

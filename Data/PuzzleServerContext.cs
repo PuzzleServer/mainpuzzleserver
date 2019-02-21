@@ -18,7 +18,6 @@ namespace ServerCore.DataModel
         public DbSet<Event> Events { get; set; }
         public DbSet<EventAdmins> EventAdmins { get; set; }
         public DbSet<EventAuthors> EventAuthors { get; set; }
-        public DbSet<EventTeams> EventTeams { get; set; }
         public DbSet<Feedback> Feedback { get; set; }
         public DbSet<Invitation> Invitations { get; set; }
         public DbSet<Prerequisites> Prerequisites { get; set; }
@@ -58,6 +57,12 @@ namespace ServerCore.DataModel
             modelBuilder.Entity<PuzzleStatePerTeam>().HasKey(state => new { state.PuzzleID, state.TeamID });
             modelBuilder.Entity<HintStatePerTeam>().HasKey(state => new { state.TeamID, state.HintID });
             modelBuilder.Entity<Event>().HasIndex(eventObj => new { eventObj.UrlString }).IsUnique();
+
+            // SQL doesn't allow multiple cacasding delete paths from one entity to another, so cut links that cause those
+            modelBuilder.Entity<ContentFile>().HasOne(contentFile => contentFile.Event).WithMany().OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<PuzzleStatePerTeam>().HasOne(state => state.Team).WithMany().OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<HintStatePerTeam>().HasOne(state => state.Team).WithMany().OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Submission>().HasOne(submission => submission.Team).WithMany().OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(modelBuilder);
         }

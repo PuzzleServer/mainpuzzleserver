@@ -138,11 +138,6 @@ namespace ServerCore.DataModel
         /// </summary>
         public bool AllowFeedback { get; set; }
 
-        // TODO: These might need to be collections that aren't a db column - check on the EF documentation for referencing join tables where it's a one to many
-        public virtual EventTeams Teams { get; set; }
-        public virtual EventAuthors Authors { get; set; }
-        public virtual EventAdmins Admins { get; set; }
-
         /// <summary>
         /// The window of time where if a team enters a certain number of
         /// incorrect answers would cause the team to be locked out of
