@@ -1,0 +1,41 @@
+﻿@page "/{eventId}/{eventRole}/Pieces/{puzzleId}"
+@model ServerCore.Pages.Pieces.IndexModel
+
+@{
+    ViewData["Title"] = "Pieces";
+}
+
+<h2>Index</h2>
+
+<p>
+    <a asp-page="Create" asp-route-puzzleId="@Model.PuzzleId">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Pieces[0].ProgressLevel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Pieces[0].Contents)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Pieces) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProgressLevel)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Contents)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-puzzleId="@Model.PuzzleId" asp-route-id="@item.ID">Edit</a> |
+                <a asp-page="./Delete" asp-route-puzzleId="@Model.PuzzleId" asp-route-id="@item.ID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
