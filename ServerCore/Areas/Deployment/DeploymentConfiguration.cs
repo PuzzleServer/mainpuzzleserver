@@ -18,7 +18,7 @@ namespace ServerCore.Areas.Deployment
                     (options => options.UseLazyLoadingProxies()
                         .UseSqlServer(configuration.GetConnectionString("PuzzleServerSQLConnectionString")));
             }
-            else // if (env.IsDevelopment() && String.IsNullOrEmpty(Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME")))
+            else
             {
                 services.AddDbContext<PuzzleServerContext>
                     (options => options.UseLazyLoadingProxies()
