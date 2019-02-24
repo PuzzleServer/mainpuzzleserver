@@ -58,10 +58,6 @@ namespace ServerCore
 
             DeploymentConfiguration.ConfigureDatabase(Configuration, services, hostingEnvironment);
 
-            //services.AddDbContext<PuzzleServerContext>
-            //    (options => options.UseLazyLoadingProxies()
-            //        .UseSqlServer(Configuration.GetConnectionString("PuzzleServerContext")));
-
             services.AddAuthentication().AddMicrosoftAccount(microsoftOptions =>
             {
                 microsoftOptions.ClientId = Configuration["Authentication-Microsoft-ApplicationId"];
