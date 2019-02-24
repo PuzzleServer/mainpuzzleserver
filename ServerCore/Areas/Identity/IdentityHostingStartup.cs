@@ -25,11 +25,6 @@ namespace ServerCore.Areas.Identity
 
                 DeploymentConfiguration.ConfigureDatabase(context.Configuration, services, env);
 
-                //services.AddDbContext<PuzzleServerContext>(options =>
-                //    options.UseLazyLoadingProxies()
-                //    .UseSqlServer(
-                //        context.Configuration.GetConnectionString("PuzzleServerContext")));
-
                 services.AddDefaultIdentity<IdentityUser>()
                     .AddEntityFrameworkStores<PuzzleServerContext>();
             });
