@@ -17,6 +17,8 @@ namespace ServerCore.Areas.Deployment
                 services.AddDbContext<PuzzleServerContext>
                     (options => options.UseLazyLoadingProxies()
                         .UseSqlServer(configuration.GetConnectionString("PuzzleServerSQLConnectionString")));
+
+                services.BuildServiceProvider().GetService<PuzzleServerContext>().Database.Migrate();
             }
             else
             {
