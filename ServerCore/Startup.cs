@@ -113,6 +113,7 @@ namespace ServerCore
                 // Use KeyVault to get secrets
                 app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
+                PuzzleServerContext.UpdateDatabase(app);
             }
             else
             {
