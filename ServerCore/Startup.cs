@@ -57,6 +57,7 @@ namespace ServerCore
                 });
 
             DeploymentConfiguration.ConfigureDatabase(Configuration, services, hostingEnvironment);
+            FileManager.ConnectionString = Configuration.GetConnectionString("AzureStorageConnectionString");
 
             services.AddAuthentication().AddMicrosoftAccount(microsoftOptions =>
             {
