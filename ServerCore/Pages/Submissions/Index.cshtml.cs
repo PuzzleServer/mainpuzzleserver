@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -22,7 +23,8 @@ namespace ServerCore.Pages.Submissions
         public PuzzleStatePerTeam PuzzleState { get; set; }
 
         [BindProperty]
-        public Submission Submission { get; set; }
+        [Required]
+        public string SubmissionText { get; set; }
 
         public IList<Submission> Submissions { get; set; }
 
@@ -43,9 +45,6 @@ namespace ServerCore.Pages.Submissions
 
             await SetupContext(puzzleId);
 
-            ModelState.Remove("Submission.Puzzle");
-            ModelState.Remove("Submission.Team");
-            ModelState.Remove("Submission.Submitter");
             if (!ModelState.IsValid)
             {
                 return Page();
@@ -58,28 +57,32 @@ namespace ServerCore.Pages.Submissions
             }
 
             // Create submission and add it to list
-            Submission.TimeSubmitted = DateTime.UtcNow;
-            Submission.Puzzle = PuzzleState.Puzzle;
-            Submission.Team = PuzzleState.Team;
-            Submission.Submitter = LoggedInUser;
-            Submission.Response = await _context.Responses.Where(
+            Submission submission = new Submission
+            {
+                SubmissionText = SubmissionText,
+                TimeSubmitted = DateTime.UtcNow,
+                Puzzle = PuzzleState.Puzzle,
+                Team = PuzzleState.Team,
+                Submitter = LoggedInUser,
+            };
+            submission.Response = await _context.Responses.Where(
                 r => r.Puzzle.ID == puzzleId &&
-                     Submission.SubmissionText == r.SubmittedText)
+                     submission.SubmissionText == r.SubmittedText)
                 .FirstOrDefaultAsync();
 
-            Submissions.Add(Submission);
+            Submissions.Add(submission);
 
             // Update puzzle state if submission was correct
-            if (Submission.Response != null && Submission.Response.IsSolution)
+            if (submission.Response != null && submission.Response.IsSolution)
             {
                 await PuzzleStateHelper.SetSolveStateAsync(_context,
                     Event,
-                    Submission.Puzzle,
-                    Submission.Team,
-                    Submission.TimeSubmitted);
+                    submission.Puzzle,
+                    submission.Team,
+                    submission.TimeSubmitted);
 
             }
-            else if (Submission.Response == null)
+            else if (submission.Response == null)
             {
                 // We also determine if the puzzle should be set to email-only mode.
                 if (IsPuzzleSubmissionLimitReached(
@@ -89,8 +92,8 @@ namespace ServerCore.Pages.Submissions
                 {
                     await PuzzleStateHelper.SetEmailOnlyModeAsync(_context,
                         Event,
-                        Submission.Puzzle,
-                        Submission.Team,
+                        submission.Puzzle,
+                        submission.Team,
                         true);
                 }
                 else
@@ -106,15 +109,15 @@ namespace ServerCore.Pages.Submissions
                     {
                         await PuzzleStateHelper.SetLockoutExpiryTimeAsync(_context,
                             Event,
-                            Submission.Puzzle,
-                            Submission.Team,
+                            submission.Puzzle,
+                            submission.Team,
                             lockoutExpiryTime);
 
                     }
                 }
             }
             
-            _context.Submissions.Add(Submission);
+            _context.Submissions.Add(submission);
             await _context.SaveChangesAsync();
 
             return RedirectToPage(

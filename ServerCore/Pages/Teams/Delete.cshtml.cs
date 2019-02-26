@@ -37,7 +37,14 @@ namespace ServerCore.Pages.Teams
                 await TeamHelper.DeleteTeamAsync(_context, Team);
             }
 
-            return RedirectToPage("./Index");
+            if (EventRole == EventRole.admin)
+            {
+                return RedirectToPage("./Index");
+            }
+            else
+            {
+                return RedirectToPage("./List");
+            }
         }
     }
 }
