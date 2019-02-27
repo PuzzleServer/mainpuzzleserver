@@ -11,7 +11,7 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Teams
 {
-    [Authorize(Policy = "PlayerIsOnTeam, PlayerCanSeePuzzle")]
+    [Authorize(Policy = "PlayerCanSeePuzzle")]
     public class HintsModel : EventSpecificPageModel
     {
         public HintsModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
