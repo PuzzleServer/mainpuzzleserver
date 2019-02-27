@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Hints
 {
+    [Authorize(Policy = "IsEventAdminOrAuthorOfPuzzle")]
     public class CreateModel : EventSpecificPageModel
     {
         public Puzzle Puzzle { get; set; }

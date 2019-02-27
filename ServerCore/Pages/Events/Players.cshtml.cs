@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Events
 {
+    [Authorize(Policy = "IsEventAdmin")]
     public class PlayersModel : EventSpecificPageModel
     {
         public IList<PuzzleUser> Admins { get; set; }
