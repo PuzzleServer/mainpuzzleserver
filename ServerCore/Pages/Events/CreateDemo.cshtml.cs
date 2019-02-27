@@ -275,7 +275,7 @@ namespace ServerCore.Pages.Events
                     _context.Teams.Add(teamLoneWolf);
                 }
 
-                var demoCreatorUser = await PuzzleUser.GetPuzzleUserForCurrentUser(_context, User, _userManager);
+                var demoCreatorUser = await PuzzleUser.GetPuzzleUserForCurrentUser(_context, HttpContext, User, _userManager);
                 if (demoCreatorUser != null)
                 {
                     //

@@ -60,6 +60,10 @@
 
                 <ul class="nav navbar-nav navbar-right">
                     <partial name="/Pages/Shared/_LoginPartial.cshtml" />
+                    @if (ServerCore.DataModel.PuzzleUser.IsImpersonating(Model.HttpContext))
+                    {
+                        <li><a asp-page="/EventSpecific/Index" asp-page-handler="Unimpersonate">Unimpersonate</a></li>
+                    }
                 </ul>
             </div>
         </div>
@@ -120,6 +124,10 @@
 
                 <ul class="nav navbar-nav navbar-right">
                     <partial name="/Pages/Shared/_LoginPartial.cshtml" />
+                    @if (ServerCore.DataModel.PuzzleUser.IsImpersonating(Model.HttpContext))
+                    {
+                        <li><a asp-page="/EventSpecific/Index" asp-page-handler="Unimpersonate">Unimpersonate</a></li>
+                    }
                 </ul>
             </div>
         </div>
@@ -178,6 +186,10 @@
 
                 <ul class="nav navbar-nav navbar-right">
                     <partial name="/Pages/Shared/_LoginPartial.cshtml" />
+                    @if (ServerCore.DataModel.PuzzleUser.IsImpersonating(Model.HttpContext))
+                    {
+                        <li><a asp-page="/EventSpecific/Index" asp-page-handler="Unimpersonate">Unimpersonate</a></li>
+                    }
                 </ul>
             </div>
         </div>
@@ -224,6 +236,10 @@
 
                 <ul class="nav navbar-nav navbar-right">
                     <partial name="/Pages/Shared/_LoginPartial.cshtml" />
+                    @if (ServerCore.DataModel.PuzzleUser.IsImpersonating(Model.HttpContext))
+                    {
+                        <li><a asp-page="/EventSpecific/Index" asp-page-handler="Unimpersonate">Unimpersonate</a></li>
+                    }
                 </ul>
             </div>
         </div>

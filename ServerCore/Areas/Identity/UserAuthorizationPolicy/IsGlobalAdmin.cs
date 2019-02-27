@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Filters;
 using ServerCore.DataModel;
 
 namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
@@ -29,7 +30,7 @@ namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
                                                        IsGlobalAdminRequirement requirement)
         {
-            PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
+            PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, (authContext.Resource as AuthorizationFilterContext)?.HttpContext, authContext.User, userManager);
 
             if (puzzleUser.IsGlobalAdmin)
             {

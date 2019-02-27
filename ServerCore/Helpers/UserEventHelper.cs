@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
@@ -52,9 +53,9 @@ namespace ServerCore.Helpers
         /// <param name="user">The claim for the user being checked</param>
         /// <param name="userManager">The UserManager for the current context</param>
         /// <returns>The user's team for this event</returns>
-        public static async Task<Team> GetTeamForCurrentPlayer(PuzzleServerContext puzzleServerContext, Event thisEvent, ClaimsPrincipal user, UserManager<IdentityUser> userManager)
+        public static async Task<Team> GetTeamForCurrentPlayer(PuzzleServerContext puzzleServerContext, HttpContext httpContext, Event thisEvent, ClaimsPrincipal user, UserManager<IdentityUser> userManager)
         {
-            PuzzleUser pUser = await PuzzleUser.GetPuzzleUserForCurrentUser(puzzleServerContext, user, userManager);
+            PuzzleUser pUser = await PuzzleUser.GetPuzzleUserForCurrentUser(puzzleServerContext, httpContext, user, userManager);
             return await GetTeamForPlayer(puzzleServerContext, thisEvent, pUser);
         }
     }

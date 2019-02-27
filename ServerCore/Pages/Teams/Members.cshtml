@@ -62,7 +62,7 @@
                 <td>
                     @if (Model.LoggedInUser.IsGlobalAdmin)
                     {
-                        <a asp-area="Identity" asp-page="/Account/Edit" asp-route-userId="@item.Member.ID" asp-route-returnUrl="@Request.GetEncodedUrl()">@Html.DisplayFor(modelItem => item.Member.Name)</a>
+                        <a asp-page-handler="ImpersonateMember" asp-route-memberId="@item.Member.ID" onclick="return confirm('Are you sure you want to impersonate @item.Member.Name from @Model.Team.Name?')">@item.Member.Name</a>
                     }
                     else
                     {

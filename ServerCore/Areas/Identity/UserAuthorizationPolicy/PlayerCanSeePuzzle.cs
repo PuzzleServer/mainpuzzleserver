@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Filters;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
 
@@ -31,7 +32,7 @@ namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
                                                        PlayerCanSeePuzzleRequirement requirement)
         {
-            PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
+            PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, (authContext.Resource as AuthorizationFilterContext)?.HttpContext, authContext.User, userManager);
             Puzzle puzzle = await AuthorizationHelper.GetPuzzleFromContext(authContext);
             Event thisEvent = await AuthorizationHelper.GetEventFromContext(authContext);
 

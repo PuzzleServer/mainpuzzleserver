@@ -32,7 +32,7 @@ namespace ServerCore.ModelBases
             {
                 if (loggedInUser == null)
                 {
-                    loggedInUser = PuzzleUser.GetPuzzleUserForCurrentUser(_context, User, userManager).Result;
+                    loggedInUser = PuzzleUser.GetPuzzleUserForCurrentUser(_context, HttpContext, User, userManager).Result;
                 }
                 return loggedInUser;
             }
@@ -60,6 +60,18 @@ namespace ServerCore.ModelBases
         public async Task<bool> IsEventAdmin()
         {
             return await LoggedInUser.IsAdminForEvent(_context, Event);
+        }
+
+        public IActionResult OnGetUnimpersonate()
+        {
+            if (!LoggedInUser.IsGlobalAdmin)
+            {
+                return NotFound("Must be a global administrator to impersonate.");
+            }
+
+            PuzzleUser.Impersonate(HttpContext, null);
+
+            return RedirectToPage("/EventSpecific/Index", new { eventRole = EventRole.admin });
         }
 
         public class EventBinder : IModelBinder

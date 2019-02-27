@@ -75,7 +75,7 @@ namespace ServerCore.Areas.Identity
 
         public static async Task IsEventAdminCheck(AuthorizationHandlerContext authContext, PuzzleServerContext dbContext, UserManager<IdentityUser> userManager, IAuthorizationRequirement requirement)
         {
-            PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
+            PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, (authContext.Resource as AuthorizationFilterContext)?.HttpContext, authContext.User, userManager);
             Event thisEvent = await AuthorizationHelper.GetEventFromContext(authContext);
             EventRole role = AuthorizationHelper.GetEventRoleFromContext(authContext);
 
@@ -87,7 +87,7 @@ namespace ServerCore.Areas.Identity
 
         public static async Task IsPuzzleAuthorCheck(AuthorizationHandlerContext authContext, PuzzleServerContext dbContext, UserManager<IdentityUser> userManager, IAuthorizationRequirement requirement)
         {
-            PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
+            PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, (authContext.Resource as AuthorizationFilterContext)?.HttpContext, authContext.User, userManager);
             Puzzle puzzle = await AuthorizationHelper.GetPuzzleFromContext(authContext);
             Event thisEvent = await AuthorizationHelper.GetEventFromContext(authContext);
             EventRole role = AuthorizationHelper.GetEventRoleFromContext(authContext);
@@ -105,7 +105,7 @@ namespace ServerCore.Areas.Identity
 
         public static async Task IsEventAuthorCheck(AuthorizationHandlerContext authContext, PuzzleServerContext dbContext, UserManager<IdentityUser> userManager, IAuthorizationRequirement requirement)
         {
-            PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
+            PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, (authContext.Resource as AuthorizationFilterContext)?.HttpContext, authContext.User, userManager);
             EventRole role = AuthorizationHelper.GetEventRoleFromContext(authContext);
 
             if (authContext.Resource is AuthorizationFilterContext filterContext)
@@ -121,7 +121,7 @@ namespace ServerCore.Areas.Identity
 
         public static async Task IsEventPlayerCheck(AuthorizationHandlerContext authContext, PuzzleServerContext dbContext, UserManager<IdentityUser> userManager, IAuthorizationRequirement requirement)
         {
-            PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
+            PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, (authContext.Resource as AuthorizationFilterContext)?.HttpContext, authContext.User, userManager);
             Event thisEvent = await AuthorizationHelper.GetEventFromContext(authContext);
             EventRole role = AuthorizationHelper.GetEventRoleFromContext(authContext);
 
@@ -133,7 +133,7 @@ namespace ServerCore.Areas.Identity
 
         public static async Task IsPlayerOnTeamCheck(AuthorizationHandlerContext authContext, PuzzleServerContext dbContext, UserManager<IdentityUser> userManager, IAuthorizationRequirement requirement)
         {
-            PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
+            PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, (authContext.Resource as AuthorizationFilterContext)?.HttpContext, authContext.User, userManager);
             Team team = await AuthorizationHelper.GetTeamFromContext(authContext);
             Event thisEvent = await AuthorizationHelper.GetEventFromContext(authContext);
             EventRole role = AuthorizationHelper.GetEventRoleFromContext(authContext);

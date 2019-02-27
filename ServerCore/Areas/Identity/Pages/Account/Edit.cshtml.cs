@@ -43,7 +43,7 @@ namespace ServerCore.Areas.Identity.Pages.Account
                 return Page();
             }
 
-            var thisPuzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(_context, User, _userManager);
+            var thisPuzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(_context, HttpContext, User, _userManager);
 
             if (thisPuzzleUser != null)
             {

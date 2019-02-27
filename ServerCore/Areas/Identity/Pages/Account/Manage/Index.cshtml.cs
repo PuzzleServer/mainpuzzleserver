@@ -73,7 +73,7 @@ namespace ServerCore.Areas.Identity.Pages.Account.Manage
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
-            var thisPuzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(_context, User, _userManager);
+            var thisPuzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(_context, HttpContext, User, _userManager);
 
             // enforce access rights, do not let these change!
             Input.ID = thisPuzzleUser.ID;

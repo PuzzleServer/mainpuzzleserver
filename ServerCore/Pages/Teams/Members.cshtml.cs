@@ -74,5 +74,18 @@ namespace ServerCore.Pages.Teams
             await _context.SaveChangesAsync();
             return RedirectToPage("./Members", new { teamId = teamId });
         }
+
+        public async Task<IActionResult> OnGetImpersonateMemberAsync(int memberId)
+        {
+            if (!LoggedInUser.IsGlobalAdmin)
+            {
+                return NotFound("Must be a global administrator to impersonate.");
+            }
+
+            PuzzleUser member = await _context.PuzzleUsers.FirstOrDefaultAsync(m => m.ID == memberId);
+            PuzzleUser.Impersonate(HttpContext, member);
+
+            return RedirectToPage("/EventSpecific/Index", new { eventRole = EventRole.play });
+        }
     }
 }

@@ -57,7 +57,7 @@ namespace ServerCore.Pages.Events
 
             _context.Events.Add(Event);
 
-            var loggedInUser = PuzzleUser.GetPuzzleUserForCurrentUser(_context, User, _userManager).Result;
+            var loggedInUser = PuzzleUser.GetPuzzleUserForCurrentUser(_context, HttpContext, User, _userManager).Result;
 
             if (loggedInUser != null)
             {

@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -51,7 +52,7 @@ namespace ServerCore.DataModel
         /// <param name="user">The claim for the user being checked</param>
         /// <param name="userManager">The UserManager for the current context</param>
         /// <returns>The user's PuzzleUser object</returns>
-        public static async Task<PuzzleUser> GetPuzzleUserForCurrentUser(PuzzleServerContext dbContext, ClaimsPrincipal user, UserManager<IdentityUser> userManager)
+        public static async Task<PuzzleUser> GetPuzzleUserForCurrentUser(PuzzleServerContext dbContext, HttpContext httpContext, ClaimsPrincipal user, UserManager<IdentityUser> userManager)
         {
             if (userManager == null || dbContext == null)
             {
@@ -65,7 +66,40 @@ namespace ServerCore.DataModel
             }
 
             string userId = userManager.GetUserId(user);
-            return await dbContext.PuzzleUsers.Where(u => u.IdentityUserId == userId).FirstOrDefaultAsync();
+            PuzzleUser puzzleUser = await dbContext.PuzzleUsers.Where(u => u.IdentityUserId == userId).FirstOrDefaultAsync();
+
+            if (puzzleUser.IsGlobalAdmin && httpContext != null)
+            {
+                string impersonatedIdAsString = httpContext.Request.Cookies["PuzzleUserImpersonation"];
+                if (int.TryParse(impersonatedIdAsString, out int impersonatedId))
+                {
+                    PuzzleUser impersonatedUser = await dbContext.PuzzleUsers.Where(u => u.ID == impersonatedId).FirstOrDefaultAsync();
+
+                    if (impersonatedUser != null)
+                    {
+                        return impersonatedUser;
+                    }
+                }
+            }
+
+            return puzzleUser;
+        }
+
+        public static void Impersonate(HttpContext httpContext, PuzzleUser user)
+        {
+            if (user != null)
+            {
+                httpContext.Response.Cookies.Append("PuzzleUserImpersonation", user.ID.ToString());
+            }
+            else
+            {
+                httpContext.Response.Cookies.Delete("PuzzleUserImpersonation");
+            }
+        }
+
+        public static bool IsImpersonating(HttpContext httpContext)
+        {
+            return httpContext.Request.Cookies.TryGetValue("PuzzleUserImpersonation", out _);
         }
 
         /// <summary>
