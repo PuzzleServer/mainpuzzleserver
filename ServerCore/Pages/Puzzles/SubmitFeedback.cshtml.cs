@@ -52,6 +52,8 @@ namespace ServerCore.Pages.Puzzles
         /// </summary>
         public async Task<IActionResult> OnPostAsync(int puzzleId)
         {
+            ModelState.Remove("Feedback.Submitter");
+            ModelState.Remove("Feedback.Puzzle");
             if (!ModelState.IsValid)
             {
                 return Page();

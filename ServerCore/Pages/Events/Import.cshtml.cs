@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
+using ServerCore.Helpers;
 using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Events
@@ -24,7 +25,7 @@ namespace ServerCore.Pages.Events
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            Events = await _context.Events.Where(e => e != Event).ToListAsync();
+            Events = await _context.EventAdmins.Where(ea => ea.Admin == LoggedInUser && ea.Event != Event).Select((ea) => ea.Event).ToListAsync();
 
             return Page();
         }
@@ -37,7 +38,11 @@ namespace ServerCore.Pages.Events
                 return NotFound();
             }
 
-            // TODO: validate that you are an admin of both events!!!
+            // verify that we're an admin of the import event. current event administratorship is already validated.
+            if (!await _context.EventAdmins.Where(ea => ea.Event.ID == ImportEventID && ea.Admin == LoggedInUser).AnyAsync())
+            {
+                return Forbid();
+            }
 
             var sourceEventAuthors = await _context.EventAuthors.Where((a) => a.Event.ID == ImportEventID).ToListAsync();
             var sourcePuzzles = await _context.Puzzles.Where((p) => p.Event.ID == ImportEventID).ToListAsync();
@@ -70,16 +75,7 @@ namespace ServerCore.Pages.Events
                     {
                         foreach (Puzzle p in _context.Puzzles.Where((p) => p.Event == Event && p.Name == sourcePuzzle.Name))
                         {
-                            // TODO why do I need a null check here? Does that mean something is improperly wired up?
-                            if (p.Contents != null)
-                            {
-                                foreach (ContentFile content in p.Contents)
-                                {
-                                    await FileManager.DeleteBlobAsync(content.Url);
-                                }
-                            }
-
-                            _context.Puzzles.Remove(p);
+                            await PuzzleHelper.DeletePuzzleAsync(_context, p);
                         }
                     }
 

@@ -10,6 +10,8 @@
 
 <h2>@Model.Event.Name: Details</h2>
 
+<a asp-page="./Edit">Edit</a>
+
 <div>
     <hr />
     <dl class="dl-horizontal">
@@ -140,8 +142,4 @@
             @Html.DisplayFor(model => model.Event.AllowFeedback)
         </dd>
     </dl>
-</div>
-<div>
-    <a asp-page="./Edit" asp-route-id="@Model.Event.ID">Edit</a> |
-    <a asp-page="./Index">Back to List</a>
 </div>

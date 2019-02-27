@@ -46,6 +46,13 @@
                 </div>
             </div>
             <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="Puzzle.IsCheatCode" /> @Html.DisplayNameFor(model => model.Puzzle.IsCheatCode)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
                 <label asp-for="Puzzle.SolveValue" class="control-label"></label>
                 <input asp-for="Puzzle.SolveValue" class="form-control" />
                 <span asp-validation-for="Puzzle.SolveValue" class="text-danger"></span>
@@ -86,6 +93,16 @@
                 <label asp-for="Puzzle.MinutesToAutomaticallySolve" class="control-label"></label>
                 <input asp-for="Puzzle.MinutesToAutomaticallySolve" class="form-control" />
                 <span asp-validation-for="Puzzle.MinutesToAutomaticallySolve" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Puzzle.MinutesOfEventLockout" class="control-label"></label>
+                <input asp-for="Puzzle.MinutesOfEventLockout" class="form-control" />
+                <span asp-validation-for="Puzzle.MinutesOfEventLockout" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Puzzle.MaxAnnotationKey" class="control-label"></label>
+                <input asp-for="Puzzle.MaxAnnotationKey" class="form-control" />
+                <span asp-validation-for="Puzzle.MaxAnnotationKey" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Puzzle.SupportEmailAlias" class="control-label"></label>

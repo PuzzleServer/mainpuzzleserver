@@ -32,7 +32,9 @@ namespace ServerCore.Pages.Events
                     Team = g.Key,
                     SolveCount = g.Count(),
                     Score = g.Sum(s => s.Puzzle.SolveValue),
-                    FinalMetaSolveTime = g.Where(s => s.Puzzle.IsFinalPuzzle).Select(s => s.SolvedTime).FirstOrDefault() ?? DateTime.MaxValue
+                    FinalMetaSolveTime = g.Where(s => s.Puzzle.IsCheatCode).Any() ?
+                        DateTime.MaxValue :
+                        (g.Where(s => s.Puzzle.IsFinalPuzzle).Select(s => s.SolvedTime).FirstOrDefault() ?? DateTime.MaxValue)
                 })
                 .OrderBy(t => t.FinalMetaSolveTime).ThenByDescending(t => t.Score).ThenBy(t => t.Team.Name)
                 .ToListAsync();
@@ -88,6 +90,12 @@ namespace ServerCore.Pages.Events
                 case SortOrder.ScoreDescending:
                     teams.Sort((a, b) => -a.Score.CompareTo(b.Score));
                     break;
+                case SortOrder.HintsUsedAscending:
+                    teams.Sort((a, b) => a.Score.CompareTo(b.Team.HintCoinsUsed));
+                    break;
+                case SortOrder.HintsUsedDescending:
+                    teams.Sort((a, b) => -a.Score.CompareTo(b.Team.HintCoinsUsed));
+                    break;
             }
 
             this.Teams = teams;
@@ -128,7 +136,9 @@ namespace ServerCore.Pages.Events
             PuzzlesAscending,
             PuzzlesDescending,
             ScoreAscending,
-            ScoreDescending
+            ScoreDescending,
+            HintsUsedAscending,
+            HintsUsedDescending
         }
     }
 }

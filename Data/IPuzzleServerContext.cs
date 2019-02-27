@@ -7,7 +7,6 @@ namespace ServerCore.DataModel
         DbSet<Event> Events { get; set; }
         DbSet<EventAdmins> EventAdmins { get; set; }
         DbSet<EventAuthors> EventAuthors { get; set; }
-        DbSet<EventTeams> EventTeams { get; set; }
         DbSet<Feedback> Feedback { get; set; }
         DbSet<Invitation> Invitations { get; set; }
         DbSet<Prerequisites> Prerequisites { get; set; }

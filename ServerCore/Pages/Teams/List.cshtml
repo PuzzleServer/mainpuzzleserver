@@ -9,7 +9,21 @@
 }
 
 <p>
-    @if (Model.Event.IsTeamRegistrationActive)
+    @if (!Model.Event.IsTeamRegistrationActive)
+    {
+        <h2>Registration closed</h2>
+        <div>
+            You are not part of a team for this event, and unfortuantely we're no longer accepting new teams into the event. :(
+        </div>
+    }
+    else if (Model.Teams.Count >= Model.Event.MaxNumberOfTeams)
+    {
+        <h2>Registration full</h2>
+        <div>
+            You are not part of a team for this event, and unfortuantely we're no longer accepting new teams into the event. :(
+        </div>
+    }
+    else
     {
         <h2>Register for @Model.Event.Name</h2>
         <div>
@@ -17,14 +31,8 @@
         </div>
         <a asp-page="Create">Create a new team</a>
     }
-    else
-    {
-        <h2>Registration closed</h2>
-        <div>
-            You are not part of a team for this event, and unfortuantely we're no longer accepting new teams into the event. :(
-        </div>
-    }
 </p>
+<h4>Registered Teams: @Model.Teams.Count/@Model.Event.MaxNumberOfTeams, Registered Players: @Model.PlayerCount/@(Model.Event.MaxNumberOfTeams * Model.Event.MaxTeamSize)</h4>
 @if (Model.Event.IsTeamRegistrationActive)
 {
     <table class="table">
@@ -55,7 +63,14 @@
                     @if (Model.EventRole == ModelBases.EventRole.play && !Model.UserOnTeam && Model.Event.IsTeamMembershipChangeActive)
                     {
                         <td>
-                            <a asp-page="./Apply" asp-route-teamId="@item.Key.ID">Join</a>
+                            @if (item.Key == Model.AppliedTeam)
+                            {
+                                <span><b>Applied</b></span>
+                            }
+                            else
+                            {
+                                <a asp-page="./Apply" asp-route-teamId="@item.Key.ID">Join</a>
+                            }
                         </td>
                     }
                 </tr>

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
+using ServerCore.Helpers;
 using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Teams
@@ -33,11 +34,17 @@ namespace ServerCore.Pages.Teams
 
             if (Team != null)
             {
-                _context.Teams.Remove(Team);
-                await _context.SaveChangesAsync();
+                await TeamHelper.DeleteTeamAsync(_context, Team);
             }
 
-            return RedirectToPage("./Index");
+            if (EventRole == EventRole.admin)
+            {
+                return RedirectToPage("./Index");
+            }
+            else
+            {
+                return RedirectToPage("./List");
+            }
         }
     }
 }

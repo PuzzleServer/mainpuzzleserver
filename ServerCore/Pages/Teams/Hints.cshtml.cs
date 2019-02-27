@@ -93,12 +93,13 @@ namespace ServerCore.Pages.Teams
 
                 state.UnlockTime = DateTime.UtcNow;
                 Team.HintCoinCount -= cost;
+                Team.HintCoinsUsed += cost;
                 await _context.SaveChangesAsync();
             }
 
             await PopulateUI(puzzleID, teamID);
             
-            return Page();
+            return RedirectToPage(new { puzzleID, teamID });
         }
     }
 }
