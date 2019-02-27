@@ -6,6 +6,7 @@
     ViewData["AuthorRoute"] = "/EventSpecific/Index";
     ViewData["PlayRoute"] = "/EventSpecific/Index";
 }
+@using Microsoft.AspNetCore.Http.Extensions @* for GetEncodedUrl *@
 
 <h2>Users</h2>
 
@@ -34,7 +35,14 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Name)
+                    @if (Model.LoggedInUser.IsGlobalAdmin)
+                    {
+                        <a asp-area="Identity" asp-page="/Account/Edit" asp-route-userId="@item.ID" asp-route-returnUrl="@Request.GetEncodedUrl()">@Html.DisplayFor(modelItem => item.Name)</a>
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(modelItem => item.Name)
+                    }
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Email)
@@ -43,7 +51,7 @@
                     @Html.DisplayFor(modelItem => item.EmployeeAlias)
                 </td>
                 <td>
-                    <a asp-page-handler="RemoveAdmin" asp-route-userId=@item.ID>Remove</a>
+                    <a asp-page-handler="RemoveAdmin" asp-route-userId=@item.ID onclick="return confirm('Are you sure you want to remove @item.Name from the event admins?')">Remove</a>
                 </td>
                 <td></td>
             </tr>
@@ -83,7 +91,14 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Item1.Name)
+                    @if (Model.LoggedInUser.IsGlobalAdmin)
+                    {
+                        <a asp-area="Identity" asp-page="/Account/Edit" asp-route-userId="@item.Item1.ID" asp-route-returnUrl="@Request.GetEncodedUrl()">@Html.DisplayFor(modelItem => item.Item1.Name)</a>
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(modelItem => item.Item1.Name)
+                    }
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Item1.Email)
@@ -95,7 +110,7 @@
                     @Html.DisplayFor(modelItem => item.Item2)
                 </td>
                 <td>
-                    <a asp-page-handler="RemoveAuthor" asp-route-userId=@item.Item1.ID>Remove</a>
+                    <a asp-page-handler="RemoveAuthor" asp-route-userId=@item.Item1.ID onclick="return confirm('Are you sure you want to remove @item.Item1.Name from the event authors?')">Remove</a>
                 </td>
                 <td></td>
             </tr>
@@ -132,7 +147,14 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Member.Name)
+                    @if (Model.LoggedInUser.IsGlobalAdmin)
+                    {
+                        <a asp-area="Identity" asp-page="/Account/Edit" asp-route-userId="@item.Member.ID" asp-route-returnUrl="@Request.GetEncodedUrl()">@Html.DisplayFor(modelItem => item.Member.Name)</a>
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(modelItem => item.Member.Name)
+                    }
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Member.Email)

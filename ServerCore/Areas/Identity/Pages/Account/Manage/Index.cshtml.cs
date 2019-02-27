@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 
 namespace ServerCore.Areas.Identity.Pages.Account.Manage
@@ -72,10 +73,17 @@ namespace ServerCore.Areas.Identity.Pages.Account.Manage
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
-            // Note - this will consider all fields on the object to be modified. Extra work can be done here to have individual modification history if we need it.
-            _context.Update(Input);
-            await _context.SaveChangesAsync(true);
+            var thisPuzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(_context, User, _userManager);
 
+            // enforce access rights, do not let these change!
+            Input.ID = thisPuzzleUser.ID;
+            Input.IsGlobalAdmin = thisPuzzleUser.IsGlobalAdmin;
+            Input.IdentityUserId = thisPuzzleUser.IdentityUserId;
+
+            _context.Entry(thisPuzzleUser).State = EntityState.Detached;
+            _context.Attach(Input).State = EntityState.Modified;
+
+            await _context.SaveChangesAsync(true);
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";
             return RedirectToPage();

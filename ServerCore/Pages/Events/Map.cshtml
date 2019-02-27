@@ -28,7 +28,7 @@
                     @foreach (var puzzle in Model.Puzzles)
                     {
                         <th>
-                            <a asp-page="/Puzzles/Status" asp-route-id="@puzzle.Puzzle.ID">@(puzzle.Puzzle.Name) (@puzzle.SolveCount)</a>
+                            <a asp-page="/Puzzles/Status" asp-route-puzzleId="@puzzle.Puzzle.ID">@(puzzle.Puzzle.Name) (@puzzle.SolveCount)</a>
                         </th>
                     }
                 </tr>
@@ -41,7 +41,7 @@
                         @(team.Rank)
                     </td>
                     <td>
-                        <a asp-page="/Teams/Status" asp-route-id="@team.Team.ID">@(team.Team.Name)</a>
+                        <a asp-page="/Teams/Status" asp-route-teamId="@team.Team.ID">@(team.Team.Name)</a>
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => team.SolveCount)

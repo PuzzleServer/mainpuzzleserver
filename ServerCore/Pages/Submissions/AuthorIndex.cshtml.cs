@@ -38,7 +38,7 @@ namespace ServerCore.Pages.Submissions
                 {
                     if (teamId == null)
                     {
-                        Submissions = await _context.Submissions.ToListAsync();
+                        Submissions = await _context.Submissions.Where((s) => s.Puzzle.Event == Event).ToListAsync();
                     }
                     else
                     {

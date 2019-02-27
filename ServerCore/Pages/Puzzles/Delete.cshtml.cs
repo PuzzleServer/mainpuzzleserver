@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
+using ServerCore.Helpers;
 using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Puzzles
@@ -37,13 +38,7 @@ namespace ServerCore.Pages.Puzzles
 
             if (Puzzle != null)
             {
-                foreach (ContentFile content in Puzzle.Contents)
-                {
-                    await FileManager.DeleteBlobAsync(content.Url);
-                }
-
-                _context.Puzzles.Remove(Puzzle);
-                await _context.SaveChangesAsync();
+                await PuzzleHelper.DeletePuzzleAsync(_context, Puzzle);
             }
 
             return RedirectToPage("./Index");

@@ -1,24 +1,40 @@
 ﻿@{
-    var Event = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Event;
-    var EventRole = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.EventRole;
-    var IsRegistered = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.IsRegisteredUser().Result ?? false;
-    var AdminRoute = ViewData["AdminRoute"] as string ?? "/EventSpecific/Index";
-    var AuthorRoute = ViewData["AuthorRoute"] as string ?? "/EventSpecific/Index";
-    var PlayRoute = ViewData["PlayRoute"] as string ?? "/EventSpecific/Index";
-    if (!IsRegistered && !PlayRoute.StartsWith("/EventSpecific/") && !PlayRoute.Equals("/Teams/Apply") && !PlayRoute.Equals("/Teams/Create"))
-    {
-        // If the user isn't registered and isn't on an event page or the two teams pages they have access to, always redirect to the registration page
-        PlayRoute = "/Teams/List";
-    }
-    var RoutingPuzzleId = ViewData["RoutingPuzzleId"] as string;
-    var RoutingTeamId = ViewData["RoutingTeamId"] as string;
-}
+    var EventModel = Model as ServerCore.ModelBases.EventSpecificPageModel;
 
-<!-- TODO: Check for permissions -->
+    if (EventModel != null)
+    {
+        var Event = EventModel.Event;
+        var EventRole = EventModel.EventRole;
+        var IsAdmin = EventRole == ModelBases.EventRole.admin || await EventModel.IsEventAdmin();
+        var IsAuthor = EventRole == ModelBases.EventRole.author || await EventModel.IsEventAuthor();
+
+        if (IsAdmin || IsAuthor)
+        {
+            var IsRegistered = await EventModel.IsRegisteredUser();
+            var AdminRoute = ViewData["AdminRoute"] as string ?? "/EventSpecific/Index";
+            var AuthorRoute = ViewData["AuthorRoute"] as string ?? "/EventSpecific/Index";
+            var PlayRoute = ViewData["PlayRoute"] as string ?? "/EventSpecific/Index";
+            if (!IsRegistered && !PlayRoute.StartsWith("/EventSpecific/") && !PlayRoute.Equals("/Teams/Apply") && !PlayRoute.Equals("/Teams/Create"))
+            {
+                // If the user isn't registered and isn't on an event page or the two teams pages they have access to, always redirect to the registration page
+                PlayRoute = "/Teams/List";
+            }
+            var RoutingPuzzleId = ViewData["RoutingPuzzleId"] as string;
+            var RoutingTeamId = ViewData["RoutingTeamId"] as string;
+
 <ul class="dropdown-menu">
+    @if (IsAdmin)
+    {
     <li><a asp-page=@AdminRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.admin" asp-route-teamId=@RoutingTeamId asp-route-puzzleId=@RoutingPuzzleId>Admin mode</a></li>
     <li class="divider"></li>
+    }
+    @if (IsAuthor)
+    {
     <li><a asp-page=@AuthorRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.author" asp-route-teamId=@RoutingTeamId asp-route-puzzleId=@RoutingPuzzleId>Author mode</a></li>
     <li class="divider"></li>
+    }
     <li><a asp-page=@PlayRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play" asp-route-teamId=@RoutingTeamId asp-route-puzzleId=@RoutingPuzzleId>Player mode</a></li>
 </ul>
+        }
+    }
+}

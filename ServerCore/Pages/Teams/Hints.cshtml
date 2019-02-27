@@ -10,6 +10,10 @@
 
 <h2>Hints for @Model.PuzzleName</h2>
 
+<div>
+    <a asp-page="/Teams/Play">Back to puzzle list</a>
+</div>
+
 You have @Model.Team.HintCoinCount hint ticket(s).
 
 <table class="table">
@@ -44,7 +48,14 @@ You have @Model.Team.HintCoinCount hint ticket(s).
                 <td>
                     @if (!hint.IsUnlocked)
                     {
-                        @Html.DisplayFor(modelItem => hint.Hint.Cost)
+                        if (hint.Hint.Cost == 0)
+                        {
+                            <text>FREE</text>
+                        }
+                        else
+                        {
+                            @Html.DisplayFor(modelItem => hint.Hint.Cost)
+                        }
                     }
                 </td>
                 <td>

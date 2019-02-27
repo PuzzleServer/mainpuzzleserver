@@ -20,16 +20,19 @@ namespace ServerCore.DataModel
         /// <summary>
         /// The puzzle the answer is for
         /// </summary>
+        [Required]
         public virtual Puzzle Puzzle { get; set; }
 
         /// <summary>
         /// The team giving the submission
         /// </summary>
+        [Required]
         public virtual Team Team { get; set; }
 
         /// <summary>
         /// The exact user giving the submission
         /// </summary>
+        [Required]
         public virtual PuzzleUser Submitter { get; set; }
 
         /// <summary>

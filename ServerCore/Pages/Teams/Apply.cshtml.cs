@@ -59,7 +59,7 @@ namespace ServerCore.Pages.Teams
 
             // Only handle one application at a time for a player to avoid spamming all teams
             IEnumerable<TeamApplication> oldApplications = from TeamApplication oldApplication in _context.TeamApplications
-                                                           where oldApplication.Player == LoggedInUser
+                                                           where oldApplication.Player == LoggedInUser && oldApplication.Team.Event == Event
                                                            select oldApplication;
             _context.TeamApplications.RemoveRange(oldApplications);
 
