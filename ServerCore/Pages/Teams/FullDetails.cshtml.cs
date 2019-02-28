@@ -12,9 +12,9 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Teams
 {
-    public class DetailsModel : EventSpecificPageModel
+    public class FullDetailsModel : EventSpecificPageModel
     {
-        public DetailsModel(PuzzleServerContext context, UserManager<IdentityUser> manager) : base(context, manager)
+        public FullDetailsModel(PuzzleServerContext context, UserManager<IdentityUser> manager) : base(context, manager)
         {
         }
 
@@ -96,11 +96,19 @@ namespace ServerCore.Pages.Teams
 
             _context.TeamMembers.Remove(member);
             await _context.SaveChangesAsync();
-            return RedirectToPage("./Details", new { teamId = teamId });
+            return RedirectToPage("./Members", new { teamId = teamId });
         }
 
         public async Task<IActionResult> OnGetAddMemberAsync(int teamId, int userId, int applicationId)
         {
+            if (applicationId == -1)
+            {
+                if (EventRole != EventRole.admin)
+                {
+                    return Forbid();
+                }
+            }
+
             if (EventRole == EventRole.play && !Event.IsTeamMembershipChangeActive)
             {
                 return NotFound("Team membership change is not currently active.");
@@ -141,22 +149,25 @@ namespace ServerCore.Pages.Teams
             Member.Team = team;
             Member.Member = user;
 
-            TeamApplication application = await (from app in _context.TeamApplications
-                                                    where app.ID == applicationId
-                                                    select app).FirstOrDefaultAsync();
-            if (application == null)
+            if (applicationId != -1)
             {
-                return NotFound("Could not find application");
-            }
+                TeamApplication application = await (from app in _context.TeamApplications
+                                                     where app.ID == applicationId
+                                                     select app).FirstOrDefaultAsync();
+                if (application == null)
+                {
+                    return NotFound("Could not find application");
+                }
 
-            if (application.Player.ID != userId)
-            {
-                return NotFound("Mismatched player and application");
-            }
+                if (application.Player.ID != userId)
+                {
+                    return NotFound("Mismatched player and application");
+                }
 
-            if (application.Team != team)
-            {
-                return Forbid();
+                if (application.Team != team)
+                {
+                    return Forbid();
+                }
             }
 
             // Remove any applications the user might have started for this event
@@ -168,7 +179,7 @@ namespace ServerCore.Pages.Teams
 
             _context.TeamMembers.Add(Member);
             await _context.SaveChangesAsync();
-            return RedirectToPage("./Details", new { teamId = teamId });
+            return RedirectToPage("./FullDetails", new { teamId = teamId });
         }
     }
 }

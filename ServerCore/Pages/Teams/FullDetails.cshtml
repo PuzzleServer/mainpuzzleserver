@@ -1,12 +1,11 @@
-﻿@page "/{eventId}/{eventRole}/Teams/Details"
-@model ServerCore.Pages.Teams.DetailsModel
+﻿@page "/{eventId}/{eventRole}/Teams/FullDetails"
+@model ServerCore.Pages.Teams.FullDetailsModel
 
 @{
     ViewData["Title"] = "Team Details";
     //Needs route data - ViewData["AdminRoute"] = "/Teams/Details";
     //Needs route data - ViewData["AuthorRoute"] = "/Teams/Details";
     //Needs route data - ViewData["PlayRoute"] = "/Teams/Details";
-    Layout = "_teamLayout.cshtml";
 }
 @using Microsoft.AspNetCore.Http.Extensions @* for GetEncodedUrl *@
 
@@ -29,10 +28,10 @@
 
 @if (Model.EventRole != ModelBases.EventRole.author)
 {
-    <div>
-        <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID">Edit team details</a> |
-        <a asp-page="./Delete" asp-route-teamId="@Model.Team.ID">Delete team</a>
-    </div>
+<div>
+    <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID">Edit team details</a> |
+    <a asp-page="./Delete" asp-route-teamId="@Model.Team.ID">Delete team</a>
+</div>
 }
 
 <div>
@@ -136,7 +135,7 @@
                                 @Html.DisplayFor(modelItem => item.Member.Email)
                             </td>
                             <td>
-                                @if (item.Member.EmployeeAlias == null)
+                                @if(item.Member.EmployeeAlias == null)
                                 {
                                     <p>N/A</p>
                                 }
