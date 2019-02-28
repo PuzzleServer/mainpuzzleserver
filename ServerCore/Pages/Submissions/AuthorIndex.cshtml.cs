@@ -38,7 +38,7 @@ namespace ServerCore.Pages.Submissions
                 {
                     if (teamId == null)
                     {
-                        Submissions = await _context.Submissions.ToListAsync();
+                        Submissions = await _context.Submissions.Where((s) => s.Puzzle.Event == Event).ToListAsync();
                     }
                     else
                     {
@@ -75,7 +75,7 @@ namespace ServerCore.Pages.Submissions
             {
                 Puzzle = await _context.Puzzles.Where(m => m.ID == puzzleId).FirstOrDefaultAsync();
 
-                if (!await UserEventHelper.IsAuthorOfPuzzle(_context, Puzzle, LoggedInUser))
+                if (EventRole == EventRole.author && !await UserEventHelper.IsAuthorOfPuzzle(_context, Puzzle, LoggedInUser))
                 {
                     return Forbid();
                 }

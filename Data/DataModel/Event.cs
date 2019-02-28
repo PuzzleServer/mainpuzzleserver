@@ -12,10 +12,18 @@ namespace ServerCore.DataModel
         [Required]
         public string Name { get; set; }
 
+        /// <summary>
+        /// The URL prefix of the event, as in: www.puzzlehunt.org/urlString
+        /// </summary>
         public string UrlString { get; set; }
 
         [NotMapped]
         public string EventID => UrlString ?? ID.ToString();
+
+        /// <summary>
+        /// The prefix of the partial files that provide the Home, FAQ, and Rules content.
+        /// </summary>
+        public string HomePartial { get; set; }
 
         [DataType(DataType.EmailAddress)]
         public string ContactEmail { get; set; }
@@ -129,11 +137,6 @@ namespace ServerCore.DataModel
         /// Whether or not the suthors are accepting feedback for the event - commonly true for betas and false for live events
         /// </summary>
         public bool AllowFeedback { get; set; }
-
-        // TODO: These might need to be collections that aren't a db column - check on the EF documentation for referencing join tables where it's a one to many
-        public virtual EventTeams Teams { get; set; }
-        public virtual EventAuthors Authors { get; set; }
-        public virtual EventAdmins Admins { get; set; }
 
         /// <summary>
         /// The window of time where if a team enters a certain number of

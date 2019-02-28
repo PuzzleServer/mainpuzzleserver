@@ -41,6 +41,9 @@ namespace ServerCore.Pages.Events
             Event.LockoutIncorrectGuessPeriod = 1;
             Event.LockoutDurationMultiplier = 2;
             Event.MaxSubmissionCount = 50;
+            Event.MaxNumberOfTeams = 120;
+            Event.MaxExternalsPerTeam = 9;
+            Event.MaxTeamSize = 12;
 
             return Page();
         }
@@ -54,7 +57,7 @@ namespace ServerCore.Pages.Events
 
             _context.Events.Add(Event);
 
-            var loggedInUser = PuzzleUser.GetPuzzleUserForCurrentUser(_context, User, _userManager).Result;
+            var loggedInUser = await PuzzleUser.GetPuzzleUserForCurrentUser(_context, User, _userManager);
 
             if (loggedInUser != null)
             {

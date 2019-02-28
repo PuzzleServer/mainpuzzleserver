@@ -24,6 +24,9 @@
             @Html.DisplayNameFor(model => model.Event.UrlString)
         </dt>
         <dd>
+            @Html.DisplayNameFor(model => model.Event.HomePartial)
+            </dt>
+        <dd>
             @Html.DisplayFor(model => model.Event.UrlString)
         </dd>
         <dt>
@@ -132,7 +135,6 @@
 
     <form method="post">
         <input type="hidden" asp-for="Event.ID" />
-        <input type="submit" value="Delete" class="btn btn-default" /> |
-        <a asp-page="./Index">Back to List</a>
+        <input type="submit" value="Delete" class="btn btn-default" />
     </form>
 </div>

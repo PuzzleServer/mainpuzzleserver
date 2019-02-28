@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ServerCore.DataModel
 {
@@ -10,13 +11,13 @@ namespace ServerCore.DataModel
         /// <summary>
         /// Foreign key - event table
         /// </summary
-        [ForeignKey("Event.ID")]
+        [Required]
         public virtual Event Event { get; set; }
 
         /// <summary>
         /// Foreign key - user table
         /// </summary>
-        [ForeignKey("User.ID")]
+        [Required]
         public virtual PuzzleUser Admin { get; set; }
 
     }

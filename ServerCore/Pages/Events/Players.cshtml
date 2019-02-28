@@ -1,31 +1,143 @@
 ﻿@page "/{eventId}/{eventRole}/Events/Players"
 @model ServerCore.Pages.Events.PlayersModel
 @{
-    ViewData["Title"] = "Players";
+    ViewData["Title"] = "Users";
     ViewData["AdminRoute"] = "/Events/Players";
     ViewData["AuthorRoute"] = "/EventSpecific/Index";
     ViewData["PlayRoute"] = "/EventSpecific/Index";
 }
+@using Microsoft.AspNetCore.Http.Extensions @* for GetEncodedUrl *@
 
-<h2>Players</h2>
+<h2>Users</h2>
+
+<h3>Admins</h3>
+<a asp-page="/Events/AddAdminOrAuthor" asp-route-addAdmin=true>Add admin</a>
 
 <table class="table">
     <thead>
         <tr>
             <th>
-                Player @Html.DisplayNameFor(model => model.Players[0].Member.ID)
+                @Html.DisplayNameFor(model => model.Admins[0].Name)
             </th>
             <th>
-                Player @Html.DisplayNameFor(model => model.Players[0].Member.Name)
+                @Html.DisplayNameFor(model => model.Admins[0].Email)
             </th>
             <th>
-                Player @Html.DisplayNameFor(model => model.Players[0].Member.Email)
+                @Html.DisplayNameFor(model => model.Admins[0].EmployeeAlias)
             </th>
             <th>
-                Team @Html.DisplayNameFor(model => model.Players[0].Team.ID)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Admins)
+        {
+            <tr>
+                <td>
+                    @if (Model.LoggedInUser.IsGlobalAdmin)
+                    {
+                        <a asp-area="Identity" asp-page="/Account/Edit" asp-route-userId="@item.ID" asp-route-returnUrl="@Request.GetEncodedUrl()">@Html.DisplayFor(modelItem => item.Name)</a>
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(modelItem => item.Name)
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EmployeeAlias)
+                </td>
+                <td>
+                    <a asp-page-handler="RemoveAdmin" asp-route-userId=@item.ID onclick="return confirm('Are you sure you want to remove @item.Name from the event admins?')">Remove</a>
+                </td>
+                <td></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h4>All admin e-mails</h4>
+
+<p>@Model.AdminEmails</p>
+
+<h3>Authors</h3>
+<a asp-page="/Events/AddAdminOrAuthor" asp-route-addAdmin=false>Add author</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Authors[0].Item1.Name)
             </th>
             <th>
-                Team @Html.DisplayNameFor(model => model.Players[0].Team.Name)
+                @Html.DisplayNameFor(model => model.Authors[0].Item1.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Authors[0].Item1.EmployeeAlias)
+            </th>
+            <th>
+                Puzzle count
+            </th>
+            <th>
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Authors)
+        {
+            <tr>
+                <td>
+                    @if (Model.LoggedInUser.IsGlobalAdmin)
+                    {
+                        <a asp-area="Identity" asp-page="/Account/Edit" asp-route-userId="@item.Item1.ID" asp-route-returnUrl="@Request.GetEncodedUrl()">@Html.DisplayFor(modelItem => item.Item1.Name)</a>
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(modelItem => item.Item1.Name)
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Item1.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Item1.EmployeeAlias)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Item2)
+                </td>
+                <td>
+                    <a asp-page-handler="RemoveAuthor" asp-route-userId=@item.Item1.ID onclick="return confirm('Are you sure you want to remove @item.Item1.Name from the event authors?')">Remove</a>
+                </td>
+                <td></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h4>All author e-mails</h4>
+
+<p>@Model.AuthorEmails</p>
+
+<h3>Players</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Players[0].Member.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Players[0].Member.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Players[0].Member.EmployeeAlias)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Players[0].Team.Name)
             </th>
             <th></th>
         </tr>
@@ -35,19 +147,23 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Member.ID)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Member.Name)
+                    @if (Model.LoggedInUser.IsGlobalAdmin)
+                    {
+                        <a asp-area="Identity" asp-page="/Account/Edit" asp-route-userId="@item.Member.ID" asp-route-returnUrl="@Request.GetEncodedUrl()">@Html.DisplayFor(modelItem => item.Member.Name)</a>
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(modelItem => item.Member.Name)
+                    }
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Member.Email)
                 </td>
                 <td>
-                    <a asp-page="/Teams/Details" asp-route-id="@item.Team.ID">@Html.DisplayFor(modelItem => item.Team.ID)</a>
+                    @Html.DisplayFor(modelItem => item.Member.EmployeeAlias)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Team.Name)
+                    <a asp-page="/Teams/Members" asp-route-teamId="@item.Team.ID">@Html.DisplayFor(modelItem => item.Team.Name)</a>
                 </td>
                 <td></td>
             </tr>
@@ -55,10 +171,6 @@
     </tbody>
 </table>
 
-<h3>All player e-mails</h3>
+<h4>All player e-mails</h4>
 
-<p>@Model.Emails</p>
-
-<div>
-    <a asp-page="./Index">Back to event list</a>
-</div>
+<p>@Model.PlayerEmails</p>

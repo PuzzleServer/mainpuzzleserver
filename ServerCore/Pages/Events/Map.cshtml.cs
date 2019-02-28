@@ -88,7 +88,13 @@ namespace ServerCore.Pages.Events
                     team.SolveCount++;
                     team.Score += puzzle.Puzzle.SolveValue;
 
-                    if (puzzle.Puzzle.IsFinalPuzzle)
+                    if (puzzle.Puzzle.IsCheatCode)
+                    {
+                        team.CheatCodeUsed = true;
+                        team.FinalMetaSolveTime = DateTime.MaxValue;
+                    }
+
+                    if (puzzle.Puzzle.IsFinalPuzzle && !team.CheatCodeUsed)
                     {
                         team.FinalMetaSolveTime = state.SolvedTime.Value;
                     }
@@ -148,6 +154,7 @@ namespace ServerCore.Pages.Events
             public int Score { get; set; }
             public int SortOrder { get; set; }
             public int? Rank { get; set; }
+            public bool CheatCodeUsed { get; set; }
             public DateTime FinalMetaSolveTime { get; set; } = DateTime.MaxValue;
         }
 

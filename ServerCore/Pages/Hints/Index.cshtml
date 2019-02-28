@@ -30,7 +30,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Hints[0].DisplayOrder)
             </th>
-            <th></th>
+            <th>
+                Actions
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -50,9 +52,15 @@
                     @Html.DisplayFor(modelItem => item.DisplayOrder)
                 </td>
                 <td>
-                    <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+                    <div class="shortcut-menu-dropdown">
+                        <span><a>Select action...</a></span>
+                        <div class="shortcut-menu-dropdown-content">
+                            <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a><br />
+                            <a asp-page="./Details" asp-route-id="@item.Id">View details</a><br />
+                            ------<br />
+                            <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+                        </div>
+                    </div>
                 </td>
             </tr>
         }

@@ -7,10 +7,6 @@
     ViewData["PlayRoute"] = "/EventSpecific/Index";
 }
 
-<h2>Welcome to @Model.Event.Name!</h2>
-
-<p>Yay! Puzzles! Excitement!</p>
-
 @if (Model.EventRole == ModelBases.EventRole.admin)
 {
     <div>
@@ -21,3 +17,5 @@
         <a asp-page="/Events/Delete">Delete the event</a>
     </div>
 }
+
+<partial name="../Resources/@(Model.Event.HomePartial ?? "Default")/HomePartial.cshtml" />

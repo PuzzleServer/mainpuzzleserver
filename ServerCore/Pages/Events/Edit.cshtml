@@ -27,6 +27,11 @@
                 <span asp-validation-for="EditableEvent.UrlString" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="EditableEvent.HomePartial" class="control-label"></label>
+                <input asp-for="EditableEvent.HomePartial" class="form-control" />
+                <span asp-validation-for="EditableEvent.HomePartial" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="EditableEvent.MaxNumberOfTeams" class="control-label"></label>
                 <input asp-for="EditableEvent.MaxNumberOfTeams" class="form-control" />
                 <span asp-validation-for="EditableEvent.MaxNumberOfTeams" class="text-danger"></span>
@@ -120,34 +125,30 @@
                 </div>
             </div>
             <div class="form-group">
-                <label asp-for="Event.LockoutIncorrectGuessLimit" class="control-label"></label>
-                <input asp-for="Event.LockoutIncorrectGuessLimit" class="form-control" />
-                <span asp-validation-for="Event.LockoutIncorrectGuessLimit" class="text-danger"></span>
+                <label asp-for="EditableEvent.LockoutIncorrectGuessLimit" class="control-label"></label>
+                <input asp-for="EditableEvent.LockoutIncorrectGuessLimit" class="form-control" />
+                <span asp-validation-for="EditableEvent.LockoutIncorrectGuessLimit" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Event.LockoutIncorrectGuessPeriod" class="control-label"></label>
-                <input asp-for="Event.LockoutIncorrectGuessPeriod" class="form-control" />
-                <span asp-validation-for="Event.LockoutIncorrectGuessPeriod" class="text-danger"></span>
+                <label asp-for="EditableEvent.LockoutIncorrectGuessPeriod" class="control-label"></label>
+                <input asp-for="EditableEvent.LockoutIncorrectGuessPeriod" class="form-control" />
+                <span asp-validation-for="EditableEvent.LockoutIncorrectGuessPeriod" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Event.LockoutDurationMultiplier" class="control-label"></label>
-                <input asp-for="Event.LockoutDurationMultiplier" class="form-control" />
-                <span asp-validation-for="Event.LockoutDurationMultiplier" class="text-danger"></span>
+                <label asp-for="EditableEvent.LockoutDurationMultiplier" class="control-label"></label>
+                <input asp-for="EditableEvent.LockoutDurationMultiplier" class="form-control" />
+                <span asp-validation-for="EditableEvent.LockoutDurationMultiplier" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Event.MaxSubmissionCount" class="control-label"></label>
-                <input asp-for="Event.MaxSubmissionCount" class="form-control" />
-                <span asp-validation-for="Event.MaxSubmissionCount" class="text-danger"></span>
+                <label asp-for="EditableEvent.MaxSubmissionCount" class="control-label"></label>
+                <input asp-for="EditableEvent.MaxSubmissionCount" class="form-control" />
+                <span asp-validation-for="EditableEvent.MaxSubmissionCount" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-default" />
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-page="./Index">Back to List</a>
 </div>
 
 @section Scripts {
