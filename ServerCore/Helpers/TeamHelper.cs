@@ -2,6 +2,22 @@
 using System.Threading.Tasks;
 using ServerCore.DataModel;
 
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using ServerCore.ModelBases;
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+using System.Linq;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using ServerCore.DataModel;
+using ServerCore.Helpers;
+using ServerCore.ModelBases;
+
 namespace ServerCore.Helpers
 {
     /// <summary>
@@ -38,6 +54,55 @@ namespace ServerCore.Helpers
             context.Teams.Remove(team);
 
             await context.SaveChangesAsync();
+        }
+
+        public static async Task<Tuple<bool, string>> AddMemberAsync(PuzzleServerContext context, Event Event, EventRole EventRole, int teamId, int userId, int applicationId)
+        {
+            Team team = await context.Teams.FirstOrDefaultAsync(m => m.ID == teamId);
+            if (team == null)
+            {
+                return new Tuple<bool, string>(false, $"Could not find team with ID '{teamId}'. Check to make sure the team hasn't been removed.");
+            }
+
+            var currentTeamMembers = await context.TeamMembers.Where(members => members.Team.ID == team.ID).ToListAsync();
+            if (currentTeamMembers.Count >= Event.MaxTeamSize && EventRole != EventRole.admin)
+            {
+                return new Tuple<bool, string>(false, $"The team '{team.Name}' is full.");
+            }
+
+            PuzzleUser user = await context.PuzzleUsers.FirstOrDefaultAsync(m => m.ID == userId);
+            if (user == null)
+            {
+                return new Tuple<bool, string>(false, $"Could not find user with ID '{userId}'. Check to make sure the user hasn't been removed.");
+            }
+
+            if (user.EmployeeAlias == null && currentTeamMembers.Where((m) => m.Member.EmployeeAlias == null).Count() >= Event.MaxExternalsPerTeam)
+            {
+                return new Tuple<bool, string>(false, $"The team '{team.Name}' is already at its maximum count of non-employee players, and '{user.Email}' has no registered alias.");
+            }
+
+            if (await (from teamMember in context.TeamMembers
+                       where teamMember.Member == user &&
+                       teamMember.Team.Event == Event
+                       select teamMember).AnyAsync())
+            {
+                return new Tuple<bool, string>(false, $"'{user.Email}' is already on a team in this event.");
+            }
+
+            TeamMembers Member = new TeamMembers();
+            Member.Team = team;
+            Member.Member = user;
+
+            // Remove any applications the user might have started for this event
+            var allApplications = from app in context.TeamApplications
+                                  where app.Player == user &&
+                                  app.Team.Event == Event
+                                  select app;
+            context.TeamApplications.RemoveRange(allApplications);
+
+            context.TeamMembers.Add(Member);
+            await context.SaveChangesAsync();
+            return new Tuple<bool, string>(true, "");
         }
     }
 }
