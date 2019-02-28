@@ -477,6 +477,8 @@ namespace Data.Migrations
 
                     b.Property<string>("CustomURL");
 
+                    b.Property<string>("Description");
+
                     b.Property<int>("EventID");
 
                     b.Property<string>("Group");

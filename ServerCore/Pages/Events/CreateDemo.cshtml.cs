@@ -93,7 +93,8 @@ namespace ServerCore.Pages.Events
                     Name = "!!!Get Hopping!!!",
                     Event = Event,
                     IsPuzzle = false,
-                    IsGloballyVisiblePrerequisite = true
+                    IsGloballyVisiblePrerequisite = true,
+                    Description = "Start the event",
                 };
                 _context.Puzzles.Add(start);
 
@@ -106,7 +107,8 @@ namespace ServerCore.Pages.Events
                     HintCoinsForSolve = 1,
                     Group = "Thumper's Stumpers",
                     OrderInGroup = 1,
-                    MinPrerequisiteCount = 1
+                    MinPrerequisiteCount = 1,
+                    Description = "Bunsweeper",
                 };
                 _context.Puzzles.Add(easy);
 
@@ -120,7 +122,8 @@ namespace ServerCore.Pages.Events
                     Group = "Thumper's Stumpers",
                     OrderInGroup = 2,
                     MinPrerequisiteCount = 1,
-                    MinutesToAutomaticallySolve = 3
+                    MinutesToAutomaticallySolve = 3,
+                    Description = "Rabbit's Cube",
                 };
                 _context.Puzzles.Add(intermediate);
 
@@ -133,7 +136,8 @@ namespace ServerCore.Pages.Events
                     HintCoinsForSolve = 3,
                     Group = "Thumper's Stumpers",
                     OrderInGroup = 3,
-                    MinPrerequisiteCount = 1
+                    MinPrerequisiteCount = 1,
+                    Description = "Lateral Leaping",
                 };
                 _context.Puzzles.Add(hard);
 
@@ -147,7 +151,8 @@ namespace ServerCore.Pages.Events
                     SolveValue = 100,
                     Group = "Thumper's Stumpers",
                     OrderInGroup = 99,
-                    MinPrerequisiteCount = 2
+                    MinPrerequisiteCount = 2,
+                    Description = "Word Hutch",
                 };
                 _context.Puzzles.Add(meta);
 
@@ -160,6 +165,7 @@ namespace ServerCore.Pages.Events
                     Group = "Daffy's Delights",
                     OrderInGroup = 1,
                     MinPrerequisiteCount = 1,
+                    Description = "Hip Hop Identification",
                     CustomURL = "https://www.bing.com/images/search?q=%22rabbit%22",
                 };
                 _context.Puzzles.Add(other);
@@ -173,7 +179,8 @@ namespace ServerCore.Pages.Events
                     SolveValue = -1,
                     Group = "Daffy's Delights",
                     OrderInGroup = 2,
-                    MinPrerequisiteCount = 1
+                    MinPrerequisiteCount = 1,
+                    Description = "Duck Konundrum",
                 };
                 _context.Puzzles.Add(cheat);
 
@@ -185,7 +192,8 @@ namespace ServerCore.Pages.Events
                     SolveValue = 0,
                     Group = "Roger's Railway",
                     OrderInGroup = 1,
-                    MinPrerequisiteCount = 1
+                    MinPrerequisiteCount = 1,
+                    Description = "Whistle Hop Intro",
                 };
                 _context.Puzzles.Add(lockIntro);
 
@@ -198,7 +206,8 @@ namespace ServerCore.Pages.Events
                     Group = "Roger's Railway",
                     OrderInGroup = 2,
                     MinPrerequisiteCount = 1,
-                    MinutesOfEventLockout = 5
+                    MinutesOfEventLockout = 5,
+                    Description = "Whistle Hop",
                 };
                 _context.Puzzles.Add(lockPuzzle);
 
