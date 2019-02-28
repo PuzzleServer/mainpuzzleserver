@@ -36,7 +36,6 @@ namespace ServerCore.ModelBases
                 puzzle,
                 team,
                 EventRole == EventRole.admin ? null : LoggedInUser);
-
             Sort = sort;
 
             switch(sort ?? DefaultSort)
@@ -100,7 +99,6 @@ namespace ServerCore.ModelBases
                 team,
                 value ? (DateTime?)DateTime.UtcNow : null,
                 EventRole == EventRole.admin ? null : LoggedInUser);
-
         }
 
         public async Task SetSolveStateAsync(Puzzle puzzle, Team team, bool value)
@@ -112,7 +110,6 @@ namespace ServerCore.ModelBases
                 team,
                 value ? (DateTime?)DateTime.UtcNow : null,
                 EventRole == EventRole.admin ? null : LoggedInUser);
-
         }
 
         public async Task SetEmailModeAsync(Puzzle puzzle, Team team, bool value)
@@ -124,7 +121,6 @@ namespace ServerCore.ModelBases
                 team,
                 value,
                 EventRole == EventRole.admin ? null : LoggedInUser);
-
         }
 
         public enum SortOrder

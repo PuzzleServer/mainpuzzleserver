@@ -35,14 +35,12 @@ namespace ServerCore.Pages.Events
                 puzzles = await _context.Puzzles.Where(p => p.Event == Event)
                     .Select(p => new PuzzleStats() { Puzzle = p })
                     .ToListAsync();
-
             }
             else
             {
                 puzzles = await UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser)
                     .Select(p => new PuzzleStats() { Puzzle = p })
                     .ToListAsync();
-
             }
 
             List<TeamStats> teams = await _context.Teams.Where(t => t.Event == Event)
@@ -188,7 +186,6 @@ namespace ServerCore.Pages.Events
                     }
 
                     return "L";
-
                 }
             }
 
