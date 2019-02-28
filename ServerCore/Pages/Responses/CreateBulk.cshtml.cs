@@ -80,6 +80,26 @@ namespace ServerCore.Pages.Responses
                     break;
                 }
 
+                // Ensure that the submission text is unique for this puzzle.
+                bool isSubmittedTextUnique(string text)
+                {
+                    foreach (Response r in _context.Responses)
+                    {
+                        if (r.SubmittedText.Equals(ServerCore.DataModel.Response.FormatSubmission(text)))
+                        {
+                            ModelState.AddModelError("SubmittedText", "Submission text is not unique");
+                            return false;
+                        }
+                    }
+
+                    return true;
+                };
+
+                if (isSubmittedTextUnique(submittedText) == false)
+                {
+                    break;
+                }
+
                 if (responseText == null)
                 {
                     ModelState.AddModelError("SubmittedText", "Unmatched Submission without Response");
@@ -102,7 +122,7 @@ namespace ServerCore.Pages.Responses
 
             if (!ModelState.IsValid)
             {
-                return Page();
+                return await OnGetAsync(puzzleId);
             }
 
             await _context.SaveChangesAsync();
