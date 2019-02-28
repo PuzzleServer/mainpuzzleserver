@@ -47,9 +47,7 @@ namespace ServerCore.Pages.Teams
             }
 
             // Existing team members
-
             Members = await _context.TeamMembers.Where(members => members.Team.ID == Team.ID).ToListAsync();
-
             StringBuilder emailList = new StringBuilder("");
             foreach (TeamMembers Member in Members)
             {
@@ -58,7 +56,6 @@ namespace ServerCore.Pages.Teams
             Emails = emailList.ToString();
 
             // Team applicants
-
             Users = await (from application in _context.TeamApplications
                            where application.Team == Team &&
                            !((from teamMember in _context.TeamMembers
@@ -124,7 +121,7 @@ namespace ServerCore.Pages.Teams
                 return Forbid();
             }
             
-            Tuple<bool, string> result = TeamHelper.AddMemberAsync(_context, Event, EventRole, teamId, userId, applicationId).Result;
+            Tuple<bool, string> result = TeamHelper.AddMemberAsync(_context, Event, EventRole, teamId, userId).Result;
             if (result.Item1)
             {
                 return RedirectToPage("./Details", new { teamId = teamId });

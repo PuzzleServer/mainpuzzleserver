@@ -140,7 +140,10 @@
                                 {
                                     <p>N/A</p>
                                 }
-                                @Html.DisplayFor(modelItem => item.Member.EmployeeAlias)
+                                else
+                                {
+                                    @Html.DisplayFor(modelItem => item.Member.EmployeeAlias);
+                                }
                             </td>
                             @if (Model.EventRole == ModelBases.EventRole.admin || Model.Event.IsTeamMembershipChangeActive)
                             {
@@ -205,7 +208,10 @@
                                     {
                                         <p>N/A</p>
                                     }
-                                    @Html.DisplayFor(modelItem => item.Item1.EmployeeAlias)
+                                    else
+                                    {
+                                        @Html.DisplayFor(modelItem => item.Item1.EmployeeAlias);
+                                    }
                                 </td>
                                 <td>
                                     <a asp-page-handler="AddMember" asp-route-teamId="@Model.Team.ID" asp-route-userId="@item.Item1.ID" asp-route-applicationId="@item.Item2">Add</a>

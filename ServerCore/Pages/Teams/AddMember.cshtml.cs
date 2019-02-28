@@ -46,7 +46,7 @@ namespace ServerCore.Pages.Teams
 
         public async Task<IActionResult> OnGetAddMemberAsync(int teamId, int userId, int applicationId)
         {
-            Tuple<bool, string> result = TeamHelper.AddMemberAsync(_context, Event, EventRole, teamId, userId, applicationId).Result;
+            Tuple<bool, string> result = TeamHelper.AddMemberAsync(_context, Event, EventRole, teamId, userId).Result;
             if (result.Item1)
             {
                 return RedirectToPage("./Details", new { teamId = teamId });

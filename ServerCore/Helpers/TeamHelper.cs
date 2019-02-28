@@ -56,7 +56,20 @@ namespace ServerCore.Helpers
             await context.SaveChangesAsync();
         }
 
-        public static async Task<Tuple<bool, string>> AddMemberAsync(PuzzleServerContext context, Event Event, EventRole EventRole, int teamId, int userId, int applicationId)
+        /// <summary>
+        /// Adds a user to a team after performing a number of checks to make sure that the change is valid
+        /// </summary>
+        /// <param name="context">The context to update</param>
+        /// <param name="Event">The event that the team is for</param>
+        /// <param name="EventRole">The event role of the user that is making this change</param>
+        /// <param name="teamId">The id of the team the player should be added to</param>
+        /// <param name="userId">The user that should be added to the team</param>
+        /// <returns>
+        /// A tuple where the first element is a boolean that indicates whether the player was successfully
+        /// added to the team and the second element is a message to display that explains the error in the
+        /// case where the user was not successfully added to the team
+        /// </returns>        
+        public static async Task<Tuple<bool, string>> AddMemberAsync(PuzzleServerContext context, Event Event, EventRole EventRole, int teamId, int userId)
         {
             Team team = await context.Teams.FirstOrDefaultAsync(m => m.ID == teamId);
             if (team == null)
