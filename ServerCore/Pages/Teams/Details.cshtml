@@ -142,7 +142,7 @@
                                 }
                                 @Html.DisplayFor(modelItem => item.Member.EmployeeAlias)
                             </td>
-                            @if (canAdd)
+                            @if (Model.EventRole == ModelBases.EventRole.admin || Model.Event.IsTeamMembershipChangeActive)
                             {
                                 if (Model.EventRole == ModelBases.EventRole.play && Model.Members.Count == 1)
                                 {
