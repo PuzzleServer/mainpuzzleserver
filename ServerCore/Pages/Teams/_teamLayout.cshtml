@@ -7,7 +7,6 @@
     <div>
         <a asp-page="/Teams/Index">Back to team list</a> ||
         <a asp-page="/Teams/Details" asp-route-teamId="@Model.Team.ID">Details</a> |
-        <a asp-page="/Teams/Members" asp-route-teamId="@Model.Team.ID">Members</a> |
         <a asp-page="/Submissions/AuthorIndex" asp-route-teamId="@Model.Team.ID">Submissions</a> |
         <a asp-page="/Teams/Status" asp-route-teamId="@Model.Team.ID">Status</a>
     </div>
@@ -20,15 +19,7 @@
         <a asp-page="/Teams/Status" asp-route-teamId="@Model.Team.ID">Status</a>
     </div>
 }
-<!-- Players can have a null team and still reach a default team page -->
-@if (Model.EventRole == ModelBases.EventRole.play && Model.Team != null)
-{
-    <div>
-        <a asp-page="/Teams/Details" asp-route-teamId="@Model.Team.ID">Details</a> |
-        <a asp-page="/Teams/Members" asp-route-teamId="@Model.Team.ID">Members</a>
-    </div>
-}
-
+<!--Players don't have other options so they don't need any links-->
 <body>
     <div>
         @RenderBody()
