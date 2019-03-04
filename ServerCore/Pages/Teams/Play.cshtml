@@ -1,11 +1,11 @@
-﻿@page "/{eventId}/{eventRole}/Teams/Play"
+﻿@page "/{eventId}/{eventRole}/Teams/{teamId}/Play"
 @model ServerCore.Pages.Teams.PlayModel
 
 @{
     ViewData["Title"] = "Puzzles";
     ViewData["AdminRoute"] = "/Puzzles/Index";
     ViewData["AuthorRoute"] = "/Puzzles/Index";
-    ViewData["PlayRoute"] = "/Teams/Play";
+    // Needs route data - ViewData["PlayRoute"] = "/Teams/Play";
     bool showAnswers = Model.Event.AnswersAvailableBegin <= DateTime.UtcNow;
 }
 
