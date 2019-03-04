@@ -31,6 +31,12 @@ namespace ServerCore.Pages.Events
             _userManager = userManager;
         }
 
+        private Piece MakePiece(Puzzle puzzle, int progressLevel, int clueID, string answerPattern, int puzzlePos, string clue)
+        {
+            string contents = $"{{\"clue_id\": {clueID}, \"answer_pattern\": \"{answerPattern}\", \"puzzle_pos\": {puzzlePos}, \"clue\": \"{clue}\"}}";
+            return new Piece { Puzzle = puzzle, ProgressLevel = progressLevel, Contents = contents };
+        }
+
         public IActionResult OnGet()
         {
             // Populate default fields
@@ -201,6 +207,56 @@ namespace ServerCore.Pages.Events
                 };
                 _context.Puzzles.Add(lockPuzzle);
 
+                Puzzle kitchenSyncPuzzle = new Puzzle
+                {
+                    Name = "Kitchen Sync",
+                    Event = Event,
+                    IsPuzzle = true,
+                    SolveValue = 10,
+                    Group = "Sync Test",
+                    OrderInGroup = 1,
+                    MinPrerequisiteCount = 1
+                };
+                _context.Puzzles.Add(kitchenSyncPuzzle);
+
+                Puzzle heatSyncPuzzle = new Puzzle
+                {
+                    Name = "Heat Sync",
+                    Event = Event,
+                    IsPuzzle = true,
+                    SolveValue = 10,
+                    Group = "Sync Test",
+                    OrderInGroup = 2,
+                    MinPrerequisiteCount = 1
+                };
+                _context.Puzzles.Add(heatSyncPuzzle);
+
+                Puzzle lipSyncPuzzle = new Puzzle
+                {
+                    Name = "Lip Sync",
+                    Event = Event,
+                    IsPuzzle = true,
+                    SolveValue = 10,
+                    Group = "Sync Test",
+                    OrderInGroup = 3,
+                    MinPrerequisiteCount = 1
+                };
+                _context.Puzzles.Add(lipSyncPuzzle);
+
+                Puzzle syncTestMetapuzzle = new Puzzle
+                {
+                    Name = "Sync Test",
+                    Event = Event,
+                    IsPuzzle = true,
+                    IsMetaPuzzle = true,
+                    SolveValue = 50,
+                    Group = "Sync Test",
+                    OrderInGroup = 99,
+                    MinPrerequisiteCount = 1,
+                    MaxAnnotationKey = 400
+                };
+                _context.Puzzles.Add(syncTestMetapuzzle);
+
                 await _context.SaveChangesAsync();
 
                 //
@@ -222,6 +278,14 @@ namespace ServerCore.Pages.Events
                 _context.Responses.Add(new Response() { Puzzle = lockIntro, SubmittedText = "ANSWER", ResponseText = "Correct!", IsSolution = true });
                 _context.Responses.Add(new Response() { Puzzle = lockPuzzle, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
                 _context.Responses.Add(new Response() { Puzzle = lockPuzzle, SubmittedText = "ANSWER", ResponseText = "Correct!", IsSolution = true });
+                _context.Responses.Add(new Response() { Puzzle = kitchenSyncPuzzle, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
+                _context.Responses.Add(new Response() { Puzzle = kitchenSyncPuzzle, SubmittedText = "SYNC", ResponseText = "Correct!", IsSolution = true });
+                _context.Responses.Add(new Response() { Puzzle = heatSyncPuzzle, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
+                _context.Responses.Add(new Response() { Puzzle = heatSyncPuzzle, SubmittedText = "OR", ResponseText = "Correct!", IsSolution = true });
+                _context.Responses.Add(new Response() { Puzzle = lipSyncPuzzle, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
+                _context.Responses.Add(new Response() { Puzzle = lipSyncPuzzle, SubmittedText = "SWIM", ResponseText = "Correct!", IsSolution = true });
+                _context.Responses.Add(new Response() { Puzzle = syncTestMetapuzzle, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
+                _context.Responses.Add(new Response() { Puzzle = syncTestMetapuzzle, SubmittedText = "SYNCORSWIM", ResponseText = "Correct!", IsSolution = true });
 
                 string hint1Description = "Tell me about the rabbits, George.";
                 string hint1Content = "O.K. Some day – we’re gonna get the jack together and we’re gonna have a little house and a couple of acres an’ a cow and some pigs and...";
@@ -253,6 +317,26 @@ namespace ServerCore.Pages.Events
                 _context.Prerequisites.Add(new Prerequisites() { Puzzle = cheat, Prerequisite = start });
                 _context.Prerequisites.Add(new Prerequisites() { Puzzle = lockIntro, Prerequisite = start });
                 _context.Prerequisites.Add(new Prerequisites() { Puzzle = lockPuzzle, Prerequisite = lockIntro });
+                _context.Prerequisites.Add(new Prerequisites() { Puzzle = kitchenSyncPuzzle, Prerequisite = start });
+                _context.Prerequisites.Add(new Prerequisites() { Puzzle = heatSyncPuzzle, Prerequisite = start });
+                _context.Prerequisites.Add(new Prerequisites() { Puzzle = lipSyncPuzzle, Prerequisite = start });
+                _context.Prerequisites.Add(new Prerequisites() { Puzzle = syncTestMetapuzzle, Prerequisite = start });
+
+                await _context.SaveChangesAsync();
+
+                //
+                // Create puzzle pieces.
+                //
+                _context.Pieces.Add(MakePiece(syncTestMetapuzzle, 0, 1, "xxx xxxx'x x xXxxx!", 3, "What Crocodile Dundee might say"));
+                _context.Pieces.Add(MakePiece(syncTestMetapuzzle, 1, 2, "xxx xxxx xxxx xxx Xxxxx", 1, "In <i>Hey Diddle Diddle</i>, what the dish did"));
+                _context.Pieces.Add(MakePiece(syncTestMetapuzzle, 1, 3, "xxXx", 1, "It smells"));
+                _context.Pieces.Add(MakePiece(syncTestMetapuzzle, 2, 4, "xxX", 4, "You reach things by extending it"));
+                _context.Pieces.Add(MakePiece(syncTestMetapuzzle, 2, 5, "Xxx xxxxx", 1, "Result of the <i>Exxon Valdez</i> crash"));
+                _context.Pieces.Add(MakePiece(syncTestMetapuzzle, 2, 6, "xxxxX", 2, "What you make out of turkey drippings"));
+                _context.Pieces.Add(MakePiece(syncTestMetapuzzle, 3, 7, "xxxXx xxx", 4, "Another name for a slow cooker"));
+                _context.Pieces.Add(MakePiece(syncTestMetapuzzle, 4, 8, "xXxxxx", 3, "The index is one of them"));
+                _context.Pieces.Add(MakePiece(syncTestMetapuzzle, 4, 9, "xxxxX", 2, "It can suffer when you play tennis"));
+                _context.Pieces.Add(MakePiece(syncTestMetapuzzle, 4, 10, "xxxxxxX xxxxxxx", 2, "What Chekov asked strangers the location of in Star Trek IV, garnering suspicion due to his Russian accent"));
 
                 await _context.SaveChangesAsync();
 

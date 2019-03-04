@@ -1,0 +1,2283 @@
+@page "/{eventId}/{puzzleId}/SyncTest.html"
+@model ServerCore.Pages.Pieces.SyncTestModel
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+  <link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+  <link href="//fonts.googleapis.com/css?family=Quattrocento:400" rel="stylesheet" type="text/css">
+  <link href="//fonts.googleapis.com/css?family=Raleway:400,500,600,700,900" rel="stylesheet" type="text/css">
+  <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
+
+  <title>Sync Test</title>
+
+  <style>
+  body {
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+  .panel {
+    border-width: 1px;
+  }
+  th, td {
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+  .fa-container {
+    font-size: 400%;
+  }
+  .latest-log-message {
+    color: blue;
+  }
+  .tools-right {
+    float:right;
+  }
+  .current-assignment {
+    font-style: italic;
+    font-weight: bold;
+  }
+  .clue-table {
+    vertical-align: middle;
+  }
+  .clue-table thead {
+    border-bottom: 1px solid black;
+  }
+  .detail-specific {
+    color: DarkGreen;
+  }
+  .detail-popup {
+    position: absolute;
+    border: 1px solid #333;
+    background-color: PeachPuff;
+    color: black;
+    padding: 2px 6px;
+  }
+  .puzzle-pos-cell {
+    font-family: none;
+    color: rgba(255, 0, 255, 1);
+    text-align: right;
+    padding-right: 8px;
+  }
+  .buttons-cell {
+    white-space: nowrap;
+  }
+  .draggable-assignment {
+    cursor: move;
+  }
+  .clue-cell {
+    text-align: center;
+    border-radius: 5px;
+    box-shadow: 0 0 0 2px rgba(200, 200, 200, 1) inset;
+    background: rgba(230, 230, 230, 1);
+    padding: 5px;
+  }
+  .guess-cell {
+    display: table-cell;
+    padding-left: 8px;
+  }
+  .placeholder-clue-cell {
+    text-align: center;
+  }
+  .boxed-cell {
+    border: 1px solid black;
+  }
+  .yellow-cell {
+    background-color: yellow;
+    border: 1px solid black;
+  }
+  .conflict-row .yellow-cell {
+    background-color: red;
+  }
+  .make-warning-red {
+    color: red;
+  }
+  .answer-row {
+    width: 585px;
+  }
+  .answer-table td {
+    width: 14px;
+    overflow: hidden;
+    font-family: monospace;
+    text-align: center;
+    border-collapse: collapse;
+    white-space: nowrap;
+    padding: 0px 0px;
+  }
+  .highlighted-answer-row {
+    border-radius: 5px;
+    background-color: rgba(100, 100, 100, 0.1);
+  }
+  .sync-status-normal {
+    position: relative;
+  }
+  .sync-status-pending {
+    outline: rgba(200, 200, 0, 0.5) solid 2px;
+    z-index: 1;
+    position: relative;
+  }
+  .sync-status-success {
+    outline: rgba(0, 200, 0, 0.5) solid 2px;
+    z-index: 1;
+    position: relative;
+  }
+  .sync-status-remote {
+    outline: rgba(0, 0, 200, 0.5) solid 2px;
+    z-index: 1;
+    position: relative;
+  }
+  .sync-status-error {
+    outline: rgba(200, 0, 0, 0.5) solid 2px;
+    z-index: 1;
+    position: relative;
+  }
+  .faq-answer-descriptor {
+    text-align: center;
+    vertical-align: middle;
+    width: 200px;
+  }
+  .faq-answer-text {
+    text-align: left;
+    vertical-align: middle;
+  }
+  .faq-overview {
+    text-align: center;
+  }
+  .solved-tab {
+    color: DarkGreen;
+  }
+  </style>
+</head>
+
+<body>
+  <br />
+  <br />
+  <br />
+
+<div class="container-fluid">
+  <div id="tools_row">
+    <div class="row">
+      <div class="col-md-12">
+        Sync Test
+        &nbsp;
+        <button class="btn btn-default btn-sm enable-mytooltip" id="sync_now" mytooltip_html="Sync now, to download new clues and see your teammates' recent work, instead of waiting for the automatic sync that happens every minute" onclick="sync_now(true); return false;">
+          <i class="fa fa-refresh"></i>
+        </button>
+        <button class="btn btn-default btn-sm enable-mytooltip" id="tooltip_toggle" mytooltip_html="Toggle tooltip display functionality">
+          <i class="fa fa-comment-o"></i>
+        </button>
+        <button class="btn btn-default btn-sm enable-mytooltip" id="help_toggle" mytooltip_html="Toggle help panels">
+          <i class="fa fa-question-circle-o"></i>
+        </button>
+        <button id="undo_button" class="btn btn-default btn-sm enable-mytooltip" mytooltip_html="Undo last assignment or guess" onclick="perform_undo(); return false;" disabled>
+          <i class="fa fa-undo"></i>
+        </button>
+        <button id="redo_button" class="btn btn-default btn-sm enable-mytooltip" mytooltip_html="Redo last undone operation" onclick="perform_redo(); return false;" disabled>
+          <i class="fa fa-repeat"></i>
+        </button>
+        <div class="tools-right">
+          Solves: <span id="current_solve_count">?</span> &nbsp;
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <br>
+
+  <div id="main_nav_row">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="alert" id="status" role="alert" hidden onclick="hide_status_message(); return false;">
+          <span id="status_message">
+          </span>
+          <br>
+        </div>
+        <ul class="nav nav-tabs" id="main_nav_ul">
+          <li class="main-tab active" id="intro_tab"><a href="#intro" onclick="activate_tab('#intro', true); return false;">Intro</a></li>
+          <li class="main-tab" id="all_tab"><a href="#all" onclick="activate_tab('#all', true); return false;">All</a></li>
+          <li class="main-tab" id="unassigned_tab"><a href="#unassigned" onclick="activate_tab('#unassigned', true); return false;" ondrop="drop_handler(event, 0);" ondragover="dragover_handler(event);">Unassigned</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-tab-content" id="intro_tab_content" hidden>
+    <div class="row">
+      <div class="col-md-12">
+        <center>
+          <h3>
+            Intro
+          </h3>
+        </center>
+      </div>
+    </div>
+
+    <div class="row faq-overview">
+      <div class="col-md-6">
+        <div class="alert alert-info">This is the page for testing sync functionality.</div>
+      </div>
+      <div class="col-md-6">
+        <div class="alert alert-info">
+          This web page should be fairly self-explanatory, but a FAQ is below if you want things spelled out.
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <center>
+          <h3>FAQ (ignorable, since everything is fairly self-explanatory)</h3>
+        </center>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <a class="btn btn-default btn-xs" id="faq_q_solving_puzzles"><i class="fa fa-chevron-down"></i></a>
+            How do I solve a puzzle in this module?
+          </div>
+          <div class="panel-body" id="faq_a_solving_puzzles" hidden>
+            <table class="faq-table">
+              <tr>
+                <td class="faq-answer-descriptor">
+                  <div class="alert alert-info">
+                    Figure out which clues go with it
+                  </div>
+                </td>
+                <td class="faq-answer-text">
+                  <div class="well">
+                    To solve one of the <span class="num-puzzles-span"></span> puzzles, you need to first figure out
+                    which clues go with it.  The puzzle's name is a hint about which clues go with it, and what you should
+                    do with them.
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="faq-answer-descriptor">
+                  <div class="alert alert-info">
+                    Assign the clues to it
+                  </div>
+                </td>
+                <td class="faq-answer-text">
+                  <div class="well">
+                    Assigning a clue to a puzzle makes it appear in the tab named after the puzzle.  There are several ways
+                    to assign a clue to a puzzle:
+                    <ul>
+                      <li>
+                        From the all-clues tab, you can use the dropdown next to the clue, which looks like this:
+                        <select class="sync-status-normal" readonly tabindex="-1">
+                          <option value="0" selected="">Unassigned</option>
+                        </select>
+                      </li>
+                      <li>
+                        From the unassigned-clues tab or any puzzle tab, you can use the
+                        <button class="btn btn-default btn-sm" tabindex="-1"><i class="fa fa-share"></i></button>
+                        button next to a clue to bring up an assignment dropdown menu for that clue.
+                      </li>
+                      <li>
+                        You can drag a clue's
+                        <button class="btn btn-default btn-sm" tabindex="-1"><i class="fa fa-share"></i></button>
+                        button and drop it on a puzzle's tab to assign it to that puzzle and jump to that tab.
+                        <br>
+                        On the "All" tab, there is no
+                        <button class="btn btn-default btn-sm" tabindex="-1"><i class="fa fa-share"></i></button>
+                        button so use the
+                        <button class="btn btn-default btn-sm" tabindex="-1"><i class="fa fa-hand-o-right"></i></button>
+                        button for dragging instead.
+                      </li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="faq-answer-descriptor">
+                  <div class="alert alert-info">Go to the puzzle's tab</div>
+                </td>
+                <td class="faq-answer-text">
+                  <div class="well">
+                    Each puzzle has its own tab in the tab display, which looks like this:
+                    <ul style="display:inline;" class="nav nav-tabs">
+                      <li class="main-tab active"><a disabled>Intro</a></li>
+                      <li class="main-tab"><a disabled>All</a></li>
+                      <li class="main-tab"><a disabled>Unassigned</a></li>
+                      <li class="main-tab"><a disabled>Bunny Hop</a></li>
+                      <li class="main-tab"><a disabled>etc.</a></li>
+                    </ul>
+                    Clues you assign to a puzzle will appear in its tab.
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="faq-answer-descriptor">
+                  <div class="alert alert-info">
+                    Solve the clues
+                  </div>
+                </td>
+                <td class="faq-answer-text">
+                  <div class="well">
+                    To the right of each clue is an input box, which looks like this:
+                    <input class="sync-status-normal" size="20" readonly value="test">.
+                    As you fill an answer into that input box, it will automatically fill into the boxes to its
+                    right, which might look like this:
+                    <table style="display:inline;" class="answer-table">
+                      <tbody>
+                        <tr>
+                          <td class="boxed-cell">T</td>
+                          <td class="boxed-cell">E</td>
+                          <td class="yellow-cell">S</td>
+                          <td class="boxed-cell">T</td>
+                          <td>&nbsp;</td>
+                          <td class="boxed-cell">&nbsp;</td>
+                          <td class="boxed-cell">&nbsp;</td>
+                          <td class="boxed-cell">&nbsp;</td>
+                          <td class="boxed-cell">&nbsp;</td>
+                          <td class="boxed-cell">&nbsp;</td>
+                          <td class="boxed-cell">&nbsp;</td>
+                        </tr>
+                      </tbody>
+                    </table>.
+                    <br>
+                    If you want to leave gaps in those boxes, use underscores in your answers.  For instance,
+                    <input class="sync-status-normal" size="20" readonly value="__st answer">
+                    would display as
+                    <table style="display:inline;" class="answer-table">
+                      <tbody>
+                        <tr>
+                          <td class="boxed-cell">&nbsp;</td>
+                          <td class="boxed-cell">&nbsp;</td>
+                          <td class="yellow-cell">S</td>
+                          <td class="boxed-cell">T</td>
+                          <td>&nbsp;</td>
+                          <td class="boxed-cell">A</td>
+                          <td class="boxed-cell">N</td>
+                          <td class="boxed-cell">S</td>
+                          <td class="boxed-cell">W</td>
+                          <td class="boxed-cell">E</td>
+                          <td class="boxed-cell">R</td>
+                        </tr>
+                      </tbody>
+                    </table>.
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="faq-answer-descriptor">
+                  <div class="alert alert-info">
+                    Submit the answer
+                  </div>
+                </td>
+                <td class="faq-answer-text">
+                  <div class="well">
+                    This page won't check any answers for you.  If you want to get credit for solving one of the
+                    puzzles, follow the "Check answer" link on its tab, which will take you to a separate
+                    answer-checking page.
+                    <br>
+                    When you solve a puzzle, its tab will display in green with a checkmark, like this:
+                    <ul style="display:inline;" class="nav nav-tabs">
+                      <li class="main-tab active"><a disabled>Intro</a></li>
+                      <li class="main-tab"><a disabled>All</a></li>
+                      <li class="main-tab"><a disabled>Unassigned</a></li>
+                      <li class="main-tab">
+                        <a disabled>
+                          <span class="solved-tab">Bunny Hop <i class="fa fa-check"></i></span>
+                        </a>
+                      </li>
+                      <li class="main-tab"><a disabled>etc.</a></li>
+                    </ul>
+                    It may take a minute for this to happen, due to lazy synchronization.
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <a class="btn btn-default btn-xs" id="faq_q_synchronization"><i class="fa fa-chevron-down"></i></a>
+            How do I synchronize work on this module with my teammates, and download new clues?
+          </div>
+          <div class="panel-body" id="faq_a_synchronization" hidden>
+            <table class="faq-table">
+              <tr>
+                <td class="faq-answer-descriptor">
+                  <div class="alert alert-info">
+                    This page will automatically sync
+                  </div>
+                </td>
+                <td class="faq-answer-text">
+                  <div class="well">
+                    To let you solve this puzzle with your teammates, some using separate computers, this page will
+                    automatically sync.  That is, it will upload the changes you make, download changes your teammates
+                    make, and download any new clues you've earned from solving puzzles in other modules.
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="faq-answer-descriptor">
+                  <div class="alert alert-info">
+                    The page syncs every 60 seconds, and after you make changes
+                  </div>
+                </td>
+                <td class="faq-answer-text">
+                  <div class="well">
+                    The page syncs every 60 seconds.  If you want to sync right away, you can use the
+                    <button class="btn btn-default btn-sm"><i class="fa fa-refresh"></i></button>
+                    button; this is faster and more efficient than your browser's refresh button.
+                    <br>
+                    The page also syncs immediately after you change a clue's assignment.  And, if you change a clue answer,
+                    it will sync 5 seconds after you stop making changes to that clue's answer.  However, these change-triggered
+                    syncs don't download new clues; they only synchronize answers and assignments.
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <a class="btn btn-default btn-xs" id="faq_q_sync_status"><i class="fa fa-chevron-down"></i></a>
+            Why do my assignments and guesses sometimes glow colorfully?
+          </div>
+          <div class="panel-body" id="faq_a_sync_status" hidden>
+            <table class="faq-table">
+              <tr>
+                <td class="faq-answer-descriptor">
+                  <div class="alert alert-info">
+                    Assignments and guesses glow to indicate sync status
+                  </div>
+                </td>
+                <td class="faq-answer-text">
+                  <div class="well">
+                    To give you some feedback about syncing, the clue answer and assignment fields will sometimes glow with
+                    a colored outline to let you know the sync status:
+                    <ul>
+                      <li>
+                        <span class="sync-status-pending">Yellow</span>
+                        means you've made a change that hasn't yet been saved on the server.
+                      </li>
+                      <li>
+                        <span class="sync-status-success">Green</span> means your recent change has been saved on the server.
+                        This color will fade away after a few seconds.
+                      </li>
+                      <li>
+                        <span class="sync-status-remote">Blue</span> means one of your teammates made a recent change to
+                        that field, which you can now see.  This color will fade away after a little while.
+                      </li>
+                      <li>
+                        <span class="sync-status-error">Red</span> means you've made a change that failed to be saved on the server.
+                        This indicates some issue with the server; you can try again later by making the change again
+                        (for instance, by adding a space and removing it.)
+                      </li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="faq-answer-descriptor">
+                  <div class="alert alert-info">
+                    Green means <i>successfully synced</i>, not necessarily correct
+                  </div>
+                </td>
+                <td class="faq-answer-text">
+                  <div class="well">
+                    Note that a <span class="sync-status-success">Green</span> sync status on a clue answer or assignment
+                    does NOT indicate the answer or assignment is correct, it only means it's been saved to the server!
+                    The page will happily sync incorrect information to the server, which will happily save it and happily
+                    disseminate it to your teammates.  Indeed, the page has no idea what the correct answers or assignments
+                    are, to avoid you being able to figure them out by debugging the page.
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <a class="btn btn-default btn-xs" id="faq_q_buttons"><i class="fa fa-chevron-down"></i></a>
+            What do the various buttons on this page do?
+          </div>
+          <div class="panel-body" id="faq_a_buttons" hidden>
+            <table class="faq-table">
+              <tr>
+                <td class="faq-answer-descriptor">
+                  <div class="alert alert-info">
+                    Hover over them to see tooltips
+                  </div>
+                </td>
+                <td class="faq-answer-text">
+                  <div class="well">
+                    To see what a button does, hover over it to reveal a tooltip.
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="faq-answer-descriptor">
+                  <div class="alert alert-info">
+                    The <button class="btn btn-default btn-sm"><i class="fa fa-undo"></i></button> button undoes your
+                    last assignment or guess
+                  </div>
+                </td>
+                <td class="faq-answer-text">
+                  <div class="well">
+                    Perhaps the most useful button is the undo button:
+                    <button class="btn btn-default btn-sm"><i class="fa fa-undo"></i></button>.
+                    It reverts the last change you made to a clue's answer or assignment.  You can undo more than once in
+                    a row to undo multiple consecutive recent changes.  To undo undo actions, use the redo button:
+                    <button class="btn btn-default btn-sm"><i class="fa fa-repeat"></i></button>.
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <a class="btn btn-default btn-xs" id="faq_q_tab_navigation"><i class="fa fa-chevron-down"></i></a>
+            How does navigation between the tabs work?
+          </div>
+          <div class="panel-body" id="faq_a_tab_navigation" hidden>
+            <table class="faq-table">
+              <tr>
+                <td class="faq-answer-descriptor">
+                  <div class="alert alert-info">
+                    The tabs are all part of a single-page application
+                  </div>
+                </td>
+                <td class="faq-answer-text">
+                  <div class="well">
+                    This web page is a single-page application for the entire module.  In other words, what appear to be
+                    navigation actions, like switching between the page's tabs, only happen locally and don't involve going
+                    to the server to reload the page.  That means that navigating between tabs is instantaneous and tabs
+                    are always perfectly synchronized with each other.
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="faq-answer-descriptor">
+                  <div class="alert alert-info">
+                    There's no point having this page open in multiple browser tabs
+                  </div>
+                </td>
+                <td class="faq-answer-text">
+                  <div class="well">
+                    If you have multiple copies of this page open (e.g., in different browser tabs), they won't be
+                    perfectly synchronized:  they'll synchronize with each other in the same way that pages synchronize
+                    across computers, as described in the FAQ entry about synchronizing with your teammates.
+                    There's probably no point to having multiple copies of this page open on the same computer since
+                    navigating between tabs is instantaneous.
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="faq-answer-descriptor">
+                  <div class="alert alert-info">
+                    Your browser's back button undoes tab-navigation actions
+                  </div>
+                </td>
+                <td class="faq-answer-text">
+                  <div class="well">
+                    The web page informs your browser of tab-navigation actions so that the browser's back button
+                    will work to undo tab-navigation actions.
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <a class="btn btn-default btn-xs" id="faq_q_checking_answers"><i class="fa fa-chevron-down"></i></a>
+            How do I check an answer?
+          </div>
+          <div hidden id="faq_a_checking_answers" class="panel-body">
+            <p>
+              This page won't check any answers for you.  If you want to get credit for solving one of the
+              puzzles, follow the "Check answer" link on its tab, which will take you to a
+              separate answer-checking page.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <a class="btn btn-default btn-xs" id="faq_q_row_numbers"><i class="fa fa-chevron-down"></i></a>
+            How does the tab for a puzzle know which row to put each clue into?
+          </div>
+          <div hidden id="faq_a_row_numbers" class="panel-body">
+            <table class="faq-table">
+              <tr>
+                <td class="faq-answer-descriptor">
+                  <div class="alert alert-info">
+                    Earning a clue earns you that information
+                  </div>
+                </td>
+                <td class="faq-answer-text">
+                  <div class="well">
+                    Whenever you earn a clue, you also earn an extra piece of information:  which row number the clue's answer
+                    goes in (but not which puzzle it goes with!).  To avoid distracting you, the non-puzzle tabs don't show
+                    you this extra information.  You only see it when you assign the clue to a puzzle.  Don't worry, though;
+                    you don't need that information to figure out what puzzle to assign it to.  If you really want to see it,
+                    you can click the
+                    <button class="btn btn-default btn-sm" tabindex="-1">
+                      <span class="glyphicon glyphicon-info-sign"></span>
+                    </button> button to the right of the clue, but it's probably just a waste of your time.
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="faq-answer-descriptor">
+                  <div class="alert alert-info">
+                    The tab will alert you if there's a conflict
+                  </div>
+                </td>
+                <td class="faq-answer-text">
+                  <div class="well">
+                    If you assign two clues to a puzzle that share the same row, then at least one of them doesn't belong
+                    there.  The tab will indicate this by making the highlighted letter appear red instead of yellow, like this:
+                    <table style="display:inline;" class="answer-table conflict-row">
+                      <tbody>
+                        <tr>
+                          <td class="boxed-cell">T</td>
+                          <td class="boxed-cell">E</td>
+                          <td class="yellow-cell">S</td>
+                          <td class="boxed-cell">T</td>
+                          <td>&nbsp;</td>
+                          <td class="boxed-cell">A</td>
+                          <td class="boxed-cell">N</td>
+                          <td class="boxed-cell">S</td>
+                          <td class="boxed-cell">W</td>
+                          <td class="boxed-cell">E</td>
+                          <td class="boxed-cell">R</td>
+                        </tr>
+                      </tbody>
+                    </table>.
+                    Also, instead of the assignment button <button class="btn btn-default btn-sm"><i class="fa fa-share"></i></button>,
+                    it will display it in red with a warning, like this:
+                    <button class="btn btn-default btn-sm make-warning-red">
+                      <i class="fa fa-share"></i>
+                      <i class="fa fa-warning"></i>
+                    </button>,
+                    to suggest you consider assigning it to a different puzzle.
+                    <br>
+                    A puzzle's tab will also alert you this way if you assign a clue to it whose row number is higher than
+                    its number of rows.  For instance, if a puzzle only has 18 rows but a clue has row number 20,
+                    the tab for that puzzle will alert you that the clue doesn't belong there, by using the red highlighting
+                    and warning button.
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="main-tab-content" id="all_tab_content" hidden>
+    <div class="row">
+      <div class="col-md-12">
+        <center>
+          <h3>
+            All clues
+          </h3>
+        </center>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <center>
+          <table class="clue-table" id="all_clues_clue_table">
+            <tbody>
+            </tbody>
+          </table>
+        </center>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-tab-content" id="unassigned_tab_content" hidden>
+    <div class="row">
+      <div class="col-md-12">
+        <center>
+          <h3>
+            Clues you haven't assigned to a puzzle
+          </h3>
+        </center>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <center>
+          <table class="clue-table" id="puzzle0_clue_table">
+            <tbody>
+            </tbody>
+          </table>
+        </center>
+      </div>
+    </div>
+  </div>
+
+  <br id="br_after_tabs">
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default" id="event_log_panel">
+        <div class="panel-heading">
+          <a class="btn btn-default btn-xs" id="log_toggler">
+            <i class="fa fa-chevron-down"></i> All messages
+          </a>
+        </div>
+        <div hidden id="event_log">
+          <table>
+            <tbody id="log_message_list" max_rows="100">
+            </tbody>
+          </table>
+          <span hidden id="event_log_truncated">(Older events truncated)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/js/ie10-viewport-bug-workaround.js"></script>
+<script>
+class Annotation
+{
+    constructor(key, contents, version)
+    {
+        this.key = key;
+        this.contents = contents;
+        this.version = version;
+
+        if (key % 2 == 1) {
+            this.type = 'guess';
+            this.clue_id = (key + 1) / 2;
+            this.guess = contents;
+        }
+        else {
+            this.type = 'assignment';
+            this.clue_id = key / 2;
+            this.assignment = Number(contents);
+        }
+    }
+}
+
+class AnswerPattern
+{
+    constructor(pattern)
+    {
+        this.pattern = pattern;
+        this.rows = [];
+        this.example = '';
+
+        var fields = [];
+        var highlight_pos = 0;
+        for (var i = 0; i < pattern.length; ++i) {
+            var c = pattern[i];
+            if (c == 'x') {
+                fields.push('x');
+                this.example += 'A';
+            }
+            else if (c == 'X') {
+                highlight_pos = fields.length;
+                fields.push('X');
+                this.example += 'B';
+            }
+            else if (c == '&') {
+                var semi_pos = pattern.indexOf(';', i+1);
+                if (semi_pos == -1) {
+                    fields.push('&amp;');
+                    this.example += '&amp;';
+                }
+                else {
+                    var special = pattern.substr(i, semi_pos - i + 1);
+                    fields.push(special);
+                    this.example += special;
+                    i = semi_pos;
+                }
+            }
+            else if (/\s/.test(c)) {
+                fields.push(' ');
+                this.example += ' ';
+            }
+            else {
+                fields.push(c);
+                this.example += c;
+            }
+        }
+
+        if (highlight_pos > window.g.max_side_letters) {
+            var cut_pos = this.find_space(fields, highlight_pos - window.g.max_side_letters - 1,
+                                          highlight_pos - window.g.max_side_letters - 1, highlight_pos - 1);
+            if (cut_pos >= 0) {
+                var prev_slice = fields.slice(0, cut_pos);
+                fields = fields.slice(cut_pos+1)
+                highlight_pos = highlight_pos - (cut_pos + 1);
+                var earlier_rows = this.cut_into_answer_rows(prev_slice);
+                this.pad_unhighlighted_rows(earlier_rows);
+                this.rows = this.rows.concat(earlier_rows);
+            }
+        }
+
+        var later_rows = [];
+        if (fields.length - highlight_pos > window.g.max_side_letters + 1) {
+            var cut_pos = this.find_space(fields, highlight_pos + window.g.max_side_letters + 1,
+                                          highlight_pos + 1, highlight_pos + window.g.max_side_letters + 1);
+            if (cut_pos >= 0) {
+                var post_slice = fields.slice(cut_pos+1);
+                fields = fields.slice(0, cut_pos);
+                later_rows = this.cut_into_answer_rows(post_slice);
+            }
+        }
+        this.pad_highlighted_row(fields, highlight_pos);
+        this.rows.push(fields);
+        this.pad_unhighlighted_rows(later_rows);
+        this.rows = this.rows.concat(later_rows);
+    }
+
+    pad_highlighted_row(fields, highlight_pos)
+    {
+        while (highlight_pos < window.g.max_side_letters) {
+            ++highlight_pos;
+            fields.unshift(' ');
+        }
+
+        while (fields.length < window.g.max_side_letters * 2 + 1) {
+            fields.push(' ');
+        }
+    }
+
+    pad_unhighlighted_rows(urows)
+    {
+        for (var i = 0; i < urows.length; ++i) {
+            var urow = urows[i];
+            while (urow.length < window.g.max_side_letters * 2 + 1) {
+              if (urow.length < window.g.max_side_letters * 2) {
+                  urow.unshift(' ');
+              }
+              urow.push(' ');
+            }
+        }
+    }
+
+    find_space(fields, target, min, max)
+    {
+        if (min > max) {
+            return -1;
+        }
+        if (target < min) {
+            target = min;
+        }
+        if (target > max) {
+            target = max;
+        }
+        var distance = 0;
+        while (target - distance >= min || target + distance <= max) {
+            if (target - distance >= min && fields[target - distance] == ' ') {
+                return target - distance;
+            }
+            if (target + distance <= max && fields[target + distance] == ' ') {
+                return target + distance;
+            }
+            ++distance;
+        }
+        return -1;
+    }
+
+    cut_into_answer_rows(fields)
+    {
+        if (fields.length <= window.g.max_side_letters * 2 + 1) {
+            return [fields];
+        }
+        for (var i = 2; i < 6; ++i) {
+            var rows = this.cut_into_num_answer_rows(fields, i);
+            if (rows != null) {
+                return rows;
+            }
+        }
+        return [fields];
+    }
+
+    cut_into_num_answer_rows(fields, num_rows)
+    {
+        var rows = [];
+        var cur_pos = 0;
+        for (var which_row = 0; which_row < num_rows - 1; ++which_row) {
+            var ideal_cut_pos = Math.round(fields.length * (which_row + 1) / num_rows);
+            var cut_pos = this.find_space(fields, ideal_cut_pos, cur_pos+1, cur_pos + window.g.max_side_letters * 2 + 1);
+            if (cut_pos < 0) {
+                return null;
+            }
+            rows.push(fields.slice(cur_pos, cut_pos));
+            cur_pos = cut_pos + 1;
+        }
+        if (fields.length - cur_pos > window.g.max_side_letters * 2 + 1) {
+            return null;
+        }
+        rows.push(fields.slice(cur_pos));
+        return rows;
+    }
+
+    format(answer)
+    {
+        var result = '<center><table class="answer-table"><tbody>'
+
+        var answer_pos = 0;
+        for (var row_num = 0; row_num < this.rows.length; ++row_num) {
+            result += '<tr>';
+            var fields = this.rows[row_num];
+            for (var fields_pos = 0; fields_pos < fields.length; ++fields_pos) {
+                var field = fields[fields_pos];
+                if (field == 'x') {
+                    if (answer_pos < answer.length) {
+                        var c = answer[answer_pos];
+                        if (c == '_') {
+                            c = '&nbsp;';
+                        }
+                        result += '<td class="boxed-cell">' + c + '</td>';
+                        ++answer_pos;
+                    }
+                    else {
+                        result += '<td class="boxed-cell">&nbsp;</td>';
+                    }
+                }
+                else if (field == 'X') {
+                    if (answer_pos < answer.length) {
+                        var c = answer[answer_pos];
+                        if (c == '_') {
+                            c = '&nbsp;';
+                        }
+                        result += '<td class="yellow-cell">' + c + '</td>';
+                        ++answer_pos;
+                    }
+                    else {
+                        result += '<td class="yellow-cell">&nbsp;</td>';
+                    }
+                }
+                else if (field == ' ') {
+                    result += '<td>&nbsp;</td>';
+                }
+                else {
+                    result += '<td>' + field + '</td>';
+                }
+            }
+            result += "</tr>";
+        }
+
+        result += '</tbody></table></center>';
+        return result;
+    }
+}
+
+class Clue
+{
+    constructor(clue_id, solve_count)
+    {
+        this.clue_id = clue_id;
+        this.solve_count = solve_count;
+        this.clue_known = false;
+        this.clue_display = '<i>(Clue unavailable until solve #' + solve_count + ')</i>';
+        this.guess = '';
+        this.canonical_guess = '';
+        this.assignment = 0;
+        this.sync_timeout = null;
+        this.guess_sync_status = 'normal';
+        this.guess_sync_status_timeout = null;
+        this.assignment_sync_status = 'normal';
+        this.assignment_sync_status_timeout = null;
+    }
+
+    update_guess(new_guess, reason)
+    {
+        if (new_guess.length > window.g.max_annotation_size) {
+            new_guess = new_guess.substring(0, window.g.max_annotation_size);
+        }
+
+        if (reason == 'sync') {
+            if (new_guess == this.guess) {
+                if (this.guess_sync_status == 'pending' || this.guess_sync_status == 'error') {
+                    change_guess_sync_status(this.clue_id, 'success', 'normal', window.g.sync_status_success_display_period);
+                }
+            }
+            else if (this.guess_sync_status == 'pending') {
+                // The server's content doesn't agree with ours, but we have a pending change to report to the server.
+                // So we just have to wait for the next sync.  However, if there is no sync scheduled, perform one now.
+
+                window.g.pending_annotations[this.clue_id * 2 - 1] = this.guess;
+                if (this.sync_timeout == null) {
+                    sync_now(false);
+                }
+                return;
+            }
+            else {
+                change_guess_sync_status(this.clue_id, 'remote', 'normal', window.g.sync_status_remote_display_period);
+            }
+        }
+
+        if (new_guess == this.guess) {
+            return;
+        }
+
+        if (this.sync_timeout == null || reason == 'undo' || reason == 'redo') {
+            var previous_annotation = new Annotation(this.clue_id * 2 - 1, this.guess, 0);
+            manage_undo_list_upon_change(previous_annotation, reason);
+        }
+
+        this.guess = new_guess;
+        this.canonical_guess = new_guess.toUpperCase().replace(/[^A-Z0-9\_]/g, "");
+
+        if (this.clue_known) {
+            this.update_answer_rows();
+        }
+
+        if (reason != 'puzzle') {
+            var selector = '#puzzle_clue_guess_' + this.clue_id;
+            $(selector).val(this.guess);
+        }
+
+        if (reason != 'all') {
+            var selector = '#clue_guess_on_all_' + this.clue_id;
+            $(selector).val(this.guess);
+        }
+
+        if (reason != 'sync') {
+            change_guess_sync_status(this.clue_id, 'pending', 'error', window.g.period_until_sync_status_pending_becomes_error);
+            window.g.pending_annotations[this.clue_id * 2 - 1] = this.guess;
+            if (reason == 'undo' || reason == 'redo') {
+                clearTimeout(this.sync_timeout);
+                this.sync_timeout = null;
+                sync_now(false);
+            }
+            else {
+                clearTimeout(this.sync_timeout);
+                var continuation_this = this;
+                this.sync_timeout = setTimeout(
+                    function()
+                    {
+                        continuation_this.sync_timeout = null;
+                        sync_now(false);
+                    },
+                    window.g.edit_delay_period);
+            }
+        }
+    }
+
+    update_assignment(new_assignment, reason, jump)
+    {
+        if (reason == 'sync') {
+            if (new_assignment == this.assignment) {
+                if (this.assignment_sync_status == 'pending' || this.assignment_sync_status == 'error') {
+                    change_assignment_sync_status(this.clue_id, 'success', 'normal', window.g.sync_status_success_display_period);
+                }
+            }
+            else if (this.assignment_sync_status == 'pending') {
+                // The server's content doesn't agree with ours, but we have a pending change to report to the server.
+                // So we just have to wait for the next sync.  To make sure it happens, do it now.
+                window.g.pending_annotations[this.clue_id * 2] = this.assignment.toString();
+                sync_now(false);
+                return;
+            }
+            else {
+                change_assignment_sync_status(this.clue_id, 'remote', 'normal', window.g.sync_status_remote_display_period);
+            }
+        }
+
+        if (new_assignment == this.assignment) {
+            return;
+        }
+
+        if (new_assignment < 0 || new_assignment > window.g.num_puzzles) {
+            log_message(3, "danger", "ERROR:  Invalid new assignment " + new_assignment + " for clue " + this.clue_id);
+            return;
+        }
+
+        window.g.puzzles[this.assignment].note_removed_clue(this.clue_id, this.puzzle_pos);
+
+        var previous_annotation = new Annotation(this.clue_id * 2, this.assignment.toString(), 0);
+        manage_undo_list_upon_change(previous_annotation, reason);
+
+        this.assignment = new_assignment;
+
+        if (this.clue_known) {
+            window.g.puzzles[this.assignment].note_added_clue(this.clue_id, this.puzzle_pos);
+
+            if (reason != 'all') {
+                $('#clue_assignment_on_all_' + this.clue_id).val(this.assignment.toString());
+            }
+        }
+
+        if (reason != 'sync') {
+            change_assignment_sync_status(this.clue_id, 'pending', 'error', window.g.period_until_sync_status_pending_becomes_error);
+            window.g.pending_annotations[this.clue_id * 2] = this.assignment.toString();
+            sync_now(false);
+        }
+
+        if (jump) {
+            navigate_to_clue(this.clue_id);
+        }
+    }
+
+    fill_in_all_clue_table()
+    {
+        var row_selector = '#all_clue_row_' + this.clue_id;
+        var row = $(row_selector);
+        row.attr("puzzle_pos", this.puzzle_pos);
+        row.empty();
+
+        var td_html = '<td class="clue-cell">' + this.clue_display + '</td>';
+        row.append($(td_html));
+
+        td_html = '<td class="guess-cell"><input class="sync-status-' + this.guess_sync_status
+                  + '" id="clue_guess_on_all_' + this.clue_id + '" clue_id="' + this.clue_id + '" size="' + window.g.clue_guess_input_size
+                  + '" maxlength="' + window.g.max_annotation_size + '" autocomplete=off onfocus="$(\'.highlighted-answer-row\').removeClass(\'highlighted-answer-row\'); '
+                  + '$(\'#all_clues_answer_row_' + this.clue_id + '\').addClass(\'highlighted-answer-row\'); return true;"'
+                  + ' onfocusout="$(\'#all_clues_answer_row_' + this.clue_id + '\').removeClass(\'highlighted-answer-row\'); return true;"'
+                  + '></td>';
+        row.append($(td_html));
+
+        td_html = '<td class="buttons-cell"><select class="sync-status-' + this.assignment_sync_status
+                  + '" id="clue_assignment_on_all_' + this.clue_id + '" clue_id="' + this.clue_id
+                  + '" onchange="note_all_assignment_change(this);">';
+        for (var puzzle_id = 0; puzzle_id <= window.g.num_puzzles; ++puzzle_id) {
+            td_html += '<option value="' + puzzle_id + '"'
+                       + (this.assignment == puzzle_id ? " selected" : "")
+                       + '>' + window.g.puzzles[puzzle_id].abbr + '</option>';
+        }
+        td_html += '</select><button class="btn btn-default btn-sm draggable-assignment" tabindex="-1"'
+                   + ' draggable="true" ondragstart="dragstart_handler(event, ' + this.clue_id + ');"'
+                   + ' onclick="navigate_to_clue(' + this.clue_id + '); return false;"><i class="fa fa-hand-o-right"></i></button><button class="btn btn-default btn-sm enable-mytooltip" mytooltip_html="Display information about this clue.  As mentioned in the intro, this button is probably just a waste of your time." onclick="return display_detail_popup(this, '
+                   + this.clue_id + ');" tabindex="-1"><span class="glyphicon glyphicon-info-sign"></span></button></td>';
+        row.append($(td_html));
+
+        var formatted_answer = this.answer_pattern.format(this.canonical_guess);
+        td_html = '<td class="answer-row" id="all_clues_answer_row_' + this.clue_id + '">' + formatted_answer + '</td>';
+        row.append($(td_html));
+
+        var input_selector = '#clue_guess_on_all_' + this.clue_id;
+        $(input_selector).val(this.guess).on("input", note_guess_change_from_all_clues_page);
+    }
+
+
+    update_answer_rows()
+    {
+        var new_row = this.answer_pattern.format(this.canonical_guess);
+        $('#all_clues_answer_row_' + this.clue_id).html(new_row);
+        $('#puzzle_answer_row_' + this.clue_id).html(new_row);
+    }
+
+    reflect_info(clue, answer_pattern, puzzle_pos)
+    {
+        if (this.clue_known) {
+            return;
+        }
+
+        this.clue_known = true;
+        this.clue_display = clue;
+        this.answer_pattern = new AnswerPattern(answer_pattern);
+        this.puzzle_pos = puzzle_pos;
+
+        this.fill_in_all_clue_table();
+
+        window.g.puzzles[this.assignment].note_added_clue(this.clue_id, this.puzzle_pos);
+    }
+}
+
+class Puzzle
+{
+    constructor(puzzle_id, title, check_url_value, abbr, hash, num_clues, num_answer_words)
+    {
+        this.puzzle_id = puzzle_id;
+        this.title = title;
+        this.abbr = abbr;
+        this.hash = hash;
+        this.check_url_value = check_url_value;
+        this.num_clues = num_clues;
+        this.clues_of_row = []
+        this.note = '';
+        this.num_answer_words = num_answer_words
+    }
+
+    note_added_clue(clue_id, puzzle_pos)
+    {
+        if (this.puzzle_id == 0) {
+            var tbody = $('#puzzle0_clue_table > tbody');
+            generate_puzzle_clue_row(tbody, 0, clue_id, puzzle_pos, null);
+        }
+        else {
+            if (this.clues_of_row[puzzle_pos] == undefined) {
+                this.clues_of_row[puzzle_pos] = [];
+            }
+            this.clues_of_row[puzzle_pos].push(clue_id);
+            this.repopulate_answer_table_row(puzzle_pos);
+        }
+    }
+
+    note_removed_clue(clue_id, puzzle_pos)
+    {
+        if (this.puzzle_id == 0) {
+            remove_matching_children($('#puzzle0_clue_table > tbody'), function(e) { return e.getAttribute('clue_id') == clue_id; });
+        }
+        else if (this.clues_of_row[puzzle_pos] != undefined) {
+            this.clues_of_row[puzzle_pos] = this.clues_of_row[puzzle_pos].filter(e => e != clue_id);
+            this.repopulate_answer_table_row(puzzle_pos);
+        }
+    }
+
+    repopulate_answer_table_row(puzzle_pos)
+    {
+        if (puzzle_pos < 1) {
+            return;
+        }
+
+        var tbody_selector = '#puzzle' + this.puzzle_id + '_clue_table > tbody';
+        var tbody = $(tbody_selector);
+        remove_matching_children(tbody, function(e) { return e.getAttribute('puzzle_pos') == puzzle_pos.toString(); });
+
+        if (this.clues_of_row[puzzle_pos] == undefined || this.clues_of_row[puzzle_pos].length == 0) {
+            if (puzzle_pos <= this.num_clues) {
+                var row_html = '<tr puzzle_pos="' + puzzle_pos + '" clue_id="0"><td class="puzzle-pos-cell">' + puzzle_pos + '.</td><td></td><td></td><td></td><td class="answer-row">' + window.g.blank_formatted_row_html + '</td></tr>';
+                var row = $(row_html);
+                insert_child_in_order(tbody, row, compare_assigned_clue_rows);
+            }
+        }
+        else {
+            var warning = null;
+            if (puzzle_pos > this.num_clues) {
+                warning = "This clue shouldn't be assigned to this puzzle, since it contributes letter #" + puzzle_pos + " of its puzzle's answer, but this puzzle only has " + this.num_clues + " letters in its answer.";
+            }
+            else {
+                var n = this.clues_of_row[puzzle_pos].length;
+                if (n == 2) {
+                    warning = "This clue contributes letter #" + puzzle_pos + " of its puzzle's answer.  So does another clue you've assigned to this puzzle.  So you need to reassign one of these (and perhaps both).";
+                }
+                else if (n > 2) {
+                    warning = "This clue contributes letter #" + puzzle_pos + " of its puzzle's answer.  So do " + (n-1) + " other clues you've assigned to this puzzle.  So you need to reassign " + (n-1) + " of these (and perhaps all " + n + ").";
+                }
+            }
+            var puzzle_id = this.puzzle_id;
+            $.each(this.clues_of_row[puzzle_pos],
+                   function (idx, clue_id) {
+                       generate_puzzle_clue_row(tbody, puzzle_id, clue_id, puzzle_pos, warning);
+                   });
+        }
+    }
+}
+
+class StableToggle
+{
+    constructor(toggle_id, state)
+    {
+        this.toggle_id = toggle_id;
+        this.state = state;
+        this.set_callback = null;
+        this.reset_callback = null;
+    }
+
+    associate(set_callback, reset_callback)
+    {
+        this.set_callback = set_callback;
+        this.reset_callback = reset_callback;
+        if (this.state != 0) {
+            (this.set_callback)();
+        }
+    }
+
+    perform_toggle()
+    {
+        this.state = (this.state ? 0 : 1);
+        if (this.state) {
+            if (this.set_callback != null) {
+                (this.set_callback)();
+            }
+        }
+        else {
+            if (this.reset_callback != null) {
+                (this.reset_callback)();
+            }
+        }
+
+        var toggles_storage = localStorage.getItem(window.g.toggles_storage_name);
+        if (toggles_storage == null) {
+            toggles_storage = 0;
+        }
+        if (this.state) {
+            toggles_storage = toggles_storage | (1 << this.toggle_id);
+        }
+        else {
+            toggles_storage = toggles_storage & ~(1 << this.toggle_id);
+        }
+        localStorage.setItem(window.g.toggles_storage_name, toggles_storage);
+    }
+}
+
+class SyncResults
+{
+    constructor()
+    {
+        this.min_clue_id_received = window.g.num_clues + 1;
+        this.max_clue_id_received = 0;
+    }
+
+    note_clue_id_received(clue_id)
+    {
+        if (clue_id < this.min_clue_id_received) {
+            this.min_clue_id_received = clue_id;
+        }
+        if (clue_id > this.max_clue_id_received) {
+            this.max_clue_id_received = clue_id;
+        }
+    }
+
+    report_clue_ids_received()
+    {
+        if (this.min_clue_id_received == this.max_clue_id_received) {
+            log_message(1, 'success', "Congratulations!  You've earned clue " + this.min_clue_id_received);
+        }
+        else if (this.min_clue_id_received < this.max_clue_id_received) {
+            log_message(1, 'success', "Congratulations!  You've earned clues " + this.min_clue_id_received + " through " + this.max_clue_id_received);
+        }
+    }
+}
+
+function get_toggle_by_id(toggle_id)
+{
+    var toggle = window.g.stable_toggles[toggle_id];
+    if (toggle == undefined || toggle == null) {
+        toggle = new StableToggle(toggle_id, 0);
+        window.g.stable_toggles[toggle_id] = toggle;
+    }
+    return toggle;
+}
+
+function initialize_stable_toggles()
+{
+    window.g.toggles_storage_name = 'SyncTest.toggles';
+    window.g.stable_toggles = [];
+
+    var n = localStorage.getItem(window.g.toggles_storage_name);
+    if (n == null) {
+        n = 0;
+    }
+    var toggle_id = 0;
+    while (n != 0) {
+        if (n % 2 != 0) {
+            var toggle = new StableToggle(toggle_id, 1);
+            window.g.stable_toggles[toggle_id] = toggle;
+        }
+        ++toggle_id;
+        n = n >> 1;
+    }
+}
+
+function create_click_toggler(toggle_id, toggler, set_callback, reset_callback)
+{
+    var toggle = get_toggle_by_id(toggle_id);
+    toggle.associate(set_callback, reset_callback);
+    toggler.click(function(event) { toggle.perform_toggle(); return false; });
+}
+
+function create_click_toggler_that_slides(toggle_id, toggler, slider, default_open)
+{
+    var toggle = get_toggle_by_id(toggle_id);
+    var fa = $("i", toggler);
+    var open_callback = function() {
+        slider.slideDown('fast');
+        fa.removeClass("fa-chevron-down").addClass("fa-chevron-up");
+    };
+    var close_callback = function() {
+        slider.slideUp('fast');
+        fa.removeClass("fa-chevron-up").addClass("fa-chevron-down");
+    }
+    if (default_open) {
+        create_click_toggler(toggle_id, toggler, close_callback, open_callback);
+    }
+    else {
+        create_click_toggler(toggle_id, toggler, open_callback, close_callback);
+    }
+}
+
+function generate_mytooltip(element, event)
+{
+    if (!window.g.mytooltip_enabled) {
+        return;
+    }
+    
+    var html = '<p class="mytooltip" id="' + element.attr("id") + '_tooltip"></p>';
+    var tooltip_top = event.pageY - 10;
+    var tooltip_left = event.pageX + 20;
+    var page_width = $(window).width();
+    if (tooltip_left + 100 > page_width) {
+        tooltip_left = page_width - 100;
+        tooltip_top = tooltip_top + 20;
+    }
+
+    $(html)
+      .html(element.attr("mytooltip_html"))
+      .css("top", tooltip_top + "px")
+      .css("left", tooltip_left + "px")
+      .appendTo("body")
+      .fadeIn("slow")
+      .click(function () { $(this).remove(); });
+}
+
+function handle_mytooltip_hoverin(event)
+{
+    var closure_element = $(this);
+    var timer = setTimeout(function() { generate_mytooltip(closure_element, event); }, 500);
+    $(this).data("mytooltip_timer", timer);
+}
+
+function hide_mytooltip_popup(event)
+{
+    var timer = $(this).data("mytooltip_timer");
+    clearTimeout(timer);
+    $(this).data("mytooltip_timer", null);
+
+    var target = "#" + $(this).attr("id") + "_tooltip";
+    var elt = $(target);
+    if (elt) {
+        elt.remove();
+    }
+}
+
+function toggle_mytooltip(event)
+{
+    if (event) {
+        event.preventDefault();
+    }
+
+    window.g.mytooltip_enabled = !window.g.mytooltip_enabled;
+}
+
+function initialize_mytooltip()
+{
+    window.g.mytooltip_enabled = true;
+    $("<style> .mytooltip { position: absolute; border: 1px solid #333; background-color: yellow; color:black; padding: 2px 6px;</style>").appendTo($('head'));
+
+    $(document).on("mouseenter touchstart", ".enable-mytooltip", handle_mytooltip_hoverin);
+    $(document).on("mouseleave touchend change", ".enable-mytooltip", hide_mytooltip_popup);
+}
+
+function activate_tab(hash, add_to_back_list)
+{
+    if (hash == '' || hash == '#') {
+        hash = '#intro';
+    }
+
+    if (hash == window.g.current_tab) {
+        return;
+    }
+
+    if (!(hash in window.g.valid_hashes)) {
+        log_message(3, "danger", "ERROR:  Attempt to activate invalid tab " + hash);
+        return;
+    }
+
+    window.g.current_tab = hash;
+
+    if (add_to_back_list) {
+        history.pushState(null, null, hash);
+    }
+
+    $(".main-tab").removeClass('active');
+    $(hash + '_tab').addClass('active');
+    $(".main-tab-content").hide();
+    $(hash + '_tab_content').show();
+
+    $(hash + '_tab_content input:first').focus();
+}
+
+function remove_matching_children(parent, fn)
+{
+    var marked = [];
+    $.each(parent.children(), function(idx, e) { if (fn(e)) { marked.push(e) } });
+    $.each(marked, function(idx, e) { e.remove(); });
+}
+
+function insert_child_in_order(parent, new_element, cmp)
+{
+    var children = parent.children();
+    var left = -1;
+    var right = children.length;
+    while (left + 1 < right) {
+        var mid = Math.floor((left + right) / 2);
+        var result = cmp(new_element, $(children[mid]));
+        if (result < 0) {
+            left = mid;
+        }
+        else if (result > 0) {
+            right = mid;
+        }
+        else {
+            return false;
+        }
+    }
+    if (right >= children.length) {
+        parent.append(new_element);
+    }
+    else {
+        $(children[right]).before(new_element);
+    }
+    return true;
+}
+
+function generate_puzzle_clue_row(tbody, puzzle_id, clue_id, puzzle_pos, warning)
+{
+    var clue = window.g.clues[clue_id];
+    var row_html = '<tr class="clue-row' + (warning ? ' conflict-row' : '') + '"'
+                   + ' id="puzzle_clue_row_' + clue_id + '"'
+                   + ' clue_id="' + clue_id + '"'
+                   + (puzzle_id != 0 ? ' puzzle_pos="' + puzzle_pos + '"' : '')
+                   + '>'
+                   + (puzzle_id != 0 ? '<td class="puzzle-pos-cell">' + puzzle_pos + '.</td>' : '')
+                   + '<td class="clue-cell">'
+                   + clue.clue_display
+                   + '</td><td class="guess-cell"><input class="sync-status-' + clue.guess_sync_status
+                   + '" id="puzzle_clue_guess_' + clue_id + '" clue_id="' + clue_id
+                   + '" size="' + window.g.clue_guess_input_size + '" maxlength="' + window.g.max_annotation_size
+                   + '" autocomplete=off onfocus="$(\'.highlighted-answer-row\').removeClass(\'highlighted-answer-row\'); '
+                   + '$(\'#puzzle_answer_row_' + clue_id + '\').addClass(\'highlighted-answer-row\'); return true;"'
+                   + ' onfocusout="$(\'#puzzle_answer_row_' + clue_id + '\').removeClass(\'highlighted-answer-row\'); return true;">'
+                   + '</td><td class="buttons-cell"><div class="dropdown"><button class="btn btn-default btn-sm dropdown-toggle draggable-assignment enable-mytooltip sync-status-'
+                   + clue.assignment_sync_status
+                   + (warning ? ' make-warning-red" mytooltip_html="' + warning + '"' : '" mytooltip_html="Assign this clue to a puzzle"')
+                   + ' draggable="true" ondragstart="dragstart_handler(event, ' + clue_id + ');"'
+                   + ' id="puzzle_assignment_button_'
+                   + clue_id
+                   + '" type="button" data-toggle="dropdown" tabindex="-1"><i class="fa fa-share"></i>'
+                   + (warning ? '<i class="fa fa-warning"></i>' : '')
+                   + '</button><button class="btn btn-default btn-sm enable-mytooltip" mytooltip_html="Display information about this clue.  As mentioned in the intro, this button is probably just a waste of your time." onclick="return display_detail_popup(this, '
+                   + clue_id
+                   + ');" tabindex="-1"><span class="glyphicon glyphicon-info-sign"></span></button>'
+                   + '<ul class="dropdown-menu"><li class="dropdown-header">Assign to...</li>';
+    for (var i = 0; i <= window.g.num_puzzles; ++i) {
+        if (i == puzzle_id) {
+            row_html += '<li><a href="#" onclick="return false;"><b><i>' + window.g.puzzles[i].abbr + '</i></b></a></li>';
+        }
+        else {
+            row_html += '<li><a href="#" onclick="window.g.clues[' + clue_id
+                        + '].update_assignment(' + i + ', \'puzzle\', false); return false;">' + window.g.puzzles[i].abbr + '</a></li>';
+        }
+    }
+    row_html += '</ul></div></td><td id="puzzle_answer_row_' + clue_id + '" class="answer-row">'
+                + clue.answer_pattern.format(clue.canonical_guess)
+                + '</td></tr>';
+    var row = $(row_html);
+    insert_child_in_order(tbody, row, puzzle_id != 0 ? compare_assigned_clue_rows : compare_unassigned_clue_rows);
+
+    var input_selector = '#puzzle_clue_guess_' + clue_id;
+    $(input_selector).val(clue.guess).on("input", note_guess_change_from_puzzle_page);
+}
+
+function zero_pad(n)
+{
+    if (n < 10) {
+        return "0" + n;
+    }
+    else {
+        return n;
+    }
+}
+
+function log_message(level, alert_type, msg)
+{
+    var date = new Date();
+    var row_str = '<tr><td level="' + level + '">' + zero_pad(date.getHours()) + ':' + zero_pad(date.getMinutes()) + ':'
+                + zero_pad(date.getSeconds()) + '</td><td class="log_message"></td></tr>';
+    var new_row = $(row_str);
+    $(".log_message", new_row).text(msg);
+
+    new_row.prependTo("#log_message_list");
+
+    while ($("#log_message_list tr").length > $("#log_message_list").attr("max_rows")) {
+        $("#log_message_list tr:last").remove();
+        $("#event_log_truncated").show();
+    }
+
+    if (alert_type == 'success' || alert_type == 'info' || alert_type == 'danger') {
+        $("#status_message").text(msg);
+        $("#status").removeClass("alert-success alert-info alert-danger")
+                    .addClass("alert-" + alert_type)
+                    .show();
+        clearTimeout(window.g.erase_log_message_timer);
+        window.g.erase_log_message_timer = setTimeout(hide_status_message, window.g.erase_log_message_delay);
+    }
+}
+
+function hide_status_message()
+{
+    $("#status_message").text('');
+    $("#status").hide();
+    clearTimeout(window.g.erase_log_message_timer);
+}
+
+function make_safe(s)
+{
+    return $('<div>').text(s).html();
+}
+
+function navigate_to_clue(clue_id)
+{
+    var clue = window.g.clues[clue_id];
+    var hash = window.g.puzzles[clue.assignment].hash;
+    activate_tab(hash, true);
+
+    var element = $('#puzzle_clue_guess_' + clue_id);
+    element.select().focus();
+}
+
+function compare_assigned_clue_rows(row1, row2)
+{
+   var pos_diff = Number(row2.attr("puzzle_pos")) - Number(row1.attr("puzzle_pos"));
+   if (pos_diff != 0) {
+       return pos_diff;
+   }
+   else {
+       return Number(row2.attr("clue_id")) - Number(row1.attr("clue_id"));
+   }
+}
+
+function compare_unassigned_clue_rows(row1, row2)
+{
+   return Number(row2.attr("clue_id")) - Number(row1.attr("clue_id"));
+}
+
+function compare_puzzle_lis(li1, li2)
+{
+    return Number(li2.attr("puzzle_id")) - Number(li1.attr("puzzle_id"));
+}
+
+function initialize_puzzle(puzzle_id, title, check_url_value, abbr, hash, num_clues, flavortext)
+{
+    var puzzle = new Puzzle(puzzle_id, title, check_url_value, abbr, hash, num_clues);
+    window.g.puzzles[puzzle_id] = puzzle;
+    window.g.valid_hashes[hash] = true;
+    window.g.unsolved_puzzles[check_url_value] = 1;
+
+    var hash_suffix = hash.substring(1);
+    var check_answer_url = window.g.check_answer_url_template.replace('%s', check_url_value);
+    var div_html = '<div class="main-tab-content" id="' + hash_suffix
+                 + '_tab_content" hidden><div class="row"><div class="col-md12"><center><h3>' + title + ' &mdash; <a href="'
+                 + check_answer_url
+                 + '" target="_blank">Check answer</a></h3>'
+                 + flavortext
+                 + '</center></div></div><div class="row"><div class="col-md-12">'
+                 + '<div class="panel panel-default hideable-help"><div class="panel-heading">Generic instructions<span class="tools-right">To hide this and other help panels, use the <i class="fa fa-question-circle-o"></i> button in the tools menu.</span></div><div class="panel-body"><p>To solve this puzzle, you need to first figure out what clues go with it, then assign them to this puzzle.  You can do that from the "All" tab (and from other tabs).</p><p>This page won\'t check the answer for you. If you want to get credit for solving it, follow the "Check answer" link above, which will take you to a separate answer-checking page.</p></div></div>'
+                 + '</div></div><div class="row"><div class="col-md-12"><center><table class="clue-table" id="puzzle'
+                 + puzzle_id + '_clue_table"><tbody></tbody></table></center></div></div></div>';
+    $("#br_after_tabs").before($(div_html));
+
+    var li_html = '<li class="main-tab" id="' + hash_suffix + '_tab"><a href="' + hash
+                + '" onclick="activate_tab(\'' + hash + '\', true); return false;" ondrop="drop_handler(event, '
+                + puzzle_id + ');" ondragover="dragover_handler(event);">'
+                + ' <span id="puzzle_solved_' + check_url_value  + '">' + abbr
+                + ' <span id="puzzle_checkmark_' + check_url_value + '" hidden><i class="fa fa-check"></i></span></span></a></li>';
+    $("#main_nav_ul").append($(li_html));
+
+    for (var i = 1; i <= num_clues; ++i) {
+        puzzle.repopulate_answer_table_row(i);
+    }
+}
+
+function initialize_clue(clue_id, solve_count)
+{
+    var clue = new Clue(clue_id, solve_count);
+    window.g.clues[clue_id] = clue;
+
+    var row_html = '<tr class="clue-row" id="all_clue_row_' + clue_id + '" clue_id="' + clue_id + '">'
+                   + '<td class="placeholder-clue-cell" colspan="4">' + clue.clue_display + '</td></tr>';
+    var row = $(row_html);
+    var tbody = $("#all_clues_clue_table > tbody");
+    tbody.append(row);
+}
+
+function handle_token(token, sync_results)
+{
+    var clue_id = Number(token.clue_id);
+    var clue = token.clue;
+    var answer_pattern = token.answer_pattern;
+    var puzzle_pos = Number(token.puzzle_pos);
+    if (clue_id < 1 || clue_id > window.g.num_clues) {
+        log_message(2, "info", "WARNING:  Token for invalid clue number " + clue_id);
+        return;
+    }
+    window.g.clues[clue_id].reflect_info(clue, answer_pattern, puzzle_pos);
+    sync_results.note_clue_id_received(clue_id);
+}
+
+function handle_token_entry(token_entry, sync_results)
+{
+    if ("solve_count" in token_entry && $.isNumeric(token_entry.solve_count)
+        && token_entry.solve_count >= window.g.min_unknown_solve_count
+        && "contents" in token_entry && $.type(token_entry.contents) == "string") {
+        handle_token(JSON.parse(token_entry.contents), sync_results);
+    }
+    else {
+        log_message(3, "danger", "ERROR:  Invalid token received");
+    }
+}
+
+function apply_annotation(annotation, reason)
+{
+    var clue = window.g.clues[annotation.clue_id];
+
+    if (annotation.type == 'assignment') {
+        clue.update_assignment(annotation.assignment, reason, false);
+    }
+    else if (annotation.type == 'guess') {
+        clue.update_guess(annotation.guess, reason);
+    }
+}
+
+function handle_server_annotation(annotation)
+{
+    if (annotation.key in window.g.server_annotation_versions) {
+        var current_version = window.g.server_annotation_versions[annotation.key];
+        if (annotation.version < current_version) {
+            log_message(3, "danger", "ERROR:  Received annotation for key " + annotation.key + " with lower version "
+                                     + annotation.version + " than current version " + current_version);
+            return;
+        }
+    }
+
+    window.g.server_annotation_versions[annotation.key] = annotation.version;
+
+    if (!$.isNumeric(annotation.clue_id)) {
+        log_message(3, "danger", "ERROR:  Received invalid clue ID " + annotation.clue_id + " in annotation");
+        return;
+    }
+    if (annotation.clue_id < 1 || annotation.clue_id > window.g.num_clues) {
+        log_message(3, "danger", "ERROR:  Received out-of-range clue ID " + annotation.clue_id + " in annotation");
+        return;
+    }
+
+    apply_annotation(annotation, 'sync');
+}
+
+function handle_server_annotation_entry(ignore, annotation_entry)
+{
+    if ("key" in annotation_entry && "contents" in annotation_entry && "version" in annotation_entry) {
+        annotation = new Annotation(annotation_entry.key, annotation_entry.contents, annotation_entry.version);
+        handle_server_annotation(annotation);
+    }
+    else {
+        log_message(3, "danger", "ERROR:  Invalid annotation received");
+    }
+}
+
+function note_solved_puzzle(ignore, solved_puzzle)
+{
+    if (solved_puzzle in window.g.unsolved_puzzles) {
+        $("#puzzle_solved_" + solved_puzzle).addClass("solved-tab");
+        $("#puzzle_checkmark_" + solved_puzzle).show();
+        delete window.g.unsolved_puzzles[solved_puzzle];
+    }
+}
+
+function handle_sync_success(data)
+{
+    if ("error" in data) {
+        log_message(3, "danger", "ERROR:  Results of sync failed with error: " + data.error);
+        change_every_sync_status_after_failed_sync();
+        return false;
+    }
+
+    try {
+        if ("site_version" in data) {
+            if (window.g.site_version == null) {
+                window.g.site_version = data.site_version;
+            }
+            else if (window.g.site_version != data.site_version) {
+                window.location.reload();
+            }
+        }
+
+        if ("sync_period" in data && $.isNumeric(data.sync_period) && window.g.sync_period != data.sync_period) {
+            log_message(2, "info", "At server's request, changing sync period to " + data.sync_period + " ms");
+            window.g.sync_period = data.sync_period;
+        }
+
+        var sync_results = new SyncResults();
+
+        if ("min_solve_count" in data && $.isNumeric(data.min_solve_count)
+            && "max_solve_count" in data && $.isNumeric(data.max_solve_count)
+            && data.max_solve_count >= window.g.min_unknown_solve_count
+            && "tokens" in data && $.isArray(data.tokens)) {
+
+            if (data.min_solve_count > window.g.min_unknown_solve_count) {
+                log_message(2, "info", "WARNING:  Ignoring response with too-high minimum solve count:  "
+                                       + data.min_solve_count + " > " + window.g.min_unknown_solve_count);
+            }
+            else {
+                $.each(data.tokens, function(key, value) { handle_token_entry(value, sync_results); });
+
+                window.g.min_unknown_solve_count = data.max_solve_count + 1;
+                $("#current_solve_count").text(data.max_solve_count.toString());
+                if (!window.g.initializing) {
+                    sync_results.report_clue_ids_received();
+                }
+            }
+        }
+
+        if ("annotations" in data && $.isArray(data.annotations)) {
+            window.g.last_sync_time_according_to_server = data.sync_time;
+            $.each(data.annotations, handle_server_annotation_entry);
+        }
+
+        if ("solved_puzzles" in data && $.isArray(data.solved_puzzles)) {
+            $.each(data.solved_puzzles, note_solved_puzzle);
+        }
+
+        return true;
+    }
+    catch (err) {
+        log_message(3, "danger", "ERROR:  Failed to process results of sync: " + err);
+        change_every_sync_status_after_failed_sync();
+        return false;
+    }
+}
+
+function handle_sync_complete(xhr, status)
+{
+    window.g.syncing = false;
+
+    if (window.g.pending_sync) {
+        if (window.g.consecutive_syncs < window.g.max_consecutive_syncs) {
+            window.g.consecutive_syncs++;
+            sync_now(window.g.pending_sync_requesting_tokens);
+        }
+        else {
+            log_message(2, "info", "WARNING:  Lots of consecutive syncs in a row, so not syncing until the next automatic sync");
+            window.g.consecutive_syncs = 0;
+        }
+    }
+    else {
+        window.g.consecutive_syncs = 0;
+    }
+}
+
+function handle_sync_fail(xhr, status, err)
+{
+    change_every_sync_status_after_failed_sync();
+    log_message(3, "danger", "ERROR:  Sync server request failed with " + xhr.statusText);
+}
+
+function send_sync_request(requesting_tokens)
+{
+    var params = { "site_version" : window.g.site_version };
+
+    if (requesting_tokens || window.g.pending_increment_solve_count > 0) {
+        params.min_solve_count = window.g.min_unknown_solve_count;
+        params.query_puzzle_ids = Object.keys(window.g.unsolved_puzzles);
+    }
+
+    params.new_solve_count = window.g.pending_increment_solve_count;
+    window.g.pending_increment_solve_count = 0;
+
+    annotations = [];
+    $.each(window.g.pending_annotations, function(key, value) {
+               var annotation = { "key" : Number(key), "contents" : value };
+               annotations.push(annotation);
+           });
+    params["annotations"] = JSON.stringify(annotations);
+    window.g.pending_annotations = {};
+
+    if (window.g.last_sync_time_according_to_server != null) {
+        params.last_sync_time = window.g.last_sync_time_according_to_server;
+    }
+
+    $.ajax( { type : "POST",
+              url : "/@Model.EventId/api/Sync/@Model.MetapuzzleId/",
+              data : params })
+     .done(function (data, status, xhr) { handle_sync_success(data); })
+     .fail(handle_sync_fail)
+     .always(handle_sync_complete);
+}
+
+function sync_now(requesting_tokens)
+{
+    if (window.g.syncing) {
+        log_message(1, null, "Not initiating a sync because a sync request is currently outstanding");
+        window.g.pending_sync = true;
+        if (requesting_tokens) {
+            window.g.pending_sync_requesting_tokens = true;
+        }
+        return;
+    }
+
+    window.g.syncing = true;
+    window.g.pending_sync = false;
+    window.g.pending_sync_requesting_tokens = false;
+
+    send_sync_request(requesting_tokens);
+}
+
+function sync_now_requesting_tokens()
+{
+    sync_now(true);
+}
+
+function increment_solve_count(count)
+{
+    window.g.pending_increment_solve_count += count;
+    sync_now(true);
+}
+
+function note_guess_change_from_puzzle_page(event)
+{
+    var clue_id = Number(event.target.getAttribute("clue_id"));
+    var new_guess = event.target.value;
+    window.g.clues[clue_id].update_guess(new_guess, 'puzzle');
+}
+
+function note_guess_change_from_all_clues_page(event)
+{
+    var clue_id = Number(event.target.getAttribute("clue_id"));
+    var new_guess = event.target.value;
+    window.g.clues[clue_id].update_guess(new_guess, 'all');
+}
+
+function note_all_assignment_change(element)
+{
+    var clue_id = Number(element.getAttribute("clue_id"));
+    var new_assignment = element.value;
+    window.g.clues[clue_id].update_assignment(new_assignment, 'all', false);
+}
+
+function dragstart_handler(event, clue_id)
+{
+    $(event.target).change();
+    event.dataTransfer.setData("text/plain", clue_id);
+    event.dataTransfer.dropEffect = 'move';
+}
+
+function dragover_handler(event)
+{
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+}
+
+function drop_handler(event, puzzle_id)
+{
+    event.preventDefault();
+
+    var clue_id = Number(event.dataTransfer.getData("text/plain"));
+    if (clue_id < 1 || clue_id > window.g.num_clues) {
+        log_message(3, "danger", "ERROR:  Drag-and-drop got invalid clue number " + clue_id);
+        return;
+    }
+
+    window.g.clues[clue_id].update_assignment(puzzle_id, 'drag', true);
+}
+
+function manage_undo_list_upon_change(annotation, reason)
+{
+    if (reason == 'sync') {
+        return;
+    }
+    else if (reason == 'undo') {
+        window.g.redo_list.push(annotation);
+        $("#redo_button").prop("disabled", false).change();
+    }
+    else {
+        window.g.undo_list.push(annotation);
+        $("#undo_button").prop("disabled", false).change();
+        while (window.g.undo_list.length > window.g.max_undo_list_size) {
+            window.g.undo_list.shift();
+        }
+        if (reason != 'redo') {
+            window.g.redo_list = [];
+            $("#redo_button").prop("disabled", true).change();
+        }
+    }
+}
+
+function perform_undo()
+{
+    if (window.g.undo_list.length == 0) {
+        log_message(2, "info", "Can't undo because the undo list is empty");
+        return;
+    }
+
+    var annotation = window.g.undo_list.pop();
+    if (window.g.undo_list.length == 0) {
+        $("#undo_button").prop("disabled", true).change();
+    }
+    apply_annotation(annotation, 'undo');
+}
+
+function perform_redo()
+{
+    if (window.g.redo_list.length == 0) {
+        log_message(2, "info", "Can't redo because the redo list is empty");
+        return;
+    }
+
+    var annotation = window.g.redo_list.pop();
+    if (window.g.redo_list.length == 0) {
+        $("#redo_button").prop("disabled", true).change();
+    }
+    apply_annotation(annotation, 'redo');
+}
+
+function display_detail_popup(element, clue_id)
+{
+    var clue = window.g.clues[clue_id];
+    html = '<div class="detail-popup"><p></p><p>As the intro says, this information is presented in a much more useful form elsewhere, so it\'s probably a waste of your time to look at it here:</p><p>This is clue <span class="detail-specific">#'
+         + clue_id + '</span>.</p><p>The text of the clue is <span class="detail-specific">'
+         + clue.clue_display + '</span>.</p><p>The clue\'s answer is of the form <span class="detail-specific">'
+         + clue.answer_pattern.pattern + '</span> where each x or X stands for a letter.</p><p>The letter corresponding to the X is letter <span class="detail-specific">#'
+         + clue.puzzle_pos + '</span> of the yellow-highlighted message for this puzzle.  For instance, if this clue is supposed to be assigned to '
+         + window.g.puzzles[1].title + ', and if this clue\'s correct answer is "'
+         + clue.answer_pattern.example + '", then letter <span class="detail-specific">#'
+         + clue.puzzle_pos + '</span> of the yellow-highlighted message for '
+         + window.g.puzzles[1].title + ' is B.</p>';
+    var tooltip_top = this.event.pageY - 10;
+    var tooltip_left = this.event.pageX - 10;
+    var page_width = $(window).width();
+    if (tooltip_left + 100 > page_width) {
+        tooltip_left = page_width - 100;
+        tooltip_top = tooltip_top + 20;
+    }
+
+    $(html)
+      .css("top", tooltip_top + "px")
+      .css("left", tooltip_left + "px")
+      .appendTo("body")
+      .fadeIn("slow")
+      .click(function () { $(this).remove(); })
+      .mouseleave(function () { $(this).remove(); });
+
+    return false;
+}
+
+function change_guess_sync_status(clue_id, status_now, status_later, delay_period)
+{
+    if (window.g.initializing) {
+        return;
+    }
+
+    var clue = window.g.clues[clue_id];
+    var old_status_class = 'sync-status-' + clue.guess_sync_status;
+    var new_status_class = 'sync-status-' + status_now;
+    var puzzle_clue = $('#puzzle_clue_guess_' + clue_id);
+    var clue_on_all = $('#clue_guess_on_all_' + clue_id);
+    puzzle_clue.removeClass(old_status_class).addClass(new_status_class);
+    clue_on_all.removeClass(old_status_class).addClass(new_status_class);
+    clue.guess_sync_status = status_now;
+
+    clearTimeout(clue.guess_sync_status_timeout);
+    clue.guess_sync_status_timeout = null;
+    if (status_later != null) {
+        clue.guess_sync_status_timeout = setTimeout(function() { change_guess_sync_status(clue_id, status_later, null, 0); }, delay_period);
+    }
+}
+
+function change_assignment_sync_status(clue_id, status_now, status_later, delay_period)
+{
+    if (window.g.initializing) {
+        return;
+    }
+
+    var clue = window.g.clues[clue_id];
+    var old_status_class = 'sync-status-' + clue.assignment_sync_status;
+    var new_status_class = 'sync-status-' + status_now;
+    var puzzle_assignment = $('#puzzle_assignment_button_' + clue_id);
+    var assignment_on_all = $('#clue_assignment_on_all_' + clue_id);
+    puzzle_assignment.removeClass(old_status_class).addClass(new_status_class);
+    assignment_on_all.removeClass(old_status_class).addClass(new_status_class);
+    clue.assignment_sync_status = status_now;
+
+    clearTimeout(clue.assignment_sync_status_timeout);
+    clue.assignment_sync_status_timeout = null;
+    if (status_later != null) {
+        clue.assignment_sync_status_timeout = setTimeout(function() { change_assignment_sync_status(clue_id, status_later, null, 0); }, delay_period);
+    }
+}
+
+function change_every_sync_status_after_failed_sync()
+{
+    for (var clue_id = 1; clue_id <= window.g.num_clues; ++clue_id) {
+        if (window.g.clues[clue_id].guess_sync_status == 'pending') {
+            change_guess_sync_status(clue_id, 'error', null, 0);
+        }
+        if (window.g.clues[clue_id].assignment_sync_status == 'pending') {
+            change_assignment_sync_status(clue_id, 'error', null, 0);
+        }
+    }
+}
+
+function initialize_puzzle_content()
+{
+    window.g.num_puzzles = 3;
+    window.g.puzzles = Array(window.g.num_puzzles + 1);
+    window.g.puzzles[0] = new Puzzle(0, "Unassigned", 0, "Unassigned", "#unassigned", 0, "");
+    window.g.num_clues = 60;
+    window.g.clues = Array(window.g.num_clues + 1);
+    window.g.valid_hashes = { '#intro' : true, '#all' : true, '#unassigned' : true };
+    window.g.unsolved_puzzles = {};
+
+    // Initialize each puzzle
+
+    initialize_puzzle(1, "Kitchen Sync", @Model.KitchenSyncId, "Kitchen", "#kitchen", 4, "")
+    initialize_puzzle(2, "Heat Sync", @Model.HeatSyncId, "Heat", "#heat", 2, "")
+    initialize_puzzle(3, "Lip Sync", @Model.LipSyncId, "Lip", "#lip", 4, "")
+
+    // Initialize each clue
+
+    initialize_clue(1, 0)
+    initialize_clue(2, 1)
+    initialize_clue(3, 1)
+    initialize_clue(4, 2)
+    initialize_clue(5, 2)
+    initialize_clue(6, 2)
+    initialize_clue(7, 3)
+    initialize_clue(8, 4)
+    initialize_clue(9, 4)
+    initialize_clue(10, 4)
+}
+
+function make_blank_formatted_row_html()
+{
+    var html = '<center><table class="answer-table"><tbody><tr>';
+    for (var i = 0; i < window.g.max_side_letters; ++i) {
+        html += '<td>&nbsp;</td>';
+    }
+    html += '<td class="yellow-cell">&nbsp;</td>'
+    for (var i = 0; i < window.g.max_side_letters; ++i) {
+        html += '<td>&nbsp;</td>';
+    }
+    html += '</tr></tbody></table></center>';
+    return html;
+}
+
+function create_faq_toggler(id, name)
+{
+    create_click_toggler_that_slides(id, $("#faq_q_" + name), $("#faq_a_" + name), false);
+}
+
+function create_faq_togglers()
+{
+    create_faq_toggler(0, "solving_puzzles")
+    create_faq_toggler(1, "synchronization")
+    create_faq_toggler(2, "sync_status")
+    create_faq_toggler(3, "buttons")
+    create_faq_toggler(4, "tab_navigation")
+    create_faq_toggler(5, "checking_answers")
+    create_faq_toggler(6, "row_numbers")
+}
+
+function initialize_page()
+{
+    window.initialization_start_time = performance.now();
+
+    window.g = {}
+
+    initialize_stable_toggles();
+    initialize_mytooltip();
+
+    window.g.site_version = null;
+    window.g.check_answer_url_template = '/@Model.EventId/play/Submissions/%s';
+    window.g.erase_log_message_delay = 30000;
+    window.g.sync_period = 60000;
+    window.g.edit_delay_period = 5000;
+    window.g.max_undo_list_size = 100;
+    window.g.max_side_letters = 19;
+    window.g.max_annotation_size = 255;
+    window.g.clue_guess_input_size = 20;
+    window.g.max_consecutive_syncs = 10;
+    window.g.sync_status_success_display_period = 5000;
+    window.g.period_until_sync_status_pending_becomes_error = 10000;
+    window.g.sync_status_remote_display_period = 30000;
+
+    window.g.initializing = true;
+    window.g.min_unknown_solve_count = 0;
+    window.g.log_level = 0;
+    window.g.erase_log_message_timer = null;
+    window.g.syncing = false;
+    window.g.pending_increment_solve_count = 0;
+    window.g.pending_sync = false;
+    window.g.pending_sync_requesting_tokens = false;
+    window.g.last_sync_time_according_to_server = null;
+    window.g.consecutive_syncs = 0;
+    window.g.pending_annotations = {};
+    window.g.server_annotation_versions = {};
+    window.g.undo_list = [];
+    window.g.redo_list = [];
+    window.g.blank_formatted_row_html = make_blank_formatted_row_html();
+
+    create_faq_togglers();
+    create_click_toggler_that_slides(15, $("#log_toggler"), $("#event_log"));
+    create_click_toggler(16, $("#tooltip_toggle"),
+                         function() { window.g.mytooltip_enabled = false; },
+                         function() { window.g.mytooltip_enabled = true;  });
+
+    initialize_puzzle_content();
+    $(".num-clues-span").text(window.g.num_clues);
+    $(".num-puzzles-span").text(window.g.num_puzzles);
+
+    create_click_toggler(17, $("#help_toggle"),
+                         function() { $(".hideable-help").hide(); },
+                         function() { $(".hideable-help").show(); });
+
+    handle_sync_success(JSON.parse('@Html.Raw(Model.InitialSyncString)'));
+    setInterval(sync_now_requesting_tokens, window.g.sync_period);
+
+    window.g.current_tab = null;
+    activate_tab(window.location.hash, false);
+
+    if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+    }
+    window.addEventListener("popstate", function(e) {
+        activate_tab(window.location.hash, false);
+        e.preventDefault();
+        });
+
+    window.onbeforeunload = function(e) { send_sync_request(); };
+    window.g.initializing = false;
+}
+
+$(document).ready(initialize_page);
+</script>
+</body>
+</html>
