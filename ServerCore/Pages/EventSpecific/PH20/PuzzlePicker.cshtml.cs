@@ -20,12 +20,23 @@ namespace ServerCore.Pages.EventSpecific.PH20
         {
         }
 
+        public List<Puzzle> PuzzleOptions { get; set; }
+        public int PrereqPuzzleId { get; set; }
+
         public async Task<IActionResult> OnGet(int puzzleId)
         {
+            PrereqPuzzleId = puzzleId;
+
             Puzzle puzzle = await (from puzz in _context.Puzzles
                                    where puzz.ID == puzzleId
                                    select puzz).FirstOrDefaultAsync();
             if (puzzle == null)
+            {
+                return NotFound();
+            }
+
+            // Restrict this page to whistle stops
+            if (puzzle.MinutesOfEventLockout == 0)
             {
                 return NotFound();
             }
@@ -46,7 +57,78 @@ namespace ServerCore.Pages.EventSpecific.PH20
                 return NotFound();
             }
 
+            // Treat all locked puzzles where this is a prerequisite as puzzles that can be unlocked
+            PuzzleOptions = await (from pspt in puzzleStateQuery
+                                       join prereq in _context.Prerequisites on pspt.PuzzleID equals prereq.PuzzleID
+                                       where prereq.PrerequisiteID == puzzle.ID &&
+                                       pspt.SolvedTime == null && pspt.UnlockedTime == null
+                                       select prereq.Puzzle).ToListAsync();
+
             return Page();
+        }
+
+        public async Task<IActionResult> OnPostUnlock(int puzzleId, int unlockId)
+        {
+            Puzzle puzzle = await (from puzz in _context.Puzzles
+                                   where puzz.ID == puzzleId
+                                   select puzz).FirstOrDefaultAsync();
+            if (puzzle == null)
+            {
+                return NotFound();
+            }
+
+            // Restrict this page to whistle stops
+            if (puzzle.MinutesOfEventLockout == 0)
+            {
+                return NotFound();
+            }
+
+            Team team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
+
+
+            var puzzleStateQuery = PuzzleStateHelper.GetSparseQuery(_context, Event, null, team);
+            PuzzleStatePerTeam prereqState = await (from pspt in puzzleStateQuery
+                                              where pspt.PuzzleID == puzzle.ID && pspt.TeamID == team.ID
+                                              select pspt).FirstOrDefaultAsync();
+            if (prereqState == null)
+            {
+                return NotFound();
+            }
+
+            // Only move forward if the prereq is open and unsolved
+            if (prereqState.UnlockedTime == null || prereqState.SolvedTime != null)
+            {
+                return NotFound("Your team has already chosen and can't choose again");
+            }
+
+            PuzzleStatePerTeam unlockState = await (from pspt in puzzleStateQuery
+                                                    where pspt.PuzzleID == unlockId && pspt.TeamID == team.ID
+                                                    select pspt).FirstOrDefaultAsync();
+            if (unlockState == null)
+            {
+                return NotFound();
+            }
+
+            // The chosen puzzle must be locked (and unsolved)
+            if (unlockState.UnlockedTime != null || unlockState.SolvedTime != null)
+            {
+                return NotFound("You've already chosen this puzzle");
+            }
+
+            // Ensure the puzzle is actually one of the unlock options
+            Prerequisites prereq = await (from pre in _context.Prerequisites
+                                          where pre.PrerequisiteID == puzzleId && pre.PuzzleID == unlockId
+                                          select pre).FirstOrDefaultAsync();
+            if (prereq == null)
+            {
+                return NotFound();
+            }
+
+            prereqState.SolvedTime = DateTime.UtcNow;
+            unlockState.UnlockedTime = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+
+            return RedirectToPage("../Teams/Play", new { EventId = Event.ID, EventRole = EventRole });
         }
     }
 }
