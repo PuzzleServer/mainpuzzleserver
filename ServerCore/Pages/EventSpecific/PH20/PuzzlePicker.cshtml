@@ -1,26 +1,28 @@
-﻿@page "/{eventId}/{eventRole}/PH20/PuzzlePicker/{puzzleId}"
+﻿@page "/{eventId}/{eventRole}/PH20/PuzzlePicker/{puzzleId}/{handler?}"
 @model ServerCore.Pages.EventSpecific.PH20.PuzzlePickerModel
 
 @{
-    ViewData["Title"] = "PuzzlePicker";
+    ViewData["Title"] = "Meanwhile Backstage...";
 }
 
 <div>
-    <h2>Meanwhile backstage...</h2>
+    <h2>Meanwhile Backstage...</h2>
 
-    The theatre is a chaotic place and the crew is running around trying to deal with problems everywhere! They need your help, but you can only deal with one at a time and you won't be able to deal with them all, so choose wisely. Your options right now are:
-
-    <table>
-        @foreach (var puzzleOption in Model.PuzzleOptions)
-        {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => puzzleOption.Name) (@Html.DisplayFor(modelItem => puzzleOption.Description))
-            </td>
-            <td>
-                <button type="submit" asp-route-unlockId="@puzzleOption.ID" asp-route-puzzleId="@Model.PrereqPuzzleId" asp-page-handler="Unlock">Choose</button>
-            </td>
-        </tr>
-        }
+    <p>The theatre is a chaotic place and the crew is running around trying to deal with problems everywhere! They need your help, but you can only deal with one problem at a time and you won't be able to solve them all, so choose wisely. Your options right now are:</p>
+    <br />
+        <table>
+            @foreach (ServerCore.DataModel.Puzzle puzzleOption in Model.PuzzleOptions)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => puzzleOption.Name) (@Html.DisplayFor(modelItem => puzzleOption.Description))
+                    </td>
+                    <td>
+                        <form method="post">
+                            <button type="submit" asp-route-unlockId="@puzzleOption.ID" asp-route-puzzleId="@Model.PrereqPuzzleId" asp-page-handler="Unlock">Choose</button>
+                        </form>
+                    </td>
+                </tr>
+            }
         </table>
 </div>
