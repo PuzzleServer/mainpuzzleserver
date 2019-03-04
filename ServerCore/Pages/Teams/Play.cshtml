@@ -69,7 +69,7 @@
                 </td>
             }
             <td>
-                <a asp-page="/Submissions/Index" asp-route-puzzleId="@item.Puzzle.ID" asp-route-teamId="@Model.TeamID">
+                <a asp-page="/Submissions/Index" asp-route-puzzleId="@item.Puzzle.ID">
                     @if (item.State.SolvedTime != null)
                     {
                         <text>Solved at </text>@item.State.SolvedTime

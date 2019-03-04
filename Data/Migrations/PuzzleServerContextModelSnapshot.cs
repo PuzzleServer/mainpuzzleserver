@@ -968,6 +968,19 @@ namespace Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("ServerCore.DataModel.TeamApplication", b =>
+                {
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Player")
+                        .WithMany()
+                        .HasForeignKey("PlayerID")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("ServerCore.DataModel.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamID")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("ServerCore.DataModel.TeamMembers", b =>
                 {
                     b.HasOne("ServerCore.DataModel.Team", "Team")

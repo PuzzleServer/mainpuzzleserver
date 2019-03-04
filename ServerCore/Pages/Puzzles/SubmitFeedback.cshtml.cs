@@ -10,7 +10,7 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Puzzles
 {
-//    [Authorize(Policy = "PlayerIsOnTeam, PlayerCanSeePuzzle")] // TODO: These auth checks not working currently.
+    // [Authorize(Policy = "PlayerIsOnTeam, PlayerCanSeePuzzle")] // TODO: These auth checks not working currently.
     public class SubmitFeedbackModel : EventSpecificPageModel
     {
         public SubmitFeedbackModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
@@ -52,6 +52,8 @@ namespace ServerCore.Pages.Puzzles
         /// </summary>
         public async Task<IActionResult> OnPostAsync(int puzzleId)
         {
+            ModelState.Remove("Feedback.Submitter");
+            ModelState.Remove("Feedback.Puzzle");
             if (!ModelState.IsValid)
             {
                 return Page();
