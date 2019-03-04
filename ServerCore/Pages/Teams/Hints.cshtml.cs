@@ -29,40 +29,40 @@ namespace ServerCore.Pages.Teams
         public int PuzzleID { get; set; }
         public string PuzzleName { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int puzzleID, int teamID)
+        public async Task<IActionResult> OnGetAsync(int puzzleId, int teamId)
         {
-            PuzzleID = puzzleID;
+            PuzzleID = puzzleId;
 
             Team = await (from Team t in _context.Teams
-                          where t.ID == teamID
+                          where t.ID == teamId
                           select t).FirstOrDefaultAsync();
             if (Team == null)
             {
                 return NotFound();
             }
 
-            await PopulateUI(puzzleID, teamID);
+            await PopulateUI(puzzleId, teamId);
 
             return Page();
         }
 
-        private async Task PopulateUI(int puzzleID, int teamID)
+        private async Task PopulateUI(int puzzleId, int teamId)
         {
             PuzzleName = await (from Puzzle in _context.Puzzles
-                                where Puzzle.ID == puzzleID
+                                where Puzzle.ID == puzzleId
                                 select Puzzle.Name).FirstOrDefaultAsync();
             Hints = await
                 (from Hint hint in _context.Hints
                  join HintStatePerTeam state in _context.HintStatePerTeam on hint.Id equals state.HintID
-                 where state.TeamID == teamID && hint.Puzzle.ID == puzzleID
+                 where state.TeamID == teamId && hint.Puzzle.ID == puzzleId
                  orderby hint.DisplayOrder, hint.Description
                  select new HintWithState { Hint = hint, IsUnlocked = state.IsUnlocked }).ToListAsync();
         }
 
-        public async Task<IActionResult> OnPostUnlockAsync(int hintID, int puzzleID, int teamID)
+        public async Task<IActionResult> OnPostUnlockAsync(int hintID, int puzzleId, int teamId)
         {
             Team = await (from Team t in _context.Teams
-                               where t.ID == teamID
+                               where t.ID == teamId
                                select t).FirstOrDefaultAsync();
             if (Team == null)
             {
@@ -78,11 +78,11 @@ namespace ServerCore.Pages.Teams
             }
 
             HintStatePerTeam state = await (from HintStatePerTeam s in _context.HintStatePerTeam
-                                            where s.HintID == hintID && s.TeamID == teamID
+                                            where s.HintID == hintID && s.TeamID == teamId
                                             select s).FirstOrDefaultAsync();
             if(state == null)
             {
-                throw new Exception($"HintStatePerTeam missing for team {teamID} hint {hintID}");
+                throw new Exception($"HintStatePerTeam missing for team {teamId} hint {hintID}");
             }
 
             if (!state.IsUnlocked)
@@ -99,9 +99,9 @@ namespace ServerCore.Pages.Teams
                 await _context.SaveChangesAsync();
             }
 
-            await PopulateUI(puzzleID, teamID);
+            await PopulateUI(puzzleId, teamId);
             
-            return RedirectToPage(new { puzzleID, teamID });
+            return RedirectToPage(new { puzzleId, teamId });
         }
     }
 }
