@@ -21,9 +21,9 @@ namespace ServerCore.Pages.Events
 
         public StateStats[,] StateMap { get; private set; }
 
-        public MapModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
-        {
-        }
+        public MapModel(PuzzleServerContext serverContext,
+                        UserManager<IdentityUser> userManager)
+            : base(serverContext, userManager) { }
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -32,14 +32,20 @@ namespace ServerCore.Pages.Events
 
             if (EventRole == EventRole.admin)
             {
-                puzzles = await _context.Puzzles.Where(p => p.Event == Event).Select(p => new PuzzleStats() { Puzzle = p }).ToListAsync();
+                puzzles = await _context.Puzzles.Where(p => p.Event == Event)
+                    .Select(p => new PuzzleStats() { Puzzle = p })
+                    .ToListAsync();
             }
             else
             {
-                puzzles = await UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser).Select(p => new PuzzleStats() { Puzzle = p }).ToListAsync();
+                puzzles = await UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser)
+                    .Select(p => new PuzzleStats() { Puzzle = p })
+                    .ToListAsync();
             }
 
-            List<TeamStats> teams = await _context.Teams.Where(t => t.Event == Event).Select(t => new TeamStats() { Team = t }).ToListAsync();
+            List<TeamStats> teams = await _context.Teams.Where(t => t.Event == Event)
+                .Select(t => new TeamStats() { Team = t })
+                .ToListAsync();
 
             // build an ID-based lookup for puzzles and teams
             Dictionary<int, PuzzleStats> puzzleLookup = new Dictionary<int, PuzzleStats>();
@@ -49,17 +55,30 @@ namespace ServerCore.Pages.Events
             teams.ForEach(t => teamLookup[t.Team.ID] = t);
 
             // tabulate solve counts and team scores
-            List<PuzzleStatePerTeam> states = await PuzzleStateHelper.GetSparseQuery(_context, Event, null, null, EventRole == EventRole.admin ? null : LoggedInUser).ToListAsync();
+            List<PuzzleStatePerTeam> states = await PuzzleStateHelper.GetSparseQuery(
+                _context,
+                Event,
+                null,
+                null,
+                EventRole == EventRole.admin ? null : LoggedInUser).ToListAsync();
+
             List<StateStats> stateList = new List<StateStats>(states.Count);
             foreach (PuzzleStatePerTeam state in states)
             {
                 // TODO: Is it more performant to prefilter the states if an author, or is this sufficient?
-                if (!puzzleLookup.TryGetValue(state.PuzzleID, out PuzzleStats puzzle) || !teamLookup.TryGetValue(state.TeamID, out TeamStats team))
+                if (!puzzleLookup.TryGetValue(state.PuzzleID, out PuzzleStats puzzle) ||
+                    !teamLookup.TryGetValue(state.TeamID, out TeamStats team))
                 {
                     continue;
                 }
 
-                stateList.Add(new StateStats() { Puzzle = puzzle, Team = team, UnlockedTime = state.UnlockedTime, SolvedTime = state.SolvedTime });
+                stateList.Add(new StateStats() {
+                    Puzzle = puzzle,
+                    Team = team,
+                    UnlockedTime = state.UnlockedTime,
+                    SolvedTime = state.SolvedTime,
+                    LockedOut = state.IsEmailOnlyMode
+                });
 
                 if (state.SolvedTime != null)
                 {
@@ -81,17 +100,26 @@ namespace ServerCore.Pages.Events
             }
 
             // sort puzzles by solve count, add the sort index to the lookup
-            puzzles = puzzles.OrderByDescending(p => p.SolveCount).ThenBy(p => p.Puzzle.Name).ToList();
+            puzzles = puzzles.OrderByDescending(p => p.SolveCount)
+                .ThenBy(p => p.Puzzle.Name)
+                .ToList();
+
             for (int i = 0; i < puzzles.Count; i++)
             {
                 puzzles[i].SortOrder = i;
             }
 
             // sort teams by metameta/score, add the sort index to the lookup
-            teams = teams.OrderBy(t => t.FinalMetaSolveTime).ThenByDescending(t => t.Score).ThenBy(t => t.Team.Name).ToList();
+            teams = teams.OrderBy(t => t.FinalMetaSolveTime)
+                .ThenByDescending(t => t.Score)
+                .ThenBy(t => t.Team.Name)
+                .ToList();
+
             for (int i = 0; i < teams.Count; i++)
             {
-                if (i == 0 || teams[i].FinalMetaSolveTime != teams[i - 1].FinalMetaSolveTime || teams[i].Score != teams[i - 1].Score)
+                if (i == 0 ||
+                    teams[i].FinalMetaSolveTime != teams[i - 1].FinalMetaSolveTime ||
+                    teams[i].Score != teams[i - 1].Score)
                 {
                     teams[i].Rank = i + 1;
                 }
@@ -136,12 +164,28 @@ namespace ServerCore.Pages.Events
             public TeamStats Team { get; set; }
             public DateTime? UnlockedTime { get; set; }
             public DateTime? SolvedTime { get; set; }
+            public Boolean LockedOut { get; set; }
 
             public string DisplayText
             {
                 get
                 {
-                    return SolvedTime != null ? "C" : UnlockedTime != null ? "U" : "L";
+                    if (LockedOut)
+                    {
+                        return "E";
+                    }
+
+                    if (SolvedTime != null)
+                    {
+                        return "C";
+                    }
+
+                    if (UnlockedTime != null)
+                    {
+                        return "U";
+                    }
+
+                    return "L";
                 }
             }
 
@@ -149,7 +193,22 @@ namespace ServerCore.Pages.Events
             {
                 get
                 {
-                    return SolvedTime != null ? 120 : UnlockedTime != null ? 60 : 0;
+                    if (LockedOut)
+                    {
+                        return 0;
+                    }
+
+                    if (SolvedTime != null)
+                    {
+                        return 120;
+                    }
+
+                    if (UnlockedTime != null)
+                    {
+                        return 60;
+                    }
+
+                    return 0;
                 }
             }
 
@@ -162,15 +221,14 @@ namespace ServerCore.Pages.Events
                         int minutes = (int)((DateTime.UtcNow - SolvedTime.Value).TotalMinutes);
                         return 75 - (Math.Min(minutes, 236) >> 2);
                     }
-                    else if (UnlockedTime != null)
+
+                    if (UnlockedTime != null)
                     {
                         int minutes = (int)((DateTime.UtcNow - UnlockedTime.Value).TotalMinutes);
                         return 75 - (Math.Min(minutes, 236) >> 2);
                     }
-                    else
-                    {
-                        return 100;
-                    }
+
+                    return 100;
                 }
             }
         }
