@@ -3,6 +3,7 @@
     var Event = eventPage?.Event;
     var EventRole = eventPage?.EventRole;
     var IsRegistered = eventPage?.IsRegisteredUser().Result ?? false;
+    var teamId = eventPage?.GetTeamId().Result;
 }
 
 <!--ADMIN NAV BAR-->
@@ -146,8 +147,8 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li><a asp-page="/EventSpecific/Index">Event</a></li>
-                    <li><a asp-page="/Teams/Play">Puzzles</a></li>
-                    <li><a asp-page="/Teams/Details">Team</a></li>
+                    <li><a asp-page="/Teams/Play" asp-route-teamId="@teamId">Puzzles</a></li>
+                    <li><a asp-page="/Teams/Details" asp-route-teamId="@teamId">Team</a></li>
                     <li class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                             Leaderboards
