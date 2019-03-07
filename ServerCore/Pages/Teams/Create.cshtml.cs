@@ -89,6 +89,18 @@ namespace ServerCore.Pages.Teams
                     return NotFound("Registration is full. No further teams may be created at the present time.");
                 }
 
+                //Isolate team name and Event ID
+                string teamName = Team.Name;
+                Event teamEvent = Team.Event;
+                int teamEventID = Team.Event.ID;
+                //Search for a team that matches Team Name and Event ID
+                Team duplicate = await _context.Teams.FirstOrDefaultAsync(t => t.Name == Team.Name && t.Event.ID == Team.Event.ID);
+                //if duplicate exists(is not null) return not found. Otherwise, add the team to the Teams table. 
+                if (duplicate != null)
+                {
+                    return NotFound("This team name is already taken.");
+                }
+
                 _context.Teams.Add(Team);
 
                 if (EventRole == EventRole.play)
