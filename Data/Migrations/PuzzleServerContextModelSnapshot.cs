@@ -15,7 +15,7 @@ namespace Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.2-servicing-10034")
+                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -217,7 +217,8 @@ namespace Data.Migrations
 
                     b.Property<int>("FileType");
 
-                    b.Property<int>("PuzzleID");
+                    b.Property<int?>("PuzzleID")
+                        .IsRequired();
 
                     b.Property<string>("ShortName")
                         .IsRequired();
@@ -474,6 +475,8 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("CustomURL");
+
                     b.Property<int>("EventID");
 
                     b.Property<string>("Group");
@@ -707,9 +710,11 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("Team.ID");
+                    b.Property<int?>("Team.ID")
+                        .IsRequired();
 
-                    b.Property<int>("User.ID");
+                    b.Property<int?>("User.ID")
+                        .IsRequired();
 
                     b.HasKey("ID");
 
@@ -952,19 +957,6 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Event", "Event")
                         .WithMany()
                         .HasForeignKey("EventID")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("ServerCore.DataModel.TeamApplication", b =>
-                {
-                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Player")
-                        .WithMany()
-                        .HasForeignKey("PlayerID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("ServerCore.DataModel.Team", "Team")
-                        .WithMany()
-                        .HasForeignKey("TeamID")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

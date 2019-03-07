@@ -159,7 +159,8 @@ namespace ServerCore.Pages.Events
                     SolveValue = 10,
                     Group = "Daffy's Delights",
                     OrderInGroup = 1,
-                    MinPrerequisiteCount = 1
+                    MinPrerequisiteCount = 1,
+                    CustomURL = "https://www.bing.com/images/search?q=%22rabbit%22",
                 };
                 _context.Puzzles.Add(other);
 

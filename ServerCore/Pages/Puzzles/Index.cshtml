@@ -60,7 +60,11 @@
                     <a asp-Page="./Details" asp-route-puzzleid=@item.ID>@Html.DisplayFor(modelItem => item.Name)</a>
                 </td>
                 <td>
-                    @if (item.PuzzleFile != null)
+                    @if (item.CustomURL != null)
+                    {
+                        <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item)">Link</a>
+                    }
+                    else if (item.PuzzleFile != null)
                     {
                         @Html.ActionLink("File", "Index", "Files", new { eventId = Model.Event.ID, filename = item.PuzzleFile.ShortName })
                     }
