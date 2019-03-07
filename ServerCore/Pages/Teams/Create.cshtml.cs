@@ -33,7 +33,7 @@ namespace ServerCore.Pages.Teams
 
             if (EventRole == EventRole.play && GetTeamId().Result != -1)
             {
-                return Forbid();
+                return NotFound("You are already on a team and cannot create a new one.");
             }
 
             if (EventRole == EventRole.admin && !await LoggedInUser.IsAdminForEvent(_context, Event))

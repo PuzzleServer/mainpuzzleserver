@@ -35,11 +35,7 @@ namespace ServerCore.Pages.Teams
         {
             TeamID = teamId;
             Team myTeam = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
-            if (teamId != myTeam.ID)
-            {
-                throw new Exception("Unauthorized");
-            }
-            else if (myTeam != null)
+            if (myTeam != null)
             {
                 this.TeamID = myTeam.ID;
                 await PuzzleStateHelper.CheckForTimedUnlocksAsync(_context, Event, myTeam);
