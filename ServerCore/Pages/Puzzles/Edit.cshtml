@@ -10,125 +10,135 @@
     Layout = "_puzzleManagementLayout.cshtml";
 }
 
-<h2>@Model.Puzzle.Name: Edit</h2>
-
-<div>
-    <a asp-page="./Details" asp-route-puzzleId="@Model.Puzzle.ID">Cancel</a>
-</div>
-
-<hr />
-<h3>Properties</h3>
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-10">
         <form method="post" enctype="multipart/form-data">
+            <h3>@Model.Puzzle.Name: Properties <input type="submit" value="Save properties" class="btn btn-default btn-primary" /></h3>
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Puzzle.ID" />
-            <div class="form-group">
-                <label asp-for="Puzzle.Name" class="control-label"></label>
-                <input asp-for="Puzzle.Name" class="form-control" />
-                <span asp-validation-for="Puzzle.Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        <input asp-for="Puzzle.IsPuzzle" /> @Html.DisplayNameFor(model => model.Puzzle.IsPuzzle)
-                    </label>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        <input asp-for="Puzzle.IsMetaPuzzle" /> @Html.DisplayNameFor(model => model.Puzzle.IsMetaPuzzle)
-                    </label>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        <input asp-for="Puzzle.IsFinalPuzzle" /> @Html.DisplayNameFor(model => model.Puzzle.IsFinalPuzzle)
-                    </label>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        <input asp-for="Puzzle.IsCheatCode" /> @Html.DisplayNameFor(model => model.Puzzle.IsCheatCode)
-                    </label>
-                </div>
-            </div>
-            <div class="form-group">
-                <label asp-for="Puzzle.SolveValue" class="control-label"></label>
-                <input asp-for="Puzzle.SolveValue" class="form-control" />
-                <span asp-validation-for="Puzzle.SolveValue" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Puzzle.HintCoinsForSolve" class="control-label"></label>
-                <input asp-for="Puzzle.HintCoinsForSolve" class="form-control" />
-                <span asp-validation-for="Puzzle.HintCoinsForSolve" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Puzzle.Token" class="control-label"></label>
-                <input asp-for="Puzzle.Token" class="form-control" />
-                <span asp-validation-for="Puzzle.Token" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Puzzle.Group" class="control-label"></label>
-                <input asp-for="Puzzle.Group" class="form-control" />
-                <span asp-validation-for="Puzzle.Group" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Puzzle.OrderInGroup" class="control-label"></label>
-                <input asp-for="Puzzle.OrderInGroup" class="form-control" />
-                <span asp-validation-for="Puzzle.OrderInGroup" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        <input asp-for="Puzzle.IsGloballyVisiblePrerequisite" /> @Html.DisplayNameFor(model => model.Puzzle.IsGloballyVisiblePrerequisite)
-                    </label>
-                </div>
-            </div>
-            <div class="form-group">
-                <label asp-for="Puzzle.MinPrerequisiteCount" class="control-label"></label>
-                <input asp-for="Puzzle.MinPrerequisiteCount" class="form-control" />
-                <span asp-validation-for="Puzzle.MinPrerequisiteCount" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Puzzle.MinutesToAutomaticallySolve" class="control-label"></label>
-                <input asp-for="Puzzle.MinutesToAutomaticallySolve" class="form-control" />
-                <span asp-validation-for="Puzzle.MinutesToAutomaticallySolve" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Puzzle.MinutesOfEventLockout" class="control-label"></label>
-                <input asp-for="Puzzle.MinutesOfEventLockout" class="form-control" />
-                <span asp-validation-for="Puzzle.MinutesOfEventLockout" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Puzzle.MaxAnnotationKey" class="control-label"></label>
-                <input asp-for="Puzzle.MaxAnnotationKey" class="form-control" />
-                <span asp-validation-for="Puzzle.MaxAnnotationKey" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Puzzle.SupportEmailAlias" class="control-label"></label>
-                <input asp-for="Puzzle.SupportEmailAlias" class="form-control" />
-                <span asp-validation-for="Puzzle.SupportEmailAlias" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Puzzle.CustomURL" class="control-label"></label>
-                <input asp-for="Puzzle.CustomURL" class="form-control" title="The URL for this puzzle to link to. You can use {eventId} for the current event and {puzzleId} for the current puzzle" />
-                <span asp-validation-for="Puzzle.CustomURL" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Puzzle.Description" class="control-label"></label>
-                <input asp-for="Puzzle.Description" class="form-control" />
-                <span asp-validation-for="Puzzle.Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-default" />
-            </div>
+
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>
+                            Basic
+                        </th>
+                        <th>
+                            Advanced
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="form-group">
+                                <label asp-for="Puzzle.Name" class="control-label"></label>
+                                <input asp-for="Puzzle.Name" class="form-control" />
+                                <span asp-validation-for="Puzzle.Name" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Puzzle.Group" class="control-label"></label>
+                                <input asp-for="Puzzle.Group" class="form-control" />
+                                <span asp-validation-for="Puzzle.Group" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Puzzle.OrderInGroup" class="control-label"></label>
+                                <input asp-for="Puzzle.OrderInGroup" class="form-control" />
+                                <span asp-validation-for="Puzzle.OrderInGroup" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <div class="checkbox">
+                                    <label>
+                                        <input asp-for="Puzzle.IsPuzzle" /> @Html.DisplayNameFor(model => model.Puzzle.IsPuzzle)
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="checkbox">
+                                    <label>
+                                        <input asp-for="Puzzle.IsMetaPuzzle" /> @Html.DisplayNameFor(model => model.Puzzle.IsMetaPuzzle)
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="checkbox">
+                                    <label>
+                                        <input asp-for="Puzzle.IsFinalPuzzle" /> @Html.DisplayNameFor(model => model.Puzzle.IsFinalPuzzle)
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="checkbox">
+                                    <label>
+                                        <input asp-for="Puzzle.IsCheatCode" /> @Html.DisplayNameFor(model => model.Puzzle.IsCheatCode)
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Puzzle.SolveValue" class="control-label"></label>
+                                <input asp-for="Puzzle.SolveValue" class="form-control" />
+                                <span asp-validation-for="Puzzle.SolveValue" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Puzzle.MinPrerequisiteCount" class="control-label"></label>
+                                <input asp-for="Puzzle.MinPrerequisiteCount" class="form-control" />
+                                <span asp-validation-for="Puzzle.MinPrerequisiteCount" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Puzzle.SupportEmailAlias" class="control-label"></label>
+                                <input asp-for="Puzzle.SupportEmailAlias" class="form-control" />
+                                <span asp-validation-for="Puzzle.SupportEmailAlias" class="text-danger"></span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group">
+                                <div class="checkbox">
+                                    <label>
+                                        <input asp-for="Puzzle.IsGloballyVisiblePrerequisite" /> @Html.DisplayNameFor(model => model.Puzzle.IsGloballyVisiblePrerequisite)
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Puzzle.HintCoinsForSolve" class="control-label"></label>
+                                <input asp-for="Puzzle.HintCoinsForSolve" class="form-control" />
+                                <span asp-validation-for="Puzzle.HintCoinsForSolve" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Puzzle.Token" class="control-label"></label>
+                                <input asp-for="Puzzle.Token" class="form-control" />
+                                <span asp-validation-for="Puzzle.Token" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Puzzle.MinutesToAutomaticallySolve" class="control-label"></label>
+                                <input asp-for="Puzzle.MinutesToAutomaticallySolve" class="form-control" />
+                                <span asp-validation-for="Puzzle.MinutesToAutomaticallySolve" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Puzzle.MinutesOfEventLockout" class="control-label"></label>
+                                <input asp-for="Puzzle.MinutesOfEventLockout" class="form-control" />
+                                <span asp-validation-for="Puzzle.MinutesOfEventLockout" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Puzzle.MaxAnnotationKey" class="control-label"></label>
+                                <input asp-for="Puzzle.MaxAnnotationKey" class="form-control" />
+                                <span asp-validation-for="Puzzle.MaxAnnotationKey" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Puzzle.CustomURL" class="control-label"></label>
+                                <input asp-for="Puzzle.CustomURL" class="form-control" title="The URL for this puzzle to link to. You can use {eventId} for the current event and {puzzleId} for the current puzzle" />
+                                <span asp-validation-for="Puzzle.CustomURL" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Puzzle.Description" class="control-label"></label>
+                                <input asp-for="Puzzle.Description" class="form-control" />
+                                <span asp-validation-for="Puzzle.Description" class="text-danger"></span>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </form>
-        <hr />
-        <h3>Prerequisites</h3>
+        <h3>@Model.Puzzle.Name: Prerequisites</h3>
         <h4>These puzzles help to unlock me:</h4>
         <form method="post" enctype="multipart/form-data">
             <input type="hidden" asp-for="Puzzle.ID" />
@@ -196,8 +206,8 @@
                 </tbody>
             </table>
         </form>
-		<hr/>
-        <h3>Authors</h3>
+        <hr />
+        <h3>@Model.Puzzle.Name: Authors</h3>
         <form method="post" enctype="multipart/form-data">
             <input type="hidden" asp-for="Puzzle.ID" />
             <table>
