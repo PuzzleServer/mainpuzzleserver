@@ -2,9 +2,9 @@
 @model ServerCore.Pages.EventSpecific.IndexModel
 @{
     ViewData["Title"] = Model.Event.Name;
-    ViewData["AdminRoute"] = "/EventSpecific/Index";
-    ViewData["AuthorRoute"] = "/EventSpecific/Index";
-    ViewData["PlayRoute"] = "/EventSpecific/Index";
+    ViewData["AdminRoute"] = "/EventInformation/Index";
+    ViewData["AuthorRoute"] = "/EventInformation/Index";
+    ViewData["PlayRoute"] = "/EventInformation/Index";
 }
 
 @if (Model.EventRole == ModelBases.EventRole.admin)
