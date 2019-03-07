@@ -50,7 +50,11 @@
                 @Html.DisplayFor(modelItem => item.Puzzle.Group)
             </td>
             <td>
-                @if (item.Puzzle.PuzzleFile != null)
+                @if (item.Puzzle.CustomURL != null)
+                {
+                    <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.Puzzle)">@item.Puzzle.Name</a>
+                }
+                else if (item.Puzzle.PuzzleFile != null)
                 {
                     @Html.ActionLink(item.Puzzle.Name, "Index", "Files", new { eventId = Model.Event.ID, filename = item.Puzzle.PuzzleFile.ShortName })
                 }
