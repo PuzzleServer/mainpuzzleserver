@@ -30,6 +30,9 @@
                 @Html.DisplayNameFor(model => model.Puzzles[0].OrderInGroup)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.Puzzles[0].Description)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Puzzles[0].SolveValue)
             </th>
             <th>
@@ -74,6 +77,9 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.OrderInGroup)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.SolveValue)

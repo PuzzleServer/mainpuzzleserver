@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Teams
 {
+    [Authorize(Policy = "IsEventAdminOrPlayerOnTeam")]
     public class DetailsModel : EventSpecificPageModel
     {
         public DetailsModel(PuzzleServerContext context, UserManager<IdentityUser> manager) : base(context, manager)
@@ -19,20 +21,13 @@ namespace ServerCore.Pages.Teams
         }
 
         public Team Team { get; set; }
-        public bool HasTeam { get; set; }
         public IList<TeamMembers> Members { get; set; }
         public string Emails { get; set; }
         public IList<Tuple<PuzzleUser, int>> Users { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int teamId = -1)
         {
-            HasTeam = false;
-            if (EventRole == ModelBases.EventRole.play)
-            {
-                // Ignore reqeusted team IDs for players - always re-direct to their own team
-                Team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
-            }
-            else if (teamId == -1)
+            if (teamId == -1)
             {
                 return NotFound("Missing team id");
             }
