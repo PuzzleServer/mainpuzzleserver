@@ -38,6 +38,7 @@ namespace ServerCore.DataModel
             MaxAnnotationKey = source.MaxAnnotationKey;
             SupportEmailAlias = source.SupportEmailAlias;
             CustomURL = source.CustomURL;
+            Description = source.Description;
         }
 
         /// <summary>
@@ -153,6 +154,11 @@ namespace ServerCore.DataModel
         /// </summary>
         [DataType(DataType.Url)]
         public string CustomURL { get; set; }
+
+        /// <summary>
+        /// Short description of the puzzle for authors or special pages
+        /// </summary>
+        public string Description { get; set; }
 
         //
         // WARNING: If you add new properties add them to the constructor as well so importing will work.
