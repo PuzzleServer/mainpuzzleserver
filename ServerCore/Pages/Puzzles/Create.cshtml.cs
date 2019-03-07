@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -82,6 +83,7 @@ namespace ServerCore.Pages.Puzzles
 
         public class MiniPuzzle
         {
+            [Required]
             public string Name { get; set; }
             public string Group { get; set; }
             public int OrderInGroup { get; set; }
