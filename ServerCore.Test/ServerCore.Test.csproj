@@ -13,11 +13,4 @@
     <PackageReference Include="MSTest.TestFramework" Version="1.3.2" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Data\Data.csproj" />
-    <ProjectReference Include="..\Puzzleday\Puzzleday.csproj" />
-    <ProjectReference Include="..\Puzzlehunt\Puzzlehunt.csproj" />
-    <ProjectReference Include="..\ServerCore\ServerCore.csproj" />
-  </ItemGroup>
-
 </Project>
