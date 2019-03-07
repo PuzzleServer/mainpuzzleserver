@@ -28,7 +28,12 @@ namespace ServerCore.Pages.Teams
 
             if (EventRole != EventRole.play && EventRole != EventRole.admin)
             {
-                return NotFound();
+                return Forbid();
+            }
+
+            if (EventRole == EventRole.play && GetTeamId().Result != -1)
+            {
+                return Forbid();
             }
 
             if (EventRole == EventRole.admin && !await LoggedInUser.IsAdminForEvent(_context, Event))

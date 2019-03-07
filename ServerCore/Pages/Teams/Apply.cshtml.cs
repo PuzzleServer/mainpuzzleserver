@@ -32,7 +32,7 @@ namespace ServerCore.Pages.Teams
 
             if (EventRole != EventRole.play)
             {
-                return NotFound();
+                return Forbid();
             }
 
             if (!Event.IsTeamMembershipChangeActive)
