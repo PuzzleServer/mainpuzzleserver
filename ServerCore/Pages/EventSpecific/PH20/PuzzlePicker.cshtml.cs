@@ -47,7 +47,7 @@ namespace ServerCore.Pages.EventSpecific.PH20
             Team team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
             var puzzleStateQuery = PuzzleStateHelper.GetFullReadOnlyQuery(_context, Event, null, team);
             PuzzleStatePerTeam state = await (from pspt in puzzleStateQuery
-                                        where pspt.PuzzleID == puzzle.ID && pspt.TeamID == team.ID
+                                        where pspt.PuzzleID == puzzle.ID
                                         select pspt).FirstOrDefaultAsync();
             if (state == null)
             {
@@ -92,7 +92,7 @@ namespace ServerCore.Pages.EventSpecific.PH20
             {
                 var puzzleStateQuery = PuzzleStateHelper.GetFullReadOnlyQuery(_context, Event, null, team);
                 PuzzleStatePerTeam prereqState = await (from pspt in puzzleStateQuery
-                                                        where pspt.PuzzleID == puzzle.ID && pspt.TeamID == team.ID
+                                                        where pspt.PuzzleID == puzzle.ID
                                                         select pspt).FirstOrDefaultAsync();
                 if (prereqState == null)
                 {
@@ -106,7 +106,7 @@ namespace ServerCore.Pages.EventSpecific.PH20
                 }
 
                 PuzzleStatePerTeam unlockState = await (from pspt in puzzleStateQuery
-                                                        where pspt.PuzzleID == unlockId && pspt.TeamID == team.ID
+                                                        where pspt.PuzzleID == unlockId
                                                         select pspt).FirstOrDefaultAsync();
                 if (unlockState == null)
                 {
