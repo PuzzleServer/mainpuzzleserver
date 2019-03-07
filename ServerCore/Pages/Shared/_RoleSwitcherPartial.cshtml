@@ -11,10 +11,10 @@
         if (IsAdmin || IsAuthor)
         {
             var IsRegistered = await EventModel.IsRegisteredUser();
-            var AdminRoute = ViewData["AdminRoute"] as string ?? "/EventGeneral/Index";
-            var AuthorRoute = ViewData["AuthorRoute"] as string ?? "/EventGeneral/Index";
-            var PlayRoute = ViewData["PlayRoute"] as string ?? "/EventGeneral/Index";
-            if (!IsRegistered && !PlayRoute.StartsWith("/EventGeneral/") && !PlayRoute.Equals("/Teams/Apply") && !PlayRoute.Equals("/Teams/Create"))
+            var AdminRoute = ViewData["AdminRoute"] as string ?? "/EventInformation/Index";
+            var AuthorRoute = ViewData["AuthorRoute"] as string ?? "/EventInformation/Index";
+            var PlayRoute = ViewData["PlayRoute"] as string ?? "/EventInformation/Index";
+            if (!IsRegistered && !PlayRoute.StartsWith("/EventInformation/") && !PlayRoute.Equals("/Teams/Apply") && !PlayRoute.Equals("/Teams/Create"))
             {
                 // If the user isn't registered and isn't on an event page or the two teams pages they have access to, always redirect to the registration page
                 PlayRoute = "/Teams/List";
