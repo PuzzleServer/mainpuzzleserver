@@ -115,7 +115,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Puzzle.CustomURL" class="control-label"></label>
-                <input asp-for="Puzzle.CustomURL" class="form-control" title="The URL for this puzzle to link to" />
+                <input asp-for="Puzzle.CustomURL" class="form-control" title="The URL for this puzzle to link to. You can use {eventId} for the current event and {puzzleId} for the current puzzle" />
                 <span asp-validation-for="Puzzle.CustomURL" class="text-danger"></span>
             </div>
             <div class="form-group">
