@@ -111,10 +111,14 @@ namespace ServerCore
             }
             else if (env.IsStaging() && Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") == "PuzzleServerTestDeploy")
             {
-                // Use KeyVault to get secrets
                 app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
                 PuzzleServerContext.UpdateDatabase(app);
+            }
+            else if (env.IsProduction() && Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") == "Puzzlehunt")
+            {
+                app.UseBrowserLink();
+                app.UseDeveloperExceptionPage();
             }
             else
             {

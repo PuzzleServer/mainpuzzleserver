@@ -18,11 +18,18 @@ namespace ServerCore.Areas.Deployment
                     (options => options.UseLazyLoadingProxies()
                         .UseSqlServer(configuration.GetConnectionString("PuzzleServerSQLConnectionString")));
             }
+            else if (env.IsProduction() && Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") == "puzzlehunt")
+            {
+                services.AddDbContext<PuzzleServerContext>
+                    (options => options.UseLazyLoadingProxies()
+                        .UseSqlServer(configuration.GetConnectionString("PuzzleServerSQLConnectionString")));
+            }
             else
             {
                 services.AddDbContext<PuzzleServerContext>
                     (options => options.UseLazyLoadingProxies()
-                        .UseSqlServer(configuration.GetConnectionString("PuzzleServerContextLocal")));
+                       //.UseSqlServer(configuration.GetConnectionString("PuzzleServerContextLocal")));
+                       .UseSqlServer(configuration.GetConnectionString("TempDeploy")));
             }
         }
     }

@@ -12,18 +12,14 @@
         "commandName": "IISExpress",
         "launchBrowser": true,
         "environmentVariables": {
-          "ASPNETCORE_ENVIRONMENT": "Development",
-          "ASPNETCORE_HOSTINGSTARTUP__KEYVAULT__CONFIGURATIONENABLED": "false",
-          "ASPNETCORE_HOSTINGSTARTUP__KEYVAULT__CONFIGURATIONVAULT": "https://PuzzleServerTestKeyVault.vault.azure.net"
+          "ASPNETCORE_ENVIRONMENT": "Development"
         }
-      },
+      },\
     "ServerCore": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_HOSTINGSTARTUP__KEYVAULT__CONFIGURATIONENABLED": "false",
-        "ASPNETCORE_HOSTINGSTARTUP__KEYVAULT__CONFIGURATIONVAULT": "https://PuzzleServerTestKeyVault.vault.azure.net"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "applicationUrl": "http://localhost:44319/"
     }
