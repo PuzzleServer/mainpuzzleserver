@@ -62,6 +62,19 @@ namespace ServerCore.ModelBases
             return await LoggedInUser.IsAdminForEvent(_context, Event);
         }
 
+        public async Task<int> GetTeamId()
+        {
+            if (EventRole == ModelBases.EventRole.play)
+            {
+                Team team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
+                return team != null ? team.ID : -1;
+            }
+            else
+            {
+                return -1;
+            }
+        }
+
         public class EventBinder : IModelBinder
         {
             public async Task BindModelAsync(ModelBindingContext bindingContext)
