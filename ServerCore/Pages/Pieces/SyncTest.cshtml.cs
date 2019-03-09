@@ -28,7 +28,7 @@ namespace ServerCore.Pages.Pieces
         {
         }
 
-        //TODO: Not working [Authorize(Policy = "PlayerCanSeePuzzle")]
+        [Authorize(Policy = "PlayerCanSeePuzzle")]
         public async Task<IActionResult> OnGetAsync(string eventId, int puzzleId)
         {
             Event currentEvent = await EventHelper.GetEventFromEventId(_context, eventId);

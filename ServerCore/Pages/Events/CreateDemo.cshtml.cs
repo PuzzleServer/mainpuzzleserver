@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using ServerCore.DataModel;
 
 namespace ServerCore.Pages.Events
@@ -33,7 +34,8 @@ namespace ServerCore.Pages.Events
 
         private Piece MakePiece(Puzzle puzzle, int progressLevel, int clueID, string answerPattern, int puzzlePos, string clue)
         {
-            string contents = $"{{\"clue_id\": {clueID}, \"answer_pattern\": \"{answerPattern}\", \"puzzle_pos\": {puzzlePos}, \"clue\": \"{clue}\"}}";
+            var clue_info = new { clue_id = clueID, answer_pattern = answerPattern, puzzle_pos = puzzlePos, clue = clue };
+            string contents = JsonConvert.SerializeObject(clue_info);
             return new Piece { Puzzle = puzzle, ProgressLevel = progressLevel, Contents = contents };
         }
 

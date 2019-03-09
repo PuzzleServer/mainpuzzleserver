@@ -23,14 +23,8 @@ namespace ServerCore.Pages
         /// </summary>
         public class AnnotationRequest
         {
-            public readonly int Key;
-            public readonly string Contents;
-
-            public AnnotationRequest(int key, string contents)
-            {
-                Key = key;
-                Contents = contents;
-            }
+            public int key;
+            public string contents;
         }
 
         /// <summary>
@@ -92,7 +86,9 @@ namespace ServerCore.Pages
                 MinSolveCount = min_solve_count;
 
                 // The last_sync_time field is a JSON-converted DateTime.  Or at least, it's supposed to be;
-                // we need to check.
+                // we need to check.  Note that this string is one that we (the server) encoded.  We do DateTime
+                // encoding and decoding on the server so as not to worry about different browsers encoding
+                // DateTimes differently.
 
                 if (last_sync_time == null) {
                     LastSyncTime = null;
@@ -106,75 +102,42 @@ namespace ServerCore.Pages
                     }
                 }
 
+                var my_annotations = new List<AnnotationRequest> { new AnnotationRequest { key = 7, contents = "foo" } };
+                var my_serialization = JsonConvert.SerializeObject(my_annotations);
+
                 // The annotations field is a JSON-converted list of objects, each with an integer key and
                 // string contents.  Or at least, it's supposed to be; we have to check it carefully.
 
                 AnnotationRequests = null;
                 if (annotations != null) {
-                    List<dynamic> annotations_decoded = null;
-
-                    // First, decode it into a list using the JSON deserializer.
-                    
                     try {
-                        annotations_decoded = JsonConvert.DeserializeObject<List<dynamic>>(annotations);
+                        // First, decode it into a list using the JSON deserializer.
+                        AnnotationRequests = JsonConvert.DeserializeObject<List<AnnotationRequest>>(annotations);
                     }
                     catch (JsonException) {
                         response.AddError("Could not deserialize annotations list");
-                        annotations_decoded = null;
+                        AnnotationRequests = null;
                     }
 
-                    // If that succeeded, decode each of the elements and check them for validity.
+                    // If that succeeded, check each of the lements for validity.
 
-                    if (annotations_decoded != null) {
-                        AnnotationRequests = new List<AnnotationRequest>();
-                        foreach (var annotation_decoded in annotations_decoded) {
-
-                            // First, get the key out of the annotaton.
-
-                            int key;
-                            try {
-                                key = annotation_decoded.key;
-                            }
-                            catch (RuntimeBinderException) {
-                                response.AddError("Did not find integer key in annotation");
-                                continue;
-                            }
-
-                            // Then, check the key for validity.
-
-                            if (key < 1) {
+                    if (AnnotationRequests != null) {
+                        foreach (var annotation in AnnotationRequests) {
+                            if (annotation.key < 1) {
                                 response.AddError("Found non-positive key in annotation");
-                                continue;
+                                AnnotationRequests = null;
+                                break;
                             }
-                            if (key > maxAnnotationKey) {
+                            if (annotation.key > maxAnnotationKey) {
                                 response.AddError("Found too-high in annotation");
-                                continue;
+                                AnnotationRequests = null;
+                                break;
                             }
-
-
-                            // Then, get the contents out of the annotation.
-
-                            string contents;
-                            try {
-                                contents = annotation_decoded.contents;
-                            }
-                            catch (RuntimeBinderException) {
-                                response.AddError("Did not find string contents in annotation");
-                                continue;
-                            }
-
-                            // Then, check the contents for validity.
-
-                            if (contents.Length > 255) {
+                            if (annotation.contents.Length > 255) {
                                 response.AddError("Found contents in annotation longer than 255 bytes");
-                                continue;
+                                AnnotationRequests = null;
+                                break;
                             }
-
-                            // We would have continued out of this loop iteration if anything were wrong with the
-                            // annotation, so create an AnnotationRequest out of it now.
-
-                            var annotationRequest = new AnnotationRequest(key, contents);
-                            AnnotationRequests.Add(annotationRequest);
                         }
                     }
                 }
@@ -366,9 +329,9 @@ namespace ServerCore.Pages
                 Annotation annotation = new Annotation();
                 annotation.PuzzleID = puzzleId;
                 annotation.TeamID = teamId;
-                annotation.Key = annotationRequest.Key;
+                annotation.Key = annotationRequest.key;
                 annotation.Version = 1;
-                annotation.Contents = annotationRequest.Contents;
+                annotation.Contents = annotationRequest.contents;
                 annotation.Timestamp = DateTime.Now;
 
                 try {
@@ -414,11 +377,11 @@ namespace ServerCore.Pages
                     try {
                         var sqlCommand = "UPDATE Annotations SET Version = Version + 1, Contents = @Contents, Timestamp = @Timestamp WHERE PuzzleID = @PuzzleID AND TeamID = @TeamID AND [Key] = @Key";
                         int result = await context.Database.ExecuteSqlCommandAsync(sqlCommand,
-                                                                                   new SqlParameter("@Contents", annotationRequest.Contents),
+                                                                                   new SqlParameter("@Contents", annotationRequest.contents),
                                                                                    new SqlParameter("@Timestamp", DateTime.Now),
                                                                                    new SqlParameter("@PuzzleID", puzzleId),
                                                                                    new SqlParameter("@TeamID", teamId),
-                                                                                   new SqlParameter("@Key", annotationRequest.Key));
+                                                                                   new SqlParameter("@Key", annotationRequest.key));
                         if (result != 1) {
                             response.AddError("Annotation update failed");
                         }
