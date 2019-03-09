@@ -290,6 +290,12 @@ namespace ServerCore.Pages
                         maxSolveCount += 1;
                     }
                 }
+
+                // If the user solved a cheat code, treat it as a solve count of 1000.
+
+                if (solvedPuzzle.IsCheatCode) {
+                    maxSolveCount += 1000;
+                }
             }
 
             // If the requester is asking for puzzle pieces (by setting request.MinSolveCount != null)
