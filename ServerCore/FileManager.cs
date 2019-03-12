@@ -1,14 +1,16 @@
-﻿using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
-using System;
+﻿using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace ServerCore
 {
     public class FileManager
     {
+        public static string ConnectionString { get; set; }
+
         /// <summary>
         /// Uploads a file to blob storage
         /// </summary>
@@ -57,9 +59,8 @@ namespace ServerCore
         private static CloudStorageAccount StorageAccount
         {
             get
-            {
-                // todo: read the account info from configuration
-                return CloudStorageAccount.Parse("UseDevelopmentStorage=true");
+            { 
+                return CloudStorageAccount.Parse(ConnectionString);
             }
         }
     }
