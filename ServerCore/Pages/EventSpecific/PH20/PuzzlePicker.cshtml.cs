@@ -133,7 +133,7 @@ namespace ServerCore.Pages.EventSpecific.PH20
                 transaction.Commit();
             }
 
-            return RedirectToPage("../../Teams/Play", new { EventId = Event.ID, EventRole = EventRole });
+            return RedirectToPage("../../Teams/Play", new { EventId = Event.ID, EventRole = EventRole, teamId = team.ID });
         }
     }
 }
