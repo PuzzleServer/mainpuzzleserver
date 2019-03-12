@@ -8,7 +8,28 @@
     ViewData["PlayRoute"] = "/Teams/Play";
 }
 
-<h2>@Model.Event.Name Puzzles (@Model.Puzzles.Count):</h2>
+<style>
+    .shortcut-menu-dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .shortcut-menu-dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        padding: 12px 16px;
+        z-index: 1;
+    }
+
+    .shortcut-menu-dropdown:hover .shortcut-menu-dropdown-content {
+        display: block;
+    }
+</style>
+
+<h2>All Puzzles</h2>
 
 <p>
     <a asp-page="Create">Create New</a> |
@@ -30,28 +51,22 @@
                 @Html.DisplayNameFor(model => model.Puzzles[0].OrderInGroup)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Puzzles[0].Description)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.Puzzles[0].SolveValue)
             </th>
             <th>
-                Puzzle
+                @Html.DisplayNameFor(model => model.Puzzles[0].IsPuzzle)
             </th>
             <th>
-                Meta
+                @Html.DisplayNameFor(model => model.Puzzles[0].IsMetaPuzzle)
             </th>
             <th>
-                Final
+                @Html.DisplayNameFor(model => model.Puzzles[0].IsFinalPuzzle)
             </th>
             <th>
-                Cheat
+                @Html.DisplayNameFor(model => model.Puzzles[0].IsGloballyVisiblePrerequisite)
             </th>
             <th>
-                MinPreReq
-            </th>
-            <th>
-                Support
+                @Html.DisplayNameFor(model => model.Puzzles[0].Token)
             </th>
             <th>
                 Shortcuts
@@ -61,82 +76,76 @@
     <tbody>
         @foreach (var item in Model.Puzzles)
         {
-        <tr>
-            <td>
-                <a asp-Page="./Details" asp-route-puzzleid=@item.ID>@Html.DisplayFor(modelItem => item.Name)</a>
-            </td>
-            <td>
-                @if (item.CustomURL != null)
-                {
-                    <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item)">Link</a>
-                }
-                else if (item.PuzzleFile != null)
-                {
-                    @Html.ActionLink("File", "Index", "Files", new { eventId = Model.Event.ID, filename = item.PuzzleFile.ShortName })
-                }
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Group)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.OrderInGroup)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SolveValue)
-            </td>
-            <td>
-                @if (item.IsPuzzle)
-                {
-                    <p>&#10004;</p>
-                }
-            </td>
-            <td>
-                @if (item.IsMetaPuzzle)
-                {
-                    <p>&#10004;</p>
-                }
-            </td>
-            <td>
-                @if (item.IsFinalPuzzle)
-                {
-                    <p>&#10004;</p>
-                }
-            </td>
-            <td>
-                @if (item.IsCheatCode)
-                {
-                    <p>&#10004;</p>
-                }
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MinPrerequisiteCount)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SupportEmailAlias)
-            </td>
-            <td>
-                <div class="shortcut-menu-dropdown">
-                    <span><a>Jump to...</a></span>
-                    <div class="shortcut-menu-dropdown-content">
-                        <a asp-Page="./Details" asp-route-puzzleid=@item.ID>Details</a><br />
-                        <a asp-Page="./Edit" asp-route-puzzleid=@item.ID>Edit</a><br />
-                        <a asp-Page="./FileManagement" asp-route-puzzleid=@item.ID>Files</a><br />
-                        <a asp-page="/Responses/Index" asp-route-puzzleid=@item.ID>Responses</a><br />
-                        <a asp-page="/Hints/Index" asp-route-puzzleid=@item.ID>Hints</a><br />
-                        <a asp-page="/Pieces/Index" asp-route-puzzleid=@item.ID>Pieces</a><br />
-                        ------<br />
-                        <a asp-page="./Status" asp-route-puzzleid=@item.ID>Status</a><br />
-                        <a asp-page="/Submissions/AuthorIndex" asp-route-puzzleid=@item.ID>Submissions</a><br />
-                        <a asp-Page="./Feedback" asp-route-puzzleid=@item.ID>Feedback</a><br />
-                        ------<br />
-                        <a asp-Page="./Delete" asp-route-puzzleid="@item.ID">Delete</a>
+            <tr>
+                <td>
+                    <a asp-Page="./Details" asp-route-puzzleid=@item.ID>@Html.DisplayFor(modelItem => item.Name)</a>
+                </td>
+                <td>
+                    @if (item.CustomURL != null)
+                    {
+                        <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item)">Link</a>
+                    }
+                    else if (item.PuzzleFile != null)
+                    {
+                        @Html.ActionLink("File", "Index", "Files", new { eventId = Model.Event.ID, filename = item.PuzzleFile.ShortName })
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Group)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.OrderInGroup)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SolveValue)
+                </td>
+                <td>
+                    @if (item.IsPuzzle)
+                    {
+                        <p>&#10004;</p>
+                    }
+                </td>
+                <td>
+                    @if (item.IsMetaPuzzle)
+                    {
+                        <p>&#10004;</p>
+                    }
+                </td>
+                <td>
+                    @if (item.IsFinalPuzzle)
+                    {
+                        <p>&#10004;</p>
+                    }
+                </td>
+                <td>
+                    @if (item.IsGloballyVisiblePrerequisite)
+                    {
+                        <p>&#10004;</p>
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Token)
+                </td>
+                <td>
+                    <div class="shortcut-menu-dropdown">
+                        <span><a>Jump to...</a></span>
+                        <div class="shortcut-menu-dropdown-content">
+                            <a asp-Page="./Details" asp-route-puzzleid=@item.ID>Details</a><br />
+                            <a asp-Page="./Edit" asp-route-puzzleid=@item.ID>Edit</a><br />
+                            <a asp-Page="./FileManagement" asp-route-puzzleid=@item.ID>Files</a><br />
+                            <a asp-page="/Responses/Index" asp-route-puzzleid=@item.ID>Responses</a><br />
+                            <a asp-page="/Hints/Index" asp-route-puzzleid=@item.ID>Hints</a><br />
+                            <a asp-page="/Pieces/Index" asp-route-puzzleid=@item.ID>Pieces</a><br />
+                            ------<br />
+                            <a asp-page="./Status" asp-route-puzzleid=@item.ID>Status</a><br />
+                            <a asp-page="/Submissions/AuthorIndex" asp-route-puzzleid=@item.ID>Submissions</a><br />
+                            <a asp-Page="./Feedback" asp-route-puzzleid=@item.ID>Feedback</a><br />
+                            ------<br />
+                            <a asp-Page="./Delete" asp-route-puzzleid="@item.ID">Delete</a>
+                        </div>
                     </div>
-                </div>
-            </td>
-        </tr>
+                </td>
+            </tr>
         }
     </tbody>
 </table>
