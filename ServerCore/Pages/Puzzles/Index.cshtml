@@ -8,6 +8,27 @@
     ViewData["PlayRoute"] = "/Teams/Play";
 }
 
+<style>
+    .shortcut-menu-dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .shortcut-menu-dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        padding: 12px 16px;
+        z-index: 1;
+    }
+
+    .shortcut-menu-dropdown:hover .shortcut-menu-dropdown-content {
+        display: block;
+    }
+</style>
+
 <h2>All Puzzles</h2>
 
 <p>
@@ -28,9 +49,6 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Puzzles[0].OrderInGroup)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Puzzles[0].Description)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Puzzles[0].SolveValue)
@@ -77,9 +95,6 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.OrderInGroup)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Description)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.SolveValue)

@@ -22,14 +22,18 @@ namespace ServerCore.Pages.Puzzles
 
         public async Task<IActionResult> OnGetAsync()
         {
+            IQueryable<Puzzle> query;
+
             if (EventRole == EventRole.admin)
             {
-                Puzzles = await _context.Puzzles.Where(p => p.Event == Event).ToListAsync();
+                query = _context.Puzzles.Where(p => p.Event == Event);
             }
             else
             {
-                Puzzles = await UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser).ToListAsync();
+                query = UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser);
             }
+
+            Puzzles = await query.OrderBy((p) => p.Group).ThenBy((p) => p.OrderInGroup).ThenBy((p) => p.Name).ToListAsync();
 
             return Page();
         }

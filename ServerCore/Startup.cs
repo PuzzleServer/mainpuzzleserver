@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ServerCore.Areas.Deployment;
 using ServerCore.Areas.Identity.UserAuthorizationPolicy;
 using ServerCore.DataModel;
 
@@ -13,9 +14,25 @@ namespace ServerCore
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private IHostingEnvironment hostingEnvironment;
+
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             Configuration = configuration;
+            hostingEnvironment = env;
+        }
+
+        public Startup(IHostingEnvironment env)
+        {
+            // Set up to use Azure settings
+            IConfigurationBuilder configBuilder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddEnvironmentVariables();
+            Configuration = configBuilder.Build();
+
+            hostingEnvironment = env;
         }
 
         public IConfiguration Configuration { get; }
@@ -39,9 +56,8 @@ namespace ServerCore
                     options.Conventions.AuthorizeFolder("/ModelBases");
                 });
 
-            services.AddDbContext<PuzzleServerContext>
-                (options => options.UseLazyLoadingProxies()
-                    .UseSqlServer(Configuration.GetConnectionString("PuzzleServerContext")));
+            DeploymentConfiguration.ConfigureDatabase(Configuration, services, hostingEnvironment);
+            FileManager.ConnectionString = Configuration.GetConnectionString("AzureStorageConnectionString");
 
             services.AddAuthentication().AddMicrosoftAccount(microsoftOptions =>
             {
@@ -87,11 +103,22 @@ namespace ServerCore
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            if (env.IsDevelopment())
+            if (env.IsDevelopment() && String.IsNullOrEmpty(Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME")))
             {
                 app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
                 PuzzleServerContext.UpdateDatabase(app);
+            }
+            else if (env.IsStaging() && Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") == "PuzzleServerTestDeploy")
+            {
+                app.UseExceptionHandler("/Error");
+                app.UseHsts();
+                PuzzleServerContext.UpdateDatabase(app);
+            }
+            else if (env.IsProduction() && (Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") == "puzzlehunt" || Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") == "puzzleday"))
+            {
+                app.UseExceptionHandler("/Error");
+                app.UseHsts();
             }
             else
             {
