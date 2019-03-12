@@ -29,7 +29,7 @@
     }
 </style>
 
-<h2>All Puzzles</h2>
+<h2>@Model.Event.Name Puzzles (@Model.Puzzles.Count):</h2>
 
 <p>
     <a asp-page="Create">Create New</a> |
@@ -54,19 +54,22 @@
                 @Html.DisplayNameFor(model => model.Puzzles[0].SolveValue)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Puzzles[0].IsPuzzle)
+                Puzzle
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Puzzles[0].IsMetaPuzzle)
+                Meta
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Puzzles[0].IsFinalPuzzle)
+                Final
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Puzzles[0].IsGloballyVisiblePrerequisite)
+                Cheat
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Puzzles[0].Token)
+                MinPreReq
+            </th>
+            <th>
+                Support
             </th>
             <th>
                 Shortcuts
@@ -118,13 +121,16 @@
                     }
                 </td>
                 <td>
-                    @if (item.IsGloballyVisiblePrerequisite)
+                    @if (item.IsCheatCode)
                     {
                         <p>&#10004;</p>
                     }
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Token)
+                    @Html.DisplayFor(modelItem => item.MinPrerequisiteCount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SupportEmailAlias)
                 </td>
                 <td>
                     <div class="shortcut-menu-dropdown">
