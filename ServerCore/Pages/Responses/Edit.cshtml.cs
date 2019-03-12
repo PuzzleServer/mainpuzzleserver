@@ -49,6 +49,7 @@ namespace ServerCore.Pages.Responses
             try
             {
                 await _context.SaveChangesAsync();
+                await PuzzleStateHelper.UpdateTeamsWhoSentResponse(_context, PuzzleResponse);
             }
             catch (DbUpdateConcurrencyException)
             {
