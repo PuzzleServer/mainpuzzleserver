@@ -66,8 +66,10 @@ namespace ServerCore.Areas.Identity
             {
                 string eventRole = filterContext.RouteData.Values["eventRole"] as string;
 
-                Enum.TryParse<EventRole>(eventRole, out EventRole role);
-                return role;
+                if (Enum.TryParse<EventRole>(eventRole, out EventRole role))
+                {
+                    return role;
+                }
             }
 
             return EventRole.play;
