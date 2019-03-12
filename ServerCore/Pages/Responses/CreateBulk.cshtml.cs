@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -52,6 +53,8 @@ namespace ServerCore.Pages.Responses
             StringReader submittedTextReader = new StringReader(SubmittedText ?? string.Empty);
             StringReader responseTextReader = new StringReader(ResponseText ?? string.Empty);
             StringReader noteReader = new StringReader(Note ?? string.Empty);
+
+            List<Response> newResponses = new List<Response>();
 
             while (true)
             {
@@ -118,6 +121,7 @@ namespace ServerCore.Pages.Responses
                 };
 
                 _context.Responses.Add(response);
+                newResponses.Add(response);
             }
 
             if (!ModelState.IsValid)
@@ -126,6 +130,11 @@ namespace ServerCore.Pages.Responses
             }
 
             await _context.SaveChangesAsync();
+
+            foreach(var response in newResponses)
+            {
+                await PuzzleStateHelper.UpdateTeamsWhoSentResponse(_context, response);
+            }
 
             return RedirectToPage("./Index", new { puzzleid = puzzleId });
         }

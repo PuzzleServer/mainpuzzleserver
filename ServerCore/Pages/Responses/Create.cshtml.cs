@@ -52,6 +52,8 @@ namespace ServerCore.Pages.Responses
             _context.Responses.Add(PuzzleResponse);
             await _context.SaveChangesAsync();
 
+            await PuzzleStateHelper.UpdateTeamsWhoSentResponse(_context, PuzzleResponse);
+
             return RedirectToPage("./Index", new { puzzleid = puzzleId });
         }
     }
