@@ -122,9 +122,10 @@ namespace ServerCore.Pages.Teams
                 transaction.Commit();
             }
 
-            if(EventRole == ModelBases.EventRole.play)
+            int teamId = await GetTeamId();
+            if (EventRole == ModelBases.EventRole.play)
             {
-                return RedirectToPage("./Details");
+                return RedirectToPage("./Details", new { teamId = teamId });
             }
             return RedirectToPage("./Index");
         }
