@@ -542,9 +542,8 @@ namespace ServerCore
                     }
 
                     await context.SaveChangesAsync();
+                    transaction.Commit();
                 }
-
-                transaction.Commit();
             }
         }
     }
