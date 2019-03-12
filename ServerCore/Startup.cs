@@ -111,14 +111,14 @@ namespace ServerCore
             }
             else if (env.IsStaging() && Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") == "PuzzleServerTestDeploy")
             {
-                app.UseBrowserLink();
-                app.UseDeveloperExceptionPage();
+                app.UseExceptionHandler("/Error");
+                app.UseHsts();
                 PuzzleServerContext.UpdateDatabase(app);
             }
-            else if (env.IsProduction() && Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") == "Puzzlehunt")
+            else if (env.IsProduction() && (Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") == "puzzlehunt" || Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") == "puzzleday"))
             {
-                app.UseBrowserLink();
-                app.UseDeveloperExceptionPage();
+                app.UseExceptionHandler("/Error");
+                app.UseHsts();
             }
             else
             {
