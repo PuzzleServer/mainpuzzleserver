@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -53,6 +54,8 @@ namespace ServerCore.Pages.Responses
             StringReader responseTextReader = new StringReader(ResponseText ?? string.Empty);
             StringReader noteReader = new StringReader(Note ?? string.Empty);
 
+            HashSet<string> submissions = new HashSet<string>();
+
             while (true)
             {
                 string isSolution = isSolutionReader.ReadLine();
@@ -80,23 +83,32 @@ namespace ServerCore.Pages.Responses
                     break;
                 }
 
+                string submittedTextFormatted = ServerCore.DataModel.Response.FormatSubmission(submittedText);
+
                 // Ensure that the submission text is unique for this puzzle.
-                bool isSubmittedTextUnique(string text)
+                async Task<bool> isSubmittedTextUnique(string text)
                 {
-                    foreach (Response r in _context.Responses)
+                    bool duplicateResponse = await(from Response r in _context.Responses
+                                                   where r.PuzzleID == puzzleId &&
+                                                   r.SubmittedText == text
+                                                   select r).AnyAsync();
+
+                    if (duplicateResponse)
                     {
-                        if (r.SubmittedText.Equals(ServerCore.DataModel.Response.FormatSubmission(text)))
-                        {
-                            ModelState.AddModelError("SubmittedText", "Submission text is not unique");
-                            return false;
-                        }
+                        ModelState.AddModelError("SubmittedText", "Submission text is not unique");
                     }
 
-                    return true;
+                    return !duplicateResponse;
                 };
 
-                if (isSubmittedTextUnique(submittedText) == false)
+                if (!await isSubmittedTextUnique(submittedTextFormatted))
                 {
+                    break;
+                }
+
+                if (!submissions.Add(submittedTextFormatted))
+                {
+                    ModelState.AddModelError("SubmittedText", "Submission text is not unique");
                     break;
                 }
 
