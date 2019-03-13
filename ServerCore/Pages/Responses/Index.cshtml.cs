@@ -26,7 +26,7 @@ namespace ServerCore.Pages.Responses
         public async Task OnGetAsync(int puzzleId)
         {
             Puzzle = await _context.Puzzles.Where(m => m.ID == puzzleId).FirstOrDefaultAsync();
-            Responses = await _context.Responses.Where((r) => r.Puzzle != null && r.Puzzle.ID == puzzleId).ToListAsync();
+            Responses = await _context.Responses.Where((r) => r.Puzzle != null && r.Puzzle.ID == puzzleId).OrderByDescending((r) => r.IsSolution).ThenBy((r) => r.ResponseText).ThenBy((r) => r.SubmittedText).ToListAsync();
             PuzzleId = puzzleId;
         }
     }
