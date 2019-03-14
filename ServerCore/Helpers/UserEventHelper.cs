@@ -41,6 +41,10 @@ namespace ServerCore.Helpers
         /// <returns>The user's team for this event</returns>
         public static async Task<Team> GetTeamForPlayer(PuzzleServerContext dbContext, Event thisEvent, PuzzleUser user)
         {
+            if (user == null)
+            {
+                return null;
+            }
             return await dbContext.TeamMembers.Where(t => t.Member.ID == user.ID && t.Team.Event.ID == thisEvent.ID).Select(t => t.Team).FirstOrDefaultAsync();
         }
 

@@ -49,16 +49,28 @@ namespace ServerCore.ModelBases
 
         public async Task<bool> IsRegisteredUser()
         {
+            if (LoggedInUser == null)
+            {
+                return false;
+            }
             return await LoggedInUser.IsPlayerInEvent(_context, Event);
         }
 
         public async Task<bool> IsEventAuthor()
         {
+            if (LoggedInUser == null)
+            {
+                return false;
+            }
             return await LoggedInUser.IsAuthorForEvent(_context, Event);
         }
 
         public async Task<bool> IsEventAdmin()
         {
+            if (LoggedInUser == null)
+            {
+                return false;
+            }
             return await LoggedInUser.IsAdminForEvent(_context, Event);
         }
 
