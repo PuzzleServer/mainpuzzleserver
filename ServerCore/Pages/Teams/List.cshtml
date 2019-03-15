@@ -9,7 +9,14 @@
 }
 
 <p>
-    @if (!Model.Event.IsTeamRegistrationActive)
+    @if (DateTime.UtcNow < Model.Event.TeamRegistrationBegin)
+    {
+        <h2>Registration not open yet</h2>
+        <div>
+            Registration will be open soon.
+        </div>
+    }
+    else if (DateTime.UtcNow > Model.Event.TeamRegistrationBegin)
     {
         <h2>Registration closed</h2>
         <div>
