@@ -28,7 +28,7 @@ namespace ServerCore.Pages.Pieces
         {
         }
 
-        [Authorize(Policy = "PlayerCanSeePuzzle")]
+        [Authorize(Policy = "IsEventAdmin")]
         public async Task<IActionResult> OnGetAsync(string eventId, int puzzleId)
         {
             Event currentEvent = await EventHelper.GetEventFromEventId(_context, eventId);

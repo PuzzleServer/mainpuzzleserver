@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -65,21 +64,9 @@ namespace ServerCore.Pages
             /// </summary>
             public readonly DateTime? LastSyncTime;
 
-            /// <summary>
-            ///   If an error was encountered while processing the raw parameters passed to the sync
-            ///   controller, this will be a non-null string that can be returned to the user to
-            ///   give a meaningful error message.  It's intended that if the request comes from a
-            ///   page we created, no error will ever be raised.
-            /// </summary>
-            public readonly string DecodingError;
-
             public DecodedSyncRequest(List<int> query_puzzle_ids, int? min_solve_count, string annotations, string last_sync_time,
                                       int maxAnnotationKey, ref SyncResponse response)
             {
-                // Initialize the error to null, and add to it as we find errors.
-
-                DecodingError = null;
-
                 // The query_puzzle_ids and min_solve_count fields are already perfectly fine, so just copy them.
 
                 QueryPuzzleIds = query_puzzle_ids;
@@ -98,47 +85,43 @@ namespace ServerCore.Pages
                         LastSyncTime = JsonConvert.DeserializeObject<DateTime>(last_sync_time);
                     }
                     catch (JsonException) {
+                        response.AddError("Could not deserialize last sync time.");
                         LastSyncTime = null;
                     }
                 }
 
-                var my_annotations = new List<AnnotationRequest> { new AnnotationRequest { key = 7, contents = "foo" } };
-                var my_serialization = JsonConvert.SerializeObject(my_annotations);
-
                 // The annotations field is a JSON-converted list of objects, each with an integer key and
                 // string contents.  Or at least, it's supposed to be; we have to check it carefully.
 
-                AnnotationRequests = null;
+                AnnotationRequests = new List<AnnotationRequest>();
                 if (annotations != null) {
+                    List<AnnotationRequest> uncheckedAnnotationRequests;
+
                     try {
                         // First, decode it into a list using the JSON deserializer.
-                        AnnotationRequests = JsonConvert.DeserializeObject<List<AnnotationRequest>>(annotations);
+                        uncheckedAnnotationRequests = JsonConvert.DeserializeObject<List<AnnotationRequest>>(annotations);
                     }
                     catch (JsonException) {
-                        response.AddError("Could not deserialize annotations list");
-                        AnnotationRequests = null;
+                        response.AddError("Could not deserialize annotations list.");
+                        uncheckedAnnotationRequests = new List<AnnotationRequest>();
                     }
 
-                    // If that succeeded, check each of the lements for validity.
+                    // Check each of the elements for validity.
 
-                    if (AnnotationRequests != null) {
-                        foreach (var annotation in AnnotationRequests) {
-                            if (annotation.key < 1) {
-                                response.AddError("Found non-positive key in annotation");
-                                AnnotationRequests = null;
-                                break;
-                            }
-                            if (annotation.key > maxAnnotationKey) {
-                                response.AddError("Found too-high in annotation");
-                                AnnotationRequests = null;
-                                break;
-                            }
-                            if (annotation.contents.Length > 255) {
-                                response.AddError("Found contents in annotation longer than 255 bytes");
-                                AnnotationRequests = null;
-                                break;
-                            }
+                    foreach (var annotation in uncheckedAnnotationRequests) {
+                        if (annotation.key < 1) {
+                            response.AddError("Found non-positive key in annotation.");
+                            continue;
                         }
+                        if (annotation.key > maxAnnotationKey) {
+                            response.AddError("Found too-high key in annotation.");
+                            continue;
+                        }
+                        if (annotation.contents.Length > 255) {
+                            response.AddError("Found contents in annotation longer than 255 bytes.");
+                            continue;
+                        }
+                        AnnotationRequests.Add(annotation);
                     }
                 }
             }
@@ -146,65 +129,58 @@ namespace ServerCore.Pages
 
         /// <summary>
         ///   A SyncResponse gathers all the data that needs to be sent back to the requester of a
-        ///   sync, and supplies it as an IActionResult when the caller calls GetResult().
+        ///   sync, and supplies it as a Dictionary<string, object> when the caller calls GetResult().
+        ///
+        ///   The reason the response is a dictionary rather than an object of a class is that some
+        ///   of its fields are optional, and their presence or absence in the response has meaning.
+        ///   For instance, the presence of a "min_solve_count" field in the response means that new
+        ///   pieces are available.
         /// </summary>
         public class SyncResponse
         {
-            private string currentError;
-            private dynamic response;
+            private List<string> errors;
+            private Dictionary<string, object> response;
 
             public SyncResponse()
             {
-                currentError = null;
-                response = new ExpandoObject();
+                errors = new List<string>();
+                response = new Dictionary<string, object>();
             }
-
-            public bool HasError { get { return currentError != null; } }
 
             public void AddError(string newError)
             {
-                if (newError == null) {
-                    return;
-                }
-                else if (currentError == null) {
-                    currentError = newError;
-                }
-                else {
-                    currentError = currentError + " " + newError;
-                }
+                errors.Add(newError);
             }
 
             public void SetSiteVersion(string siteVersion)
             {
-                response.site_version = siteVersion;
+                response["site_version"] = siteVersion;
             }
 
             public void SetMinAndMaxSolveCountAndPieces(int minSolveCount, int maxSolveCount, List<Piece> pieces)
             {
-                response.min_solve_count = minSolveCount;
-                response.max_solve_count = maxSolveCount;
-                response.tokens = pieces.Select(piece => new { solve_count = piece.ProgressLevel, contents = piece.Contents } );
+                response["min_solve_count"] = minSolveCount;
+                response["max_solve_count"] = maxSolveCount;
+                response["tokens"] = pieces.Select(piece => new { solve_count = piece.ProgressLevel, contents = piece.Contents } );
             }
 
             public void SetSolvedPuzzles(List<int> solvedPuzzles)
             {
-                response.solved_puzzles = solvedPuzzles;
+                response["solved_puzzles"] = solvedPuzzles;
             }
 
             public void SetSyncTimeAndAnnotations(DateTime syncTime, List<Annotation> annotations)
             {
-                response.sync_time = JsonConvert.SerializeObject(syncTime);
-                response.annotations = annotations.Select(a => new { key = a.Key, contents = a.Contents, version = a.Version });
+                response["sync_time"] = JsonConvert.SerializeObject(syncTime);
+                response["annotations"] = annotations.Select(a => new { key = a.Key, contents = a.Contents, version = a.Version }).ToList();
             }
 
-            public dynamic GetResult()
+            public Dictionary<string, object> GetResult()
             {
-                if (currentError != null) {
-                    return new { error = currentError };
+                if (errors.Any()) {
+                    response["error"] = String.Join(" ", errors);
                 }
-                else {
-                    return response;
-                }
+                return response;
             }
         }
 
@@ -260,20 +236,12 @@ namespace ServerCore.Pages
             // Get a list of all the puzzles this team has solved from this event.
 
             List<Puzzle> solves = await (from state in context.PuzzleStatePerTeam
-                                         where state.TeamID == teamId && state.SolvedTime != null
+                                         where state.TeamID == teamId && state.SolvedTime != null && state.Puzzle.Event.ID == eventId
                                          select state.Puzzle).ToListAsync();
 
             int maxSolveCount = 0;
             List<int> solvedPuzzles = new List<int>();
             foreach (var solvedPuzzle in solves) {
-                // I'm pretty sure the query above will never return any puzzles that aren't
-                // from the current event.  But, just in case, out of paranoia, we check
-                // for them and don't count them.
-
-                if (solvedPuzzle.Event.ID != eventId) {
-                    continue;
-                }
-
                 // If the request is asking whether certain puzzles are solved, check if it's
                 // in the set and, if so, put it in the list of solved puzzles to inform the
                 // requester of.
@@ -389,14 +357,14 @@ namespace ServerCore.Pages
                                                                                    new SqlParameter("@TeamID", teamId),
                                                                                    new SqlParameter("@Key", annotationRequest.key));
                         if (result != 1) {
-                            response.AddError("Annotation update failed");
+                            response.AddError("Annotation update failed.");
                         }
                     }
                     catch (DbUpdateException) {
-                        response.AddError("Encountered error while trying to update annotation");
+                        response.AddError("Encountered error while trying to update annotation.");
                     }
                     catch (Exception) {
-                        response.AddError("Miscellaneous error while trying to update annotation");
+                        response.AddError("Miscellaneous error while trying to update annotation.");
                     }
                 }
             }
@@ -442,8 +410,8 @@ namespace ServerCore.Pages
             response.SetSyncTimeAndAnnotations(now, annotations);
         }
 
-        public async Task<dynamic> GetSyncResponse(int eventId, int teamId, int puzzleId, List<int> query_puzzle_ids, int? min_solve_count,
-                                                   string annotations, string last_sync_time)
+        public async Task<Dictionary<string, object>> GetSyncResponse(int eventId, int teamId, int puzzleId, List<int> query_puzzle_ids,
+                                                                      int? min_solve_count, string annotations, string last_sync_time)
         {
             SyncResponse response = new SyncResponse();
 
@@ -451,7 +419,7 @@ namespace ServerCore.Pages
 
             Puzzle thisPuzzle = await context.Puzzles.Where(puz => puz.ID == puzzleId).FirstOrDefaultAsync();
             if (thisPuzzle == null) {
-                response.AddError("Could not find the puzzle you tried to sync");
+                response.AddError("Could not find the puzzle you tried to sync.");
                 return response.GetResult();
             }
 
@@ -473,9 +441,6 @@ namespace ServerCore.Pages
 
             DecodedSyncRequest request = new DecodedSyncRequest(query_puzzle_ids, min_solve_count, annotations, last_sync_time,
                                                                 thisPuzzle.MaxAnnotationKey, ref response);
-            if (response.HasError) {
-                return response.GetResult();
-            }
 
             // Do any processing that requires fetching the list of all puzzles this team has
             // solved.  Pass thisPuzzle.Group as the groupExcludedFromSolveCount parameter so that,
@@ -487,9 +452,6 @@ namespace ServerCore.Pages
             // Store any annotations the requester provided
 
             await StoreAnnotations(request, response, thisPuzzle.ID, teamId);
-            if (response.HasError) {
-                return response.GetResult();
-            }
 
             // Fetch and return any annotations that the requester may not have yet
 

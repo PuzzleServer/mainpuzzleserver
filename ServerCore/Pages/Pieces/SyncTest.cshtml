@@ -1,22 +1,13 @@
 @page "/{eventId}/{puzzleId}/SyncTest.html"
 @model ServerCore.Pages.Pieces.SyncTestModel
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-  <link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
-  <link href="//fonts.googleapis.com/css?family=Quattrocento:400" rel="stylesheet" type="text/css">
-  <link href="//fonts.googleapis.com/css?family=Raleway:400,500,600,700,900" rel="stylesheet" type="text/css">
-  <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-  <link href="//fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
+@{
+    ViewData["Title"] = "Sync Test";
+}
 
-  <title>Sync Test</title>
+<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 
-  <style>
+<style>
   body {
     padding-top: 20px;
     padding-bottom: 20px;
@@ -27,9 +18,6 @@
   th, td {
     padding-left: 2px;
     padding-right: 2px;
-  }
-  .fa-container {
-    font-size: 400%;
   }
   .latest-log-message {
     color: blue;
@@ -150,13 +138,7 @@
   .solved-tab {
     color: DarkGreen;
   }
-  </style>
-</head>
-
-<body>
-  <br />
-  <br />
-  <br />
+</style>
 
 <div class="container-fluid">
   <div id="tools_row">
@@ -1818,7 +1800,6 @@ function handle_sync_success(data)
     if ("error" in data) {
         log_message(3, "danger", "ERROR:  Results of sync failed with error: " + data.error);
         change_every_sync_status_after_failed_sync();
-        return false;
     }
 
     try {
@@ -2151,7 +2132,7 @@ function initialize_puzzle_content()
     window.g.num_puzzles = 3;
     window.g.puzzles = Array(window.g.num_puzzles + 1);
     window.g.puzzles[0] = new Puzzle(0, "Unassigned", 0, "Unassigned", "#unassigned", 0, "");
-    window.g.num_clues = 60;
+    window.g.num_clues = 10;
     window.g.clues = Array(window.g.num_clues + 1);
     window.g.valid_hashes = { '#intro' : true, '#all' : true, '#unassigned' : true };
     window.g.unsolved_puzzles = {};
@@ -2279,5 +2260,3 @@ function initialize_page()
 
 $(document).ready(initialize_page);
 </script>
-</body>
-</html>
