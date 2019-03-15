@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace ServerCore.DataModel
@@ -80,7 +81,15 @@ namespace ServerCore.DataModel
                 return string.Empty;
             }
 
-            return Regex.Replace(submission, @"[^a-zA-Z\d]", string.Empty).ToUpper();
+            // Use Compatibility Decomposition (FormKD) so that
+            // 1. Compatible equivalents like exponents, ligatures, and Roman numerals are converted into preserved common characters.
+            // 2. Canonical composite characters like the accented e (\u00E9) characters in re'sume' are decomposed to preserve the starter characters.
+            if (!submission.IsNormalized(NormalizationForm.FormKD))
+            {
+                submission = submission.Normalize(NormalizationForm.FormKD);
+            }
+
+            return Regex.Replace(submission, @"[^a-zA-Z\d]", string.Empty).ToUpperInvariant();
         }
     }
 }
