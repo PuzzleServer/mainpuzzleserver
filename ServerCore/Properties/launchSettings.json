@@ -14,7 +14,7 @@
         "environmentVariables": {
           "ASPNETCORE_ENVIRONMENT": "Development"
         }
-      },\
+      },
     "ServerCore": {
       "commandName": "Project",
       "launchBrowser": true,
