@@ -4,7 +4,7 @@ using ServerCore.DataModel;
 
 namespace ServerCore.Helpers
 {
-    static class PuzzleHelper
+    public static class PuzzleHelper
     {
         /// <summary>
         /// Helper for deleting puzzles that correctly deletes dependent objects
@@ -26,6 +26,16 @@ namespace ServerCore.Helpers
 
             context.Puzzles.Remove(puzzle);
             await context.SaveChangesAsync();
+        }
+
+        public static string GetFormattedUrl(Puzzle puzzle)
+        {
+            if (puzzle.CustomURL == null)
+            {
+                return null;
+            }
+            string formattedUrl = puzzle.CustomURL.Replace("{puzzleId}", $"{puzzle.ID}").Replace("{eventId}", $"{puzzle.Event.ID}");
+            return formattedUrl;
         }
     }
 }

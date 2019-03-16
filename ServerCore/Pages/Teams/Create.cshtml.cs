@@ -28,7 +28,12 @@ namespace ServerCore.Pages.Teams
 
             if (EventRole != EventRole.play && EventRole != EventRole.admin)
             {
-                return NotFound();
+                return Forbid();
+            }
+
+            if (EventRole == EventRole.play && GetTeamId().Result != -1)
+            {
+                return NotFound("You are already on a team and cannot create a new one.");
             }
 
             if (EventRole == EventRole.admin && !await LoggedInUser.IsAdminForEvent(_context, Event))
@@ -117,9 +122,10 @@ namespace ServerCore.Pages.Teams
                 transaction.Commit();
             }
 
-            if(EventRole == ModelBases.EventRole.play)
+            int teamId = await GetTeamId();
+            if (EventRole == ModelBases.EventRole.play)
             {
-                return RedirectToPage("./Details");
+                return RedirectToPage("./Details", new { teamId = teamId });
             }
             return RedirectToPage("./Index");
         }

@@ -40,17 +40,20 @@ namespace ServerCore.Pages.Responses
             PuzzleResponse.PuzzleID = puzzleId;
 
             // Ensure that the response text is unique across all responses for this puzzle.
-            foreach (Response r in _context.Responses)
+            bool duplicateResponse = await (from Response r in _context.Responses
+                                            where r.PuzzleID == puzzleId &&
+                                            r.SubmittedText == PuzzleResponse.SubmittedText
+                                            select r).AnyAsync();
+            if (duplicateResponse)
             {
-                if (r.SubmittedText.Equals(PuzzleResponse.SubmittedText))
-                {
-                    ModelState.AddModelError("PuzzleResponse.SubmittedText", "Submission text is not unique");
-                    return await OnGetAsync(puzzleId);
-                }
+                ModelState.AddModelError("PuzzleResponse.SubmittedText", "Submission text is not unique");
+                return await OnGetAsync(puzzleId);
             }
 
             _context.Responses.Add(PuzzleResponse);
             await _context.SaveChangesAsync();
+
+            await PuzzleStateHelper.UpdateTeamsWhoSentResponse(_context, PuzzleResponse);
 
             return RedirectToPage("./Index", new { puzzleid = puzzleId });
         }
