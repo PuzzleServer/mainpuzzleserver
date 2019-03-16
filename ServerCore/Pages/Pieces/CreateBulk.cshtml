@@ -1,0 +1,37 @@
+﻿@page "/{eventId}/{eventRole}/Pieces/CreateBulk/{puzzleId}"
+@model ServerCore.Pages.Pieces.CreateBulkModel
+
+@{
+    ViewData["Title"] = "Create pieces in bulk";
+    ViewData["AdminRoute"] = "../Pieces/CreateBulk";
+    ViewData["AuthorRoute"] = "../Pieces/CreateBulk";
+    ViewData["PlayRoute"] = "../Submissions/Index";
+    ViewData["RoutingPuzzleId"] = ViewContext.RouteData.Values["puzzleId"];
+}
+
+<h2>@Model.Puzzle.Name: Create pieces (bulk)</h2>
+<div>
+    <a asp-page="./Index" asp-route-puzzleid="@Model.PuzzleId">Cancel</a>
+</div>
+
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <div>
+            <p>Enter one line per piece.  That line should contain the progress level (an integer),
+               then a tab character, and then the contents.  Then click Bulk Create.  This will
+               delete all existing pieces for this puzzle and replace them with the new ones.</p>
+            <br />
+        </div>
+        <form method="post">
+            <textarea cols="100" asp-for="Pieces"></textarea>
+            <div class="form-group">
+                <input type="submit" value="Bulk Create" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
