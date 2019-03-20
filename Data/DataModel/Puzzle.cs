@@ -152,6 +152,11 @@ namespace ServerCore.DataModel
         //
 
         /// <summary>
+        /// Erata
+        /// </summary>
+        public string Erata { get; set; }
+
+        /// <summary>
         /// File for the main puzzle (typically a PDF containing the puzzle)
         /// </summary>
         [NotMapped]
