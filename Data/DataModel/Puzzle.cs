@@ -37,6 +37,7 @@ namespace ServerCore.DataModel
             MinutesOfEventLockout = source.MinutesOfEventLockout;
             MaxAnnotationKey = source.MaxAnnotationKey;
             SupportEmailAlias = source.SupportEmailAlias;
+            Erata = source.Erata;
         }
 
         /// <summary>
