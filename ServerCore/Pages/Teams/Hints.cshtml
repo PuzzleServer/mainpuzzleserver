@@ -1,4 +1,4 @@
-﻿@page "/{eventId}/{eventRole}/Teams/Hints"
+﻿@page "/{eventId}/{eventRole}/Teams/{teamId}/Hints/{puzzleId}"
 @model ServerCore.Pages.Teams.HintsModel
 
 @{
@@ -64,7 +64,7 @@ You have @Model.Team.HintCoinCount hint ticket(s).
                     <form method="post">
                         @if (Model.Team.HintCoinCount >= hint.Hint.Cost)
                         {
-                            <button type="submit" asp-route-hintId="@hint.Hint.Id" asp-route-teamID="@Model.Team.ID" asp-route-puzzleID="@Model.PuzzleID" asp-page-handler="Unlock" onclick="return confirm('Are you sure you want to spend @hint.Hint.Cost tickets to find out &quot;@hint.Hint.Description&quot;?')">Unlock</button>
+                            <button type="submit" asp-route-hintId="@hint.Hint.Id" asp-route-teamId="@Model.Team.ID" asp-route-puzzleId="@Model.PuzzleID" asp-page-handler="Unlock" onclick="return confirm('Are you sure you want to spend @hint.Hint.Cost tickets to find out &quot;@hint.Hint.Description&quot;?')">Unlock</button>
                         }
                         else
                         {

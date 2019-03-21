@@ -1,4 +1,4 @@
-﻿@page "/{eventId}/{eventRole}/Teams/Status"
+﻿@page "/{eventId}/{eventRole}/Teams/{teamId}/Status"
 @model ServerCore.Pages.Teams.StatusModel
 
 @{
@@ -34,6 +34,9 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.PuzzleStatePerTeam[0].Notes)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PuzzleStatePerTeam[0].IsEmailOnlyMode)
             </th>
         </tr>
     </thead>
@@ -72,6 +75,16 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Notes)
                 </td>
+                <td>
+                    @if (item.IsEmailOnlyMode == true)
+                    {
+                        <a asp-page-handler="EmailMode" asp-route-sort="@Model.Sort" asp-route-teamId="@Model.Team.ID" asp-route-puzzleid="@item.Puzzle.ID" asp-route-value="false" onclick="return confirm('Are you sure you want to release @(item.Puzzle.Name) from email-only mode?')">Release</a>
+                    }
+                    else
+                    {
+                        <a asp-page-handler="EmailMode" asp-route-sort="@Model.Sort" asp-route-teamId="@Model.Team.ID" asp-route-puzzleid="@item.Puzzle.ID" asp-route-value="true" onclick="return confirm('Are you sure you want to restrict @(item.Puzzle.Name) to email-only mode?')">Restrict</a>
+                    }
+                </td>
             </tr>
         }
 
@@ -93,6 +106,17 @@
             </td>
             <td>
                 <a asp-page-handler="SolveState" asp-route-sort="@Model.Sort" asp-route-teamId="@Model.Team.ID" asp-route-value="false" onclick="return confirm('Are you sure you want to mark ALL PUZZLES as unsolved?')">Unsolve All</a>
+            </td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                    <a asp-page-handler="EmailMode" asp-route-sort="@Model.Sort" asp-route-teamId="@Model.Team.ID" asp-route-value="false" onclick="return confirm('Are you sure you want to release all puzzles from email-only mode?')">Release all</a>
+            </td>
+            <td>
+                    <a asp-page-handler="EmailMode" asp-route-sort="@Model.Sort" asp-route-teamId="@Model.Team.ID"  asp-route-value="true" onclick="return confirm('Are you sure you want to restrict all puzzles to email-only mode?')">Restrict all</a>
             </td>
             <td></td>
             <td></td>

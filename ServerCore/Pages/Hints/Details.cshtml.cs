@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Hints
 {
+    [Authorize(Policy = "IsEventAdminOrAuthorOfPuzzle")]
     public class DetailsModel : EventSpecificPageModel
     {
         public DetailsModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)

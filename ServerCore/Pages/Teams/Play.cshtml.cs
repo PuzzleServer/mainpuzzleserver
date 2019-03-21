@@ -14,7 +14,7 @@ namespace ServerCore.Pages.Teams
     /// <summary>
     /// Model for the player's "Puzzles" page. Shows a list of the team's unsolved puzzles, with sorting options.
     /// </summary>
-    [Authorize(Policy = "IsPlayer")]
+    [Authorize(Policy = "PlayerIsOnTeam")]
     public class PlayModel : EventSpecificPageModel
     {
         // see https://docs.microsoft.com/en-us/aspnet/core/data/ef-rp/sort-filter-page?view=aspnetcore-2.1 to make this sortable!
@@ -31,8 +31,9 @@ namespace ServerCore.Pages.Teams
 
         private const SortOrder DefaultSort = SortOrder.GroupAscending;
 
-        public async Task OnGetAsync(SortOrder? sort)
+        public async Task OnGetAsync(SortOrder? sort, int teamId)
         {
+            TeamID = teamId;
             Team myTeam = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
             if (myTeam != null)
             {

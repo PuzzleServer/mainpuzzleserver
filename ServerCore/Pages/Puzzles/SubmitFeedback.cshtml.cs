@@ -10,7 +10,7 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Puzzles
 {
-//    [Authorize(Policy = "PlayerIsOnTeam, PlayerCanSeePuzzle")] // TODO: These auth checks not working currently.
+    [Authorize(Policy = "PlayerCanSeePuzzle")]
     public class SubmitFeedbackModel : EventSpecificPageModel
     {
         public SubmitFeedbackModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)

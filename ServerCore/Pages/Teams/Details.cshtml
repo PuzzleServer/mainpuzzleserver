@@ -1,61 +1,226 @@
-﻿@page "/{eventId}/{eventRole}/Teams/Details"
+﻿@page "/{eventId}/{eventRole}/Teams/{teamId}/Details"
 @model ServerCore.Pages.Teams.DetailsModel
 
 @{
     ViewData["Title"] = "Team Details";
     //Needs route data - ViewData["AdminRoute"] = "/Teams/Details";
-    //Needs route data - ViewData["AuthorRoute"] = "/Teams/Status";
+    //Needs route data - ViewData["AuthorRoute"] = "/Teams/Details";
     //Needs route data - ViewData["PlayRoute"] = "/Teams/Details";
     Layout = "_teamLayout.cshtml";
 }
+@using Microsoft.AspNetCore.Http.Extensions @* for GetEncodedUrl *@
 
-<h2>@Html.DisplayFor(model => model.Team.Name): Details</h2>
+<!--TODO: Consider moving if other pages use this format-->
+<style>
+    .column {
+        float: left;
+        width: 50%;
+    }
+
+    /* Clear floats after the columns */
+    .row:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+</style>
+
+<h2>@Html.DisplayFor(model => model.Team.Name) Team</h2>
+
+@if (Model.EventRole != ModelBases.EventRole.author)
+{
+    <div>
+        <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID">Edit team details</a> |
+        <a asp-page="./Delete" asp-route-teamId="@Model.Team.ID">Delete team</a>
+    </div>
+}
 
 <div>
-    @if (Model.EventRole != ModelBases.EventRole.author)
-    {
-        <div>
-            <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID">Edit</a> |
-            <a asp-page="./Delete" asp-route-teamId="@Model.Team.ID">Delete</a>
-        </div>
-    }
     <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.Name)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Team.Name)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.RoomID)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Team.RoomID)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.CustomRoom)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Team.CustomRoom)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.PrimaryContactEmail)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Team.PrimaryContactEmail)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.PrimaryPhoneNumber)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Team.PrimaryPhoneNumber)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.SecondaryPhoneNumber)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Team.SecondaryPhoneNumber)
-        </dd>
-    </dl>
+
+    <div class="row">
+        <div class="column">
+            <h3>Details</h3>
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => model.Team.Name)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Team.Name)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Team.RoomID)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Team.RoomID)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Team.CustomRoom)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Team.CustomRoom)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Team.PrimaryContactEmail)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Team.PrimaryContactEmail)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Team.PrimaryPhoneNumber)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Team.PrimaryPhoneNumber)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Team.SecondaryPhoneNumber)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Team.SecondaryPhoneNumber)
+                </dd>
+            </dl>
+        </div>
+        <div class="column">
+            <div>
+                <h3>Members (@(Model.Members.Count))</h3>
+                @{ bool canAdd = Model.EventRole == ModelBases.EventRole.admin; }
+
+                @if (!Model.Event.IsTeamMembershipChangeActive)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        This event is not currently open for membership changes.
+                    </div>
+                }
+                else if (Model.Members.Count >= Model.Event.MaxTeamSize)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        This team is full.
+                    </div>
+                }
+                else
+                {
+                    canAdd = true;
+                }
+
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Members[0].Member.Name)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Members[0].Member.Email)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Members[0].Member.EmployeeAlias)
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Members)
+                    {
+                        <tr>
+                            <td>
+                                @if (Model.LoggedInUser.IsGlobalAdmin)
+                                {
+                                    <a asp-area="Identity" asp-page="/Account/Edit" asp-route-userId="@item.Member.ID" asp-route-returnUrl="@Request.GetEncodedUrl()">@Html.DisplayFor(modelItem => item.Member.Name)</a>
+                                }
+                                else
+                                {
+                                    @Html.DisplayFor(modelItem => item.Member.Name)
+                                }
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Member.Email)
+                            </td>
+                            <td>
+                                @if (item.Member.EmployeeAlias == null)
+                                {
+                                    <p>N/A</p>
+                                }
+                                else
+                                {
+                                    @Html.DisplayFor(modelItem => item.Member.EmployeeAlias);
+                                }
+                            </td>
+                            @if (Model.EventRole == ModelBases.EventRole.admin || Model.Event.IsTeamMembershipChangeActive)
+                            {
+                                if (Model.EventRole == ModelBases.EventRole.play && Model.Members.Count == 1)
+                                {
+                                    <td>
+                                        (Can't remove last member)
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>
+                                        <a asp-page-handler="RemoveMember" asp-route-teamId="@Model.Team.ID" asp-route-teamMemberId="@item.ID" onclick="return confirm('Are you sure you want to remove @item.Member.Name from @Model.Team.Name?')">Remove</a>
+                                    </td>
+                                }
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            @if (canAdd)
+            {
+
+                <h3>Pending requests  (@(Model.Users.Count))</h3>
+                <div>
+                    <a asp-page="./Apply" asp-route-eventRole="play" asp-route-teamId="@Model.Team.ID">Application link (copy me and email me!)</a>
+                    @if (Model.EventRole == ModelBases.EventRole.admin)
+                    {
+                        <a asp-page="./AddMember" asp-route-teamId="@Model.Team.ID"> | Add a different user</a>
+                    }
+                </div>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Users[0].Item1.Name)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Users[0].Item1.Email)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Users[0].Item1.EmployeeAlias)
+                            </th>
+                            <th>
+                                Add player to team
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Users)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Item1.Name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Item1.Email)
+                                </td>
+                                <td>
+                                    @if (item.Item1.EmployeeAlias == null)
+                                    {
+                                        <p>N/A</p>
+                                    }
+                                    else
+                                    {
+                                        @Html.DisplayFor(modelItem => item.Item1.EmployeeAlias);
+                                    }
+                                </td>
+                                <td>
+                                    <a asp-page-handler="AddMember" asp-route-teamId="@Model.Team.ID" asp-route-userId="@item.Item1.ID" asp-route-applicationId="@item.Item2">Add</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
 </div>

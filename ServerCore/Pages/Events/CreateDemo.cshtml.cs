@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using ServerCore.DataModel;
 
 namespace ServerCore.Pages.Events
@@ -29,6 +30,13 @@ namespace ServerCore.Pages.Events
         {
             _context = context;
             _userManager = userManager;
+        }
+
+        private Piece MakePiece(Puzzle puzzle, int progressLevel, int clueID, string answerPattern, int puzzlePos, string clue)
+        {
+            var clue_info = new { clue_id = clueID, answer_pattern = answerPattern, puzzle_pos = puzzlePos, clue = clue };
+            string contents = JsonConvert.SerializeObject(clue_info);
+            return new Piece { Puzzle = puzzle, ProgressLevel = progressLevel, Contents = contents };
         }
 
         public IActionResult OnGet()
@@ -93,7 +101,8 @@ namespace ServerCore.Pages.Events
                     Name = "!!!Get Hopping!!!",
                     Event = Event,
                     IsPuzzle = false,
-                    IsGloballyVisiblePrerequisite = true
+                    IsGloballyVisiblePrerequisite = true,
+                    Description = "Start the event",
                 };
                 _context.Puzzles.Add(start);
 
@@ -106,7 +115,8 @@ namespace ServerCore.Pages.Events
                     HintCoinsForSolve = 1,
                     Group = "Thumper's Stumpers",
                     OrderInGroup = 1,
-                    MinPrerequisiteCount = 1
+                    MinPrerequisiteCount = 1,
+                    Description = "Bunsweeper",
                 };
                 _context.Puzzles.Add(easy);
 
@@ -120,7 +130,8 @@ namespace ServerCore.Pages.Events
                     Group = "Thumper's Stumpers",
                     OrderInGroup = 2,
                     MinPrerequisiteCount = 1,
-                    MinutesToAutomaticallySolve = 3
+                    MinutesToAutomaticallySolve = 3,
+                    Description = "Rabbit's Cube",
                 };
                 _context.Puzzles.Add(intermediate);
 
@@ -133,7 +144,8 @@ namespace ServerCore.Pages.Events
                     HintCoinsForSolve = 3,
                     Group = "Thumper's Stumpers",
                     OrderInGroup = 3,
-                    MinPrerequisiteCount = 1
+                    MinPrerequisiteCount = 1,
+                    Description = "Lateral Leaping",
                 };
                 _context.Puzzles.Add(hard);
 
@@ -147,7 +159,8 @@ namespace ServerCore.Pages.Events
                     SolveValue = 100,
                     Group = "Thumper's Stumpers",
                     OrderInGroup = 99,
-                    MinPrerequisiteCount = 2
+                    MinPrerequisiteCount = 2,
+                    Description = "Word Hutch",
                 };
                 _context.Puzzles.Add(meta);
 
@@ -159,7 +172,9 @@ namespace ServerCore.Pages.Events
                     SolveValue = 10,
                     Group = "Daffy's Delights",
                     OrderInGroup = 1,
-                    MinPrerequisiteCount = 1
+                    MinPrerequisiteCount = 1,
+                    Description = "Hip Hop Identification",
+                    CustomURL = "https://www.bing.com/images/search?q=%22rabbit%22",
                 };
                 _context.Puzzles.Add(other);
 
@@ -172,7 +187,8 @@ namespace ServerCore.Pages.Events
                     SolveValue = -1,
                     Group = "Daffy's Delights",
                     OrderInGroup = 2,
-                    MinPrerequisiteCount = 1
+                    MinPrerequisiteCount = 1,
+                    Description = "Duck Konundrum",
                 };
                 _context.Puzzles.Add(cheat);
 
@@ -184,7 +200,8 @@ namespace ServerCore.Pages.Events
                     SolveValue = 0,
                     Group = "Roger's Railway",
                     OrderInGroup = 1,
-                    MinPrerequisiteCount = 1
+                    MinPrerequisiteCount = 1,
+                    Description = "Whistle Hop Intro",
                 };
                 _context.Puzzles.Add(lockIntro);
 
@@ -197,9 +214,60 @@ namespace ServerCore.Pages.Events
                     Group = "Roger's Railway",
                     OrderInGroup = 2,
                     MinPrerequisiteCount = 1,
-                    MinutesOfEventLockout = 5
+                    MinutesOfEventLockout = 5,
+                    Description = "Whistle Hop",
                 };
                 _context.Puzzles.Add(lockPuzzle);
+
+                Puzzle kitchenSyncPuzzle = new Puzzle
+                {
+                    Name = "Kitchen Sync",
+                    Event = Event,
+                    IsPuzzle = true,
+                    SolveValue = 10,
+                    Group = "Sync Test",
+                    OrderInGroup = 1,
+                    MinPrerequisiteCount = 1
+                };
+                _context.Puzzles.Add(kitchenSyncPuzzle);
+
+                Puzzle heatSyncPuzzle = new Puzzle
+                {
+                    Name = "Heat Sync",
+                    Event = Event,
+                    IsPuzzle = true,
+                    SolveValue = 10,
+                    Group = "Sync Test",
+                    OrderInGroup = 2,
+                    MinPrerequisiteCount = 1
+                };
+                _context.Puzzles.Add(heatSyncPuzzle);
+
+                Puzzle lipSyncPuzzle = new Puzzle
+                {
+                    Name = "Lip Sync",
+                    Event = Event,
+                    IsPuzzle = true,
+                    SolveValue = 10,
+                    Group = "Sync Test",
+                    OrderInGroup = 3,
+                    MinPrerequisiteCount = 1
+                };
+                _context.Puzzles.Add(lipSyncPuzzle);
+
+                Puzzle syncTestMetapuzzle = new Puzzle
+                {
+                    Name = "Sync Test",
+                    Event = Event,
+                    IsPuzzle = true,
+                    IsMetaPuzzle = true,
+                    SolveValue = 50,
+                    Group = "Sync Test",
+                    OrderInGroup = 99,
+                    MinPrerequisiteCount = 1,
+                    MaxAnnotationKey = 400
+                };
+                _context.Puzzles.Add(syncTestMetapuzzle);
 
                 await _context.SaveChangesAsync();
 
@@ -222,6 +290,14 @@ namespace ServerCore.Pages.Events
                 _context.Responses.Add(new Response() { Puzzle = lockIntro, SubmittedText = "ANSWER", ResponseText = "Correct!", IsSolution = true });
                 _context.Responses.Add(new Response() { Puzzle = lockPuzzle, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
                 _context.Responses.Add(new Response() { Puzzle = lockPuzzle, SubmittedText = "ANSWER", ResponseText = "Correct!", IsSolution = true });
+                _context.Responses.Add(new Response() { Puzzle = kitchenSyncPuzzle, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
+                _context.Responses.Add(new Response() { Puzzle = kitchenSyncPuzzle, SubmittedText = "SYNC", ResponseText = "Correct!", IsSolution = true });
+                _context.Responses.Add(new Response() { Puzzle = heatSyncPuzzle, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
+                _context.Responses.Add(new Response() { Puzzle = heatSyncPuzzle, SubmittedText = "OR", ResponseText = "Correct!", IsSolution = true });
+                _context.Responses.Add(new Response() { Puzzle = lipSyncPuzzle, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
+                _context.Responses.Add(new Response() { Puzzle = lipSyncPuzzle, SubmittedText = "SWIM", ResponseText = "Correct!", IsSolution = true });
+                _context.Responses.Add(new Response() { Puzzle = syncTestMetapuzzle, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
+                _context.Responses.Add(new Response() { Puzzle = syncTestMetapuzzle, SubmittedText = "SYNCORSWIM", ResponseText = "Correct!", IsSolution = true });
 
                 string hint1Description = "Tell me about the rabbits, George.";
                 string hint1Content = "O.K. Some day – we’re gonna get the jack together and we’re gonna have a little house and a couple of acres an’ a cow and some pigs and...";
@@ -253,6 +329,26 @@ namespace ServerCore.Pages.Events
                 _context.Prerequisites.Add(new Prerequisites() { Puzzle = cheat, Prerequisite = start });
                 _context.Prerequisites.Add(new Prerequisites() { Puzzle = lockIntro, Prerequisite = start });
                 _context.Prerequisites.Add(new Prerequisites() { Puzzle = lockPuzzle, Prerequisite = lockIntro });
+                _context.Prerequisites.Add(new Prerequisites() { Puzzle = kitchenSyncPuzzle, Prerequisite = start });
+                _context.Prerequisites.Add(new Prerequisites() { Puzzle = heatSyncPuzzle, Prerequisite = start });
+                _context.Prerequisites.Add(new Prerequisites() { Puzzle = lipSyncPuzzle, Prerequisite = start });
+                _context.Prerequisites.Add(new Prerequisites() { Puzzle = syncTestMetapuzzle, Prerequisite = start });
+
+                await _context.SaveChangesAsync();
+
+                //
+                // Create puzzle pieces.
+                //
+                _context.Pieces.Add(MakePiece(syncTestMetapuzzle, 0, 1, "xxx xxxx'x x xXxxx!", 3, "What Crocodile Dundee might say"));
+                _context.Pieces.Add(MakePiece(syncTestMetapuzzle, 1, 2, "xxx xxxx xxxx xxx Xxxxx", 1, "In <i>Hey Diddle Diddle</i>, what the dish did"));
+                _context.Pieces.Add(MakePiece(syncTestMetapuzzle, 1, 3, "xxXx", 1, "It smells"));
+                _context.Pieces.Add(MakePiece(syncTestMetapuzzle, 2, 4, "xxX", 4, "You reach things by extending it"));
+                _context.Pieces.Add(MakePiece(syncTestMetapuzzle, 2, 5, "Xxx xxxxx", 1, "Result of the <i>Exxon Valdez</i> crash"));
+                _context.Pieces.Add(MakePiece(syncTestMetapuzzle, 2, 6, "xxxxX", 2, "What you make out of turkey drippings"));
+                _context.Pieces.Add(MakePiece(syncTestMetapuzzle, 3, 7, "xxxXx xxx", 4, "Another name for a slow cooker"));
+                _context.Pieces.Add(MakePiece(syncTestMetapuzzle, 4, 8, "xXxxxx", 3, "The index is one of them"));
+                _context.Pieces.Add(MakePiece(syncTestMetapuzzle, 4, 9, "xxxxX", 2, "It can suffer when you play tennis"));
+                _context.Pieces.Add(MakePiece(syncTestMetapuzzle, 4, 10, "xxxxxxX xxxxxxx", 2, "What Chekov asked strangers the location of in Star Trek IV, garnering suspicion due to his Russian accent"));
 
                 await _context.SaveChangesAsync();
 
