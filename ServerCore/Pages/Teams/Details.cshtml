@@ -50,13 +50,13 @@
                     @Html.DisplayFor(model => model.Team.Name)
                 </dd>
                 <!-- TODO: Conditionally show/hide based on event property (not needed for PuzzleHunt)
-    <dt>
-        @Html.DisplayNameFor(model => model.Team.RoomID)
-    </dt>
-    <dd>
-        @Html.DisplayFor(model => model.Team.RoomID)
-    </dd>
-    -->
+                <dt>
+                    @Html.DisplayNameFor(model => model.Team.RoomID)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Team.RoomID)
+                </dd>
+                -->
                 <dt>
                     Team room
                 </dt>
@@ -129,23 +129,6 @@
                 <h3>Current members (@(Model.Members.Count))</h3>
                 @{ bool canAdd = Model.EventRole == ModelBases.EventRole.admin; }
 
-                @if (!Model.Event.IsTeamMembershipChangeActive)
-                {
-                    <div class="alert alert-danger" role="alert">
-                        This event is not currently open for membership changes.
-                    </div>
-                }
-                else if (Model.Members.Count >= Model.Event.MaxTeamSize)
-                {
-                    <div class="alert alert-danger" role="alert">
-                        This team is full.
-                    </div>
-                }
-                else
-                {
-                    canAdd = true;
-                }
-
             </div>
             <table class="table">
                 <thead>
@@ -208,6 +191,22 @@
                     }
                 </tbody>
             </table>
+            @if (!Model.Event.IsTeamMembershipChangeActive)
+            {
+                <div class="alert alert-danger" role="alert">
+                    This event is not currently open for membership changes.
+                </div>
+            }
+            else if (Model.Members.Count >= Model.Event.MaxTeamSize)
+            {
+                <div class="alert alert-danger" role="alert">
+                    This team is full.
+                </div>
+            }
+            else
+            {
+                canAdd = true;
+            }
             @if (canAdd)
             {
                 <h3>Invite teammates</h3>
