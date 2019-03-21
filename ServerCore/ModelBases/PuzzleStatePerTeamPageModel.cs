@@ -14,9 +14,10 @@ namespace ServerCore.ModelBases
     {
         public SortOrder? Sort { get; set; }
 
-        public PuzzleStatePerTeamPageModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
-        {
-        }
+        public PuzzleStatePerTeamPageModel(
+            PuzzleServerContext serverContext,
+            UserManager<IdentityUser> userManager)
+        : base(serverContext, userManager) { }
 
         public IList<PuzzleStatePerTeam> PuzzleStatePerTeam { get; set; }
 
@@ -29,7 +30,12 @@ namespace ServerCore.ModelBases
                 return NotFound();
             }
 
-            IQueryable<PuzzleStatePerTeam> statesQ = PuzzleStateHelper.GetFullReadOnlyQuery(_context, Event, puzzle, team, EventRole == EventRole.admin ? null : LoggedInUser);
+            IQueryable<PuzzleStatePerTeam> statesQ = PuzzleStateHelper.GetFullReadOnlyQuery(
+                _context,
+                Event,
+                puzzle,
+                team,
+                EventRole == EventRole.admin ? null : LoggedInUser);
             Sort = sort;
 
             switch(sort ?? DefaultSort)
@@ -86,12 +92,35 @@ namespace ServerCore.ModelBases
 
         public async Task SetUnlockStateAsync(Puzzle puzzle, Team team, bool value)
         {
-            await PuzzleStateHelper.SetUnlockStateAsync(_context, Event, puzzle, team, value ? (DateTime?)DateTime.UtcNow : null, EventRole == EventRole.admin ? null : LoggedInUser);
+            await PuzzleStateHelper.SetUnlockStateAsync(
+                _context,
+                Event,
+                puzzle,
+                team,
+                value ? (DateTime?)DateTime.UtcNow : null,
+                EventRole == EventRole.admin ? null : LoggedInUser);
         }
 
         public async Task SetSolveStateAsync(Puzzle puzzle, Team team, bool value)
         {
-            await PuzzleStateHelper.SetSolveStateAsync(_context, Event, puzzle, team, value ? (DateTime?)DateTime.UtcNow : null, EventRole == EventRole.admin ? null : LoggedInUser);
+            await PuzzleStateHelper.SetSolveStateAsync(
+                _context,
+                Event,
+                puzzle,
+                team,
+                value ? (DateTime?)DateTime.UtcNow : null,
+                EventRole == EventRole.admin ? null : LoggedInUser);
+        }
+
+        public async Task SetEmailModeAsync(Puzzle puzzle, Team team, bool value)
+        {
+            await PuzzleStateHelper.SetEmailOnlyModeAsync(
+                _context,
+                Event, 
+                puzzle,
+                team,
+                value,
+                EventRole == EventRole.admin ? null : LoggedInUser);
         }
 
         public enum SortOrder

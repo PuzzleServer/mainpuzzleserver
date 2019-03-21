@@ -106,12 +106,24 @@
             @Html.DisplayFor(model => model.Puzzle.SupportEmailAlias)
         </dd>
         <dt>
+            @Html.DisplayNameFor(model => model.Puzzle.Description)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Puzzle.Description)
+        </dd>
+        <dt>
             @Html.DisplayNameFor(model => model.Puzzle.PuzzleFile)
         </dt>
         <dd>
             <a href="@Html.DisplayFor(model => model.Puzzle.PuzzleFile.Url)">
                 @Html.DisplayFor(model => model.Puzzle.PuzzleFile.Url)
             </a>
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Puzzle.CustomURL)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Puzzle.CustomURL)
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.Puzzle.Errata)

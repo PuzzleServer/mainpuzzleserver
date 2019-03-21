@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -53,6 +54,9 @@ namespace ServerCore.Pages.Responses
             StringReader responseTextReader = new StringReader(ResponseText ?? string.Empty);
             StringReader noteReader = new StringReader(Note ?? string.Empty);
 
+            List<Response> newResponses = new List<Response>();
+            HashSet<string> submissions = new HashSet<string>();
+
             while (true)
             {
                 string isSolution = isSolutionReader.ReadLine();
@@ -80,6 +84,35 @@ namespace ServerCore.Pages.Responses
                     break;
                 }
 
+                string submittedTextFormatted = ServerCore.DataModel.Response.FormatSubmission(submittedText);
+
+                // Ensure that the submission text is unique for this puzzle.
+                async Task<bool> isSubmittedTextUnique(string text)
+                {
+                    bool duplicateResponse = await(from Response r in _context.Responses
+                                                   where r.PuzzleID == puzzleId &&
+                                                   r.SubmittedText == text
+                                                   select r).AnyAsync();
+
+                    if (duplicateResponse)
+                    {
+                        ModelState.AddModelError("SubmittedText", "Submission text is not unique");
+                    }
+
+                    return !duplicateResponse;
+                };
+
+                if (!await isSubmittedTextUnique(submittedTextFormatted))
+                {
+                    break;
+                }
+
+                if (!submissions.Add(submittedTextFormatted))
+                {
+                    ModelState.AddModelError("SubmittedText", "Submission text is not unique");
+                    break;
+                }
+
                 if (responseText == null)
                 {
                     ModelState.AddModelError("SubmittedText", "Unmatched Submission without Response");
@@ -98,14 +131,20 @@ namespace ServerCore.Pages.Responses
                 };
 
                 _context.Responses.Add(response);
+                newResponses.Add(response);
             }
 
             if (!ModelState.IsValid)
             {
-                return Page();
+                return await OnGetAsync(puzzleId);
             }
 
             await _context.SaveChangesAsync();
+
+            foreach(var response in newResponses)
+            {
+                await PuzzleStateHelper.UpdateTeamsWhoSentResponse(_context, response);
+            }
 
             return RedirectToPage("./Index", new { puzzleid = puzzleId });
         }

@@ -475,6 +475,10 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("CustomURL");
+
+                    b.Property<string>("Description");
+
                     b.Property<string>("Errata");
 
                     b.Property<int>("EventID");

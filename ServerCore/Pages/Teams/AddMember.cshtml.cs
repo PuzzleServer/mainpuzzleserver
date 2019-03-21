@@ -10,12 +10,12 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
+using ServerCore.Helpers;
 using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Teams
 {
-    // TODO: Uncomment when auth can read teamId from the route
-    //[Authorize("IsEventAdminOrPlayerOnTeam")]
+    [Authorize("IsEventAdmin")]
     public class AddMemberModel : EventSpecificPageModel
     {
         public Team Team { get; set; }
@@ -34,114 +34,24 @@ namespace ServerCore.Pages.Teams
                 return NotFound("Could not find team with ID '" + teamId + "'. Check to make sure you're accessing this page in the context of a team.");
             }
 
-            if (EventRole == EventRole.play)
-            {
-                // Get all users that want to be on this team
-                Users = await (from application in _context.TeamApplications
-                               where application.Team == Team &&
-                               !((from teamMember in _context.TeamMembers
-                                  where teamMember.Member == application.Player &&
-                             teamMember.Team.Event == Event
-                                  select teamMember).Any())
-                               select new Tuple<PuzzleUser, int>(application.Player, application.ID)).ToListAsync();
-            }
-            else
-            {
-                Debug.Assert(EventRole == EventRole.admin);
-
-                // Admins can add anyone
-                Users = await (from user in _context.PuzzleUsers
-                               where !((from teamMember in _context.TeamMembers
-                                        where teamMember.Team.Event == Event
-                                        where teamMember.Member == user
-                                        select teamMember).Any())
-                               select new Tuple<PuzzleUser, int>(user, -1)).ToListAsync();
-            }
+            Users = await (from user in _context.PuzzleUsers
+                            where !((from teamMember in _context.TeamMembers
+                                    where teamMember.Team.Event == Event
+                                    where teamMember.Member == user
+                                    select teamMember).Any())
+                            select new Tuple<PuzzleUser, int>(user, -1)).ToListAsync();
 
             return Page();
         }
 
         public async Task<IActionResult> OnGetAddMemberAsync(int teamId, int userId, int applicationId)
         {
-            if (applicationId == -1)
+            Tuple<bool, string> result = TeamHelper.AddMemberAsync(_context, Event, EventRole, teamId, userId).Result;
+            if (result.Item1)
             {
-                if (EventRole != EventRole.admin)
-                {
-                    return Forbid();
-                }
+                return RedirectToPage("./Details", new { teamId = teamId });
             }
-
-            if (EventRole == EventRole.play && !Event.IsTeamMembershipChangeActive)
-            {
-                return NotFound("Team membership change is not currently active.");
-            }
-
-            Team team = await _context.Teams.FirstOrDefaultAsync(m => m.ID == teamId);
-            if (team == null)
-            {
-                return NotFound($"Could not find team with ID '{teamId}'. Check to make sure the team hasn't been removed.");
-            }
-
-            var currentTeamMembers = await _context.TeamMembers.Where(members => members.Team.ID == team.ID).ToListAsync();
-            if (currentTeamMembers.Count >= Event.MaxTeamSize && EventRole != EventRole.admin)
-            {
-                return NotFound($"The team '{team.Name}' is full.");
-            }
-
-            PuzzleUser user = await _context.PuzzleUsers.FirstOrDefaultAsync(m => m.ID == userId);
-            if (user == null)
-            {
-                return NotFound($"Could not find user with ID '{userId}'. Check to make sure the user hasn't been removed.");
-            }
-
-            if (user.EmployeeAlias == null && currentTeamMembers.Where((m) => m.Member.EmployeeAlias == null).Count() >= Event.MaxExternalsPerTeam)
-            {
-                return NotFound($"The team '{team.Name}' is already at its maximum count of non-employee players, and '{user.Email}' has no registered alias.");
-            }
-
-            if (await (from teamMember in _context.TeamMembers
-                       where teamMember.Member == user &&
-                       teamMember.Team.Event == Event
-                       select teamMember).AnyAsync())
-            {
-                return NotFound($"'{user.Email}' is already on a team in this event.");
-            }
-
-            TeamMembers Member = new TeamMembers();
-            Member.Team = team;
-            Member.Member = user;
-
-            if (applicationId != -1)
-            {
-                TeamApplication application = await (from app in _context.TeamApplications
-                                               where app.ID == applicationId
-                                               select app).FirstOrDefaultAsync();
-                if (application == null)
-                {
-                    return NotFound("Could not find application");
-                }
-
-                if (application.Player.ID != userId)
-                {
-                    return NotFound("Mismatched player and application");
-                }
-
-                if (application.Team != team)
-                {
-                    return Forbid();
-                }
-            }
-
-            // Remove any applications the user might have started for this event
-            var allApplications = from app in _context.TeamApplications
-                                  where app.Player == user &&
-                                  app.Team.Event == Event
-                                  select app;
-            _context.TeamApplications.RemoveRange(allApplications);
-
-            _context.TeamMembers.Add(Member);
-            await _context.SaveChangesAsync();
-            return RedirectToPage("./Members", new { teamId = teamId });
+            return NotFound(result.Item2);
         }
     }
 }

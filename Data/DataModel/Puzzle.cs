@@ -10,7 +10,7 @@ namespace ServerCore.DataModel
     /// <summary>
     /// A Puzzle is the record of a solvable puzzle in the database
     /// Sometimes a Puzzle is used as a workaround for things like time prerequisites
-    /// </summary>
+    /// </summary>    
     public class Puzzle
     {
         public Puzzle()
@@ -37,6 +37,8 @@ namespace ServerCore.DataModel
             MinutesOfEventLockout = source.MinutesOfEventLockout;
             MaxAnnotationKey = source.MaxAnnotationKey;
             SupportEmailAlias = source.SupportEmailAlias;
+            CustomURL = source.CustomURL;
+            Description = source.Description;
             Errata = source.Errata;
         }
 
@@ -147,6 +149,17 @@ namespace ServerCore.DataModel
         /// If null, the event email address should be used instead.
         /// </summary>
         public string SupportEmailAlias { get; set; }
+
+        /// <summary>
+        /// A custom URL the puzzle should link to instead of an associated file
+        /// </summary>
+        [DataType(DataType.Url)]
+        public string CustomURL { get; set; }
+
+        /// <summary>
+        /// Short description of the puzzle for authors or special pages
+        /// </summary>
+        public string Description { get; set; }
 
         //
         // WARNING: If you add new properties add them to the constructor as well so importing will work.

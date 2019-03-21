@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
 
@@ -62,7 +63,8 @@ namespace ServerCore
                            UnlockedTime = teamstate == null ? null : teamstate.UnlockedTime,
                            SolvedTime = teamstate == null ? null : teamstate.SolvedTime,
                            Printed = teamstate == null ? false : teamstate.Printed,
-                           Notes = teamstate == null ? null : teamstate.Notes
+                           Notes = teamstate == null ? null : teamstate.Notes,
+                           IsEmailOnlyMode = teamstate == null ? false : teamstate.IsEmailOnlyMode
                        };
             }
 
@@ -83,7 +85,8 @@ namespace ServerCore
                            UnlockedTime = teamstate == null ? null : teamstate.UnlockedTime,
                            SolvedTime = teamstate == null ? null : teamstate.SolvedTime,
                            Printed = teamstate == null ? false : teamstate.Printed,
-                           Notes = teamstate == null ? null : teamstate.Notes
+                           Notes = teamstate == null ? null : teamstate.Notes,
+                           IsEmailOnlyMode = teamstate == null ? false : teamstate.IsEmailOnlyMode
                        };
             }
 #pragma warning restore IDE0031
@@ -258,6 +261,10 @@ namespace ServerCore
             for (int i = 0; i < states.Count; i++)
             {
                 states[i].IsEmailOnlyMode = value;
+                if (value == true)
+                {
+                    states[i].WrongSubmissionCountBuffer += 50;
+                }
             }
 
             await context.SaveChangesAsync();
@@ -515,6 +522,37 @@ namespace ServerCore
 
             // after looping through all teams, send one update with all changes made
             await context.SaveChangesAsync();
+        }
+
+        public static async Task UpdateTeamsWhoSentResponse(PuzzleServerContext context, Response response)
+        {
+            using (IDbContextTransaction transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable))
+            {
+                var submissionsThatMatchResponse = await (from PuzzleStatePerTeam pspt in context.PuzzleStatePerTeam
+                                                          join Submission sub in context.Submissions on pspt.Team equals sub.Team
+                                                          where pspt.PuzzleID == response.PuzzleID &&
+                                                          sub.SubmissionText == response.SubmittedText
+                                                          select new { State = pspt, Submission = sub }).ToListAsync();
+
+                if (submissionsThatMatchResponse.Count > 0)
+                {
+                    Puzzle puzzle = await context.Puzzles.Where((p) => p.ID == response.PuzzleID).FirstOrDefaultAsync();
+
+                    foreach (var s in submissionsThatMatchResponse)
+                    {
+                        s.Submission.Response = response;
+                        context.Attach(s.Submission).State = EntityState.Modified;
+
+                        if (response.IsSolution && s.State.SolvedTime == null)
+                        {
+                            await SetSolveStateAsync(context, puzzle.Event, puzzle, s.State.Team, s.Submission.TimeSubmitted);
+                        }
+                    }
+
+                    await context.SaveChangesAsync();
+                    transaction.Commit();
+                }
+            }
         }
     }
 }

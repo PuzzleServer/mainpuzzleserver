@@ -8,7 +8,28 @@
     ViewData["PlayRoute"] = "/Teams/Play";
 }
 
-<h2>All Puzzles</h2>
+<style>
+    .shortcut-menu-dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .shortcut-menu-dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        padding: 12px 16px;
+        z-index: 1;
+    }
+
+    .shortcut-menu-dropdown:hover .shortcut-menu-dropdown-content {
+        display: block;
+    }
+</style>
+
+<h2>@Model.Event.Name Puzzles (@Model.Puzzles.Count):</h2>
 
 <p>
     <a asp-page="Create">Create New</a> |
@@ -33,19 +54,22 @@
                 @Html.DisplayNameFor(model => model.Puzzles[0].SolveValue)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Puzzles[0].IsPuzzle)
+                Puzzle
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Puzzles[0].IsMetaPuzzle)
+                Meta
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Puzzles[0].IsFinalPuzzle)
+                Final
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Puzzles[0].IsGloballyVisiblePrerequisite)
+                Cheat
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Puzzles[0].Token)
+                MinPreReq
+            </th>
+            <th>
+                Support
             </th>
             <th>
                 Shortcuts
@@ -60,7 +84,11 @@
                     <a asp-Page="./Details" asp-route-puzzleid=@item.ID>@Html.DisplayFor(modelItem => item.Name)</a>
                 </td>
                 <td>
-                    @if (item.PuzzleFile != null)
+                    @if (item.CustomURL != null)
+                    {
+                        <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item)">Link</a>
+                    }
+                    else if (item.PuzzleFile != null)
                     {
                         @Html.ActionLink("File", "Index", "Files", new { eventId = Model.Event.ID, filename = item.PuzzleFile.ShortName })
                     }
@@ -93,13 +121,16 @@
                     }
                 </td>
                 <td>
-                    @if (item.IsGloballyVisiblePrerequisite)
+                    @if (item.IsCheatCode)
                     {
                         <p>&#10004;</p>
                     }
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Token)
+                    @Html.DisplayFor(modelItem => item.MinPrerequisiteCount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SupportEmailAlias)
                 </td>
                 <td>
                     <div class="shortcut-menu-dropdown">
