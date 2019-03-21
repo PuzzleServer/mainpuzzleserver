@@ -26,8 +26,7 @@ namespace ServerCore.Pages.Teams
 
         protected async Task LoadTeamDataAsync()
         {
-            List<Team> allTeams = null;
-            allTeams = await (from team in _context.Teams
+            List<Team> allTeams = await (from team in _context.Teams
                               where team.Event == Event
                               select team).ToListAsync();
             Teams = await (from team in _context.Teams
