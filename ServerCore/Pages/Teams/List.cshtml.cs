@@ -46,7 +46,7 @@ namespace ServerCore.Pages.Teams
                                select application.Team;
             AppliedTeam = await applications.FirstOrDefaultAsync();
 
-            await LoadTeamDataAsync(true);
+            await LoadTeamDataAsync();
 
             return Page();
         }

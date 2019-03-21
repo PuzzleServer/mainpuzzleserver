@@ -15,7 +15,7 @@ namespace ServerCore.Pages.Teams
 
         public async Task<IActionResult> OnGetAsync()
         {
-            await LoadTeamDataAsync(false);
+            await LoadTeamDataAsync();
             return Page();
         }
     }

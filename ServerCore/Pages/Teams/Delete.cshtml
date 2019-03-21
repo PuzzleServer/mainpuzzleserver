@@ -39,7 +39,7 @@
         <dd>
             @if (Model.Team.CustomRoom == null)
             {
-                <div>(none - please enter this before the start of the event)</div>
+                <div>(none)</div>
             }
             else
             {
@@ -52,7 +52,7 @@
         <dd>
             @if (Model.Team.PrimaryPhoneNumber == null)
             {
-                <div>(none - please enter this before the start of the event)</div>
+                <div>(none)</div>
             }
             else
             {
@@ -60,7 +60,7 @@
             }
         </dd>
         <dt>
-            Secondary phone number (optional)
+            Secondary phone number
         </dt>
         <dd>
             @if (Model.Team.SecondaryPhoneNumber == null)
@@ -73,7 +73,7 @@
             }
         </dd>
         <dt>
-            Primary contact e-mail (optional)
+            Primary contact e-mail 
         </dt>
         <dd>
             @if (Model.Team.PrimaryContactEmail == null)

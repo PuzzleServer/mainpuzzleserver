@@ -30,6 +30,13 @@
             You are not part of a team for this event, and unfortuantely we're no longer accepting new teams into the event. You can still request to join an existing team.
         </div>
     }
+    else if (!Model.Event.IsTeamMembershipChangeActive)
+    {
+        <h2>Registration closed.</h2>
+        <div>
+            The deadline for creating or joining teams for this event has passed. We hope to see you next time!
+        </div>
+    }
     else
     {
         <h2>Register for @Model.Event.Name</h2>
@@ -60,6 +67,11 @@
         <tbody>
             @foreach (var item in Model.Teams)
             {
+                if (!item.Key.IsLookingForTeammates)
+                {
+                    continue;
+                }
+
                 <tr>
                     <td>
                         @Html.DisplayFor(modelItem => item.Key.Name)

@@ -24,32 +24,18 @@ namespace ServerCore.Pages.Teams
         /// </summary>
         public int PlayerCount { get; set; }
 
-        protected async Task LoadTeamDataAsync(bool onlyIncludeTeamsLookingForMembers)
+        protected async Task LoadTeamDataAsync()
         {
             List<Team> allTeams = null;
-            if (onlyIncludeTeamsLookingForMembers) {
-                allTeams = await(from team in _context.Teams
-                                 where team.Event == Event
-                                 where team.IsLookingForTeammates == true
-                                 select team).ToListAsync();
-                Teams = await (from team in _context.Teams
-                               where team.Event == Event
-                               where team.IsLookingForTeammates == true
-                               join teamMember in _context.TeamMembers on team equals teamMember.Team
-                               group teamMember by teamMember.Team into teamCounts
-                               select new { Team = teamCounts.Key, Count = teamCounts.Count() }).ToDictionaryAsync(x => x.Team, x => x.Count);
-            }
-            else {
-                allTeams = await (from team in _context.Teams
-                                  where team.Event == Event
-                                  select team).ToListAsync();
-                Teams = await (from team in _context.Teams
-                               where team.Event == Event
-                               join teamMember in _context.TeamMembers on team equals teamMember.Team
-                               group teamMember by teamMember.Team into teamCounts
-                               select new { Team = teamCounts.Key, Count = teamCounts.Count() }).ToDictionaryAsync(x => x.Team, x => x.Count);
-            }
-            
+            allTeams = await (from team in _context.Teams
+                              where team.Event == Event
+                              select team).ToListAsync();
+            Teams = await (from team in _context.Teams
+                           where team.Event == Event
+                           join teamMember in _context.TeamMembers on team equals teamMember.Team
+                           group teamMember by teamMember.Team into teamCounts
+                           select new { Team = teamCounts.Key, Count = teamCounts.Count() }).ToDictionaryAsync(x => x.Team, x => x.Count);
+
             foreach (Team team in allTeams)
             {
                 if (!Teams.ContainsKey(team))
