@@ -389,6 +389,7 @@ namespace ServerCore.Pages.Events
                     _context.PuzzleAuthors.Add(new PuzzleAuthors() { Puzzle = meta, Author = demoCreatorUser });
                 }
 
+
                 // TODO: Files (need to know how to detect whether local blob storage is configured)
                 // Is there a point to adding Feedback or is that quick/easy enough to demo by hand?
 
@@ -397,12 +398,12 @@ namespace ServerCore.Pages.Events
                 if (teamLoneWolf != null)
                 {
                     _context.TeamMembers.Add(new TeamMembers() { Team = teamLoneWolf, Member = demoCreatorUser });
-                    await _context.SaveChangesAsync();
                 }
 
                 // line up all hints
                 var teams = await _context.Teams.Where((t) => t.Event == Event).ToListAsync();
                 var hints = await _context.Hints.Where((h) => h.Puzzle.Event == Event).ToListAsync();
+                var puzzles = await _context.Puzzles.Where(p => p.Event == Event).ToListAsync();
 
                 foreach (Team team in teams)
                 {
@@ -410,11 +411,13 @@ namespace ServerCore.Pages.Events
                     {
                         _context.HintStatePerTeam.Add(new HintStatePerTeam() { Hint = hint, Team = team });
                     }
-                    foreach (Puzzle puzzle in _context.Puzzles)
+                    foreach (Puzzle puzzle in puzzles)
                     {
                         _context.PuzzleStatePerTeam.Add(new PuzzleStatePerTeam() { PuzzleID = puzzle.ID, TeamID = team.ID });
                     }
                 }
+
+                await _context.SaveChangesAsync();
 
                 //
                 // Mark the start puzzle as solved if we were asked to.
