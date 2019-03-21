@@ -52,6 +52,11 @@
                 <span asp-validation-for="Team.SecondaryPhoneNumber" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="Team.IsLookingForTeammates" class="control-label"></label>
+                <input asp-for="Team.IsLookingForTeammates" class="form-control" />
+                <span asp-validation-for="Team.IsLookingForTeammates" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-default" />
             </div>
         </form>

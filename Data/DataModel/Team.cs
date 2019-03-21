@@ -28,6 +28,7 @@ namespace ServerCore.DataModel
         public string PrimaryContactEmail { get; set; }
         public string PrimaryPhoneNumber { get; set; }
         public string SecondaryPhoneNumber { get; set; }
+        public bool IsLookingForTeammates { get; set; }
 
         public virtual List<Submission> Submissions { get; set; }
 
