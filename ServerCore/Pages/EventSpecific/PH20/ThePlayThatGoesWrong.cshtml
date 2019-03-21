@@ -2997,6 +2997,7 @@ function handle_sync_success(data)
                 window.g.site_version = data.site_version;
             }
             else if (window.g.site_version != data.site_version) {
+                window.g.site_version = null;
                 window.location.reload();
             }
         }
