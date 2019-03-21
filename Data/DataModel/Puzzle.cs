@@ -37,7 +37,7 @@ namespace ServerCore.DataModel
             MinutesOfEventLockout = source.MinutesOfEventLockout;
             MaxAnnotationKey = source.MaxAnnotationKey;
             SupportEmailAlias = source.SupportEmailAlias;
-            Erata = source.Erata;
+            Errata = source.Errata;
         }
 
         /// <summary>
@@ -153,9 +153,9 @@ namespace ServerCore.DataModel
         //
 
         /// <summary>
-        /// Erata
+        /// Errata
         /// </summary>
-        public string Erata { get; set; }
+        public string Errata { get; set; }
 
         /// <summary>
         /// File for the main puzzle (typically a PDF containing the puzzle)

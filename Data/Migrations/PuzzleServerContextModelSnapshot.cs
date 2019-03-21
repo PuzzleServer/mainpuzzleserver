@@ -475,7 +475,7 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Erata");
+                    b.Property<string>("Errata");
 
                     b.Property<int>("EventID");
 
