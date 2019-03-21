@@ -17,11 +17,11 @@
 <br />
 @if (!string.IsNullOrEmpty(Model.Puzzle.Errata))
 {
-    <div>
+    <h4>
         <strong style="color:red">Errata: </strong>@Model.Puzzle.Errata
-    </div>
+    </h4>
+    <br />
 }
-<br />
 <div class="row">
     <div class="col-md-4">
         @if (!string.IsNullOrEmpty(Model.AnswerToken))
