@@ -410,6 +410,10 @@ namespace ServerCore.Pages.Events
                     {
                         _context.HintStatePerTeam.Add(new HintStatePerTeam() { Hint = hint, Team = team });
                     }
+                    foreach (Puzzle puzzle in _context.Puzzles)
+                    {
+                        _context.PuzzleStatePerTeam.Add(new PuzzleStatePerTeam() { PuzzleID = puzzle.ID, TeamID = team.ID });
+                    }
                 }
 
                 //

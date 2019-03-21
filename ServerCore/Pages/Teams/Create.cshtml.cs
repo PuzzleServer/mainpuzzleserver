@@ -109,13 +109,21 @@ namespace ServerCore.Pages.Teams
                     _context.TeamMembers.Add(teamMember);
                 }
 
-                var hints = from Hint hint in _context.Hints
+                var hints = await (from Hint hint in _context.Hints
                             where hint.Puzzle.Event == Event
-                            select hint;
+                            select hint).ToListAsync();
 
                 foreach (Hint hint in hints)
                 {
                     _context.HintStatePerTeam.Add(new HintStatePerTeam() { Hint = hint, Team = Team });
+                }
+
+                var puzzleIDs = await (from Puzzle puzzle in _context.Puzzles
+                                where puzzle.Event == Event
+                                select puzzle.ID).ToListAsync();
+                foreach (int puzzleID in puzzleIDs)
+                {
+                    _context.PuzzleStatePerTeam.Add(new PuzzleStatePerTeam() { PuzzleID = puzzleID, TeamID = Team.ID });
                 }
 
                 await _context.SaveChangesAsync();
