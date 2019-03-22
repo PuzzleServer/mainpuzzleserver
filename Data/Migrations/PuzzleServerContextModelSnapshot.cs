@@ -15,7 +15,7 @@ namespace Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.2-servicing-10034")
+                .HasAnnotation("ProductVersion", "2.1.8-servicing-32085")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -217,7 +217,8 @@ namespace Data.Migrations
 
                     b.Property<int>("FileType");
 
-                    b.Property<int>("PuzzleID");
+                    b.Property<int?>("PuzzleID")
+                        .IsRequired();
 
                     b.Property<string>("ShortName")
                         .IsRequired();
@@ -484,6 +485,8 @@ namespace Data.Migrations
 
                     b.Property<int>("HintCoinsForSolve");
 
+                    b.Property<bool>("HintsAreCumulative");
+
                     b.Property<bool>("IsCheatCode");
 
                     b.Property<bool>("IsFinalPuzzle");
@@ -669,6 +672,8 @@ namespace Data.Migrations
 
                     b.Property<int>("HintCoinsUsed");
 
+                    b.Property<bool>("IsLookingForTeammates");
+
                     b.Property<string>("Name");
 
                     b.Property<string>("PrimaryContactEmail");
@@ -711,9 +716,11 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("Team.ID");
+                    b.Property<int?>("Team.ID")
+                        .IsRequired();
 
-                    b.Property<int>("User.ID");
+                    b.Property<int?>("User.ID")
+                        .IsRequired();
 
                     b.HasKey("ID");
 
