@@ -16,25 +16,32 @@
             Registration will be open soon.
         </div>
     }
-    else if (DateTime.UtcNow > Model.Event.TeamRegistrationBegin)
+    else if (DateTime.UtcNow > Model.Event.TeamRegistrationEnd)
     {
         <h2>Registration closed</h2>
         <div>
-            You are not part of a team for this event, and unfortuantely we're no longer accepting new teams into the event. :(
+            You are not part of a team for this event, and unfortuantely we're no longer accepting new teams into the event. You can still request to join an existing team.
         </div>
     }
     else if (Model.Teams.Count >= Model.Event.MaxNumberOfTeams)
     {
         <h2>Registration full</h2>
         <div>
-            You are not part of a team for this event, and unfortuantely we're no longer accepting new teams into the event. :(
+            You are not part of a team for this event, and unfortuantely we're no longer accepting new teams into the event. You can still request to join an existing team.
+        </div>
+    }
+    else if (!Model.Event.IsTeamMembershipChangeActive)
+    {
+        <h2>Registration closed.</h2>
+        <div>
+            The deadline for creating or joining teams for this event has passed. We hope to see you next time!
         </div>
     }
     else
     {
         <h2>Register for @Model.Event.Name</h2>
         <div>
-            You are not yet part of a team for this event. Create a new team or request to join one below!
+            You are not yet part of a team for this event. Create a new team or request to join one below. You can request to join one team at a time - check back to see if you've been accepted to a team or to change which team you've applied to.
         </div>
         <a asp-page="Create">Create a new team</a>
     }
@@ -46,20 +53,25 @@
         <thead>
             <tr>
                 <th>
-                    @Html.DisplayNameFor(model => model.Teams.FirstOrDefault().Key.Name)
+                    Team name
                 </th>
                 <th>
-                    Size
+                    Current team size
                 </th>
                 @if (Model.EventRole == ModelBases.EventRole.play && !Model.UserOnTeam && Model.Event.IsTeamMembershipChangeActive)
                 {
-                    <th>Join</th>
+                    <th>Request to join</th>
                 }
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model.Teams)
             {
+                if (!item.Key.IsLookingForTeammates)
+                {
+                    continue;
+                }
+
                 <tr>
                     <td>
                         @Html.DisplayFor(modelItem => item.Key.Name)
@@ -72,11 +84,11 @@
                         <td>
                             @if (item.Key == Model.AppliedTeam)
                             {
-                                <span><b>Applied</b></span>
+                                <span><b>Request pending</b></span>
                             }
                             else
                             {
-                                <a asp-page="./Apply" asp-route-teamId="@item.Key.ID">Join</a>
+                                <a asp-page="./Apply" asp-route-teamId="@item.Key.ID">Request to join</a>
                             }
                         </td>
                     }

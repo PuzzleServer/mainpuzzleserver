@@ -26,6 +26,9 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
@@ -36,8 +39,6 @@
   body {
     padding-top: 20px;
     padding-bottom: 20px;
-  }
-  h1, h2, h3, h4, h5, h6, p, div {
     font-family: 'Open Sans';
   }
   .panel {
@@ -284,7 +285,8 @@
       <div class="col-md-2">
         <div class="alert alert-info">
            Teams who solve the TPTGW metapuzzle without taking the fast forward will top the scoreboard, ordered
-           by when they solve it.  Taking the fast forward gives you all the TPTGW clues.
+           by when they solve it.  Taking the fast forward gives you all the TPTGW clues.  To take
+           it, follow the directions in the Fast Forward puzzle PDF.
         </div>
       </div>
       <div class="col-md-2">
@@ -816,14 +818,14 @@
         <div class="panel panel-default">
           <div class="panel-heading">
             <a class="btn btn-default btn-xs" id="faq_q_fast_forward"><i class="fa fa-chevron-down"></i></a>
-            What happens if I take the fast forward?
+            How does the fast forward work?
           </div>
           <div class="panel-body" id="faq_a_fast_forward" hidden>
             <table class="faq-table">
               <tr>
                 <td class="faq-answer-descriptor">
                   <div class="alert alert-info">
-                    You can't win
+                    If you take it, you can't win
                   </div>
                 </td>
                 <td class="faq-answer-text">
@@ -831,19 +833,23 @@
                     Teams who solve the TPTGW metapuzzle without taking the fast forward will top the scoreboard, ordered
                     by when they solve it.  So, if you take the fast forward, you'll be ranked below all those teams.
                     You'll be ordered among the other teams by total score.
+                    <br>
+                    Note that this happens even if you take the fast forward <b>after</b> you solve
+                    the TPTGW metapuzzle. So, don't take the fast forward if you've already solved the
+                    TPTGW metapuzzle; doing so will retroactively undo your win.
                   </div>
                 </td>
               </tr>
               <tr>
                 <td class="faq-answer-descriptor">
                   <div class="alert alert-info">
-                    You'll get all the clues
+                    If you take it, you'll get all the clues
                   </div>
                 </td>
                 <td class="faq-answer-text">
                   <div class="well">
-                    You'll immediately earn all the clues for this module, so you'll receive them the next time you sync,
-                    e.g., by using the
+                    If you take the fast forward, you immediately earn all the clues for this
+                    module, so you'll receive them the next time you sync, e.g., by using the
                     <button class="btn btn-default btn-sm"><i class="fa fa-refresh"></i></button>
                     button.
                     <br>
@@ -851,6 +857,22 @@
                     give you points.
                     <br>
                     Essentially, taking the fast forward makes this module into a "normal" module rather than a final module.
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="faq-answer-descriptor">
+                  <div class="alert alert-info">
+                    To take it, use the puzzle named Fast Forward
+                  </div>
+                </td>
+                <td class="faq-answer-text">
+                  <div class="well">
+                    If you decide to take the fast forward, first read the PDF of the "puzzle" titled
+                    Fast Forward carefully to make sure you understand the consequences of taking
+                    the fast forward.  Note that merely opening the PDF doesn't cause you to take
+                    the fast forward.  The PDF has instructions for how to take the fast forward,
+                    and you don't have to worry about taking the fast forward accidentally.
                   </div>
                 </td>
               </tr>
@@ -1863,6 +1885,13 @@
           <span hidden id="event_log_truncated">(Older events truncated)</span>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      &copy; Jay Lorch 2019 <br>
+      <a href="mailto:wrong@puzzlehunt.org">wrong@puzzlehunt.org</a>
     </div>
   </div>
 
@@ -2968,6 +2997,7 @@ function handle_sync_success(data)
                 window.g.site_version = data.site_version;
             }
             else if (window.g.site_version != data.site_version) {
+                window.g.site_version = null;
                 window.location.reload();
             }
         }
@@ -3674,7 +3704,10 @@ function initialize_page()
         e.preventDefault();
         });
 
-    window.onbeforeunload = function(e) { send_sync_request(); };
+    window.onbeforeunload = function(e) {
+      window.g.site_version = null;
+      send_sync_request();
+      };
     window.g.initializing = false;
 }
 

@@ -28,6 +28,7 @@ namespace ServerCore.DataModel
             IsCheatCode = source.IsCheatCode;
             SolveValue = source.SolveValue;
             HintCoinsForSolve = source.HintCoinsForSolve;
+            HintsAreCumulative = source.HintsAreCumulative;
             Token = source.Token;
             Group = source.Group;
             OrderInGroup = source.OrderInGroup;
@@ -88,6 +89,11 @@ namespace ServerCore.DataModel
         /// The number of hint coins to award if the puzzle is solved
         /// </summary>
         public int HintCoinsForSolve { get; set; } = 0;
+
+        /// <summary>
+        /// whether to decrement future hint costs for this puzzle as hints are taken
+        /// </summary>
+        public bool HintsAreCumulative { get; set; }
 
         /// <summary>
         /// Reward if solved: Sometimes displayed publicly, sometimes used internally by meta engine

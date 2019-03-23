@@ -8,17 +8,18 @@
     //Needs route data - ViewData["PlayRoute"] = "/Teams/Apply";
 }
 
-<h2>Apply to a team</h2>
+<h2>Request sent!</h2>
 
 <hr />
 <div class="row">
     <div class="col-md-4">
-        You have applied to <strong>@{@Model.Team.Name}</strong>. Once they accept you, you will be on the team (make sure to contact somebody on the team and ask them to add you!). If you've previously requested to join to another team, that request has been removed.
+        You have applied to <strong>@{@Model.Team.Name}</strong>. If they accept you, you will be on the team (If you know someone on the team, make sure to contact somebody on the team and ask them to add you!). If you've previously requested to join to another team, that request has been removed.
     </div>
 </div>
 
 <div>
-    <a asp-page="List">Back to List</a>
+    <br/>
+    <a asp-page="List">Back to team list</a>
 </div>
 
 @section Scripts {

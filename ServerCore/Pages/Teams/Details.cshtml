@@ -40,73 +40,94 @@
 
     <div class="row">
         <div class="column">
-            <h3>Details</h3>
-            <dl class="dl-horizontal">
+            <h3>Team details</h3>
+            <dl>
+                <!-- class="dl-horizontal"> -->
                 <dt>
-                    @Html.DisplayNameFor(model => model.Team.Name)
+                    Team name
                 </dt>
                 <dd>
                     @Html.DisplayFor(model => model.Team.Name)
                 </dd>
+                <!-- TODO: Conditionally show/hide based on event property (not needed for PuzzleHunt)
                 <dt>
                     @Html.DisplayNameFor(model => model.Team.RoomID)
                 </dt>
                 <dd>
                     @Html.DisplayFor(model => model.Team.RoomID)
                 </dd>
+                -->
                 <dt>
-                    @Html.DisplayNameFor(model => model.Team.CustomRoom)
+                    Team room
                 </dt>
                 <dd>
-                    @Html.DisplayFor(model => model.Team.CustomRoom)
+                    @if (Model.Team.CustomRoom == null)
+                    {
+                        <div>(none - please enter this before the start of the event)</div>
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(model => model.Team.CustomRoom)
+                    }
                 </dd>
                 <dt>
-                    @Html.DisplayNameFor(model => model.Team.PrimaryContactEmail)
+                    Primary phone number
                 </dt>
                 <dd>
-                    @Html.DisplayFor(model => model.Team.PrimaryContactEmail)
+                    @if (Model.Team.PrimaryPhoneNumber == null)
+                    {
+                        <div>(none - please enter this before the start of the event)</div>
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(model => model.Team.PrimaryPhoneNumber)
+                    }
                 </dd>
                 <dt>
-                    @Html.DisplayNameFor(model => model.Team.PrimaryPhoneNumber)
+                    Secondary phone number (optional)
                 </dt>
                 <dd>
-                    @Html.DisplayFor(model => model.Team.PrimaryPhoneNumber)
+                    @if (Model.Team.SecondaryPhoneNumber == null)
+                    {
+                        <div>(none)</div>
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(model => model.Team.SecondaryPhoneNumber)
+                    }
                 </dd>
                 <dt>
-                    @Html.DisplayNameFor(model => model.Team.SecondaryPhoneNumber)
+                    Primary contact e-mail (optional)
                 </dt>
                 <dd>
-                    @Html.DisplayFor(model => model.Team.SecondaryPhoneNumber)
+                    @if (Model.Team.PrimaryContactEmail == null)
+                    {
+                        <div>(none)</div>
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(model => model.Team.PrimaryContactEmail)
+                    }
                 </dd>
                 <dt>
-                    @Html.DisplayNameFor(model => model.Team.IsLookingForTeammates)
+                    Allow anonymous applications
                 </dt>
                 <dd>
-                    @Html.DisplayFor(model => model.Team.IsLookingForTeammates)
+                    @if (Model.Team.IsLookingForTeammates)
+                    {
+                        <div>Yes (this team shows up on the list of teams that anyone can apply to)</div>
+                    }
+                    else
+                    {
+                        <div>No (only people who are sent an application link directly will be able to apply)</div>
+                    }
                 </dd>
             </dl>
         </div>
         <div class="column">
             <div>
-                <h3>Members (@(Model.Members.Count))</h3>
+                <h3>Current members (@(Model.Members.Count))</h3>
                 @{ bool canAdd = Model.EventRole == ModelBases.EventRole.admin; }
-
-                @if (!Model.Event.IsTeamMembershipChangeActive)
-                {
-                    <div class="alert alert-danger" role="alert">
-                        This event is not currently open for membership changes.
-                    </div>
-                }
-                else if (Model.Members.Count >= Model.Event.MaxTeamSize)
-                {
-                    <div class="alert alert-danger" role="alert">
-                        This team is full.
-                    </div>
-                }
-                else
-                {
-                    canAdd = true;
-                }
 
             </div>
             <table class="table">
@@ -170,12 +191,42 @@
                     }
                 </tbody>
             </table>
+            @if (!Model.Event.IsTeamMembershipChangeActive)
+            {
+                <div class="alert alert-danger" role="alert">
+                    This event is not currently open for membership changes.
+                </div>
+            }
+            else if (Model.Members.Count >= Model.Event.MaxTeamSize)
+            {
+                <div class="alert alert-danger" role="alert">
+                    This team is full.
+                </div>
+            }
+            else
+            {
+                canAdd = true;
+            }
             @if (canAdd)
             {
+                <h3>Invite teammates</h3>
+                <p>Copy the link below and send it to teammates to give them a direct link to request to join this team. After they request to join the team you can accept them into the team using the table below.</p>
+                <a asp-page="./Apply" asp-route-eventRole="play" asp-route-teamId="@Model.Team.ID">Team application link (copy me and email me!)</a>
+                <br />
+                <br />
+                @if (Model.Team.IsLookingForTeammates)
+                {
+                    <p>Note: Your team is currently marked as looking for anonymous teammates. You may get applications from people who you did not send the link to. To change this, edit your team details <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID"> here</a>.</p>
 
-                <h3>Pending requests  (@(Model.Users.Count))</h3>
+                }
+                else
+                {
+                    <p>Note: Your team is currently marked as not looking for anonymous teammates. Sending this link is the only way people will find your team. To change this, edit your team details <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID"> here</a>.</p>
+                }
+
+
+                <h3>Pending requests  (@Model.Users.Count)</h3>
                 <div>
-                    <a asp-page="./Apply" asp-route-eventRole="play" asp-route-teamId="@Model.Team.ID">Application link (copy me and email me!)</a>
                     @if (Model.EventRole == ModelBases.EventRole.admin)
                     {
                         <a asp-page="./AddMember" asp-route-teamId="@Model.Team.ID"> | Add a different user</a>
