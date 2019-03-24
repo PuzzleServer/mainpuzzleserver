@@ -322,14 +322,27 @@ namespace ServerCore
             }
 
             DateTime now = DateTime.UtcNow;
-            var puzzlesToSolveByTime = await PuzzleStateHelper.GetSparseQuery(context, eventObj, null, team)
-                .Where(state => state.SolvedTime == null && state.UnlockedTime != null && state.Puzzle.MinutesToAutomaticallySolve != null && state.UnlockedTime.Value + TimeSpan.FromMinutes(state.Puzzle.MinutesToAutomaticallySolve.Value) <= now)
-                .Select(state => state.Puzzle)
-                .ToListAsync();
 
-            foreach (Puzzle puzzle in puzzlesToSolveByTime)
+            // do the unlocks in a loop.
+            // The loop will catch cascading unlocks, e.g. if someone does not hit the site between 11:59 and 12:31, catch up to the 12:30 unlocks immediately.
+            while (true)
             {
-                await PuzzleStateHelper.SetSolveStateAsync(context, eventObj, puzzle, team, DateTime.UtcNow);
+                var puzzlesToSolveByTime = await PuzzleStateHelper.GetSparseQuery(context, eventObj, null, team)
+                    .Where(state => state.SolvedTime == null && state.UnlockedTime != null && state.Puzzle.MinutesToAutomaticallySolve != null && state.UnlockedTime.Value + TimeSpan.FromMinutes(state.Puzzle.MinutesToAutomaticallySolve.Value) <= now)
+                    .Select((state) => new { Puzzle = state.Puzzle, UnlockedTime = state.UnlockedTime.Value })
+                    .ToListAsync();
+
+                foreach (var state in puzzlesToSolveByTime)
+                {
+                    // mark solve time as when the puzzle was supposed to complete, so cascading unlocks work properly.
+                    await PuzzleStateHelper.SetSolveStateAsync(context, eventObj, state.Puzzle, team, state.UnlockedTime + TimeSpan.FromMinutes(state.Puzzle.MinutesToAutomaticallySolve.Value));
+                }
+
+                // get out of the loop if we did nothing
+                if (puzzlesToSolveByTime.Count == 0)
+                {
+                    break;
+                }
             }
 
             lock (TimedUnlockExpiryCache)
