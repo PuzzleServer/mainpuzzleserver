@@ -47,17 +47,22 @@ namespace ServerCore.Pages.Teams
             return Page();
         }
 
-        private async Task PopulateUI(int puzzleId, int teamId)
+        private async Task<IList<HintWithState>> GetAllHints(int puzzleId, int teamId)
         {
-            PuzzleName = await (from Puzzle in _context.Puzzles
-                                where Puzzle.ID == puzzleId
-                                select Puzzle.Name).FirstOrDefaultAsync();
-            Hints = await
+            return await
                 (from Hint hint in _context.Hints
                  join HintStatePerTeam state in _context.HintStatePerTeam on hint.Id equals state.HintID
                  where state.TeamID == teamId && hint.Puzzle.ID == puzzleId
                  orderby hint.DisplayOrder, hint.Description
                  select new HintWithState { Hint = hint, IsUnlocked = state.IsUnlocked }).ToListAsync();
+        }
+
+        private async Task PopulateUI(int puzzleId, int teamId)
+        {
+            PuzzleName = await (from Puzzle in _context.Puzzles
+                                where Puzzle.ID == puzzleId
+                                select Puzzle.Name).FirstOrDefaultAsync();
+            Hints = await GetAllHints(puzzleId, teamId);
         }
 
         public async Task<IActionResult> OnPostUnlockAsync(int hintID, int puzzleId, int teamId)
@@ -88,15 +93,19 @@ namespace ServerCore.Pages.Teams
 
             if (!state.IsUnlocked)
             {
-                int cost = hint.Cost;
-                if (Team.HintCoinCount < cost)
+                Hints = await GetAllHints(puzzleId, teamId);
+                int discount = Hints.Min(hws => (hws.IsUnlocked && hws.Hint.Cost < 0) ? hws.Hint.Cost : 0);
+
+                int baseCost = Math.Abs(hint.Cost);
+                int adjustedCost = Math.Max(0, baseCost + discount);
+                if (Team.HintCoinCount < adjustedCost)
                 {
                     return NotFound();
                 }
 
                 state.UnlockTime = DateTime.UtcNow;
-                Team.HintCoinCount -= cost;
-                Team.HintCoinsUsed += cost;
+                Team.HintCoinCount -= adjustedCost;
+                Team.HintCoinsUsed += adjustedCost;
                 await _context.SaveChangesAsync();
             }
 
