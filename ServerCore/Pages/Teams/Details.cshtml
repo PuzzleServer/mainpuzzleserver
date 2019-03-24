@@ -110,7 +110,7 @@
                     }
                 </dd>
                 <dt>
-                    Allow anonymous applications
+                    Allow unsolicited applications
                 </dt>
                 <dd>
                     @if (Model.Team.IsLookingForTeammates)
@@ -216,12 +216,12 @@
                 <br />
                 @if (Model.Team.IsLookingForTeammates)
                 {
-                    <p>Note: Your team is currently marked as looking for anonymous teammates. You may get applications from people who you did not send the link to. To change this, edit your team details <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID"> here</a>.</p>
+                    <p>Note: Your team is currently marked as looking for unsolicited teammates. You may get applications from people who you did not send the link to. To change this, edit your team details <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID"> here</a>.</p>
 
                 }
                 else
                 {
-                    <p>Note: Your team is currently marked as not looking for anonymous teammates. Sending this link is the only way people will find your team. To change this, edit your team details <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID"> here</a>.</p>
+                    <p>Note: Your team is currently marked as not looking for unsolicited teammates. Sending this link is the only way people will find your team. To change this, edit your team details <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID"> here</a>.</p>
                 }
 
 
