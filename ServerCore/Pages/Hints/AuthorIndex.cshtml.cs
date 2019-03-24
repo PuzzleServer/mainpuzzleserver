@@ -67,6 +67,11 @@ namespace ServerCore.Pages.Hints
             {
                 Puzzle = await _context.Puzzles.Where(m => m.ID == puzzleId).FirstOrDefaultAsync();
 
+                if (Puzzle == null)
+                {
+                    return NotFound();
+                }
+
                 if (EventRole == EventRole.author && !await UserEventHelper.IsAuthorOfPuzzle(_context, Puzzle, LoggedInUser))
                 {
                     return Forbid();
@@ -85,6 +90,11 @@ namespace ServerCore.Pages.Hints
             if (teamId != null)
             {
                 Team = await _context.Teams.Where(m => m.ID == teamId).FirstOrDefaultAsync();
+
+                if (Team == null)
+                {
+                    return NotFound();
+                }
             }
 
             switch (sort ?? DefaultSort)
@@ -106,12 +116,6 @@ namespace ServerCore.Pages.Hints
                     break;
                 case SortOrder.DescriptionDescending:
                     HintStatePerTeam.Sort((a, b) => -a.Hint.Description.CompareTo(b.Hint.Description));
-                    break;
-                case SortOrder.ContentAscending:
-                    HintStatePerTeam.Sort((a, b) => a.Hint.Content.CompareTo(b.Hint.Content));
-                    break;
-                case SortOrder.ContentDescending:
-                    HintStatePerTeam.Sort((a, b) => -a.Hint.Content.CompareTo(b.Hint.Content));
                     break;
                 case SortOrder.CostAscending:
                     HintStatePerTeam.Sort((a, b) => a.Hint.Cost.CompareTo(b.Hint.Cost));
@@ -155,8 +159,6 @@ namespace ServerCore.Pages.Hints
             PuzzleDescending,
             DescriptionAscending,
             DescriptionDescending,
-            ContentAscending,
-            ContentDescending,
             CostAscending,
             CostDescending,
             TimeAscending,

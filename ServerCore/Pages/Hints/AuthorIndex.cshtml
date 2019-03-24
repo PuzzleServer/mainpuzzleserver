@@ -48,11 +48,6 @@
                     </a>
                 </th>
                 <th>
-                    <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.ContentAscending, AuthorIndexModel.SortOrder.ContentDescending))">
-                        @Html.DisplayNameFor(model => model.HintStatePerTeam[0].Hint.Content)
-                    </a>
-                </th>
-                <th>
                     <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.CostAscending, AuthorIndexModel.SortOrder.CostDescending))">
                         @Html.DisplayNameFor(model => model.HintStatePerTeam[0].Hint.Cost)
                     </a>
@@ -77,9 +72,6 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Hint.Description)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Hint.Content)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Hint.Cost)
