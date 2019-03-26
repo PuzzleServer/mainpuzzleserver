@@ -40,12 +40,13 @@ namespace ServerCore.Pages.Teams
                 return NotFound("Team membership change is not currently allowed.");
             }
 
-            if (await (from member in _context.TeamMembers
-                       where member.Member == LoggedInUser &&
-                       member.Team.Event == Event
-                       select member).AnyAsync())
+            TeamMembers playerTeam = await (from member in _context.TeamMembers
+                                     where member.Member == LoggedInUser &&
+                                     member.Team.Event == Event
+                                     select member).FirstOrDefaultAsync();
+            if (playerTeam != null)
             {
-                return NotFound("You're already on a team!");
+                return RedirectToPage("./Details", new { eventId = Event.ID, eventRole = EventRole, teamId = playerTeam.Team.ID });
             }
 
             Team = await (from Team t in _context.Teams
