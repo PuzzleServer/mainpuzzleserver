@@ -9,7 +9,6 @@
 <div class="row">
     <div class="col-md-6 col-md-offset-2">
         <section>
-            <h4>Use another service to log in.</h4>
             <hr />
             @{
                 if ((Model.ExternalLogins?.Count ?? 0) == 0)
@@ -25,12 +24,12 @@
                     <form asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
                         <div>
                             <p>
-                                Please login using your Microsoft (non-employee) account to register for an event or view events you have registered for.
+                                Please login to register for an event or view events you have registered for. You can use your corpnet account if you are an employee, your Hotmail/Outlook/Office365 account, or any account you've registered with Microsoft as an MSA.
                             </p>
                             <p>
                                 @foreach (var provider in Model.ExternalLogins)
                                 {
-                                    <button type="submit" class="btn btn-default" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
+                                    <button type="submit" class="btn btn-default" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">Login</button>
                                 }
                             </p>
                         </div>
