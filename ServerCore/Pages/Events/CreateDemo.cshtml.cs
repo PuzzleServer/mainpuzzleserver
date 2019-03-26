@@ -389,7 +389,6 @@ namespace ServerCore.Pages.Events
                     _context.PuzzleAuthors.Add(new PuzzleAuthors() { Puzzle = meta, Author = demoCreatorUser });
                 }
 
-
                 // TODO: Files (need to know how to detect whether local blob storage is configured)
                 // Is there a point to adding Feedback or is that quick/easy enough to demo by hand?
 

@@ -135,7 +135,7 @@ namespace ServerCore.Pages.Events
                     {
                         int newPuzzleId = puzzleCloneMap[sourcePuzzle.ID].ID;
                         bool hasPuzzleStatePerTeam = await (from pspt in _context.PuzzleStatePerTeam
-                                                            where pspt.PuzzleID == puzzleCloneMap[sourcePuzzle.ID].ID &&
+                                                            where pspt.PuzzleID == newPuzzleId &&
                                                             pspt.TeamID == team.ID
                                                             select pspt).AnyAsync();
                         if (!hasPuzzleStatePerTeam)

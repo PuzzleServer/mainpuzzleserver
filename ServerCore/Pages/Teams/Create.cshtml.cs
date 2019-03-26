@@ -123,7 +123,7 @@ namespace ServerCore.Pages.Teams
                                 select puzzle.ID).ToListAsync();
                 foreach (int puzzleID in puzzleIDs)
                 {
-                    _context.PuzzleStatePerTeam.Add(new PuzzleStatePerTeam() { PuzzleID = puzzleID, TeamID = Team.ID });
+                    _context.PuzzleStatePerTeam.Add(new PuzzleStatePerTeam() { PuzzleID = puzzleID, Team = Team });
                 }
 
                 await _context.SaveChangesAsync();
