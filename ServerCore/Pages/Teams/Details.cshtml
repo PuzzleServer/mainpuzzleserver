@@ -110,7 +110,7 @@
                     }
                 </dd>
                 <dt>
-                    Allow anonymous applications
+                    Allow unsolicited applications
                 </dt>
                 <dd>
                     @if (Model.Team.IsLookingForTeammates)
@@ -213,12 +213,12 @@
                 <p>Copy the sample e-mail below and send it to teammates to give them a direct link to request to join this team. After they request to join the team you can accept them into the team using the 'Pending requests' table below.</p>
                 @if (Model.Team.IsLookingForTeammates)
                 {
-                    <p>Note: Your team is currently marked as looking for anonymous teammates. You may get applications from people who you did not send the link to. To change this, edit your team details <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID"> here</a>.</p>
+                    <p>Note: Your team is currently marked as looking for unsolicited teammates. You may get applications from people who you did not send the link to. To change this, edit your team details <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID"> here</a>.</p>
 
                 }
                 else
                 {
-                    <p>Note: Your team is currently marked as not looking for anonymous teammates. Sending this link is the only way people will find your team. To change this, edit your team details <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID"> here</a>.</p>
+                    <p>Note: Your team is currently marked as not looking for unsolicited teammates. Sending this link is the only way people will find your team. To change this, edit your team details <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID"> here</a>.</p>
                 }
                 
                 <p id="emailContent">
