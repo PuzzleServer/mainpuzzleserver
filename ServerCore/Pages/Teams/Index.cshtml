@@ -94,6 +94,7 @@
                             ------<br />
                             <a asp-page="./Status" asp-route-teamId="@item.Key.ID">Status</a><br />
                             <a asp-page="/Submissions/AuthorIndex" asp-route-teamId="@item.Key.ID">Submissions</a><br />
+                            <a asp-page="/Hints/AuthorIndex" asp-route-teamId="@item.Key.ID">Hints Taken</a><br />
                             ------<br />
                             <a asp-page="./Delete" asp-route-teamId="@item.Key.ID">Delete</a>
                         </div>
@@ -106,6 +107,7 @@
                         <div class="shortcut-menu-dropdown-content">
                             <a asp-page="./Status" asp-route-teamId="@item.Key.ID">Status</a><br />
                             <a asp-page="/Submissions/AuthorIndex" asp-route-teamId="@item.Key.ID">Submissions</a><br />
+                            <a asp-page="/Hints/AuthorIndex" asp-route-teamId="@item.Key.ID">Hints Taken</a><br />
                         </div>
                     </div>
                 }
