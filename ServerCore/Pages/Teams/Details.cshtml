@@ -110,7 +110,7 @@
                     }
                 </dd>
                 <dt>
-                    Allow anonymous applications
+                    Allow unsolicited applications
                 </dt>
                 <dd>
                     @if (Model.Team.IsLookingForTeammates)
@@ -210,26 +210,30 @@
             @if (canAdd)
             {
                 <h3>Invite teammates</h3>
-                <p>Copy the link below and send it to teammates to give them a direct link to request to join this team. After they request to join the team you can accept them into the team using the table below.</p>
-                <a asp-page="./Apply" asp-route-eventRole="play" asp-route-teamId="@Model.Team.ID">Team application link (copy me and email me!)</a>
-                <br />
-                <br />
+                <p>Copy the sample e-mail below and send it to teammates to give them a direct link to request to join this team. After they request to join the team you can accept them into the team using the 'Pending requests' table below.</p>
                 @if (Model.Team.IsLookingForTeammates)
                 {
-                    <p>Note: Your team is currently marked as looking for anonymous teammates. You may get applications from people who you did not send the link to. To change this, edit your team details <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID"> here</a>.</p>
+                    <p>Note: Your team is currently marked as looking for unsolicited teammates. You may get applications from people who you did not send the link to. To change this, edit your team details <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID"> here</a>.</p>
 
                 }
                 else
                 {
-                    <p>Note: Your team is currently marked as not looking for anonymous teammates. Sending this link is the only way people will find your team. To change this, edit your team details <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID"> here</a>.</p>
+                    <p>Note: Your team is currently marked as not looking for unsolicited teammates. Sending this link is the only way people will find your team. To change this, edit your team details <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID"> here</a>.</p>
                 }
-
-
+                
+                <p id="emailContent">
+                    ------------------
+                    <br /><br />Hello,
+                    <br /><br />I've created a team to participate in @Model.Event.Name! Click this link <a asp-page="./Apply" asp-route-eventRole="play" asp-route-teamId="@Model.Team.ID">HERE</a> to request to join my team. Once you do, let me know and I'll officially add you to the team.
+                    <br /><br />Thanks,
+                    <br />@Model.LoggedInUser.Name
+                    <br /><br />------------------
+                </p>
                 <h3>Pending requests  (@Model.Users.Count)</h3>
                 <div>
                     @if (Model.EventRole == ModelBases.EventRole.admin)
                     {
-                        <a asp-page="./AddMember" asp-route-teamId="@Model.Team.ID"> | Add a different user</a>
+                        <a asp-page="./AddMember" asp-route-teamId="@Model.Team.ID">Add a different user</a>
                     }
                 </div>
 
