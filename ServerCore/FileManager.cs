@@ -2,6 +2,7 @@
 using System.IO;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 
@@ -10,6 +11,8 @@ namespace ServerCore
     public class FileManager
     {
         public static string ConnectionString { get; set; }
+
+        static readonly FileExtensionContentTypeProvider fileExtensionProvider = new FileExtensionContentTypeProvider();
 
         /// <summary>
         /// Uploads a file to blob storage
@@ -30,6 +33,10 @@ namespace ServerCore
             CloudBlobDirectory puzzleDirectory = eventContainer.GetDirectoryReference(mangledString);
 
             CloudBlockBlob blob = puzzleDirectory.GetBlockBlobReference(fileName);
+            if (fileExtensionProvider.TryGetContentType(fileName, out string contentType))
+            {
+                blob.Properties.ContentType = contentType;
+            }
             await blob.UploadFromStreamAsync(contents);
             return blob.Uri;
         }
