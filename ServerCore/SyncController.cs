@@ -488,7 +488,7 @@ namespace ServerCore.Pages
         
         // GET api/Sync/client
         [HttpGet]
-        [Route("{eventId}/{puzzleId}/api/Sync/client")]
+        [Route("{eventId}/{puzzleId}/api/Sync/client/")]
         public async Task<IActionResult> Index(string eventId, int puzzleId)
         {
             Event currentEvent = await EventHelper.GetEventFromEventId(context, eventId);
@@ -515,12 +515,22 @@ namespace ServerCore.Pages
                 return Content("ERROR:  That's not a valid puzzle ID");
             }
 
+            if (!currentEvent.AreAnswersAvailableNow) {
+                var puzzleState = await (from state in context.PuzzleStatePerTeam
+                                         where state.Puzzle == thisPuzzle && state.Team == team
+                                         select state).FirstOrDefaultAsync();
+                if (puzzleState == null || puzzleState.UnlockedTime == null)
+                {
+                    return Content("ERROR:  You haven't unlocked this puzzle yet");
+                }
+            }
+
             // Start doing a sync asynchronously while we download the file contents.
 
             var helper = new SyncHelper(context);
             Task<Dictionary<string, object>> responseTask = helper.GetSyncResponse(currentEvent.ID, team.ID, puzzleId, null, 0, null, null, true);
 
-            // Find the material file with the latest-alphabetically ShortName
+            // Find the material file with the latest-alphabetically ShortName that contains the substring "client".
 
             var materialFile = await (from f in context.ContentFiles
                                       where f.Puzzle == thisPuzzle && f.FileType == ContentFileType.PuzzleMaterial && f.ShortName.Contains("client")
@@ -531,16 +541,24 @@ namespace ServerCore.Pages
                 return Content("ERROR:  There's no sync client registered for this puzzle");
             }
 
+            // Download that material file.
+
             string fileContents;
             using (var wc = new System.Net.WebClient())
             {
                 fileContents = await wc.DownloadStringTaskAsync(materialFile.Url);
             }
 
+            // Wait for the asynchronous sync we started earlier to complete, then serialize
+            // its results and use them to replace the substring "@SYNC" where it appears
+            // in the downloaded file contents.
+
             Dictionary<string, object> response = await responseTask;
             var responseSerialized = JsonConvert.SerializeObject(response);
             var initialSyncString = HttpUtility.JavaScriptStringEncode(responseSerialized);
             fileContents = fileContents.Replace("@SYNC", initialSyncString);
+
+            // Return the file contents to the user.
 
             return Content(fileContents, "text/html");
         }
