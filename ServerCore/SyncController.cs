@@ -203,7 +203,7 @@ namespace ServerCore.Pages
         ///   has solved.
         /// </summary>
         private async Task HandleSyncAspectsRequiringListOfSolvedPuzzles(DecodedSyncRequest request, SyncResponse response,
-                                                                         string groupExcludedFromSolveCount, int teamId, int eventId)
+                                                                         string puzzleGroup, int teamId, int eventId)
         {
             // If the requester isn't asking for pieces (by setting MinSolveCount to null), and isn't asking about
             // whether any puzzle IDs are solved, we can save time by not querying the list of solved puzzles.
@@ -234,20 +234,20 @@ namespace ServerCore.Pages
             foreach (var solvedPuzzle in solves) {
                 // If the request is asking whether certain puzzles are solved, check if it's
                 // in the set and, if so, put it in the list of solved puzzles to inform the
-                // requester of.  Also, if we've been asked to query all puzzles in the excluded
+                // requester of.  Also, if we've been asked to query all puzzles in the puzzle's
                 // group and this is one of them, put it in the list of solved puzzles.
                     
                 if (queryPuzzleIdSet != null && queryPuzzleIdSet.Contains(solvedPuzzle.ID)) {
                     solvedPuzzles.Add(solvedPuzzle.ID);
                 }
-                else if (request.QueryAllInGroup && solvedPuzzle.Group == groupExcludedFromSolveCount) {
+                else if (request.QueryAllInGroup && solvedPuzzle.Group == puzzleGroup) {
                     solvedPuzzles.Add(solvedPuzzle.ID);
                 }
 
-                // When counting solves, only count puzzles if they're not in the group that doesn't
-                // count toward the solve count, and only if they're worth at least 10 points.
+                // When counting solves, only count puzzles if they're not in the same group
+                // as the puzzle being synced, and only if they're worth at least 10 points.
 
-                if (groupExcludedFromSolveCount == null || solvedPuzzle.Group != groupExcludedFromSolveCount) {
+                if (puzzleGroup == null || solvedPuzzle.Group != puzzleGroup) {
                     if (solvedPuzzle.SolveValue >= 10) {
                         maxSolveCount += 1;
                     }
@@ -438,9 +438,7 @@ namespace ServerCore.Pages
                                                                 thisPuzzle.MaxAnnotationKey, queryAllInGroup, ref response);
 
             // Do any processing that requires fetching the list of all puzzles this team has
-            // solved.  Pass thisPuzzle.Group as the groupExcludedFromSolveCount parameter so that,
-            // when counting solves, we don't count solves in the same group as this puzzle as part
-            // of the solve count.
+            // solved.
 
             await HandleSyncAspectsRequiringListOfSolvedPuzzles(request, response, thisPuzzle.Group, teamId, eventId);
 
@@ -524,18 +522,11 @@ namespace ServerCore.Pages
 
             // Find the material file with the latest-alphabetically ShortName
 
-            var materialFiles = await (from f in context.ContentFiles
-                                       where f.Puzzle == thisPuzzle && f.FileType == ContentFileType.PuzzleMaterial && f.ShortName.Contains("client")
-                                       select f).ToListAsync();
-            ContentFile selectedMaterialFile = null;
-            foreach (ContentFile materialFile in materialFiles)
-            {
-                if (selectedMaterialFile == null || String.Compare(selectedMaterialFile.ShortName, materialFile.ShortName) < 0)
-                {
-                    selectedMaterialFile = materialFile;
-                }
-            }
-            if (selectedMaterialFile == null)
+            var materialFile = await (from f in context.ContentFiles
+                                      where f.Puzzle == thisPuzzle && f.FileType == ContentFileType.PuzzleMaterial && f.ShortName.Contains("client")
+                                      orderby f.ShortName descending
+                                      select f).FirstOrDefaultAsync();
+            if (materialFile == null)
             {
                 return Content("ERROR:  There's no sync client registered for this puzzle");
             }
@@ -543,7 +534,7 @@ namespace ServerCore.Pages
             string fileContents;
             using (var wc = new System.Net.WebClient())
             {
-                fileContents = await wc.DownloadStringTaskAsync(selectedMaterialFile.Url);
+                fileContents = await wc.DownloadStringTaskAsync(materialFile.Url);
             }
 
             Dictionary<string, object> response = await responseTask;
