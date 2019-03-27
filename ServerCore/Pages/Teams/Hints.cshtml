@@ -81,12 +81,8 @@ You have <b>
         </tr>
     </thead>
     <tbody>
-        @{int discount = Model.Hints.Count == 0 ? 0
-                      : Model.Hints.Min(hws => (hws.IsUnlocked && hws.Hint.Cost < 0) ? hws.Hint.Cost : 0); }
         @foreach (var hint in Model.Hints)
         {
-            int baseCost = Math.Abs(hint.Hint.Cost);
-            int adjustedCost = Math.Max(0, baseCost + discount);
             <tr>
                 <td>
                     @Html.DisplayFor(modelItem => hint.Hint.Description)
@@ -99,43 +95,43 @@ You have <b>
                     else
                     {
                         <b>Cost:</b>
-                        if (discount != 0)
+                        if (hint.AdjustedCost < hint.BaseCost)
                         {
-                            <span class="strike1 strike2">&nbsp;@baseCost&nbsp;</span>
+                            <span class="strike1 strike2">&nbsp;@hint.BaseCost&nbsp;</span>
                         }
-                        if (adjustedCost == 0)
+                        if (hint.AdjustedCost == 0)
                         {
                             <text>FREE</text>
                         }
                         else
                         {
-                            @adjustedCost
+                            @hint.AdjustedCost
                         }
                     }
 
                     @if (!hint.IsUnlocked)
                     {
                         <form method="post" style="display:inline-block">
-                            @if (Model.Team.HintCoinCount >= adjustedCost)
+                            @if (Model.Team.HintCoinCount >= hint.AdjustedCost)
                             {
                                 <button type="submit" asp-route-hintId="@hint.Hint.Id" 
                                     asp-route-teamId="@Model.Team.ID" 
                                     asp-route-puzzleId="@Model.PuzzleID" 
                                     asp-page-handler="Unlock" 
-                                    onclick="return confirm('Are you sure you want to spend @adjustedCost tickets to find out &quot;@hint.Hint.Description&quot;?')" 
+                                    onclick="return confirm('Are you sure you want to spend @hint.AdjustedCost tickets to find out &quot;@hint.Hint.Description&quot;?')" 
                                     style="margin-left: 5px; margin-right: 5px;">Unlock</button>
                             }
                             else
                             {
                                 <button type="submit" disabled 
                                     style="margin-left: 5px; margin-right: 5px;">Unlock</button>
-                                if (adjustedCost - Model.Team.HintCoinCount == 1)
+                                if (hint.AdjustedCost - Model.Team.HintCoinCount == 1)
                                 {
                                     <text>You need 1 more ticket to unlock.</text>
                                 }
                                 else
                                 {
-                                    <text>You need @(adjustedCost - Model.Team.HintCoinCount) more tickets to unlock.</text>
+                                    <text>You need @(hint.AdjustedCost - Model.Team.HintCoinCount) more tickets to unlock.</text>
                                 }
                             }
                         </form>

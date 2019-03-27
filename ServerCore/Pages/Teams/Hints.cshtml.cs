@@ -23,6 +23,10 @@ namespace ServerCore.Pages.Teams
         {
             public Hint Hint { get; set; }
             public bool IsUnlocked { get; set; }
+            public int Discount { get; set; }
+
+            public int BaseCost { get { return Math.Abs(Hint.Cost); } }
+            public int AdjustedCost { get { return Math.Max(0, Math.Abs(Hint.Cost) + Discount); } }
         }
 
         public IList<HintWithState> Hints { get; set; }
@@ -49,12 +53,17 @@ namespace ServerCore.Pages.Teams
 
         private async Task<IList<HintWithState>> GetAllHints(int puzzleId, int teamId)
         {
-            return await
-                (from Hint hint in _context.Hints
-                 join HintStatePerTeam state in _context.HintStatePerTeam on hint.Id equals state.HintID
-                 where state.TeamID == teamId && hint.Puzzle.ID == puzzleId
-                 orderby hint.DisplayOrder, hint.Description
-                 select new HintWithState { Hint = hint, IsUnlocked = state.IsUnlocked }).ToListAsync();
+            Hints = await (from Hint hint in _context.Hints
+                             join HintStatePerTeam state in _context.HintStatePerTeam on hint.Id equals state.HintID
+                             where state.TeamID == teamId && hint.Puzzle.ID == puzzleId
+                             orderby hint.DisplayOrder, hint.Description
+                             select new HintWithState { Hint = hint, IsUnlocked = state.IsUnlocked }).ToListAsync();
+
+            int discount = Hints.Min(hws => (hws.IsUnlocked && hws.Hint.Cost < 0) ? hws.Hint.Cost : 0);
+            foreach (HintWithState hint in Hints) {
+                hint.Discount = discount;
+            }
+            return Hints;
         }
 
         private async Task PopulateUI(int puzzleId, int teamId)
@@ -94,18 +103,16 @@ namespace ServerCore.Pages.Teams
             if (!state.IsUnlocked)
             {
                 Hints = await GetAllHints(puzzleId, teamId);
-                int discount = Hints.Min(hws => (hws.IsUnlocked && hws.Hint.Cost < 0) ? hws.Hint.Cost : 0);
+                HintWithState hintToUnlock = Hints.SingleOrDefault(hws => hws.Hint.Id == hintID);
 
-                int baseCost = Math.Abs(hint.Cost);
-                int adjustedCost = Math.Max(0, baseCost + discount);
-                if (Team.HintCoinCount < adjustedCost)
+                if (Team.HintCoinCount < hintToUnlock.AdjustedCost)
                 {
                     return NotFound();
                 }
 
                 state.UnlockTime = DateTime.UtcNow;
-                Team.HintCoinCount -= adjustedCost;
-                Team.HintCoinsUsed += adjustedCost;
+                Team.HintCoinCount -= hintToUnlock.AdjustedCost;
+                Team.HintCoinsUsed += hintToUnlock.AdjustedCost;
                 await _context.SaveChangesAsync();
             }
 
