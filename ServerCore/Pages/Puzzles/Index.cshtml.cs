@@ -18,7 +18,13 @@ namespace ServerCore.Pages.Puzzles
         {
         }
 
-        public IList<Puzzle> Puzzles { get; set; }
+        public class PuzzleView
+        {
+            public Puzzle Puzzle { get; set; }
+            public ContentFile Content { get; set; }
+        }
+
+        public List<PuzzleView> Puzzles { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -33,7 +39,12 @@ namespace ServerCore.Pages.Puzzles
                 query = UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser);
             }
 
-            Puzzles = await query.OrderBy((p) => p.Group).ThenBy((p) => p.OrderInGroup).ThenBy((p) => p.Name).ToListAsync();
+            Puzzles = await (from Puzzle p in query
+                             join ContentFile joinFile in _context.ContentFiles on p equals joinFile.Puzzle into fileJoin
+                             from ContentFile file in fileJoin.DefaultIfEmpty()
+                             where file == null || file.FileType  == ContentFileType.Puzzle
+                             orderby p.Group, p.OrderInGroup, p.Name
+                             select new PuzzleView { Puzzle = p, Content = file }).ToListAsync();
 
             return Page();
         }
