@@ -97,7 +97,7 @@ namespace ServerCore.Pages.Puzzles
 
             await _context.SaveChangesAsync();
 
-            return RedirectToPage("/Teams/Play");
+            return RedirectToPage("/Teams/Play", new { teamId = GetTeamId().Result });
         }
     }
 }
