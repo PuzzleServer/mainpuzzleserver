@@ -21,6 +21,11 @@
                 </a>
             </th>
             <th>
+                <a asp-page="./Answers" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(AnswersModel.SortOrder.GroupAscending, AnswersModel.SortOrder.GroupDescending))">
+                    Group
+                </a>
+            </th>
+            <th>
                 <a asp-page="./Answers" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(AnswersModel.SortOrder.PuzzleNameAscending, AnswersModel.SortOrder.PuzzleNameDescending))">
                     Puzzle
                 </a>
@@ -36,20 +41,23 @@
     <tbody>
         @foreach (var item in Model.CorrectSubmissions)
         {
-            <tr>
-                <td>
-                    @item.TimeSubmitted
-                </td>
-                <td>
-                    @item.Puzzle.Name
-                </td>
-                <td>
-                    @item.SubmissionText
-                </td>
-                <td>
-                    @item.Response.ResponseText
-                </td>
-            </tr>
+        <tr>
+            <td>
+                @item.TimeSubmitted
+            </td>
+            <td>
+                @item.Puzzle.Group
+            </td>
+            <td>
+                @item.Puzzle.Name
+            </td>
+            <td>
+                @item.SubmissionText
+            </td>
+            <td>
+                @item.Response.ResponseText
+            </td>
+        </tr>
         }
     </tbody>
 </table>

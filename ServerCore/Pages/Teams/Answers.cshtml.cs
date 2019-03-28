@@ -30,26 +30,16 @@ namespace ServerCore.Pages.Teams
 
         public SortOrder? Sort { get; set; }
 
-        private const SortOrder DefaultSort = SortOrder.TimeSubmittedDecending;
+        private const SortOrder DefaultSort = SortOrder.GroupAscending;
 
         public async Task OnGetAsync(SortOrder? sort, int teamId)
         {
             TeamID = teamId;
 
-            // Verify if the user is on the team in the parametsr
-            Team myTeam = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
-            if (myTeam != null)
-            {
-                this.TeamID = myTeam.ID;
-                await PuzzleStateHelper.CheckForTimedUnlocksAsync(_context, Event, myTeam);
-            }
-            else
-            {
-                throw new Exception("Not currently registered for a team");
-            }
-
             IQueryable<Submission> submissions = _context.Submissions
-                .Where((s) => s.Team.ID == teamId && s.Response.IsSolution);
+                .Include((s)=>s.Response)
+                .Where((s) => s.TeamID == teamId && s.Response.IsSolution)
+                .Include((s)=>s.Puzzle);
 
             this.Sort = sort;
             switch (sort ?? DefaultSort) {
@@ -65,6 +55,12 @@ namespace ServerCore.Pages.Teams
                 case SortOrder.TimeSubmittedDecending:
                     submissions = submissions.OrderByDescending(s => s.TimeSubmitted);
                     break;
+                case SortOrder.GroupAscending:
+                    submissions = submissions.OrderBy(s => s.Puzzle.Group);
+                    break;
+                case SortOrder.GroupDescending:
+                    submissions = submissions.OrderByDescending(s => s.Puzzle.Group);
+                    break;
                 default:
                     throw new Exception("Sort order is not mapped");
             }
@@ -74,14 +70,14 @@ namespace ServerCore.Pages.Teams
 
         public SortOrder? SortForColumnLink(SortOrder ascending, SortOrder descending)
         {
-            // Toggle away from the current sort order (ascend by default)
-            if (ascending == (this.Sort ?? DefaultSort))
+            // Toggle away from the current sort order (descend by default)
+            if (descending == (this.Sort ?? DefaultSort))
             {
-                return descending;
+                return ascending;
             }
             else
             {
-                return ascending;
+                return descending;
             }
         }
 
@@ -90,7 +86,9 @@ namespace ServerCore.Pages.Teams
             TimeSubmittedAscending,
             TimeSubmittedDecending,
             PuzzleNameAscending,
-            PuzzleNameDescending
+            PuzzleNameDescending,
+            GroupAscending,
+            GroupDescending
         }
     }
 }
