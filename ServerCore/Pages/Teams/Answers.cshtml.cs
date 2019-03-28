@@ -49,7 +49,7 @@ namespace ServerCore.Pages.Teams
             }
 
             IQueryable<Submission> submissions = _context.Submissions
-                .Where((s) => s.Team.ID == teamId && s.Response.IsSolution); ;
+                .Where((s) => s.Team.ID == teamId && s.Response.IsSolution);
 
             this.Sort = sort;
             switch (sort ?? DefaultSort) {
