@@ -1,0 +1,43 @@
+﻿@page "/{eventId}/{eventRole}/Teams/All"
+@model ServerCore.Pages.Teams.AllTeamsModel
+
+@{
+    ViewData["Title"] = "All teams";
+    ViewData["AdminRoute"] = "/Teams/Index";
+    ViewData["AuthorRoute"] = "/Teams/Index";
+    ViewData["PlayRoute"] = "/Teams/All";
+}
+
+<h2>All teams</h2>
+@if(Model.PlayerNotOnTeam)
+{
+<p>
+    You are not yet part of a team. To join a team, go to the register page.
+</p>
+}
+Registered Teams: <b>@Model.Teams.Count/@Model.Event.MaxNumberOfTeams</b>, Registered Players: <b>@Model.PlayerCount/@(Model.Event.MaxNumberOfTeams * Model.Event.MaxTeamSize)</b>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Team name
+            </th>
+            <th>
+                Team size
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Teams)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Key.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Value)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
