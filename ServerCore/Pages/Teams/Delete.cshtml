@@ -14,46 +14,89 @@
     <a asp-page="./Details" asp-route-teamId="@Model.Team.ID">Cancel</a>
 </div>
 
-<h3>Are you sure you want to delete this?</h3>
+<h3>Are you sure you want to delete your team?</h3>
 <div>
-    <h4>Team</h4>
     <hr />
-    <dl class="dl-horizontal">
+    <dl>
+        <!-- class="dl-horizontal"> -->
         <dt>
-            @Html.DisplayNameFor(model => model.Team.Name)
+            Team name
         </dt>
         <dd>
             @Html.DisplayFor(model => model.Team.Name)
         </dd>
+        <!-- TODO: Conditionally show/hide based on event property (not needed for PuzzleHunt)
+    <dt>
+        @Html.DisplayNameFor(model => model.Team.RoomID)
+    </dt>
+    <dd>
+        @Html.DisplayFor(model => model.Team.RoomID)
+    </dd>
+    -->
         <dt>
-            @Html.DisplayNameFor(model => model.Team.RoomID)
+            Team room
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Team.RoomID)
+            @if (Model.Team.CustomRoom == null)
+            {
+                <div>(none)</div>
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.Team.CustomRoom)
+            }
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Team.CustomRoom)
+            Primary phone number
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Team.CustomRoom)
+            @if (Model.Team.PrimaryPhoneNumber == null)
+            {
+                <div>(none)</div>
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.Team.PrimaryPhoneNumber)
+            }
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Team.PrimaryContactEmail)
+            Secondary phone number
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Team.PrimaryContactEmail)
+            @if (Model.Team.SecondaryPhoneNumber == null)
+            {
+                <div>(none)</div>
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.Team.SecondaryPhoneNumber)
+            }
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Team.PrimaryPhoneNumber)
+            Primary contact e-mail 
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Team.PrimaryPhoneNumber)
+            @if (Model.Team.PrimaryContactEmail == null)
+            {
+                <div>(none)</div>
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.Team.PrimaryContactEmail)
+            }
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Team.SecondaryPhoneNumber)
+            Allow unsolicited applications
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Team.SecondaryPhoneNumber)
+            @if (Model.Team.IsLookingForTeammates)
+            {
+                <div>Yes (this team shows up on the list of teams that anyone can apply to)</div>
+            }
+            else
+            {
+                <div>No (only people who are sent an application link directly will be able to apply)</div>
+            }
         </dd>
     </dl>
     

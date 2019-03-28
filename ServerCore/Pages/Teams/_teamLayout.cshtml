@@ -4,18 +4,20 @@
 
 @if (Model.EventRole == ModelBases.EventRole.admin)
 {
-    <div>
-        <a asp-page="/Teams/Index">Back to team list</a> ||
-        <a asp-page="/Teams/Details" asp-route-teamId="@Model.Team.ID">Details</a> |
-        <a asp-page="/Submissions/AuthorIndex" asp-route-teamId="@Model.Team.ID">Submissions</a> |
-        <a asp-page="/Teams/Status" asp-route-teamId="@Model.Team.ID">Status</a>
-    </div>
+<div>
+    <a asp-page="/Teams/Index">Back to team list</a> ||
+    <a asp-page="/Teams/Details" asp-route-teamId="@Model.Team.ID">Details</a> |
+    <a asp-page="/Submissions/AuthorIndex" asp-route-teamId="@Model.Team.ID">Submissions</a> |
+    <a asp-page="/Hints/AuthorIndex" asp-route-teamId="@Model.Team.ID">Hints Taken</a> |
+    <a asp-page="/Teams/Status" asp-route-teamId="@Model.Team.ID">Status</a>
+</div>
 }
 @if (Model.EventRole == ModelBases.EventRole.author)
 {
     <div>
         <a asp-page="/Teams/Index">Back to team list</a> ||
         <a asp-page="/Submissions/AuthorIndex" asp-route-teamId="@Model.Team.ID">Submissions</a> |
+        <a asp-page="/Hints/AuthorIndex" asp-route-teamId="@Model.Team.ID">Hints Taken</a> |
         <a asp-page="/Teams/Status" asp-route-teamId="@Model.Team.ID">Status</a>
     </div>
 }

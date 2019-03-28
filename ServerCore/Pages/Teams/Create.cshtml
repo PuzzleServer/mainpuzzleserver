@@ -30,34 +30,50 @@ else
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Team.Name" class="control-label"></label>
+                <label asp-for="Team.Name" class="control-label">Team name</label>
                 <input asp-for="Team.Name" class="form-control" />
                 <span asp-validation-for="Team.Name" class="text-danger"></span>
             </div>
+            <!-- TODO: Conditionally show/hide based on event property (not needed for PuzzleHunt)
             <div class="form-group">
                 <label asp-for="Team.RoomID" class="control-label"></label>
                 <input asp-for="Team.RoomID" class="form-control" />
                 <span asp-validation-for="Team.RoomID" class="text-danger"></span>
             </div>
+            -->
             <div class="form-group">
-                <label asp-for="Team.CustomRoom" class="control-label"></label>
+                <label asp-for="Team.CustomRoom" class="control-label">Team room</label>
                 <input asp-for="Team.CustomRoom" class="form-control" />
                 <span asp-validation-for="Team.CustomRoom" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Team.PrimaryContactEmail" class="control-label"></label>
-                <input asp-for="Team.PrimaryContactEmail" class="form-control" />
-                <span asp-validation-for="Team.PrimaryContactEmail" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Team.PrimaryPhoneNumber" class="control-label"></label>
+                <label asp-for="Team.PrimaryPhoneNumber" class="control-label">Primary phone number</label>
                 <input asp-for="Team.PrimaryPhoneNumber" class="form-control" />
                 <span asp-validation-for="Team.PrimaryPhoneNumber" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Team.SecondaryPhoneNumber" class="control-label"></label>
+                <label asp-for="Team.SecondaryPhoneNumber" class="control-label">Secondary phone number (optional)</label>
                 <input asp-for="Team.SecondaryPhoneNumber" class="form-control" />
                 <span asp-validation-for="Team.SecondaryPhoneNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Team.PrimaryContactEmail" class="control-label">Primary contact e-mail (optional)</label>
+                <input asp-for="Team.PrimaryContactEmail" class="form-control" />
+                <span asp-validation-for="Team.PrimaryContactEmail" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Team.IsLookingForTeammates" class="control-label">Allow unsolicited applications</label>
+                <table>
+                    <tr>
+                        <td style="width:50px;vertical-align:top;">
+                            <input asp-for="Team.IsLookingForTeammates" class="form-control" />
+                        </td>
+                        <td>
+                            <p>Checking this box will cause your team to show up in the list of teams that players who are looking for a team can request to join. If you want to manually invite your teammates instead, do not check this box. You will have the opportunity to approve all requests on the website.</p>
+                            <span asp-validation-for="Team.IsLookingForTeammates" class="text-danger"></span>
+                        </td>
+                    </tr>
+                </table>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-default" />

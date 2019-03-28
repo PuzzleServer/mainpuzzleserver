@@ -50,7 +50,7 @@ namespace ServerCore.Pages.Events
             // TODO: replace this with a checkbox and sufficient danger warnings about duplicate titles
             bool deletePuzzleIfPresent = true;
 
-            using (var transaction = _context.Database.BeginTransaction())
+            using (var transaction = _context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable))
             {
                 // Step 1: Make sure all authors exist
                 foreach (var sourceEventAuthor in sourceEventAuthors)
@@ -123,6 +123,26 @@ namespace ServerCore.Pages.Events
                         var destHint = new Hint(sourceHint);
                         destHint.Puzzle = puzzleCloneMap[sourceHint.Puzzle.ID];
                         _context.Hints.Add(destHint);
+
+                        foreach (Team team in _context.Teams.Where(t => t.Event == Event))
+                        {
+                            _context.HintStatePerTeam.Add(new HintStatePerTeam() { Hint = destHint, TeamID = team.ID });
+                        }
+                    }
+
+                    // PuzzleStatePerTeam
+                    foreach (Team team in _context.Teams.Where(t => t.Event == Event))
+                    {
+                        int newPuzzleId = puzzleCloneMap[sourcePuzzle.ID].ID;
+                        bool hasPuzzleStatePerTeam = await (from pspt in _context.PuzzleStatePerTeam
+                                                            where pspt.PuzzleID == newPuzzleId &&
+                                                            pspt.TeamID == team.ID
+                                                            select pspt).AnyAsync();
+                        if (!hasPuzzleStatePerTeam)
+                        {
+                            PuzzleStatePerTeam newPspt = new PuzzleStatePerTeam() { TeamID = team.ID, PuzzleID = newPuzzleId };
+                            _context.PuzzleStatePerTeam.Add(newPspt);
+                        }
                     }
 
                     // TODO: ContentFiles
