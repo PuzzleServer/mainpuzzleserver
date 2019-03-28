@@ -2,22 +2,21 @@
 
 namespace Data.Migrations
 {
-    public partial class RenameErrata : Migration
+    public partial class AddErrata : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.RenameColumn(
-                name: "Erata",
+            migrationBuilder.AddColumn<string>(
+                name: "Errata",
                 table: "Puzzles",
-                newName: "Errata");
+                nullable: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.RenameColumn(
+            migrationBuilder.DropColumn(
                 name: "Errata",
-                table: "Puzzles",
-                newName: "Erata");
+                table: "Puzzles");
         }
     }
 }

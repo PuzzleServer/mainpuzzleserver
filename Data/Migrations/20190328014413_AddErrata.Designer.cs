@@ -10,8 +10,8 @@ using ServerCore.DataModel;
 namespace Data.Migrations
 {
     [DbContext(typeof(PuzzleServerContext))]
-    [Migration("20190227091159_AddErata")]
-    partial class AddErata
+    [Migration("20190328014413_AddErrata")]
+    partial class AddErrata
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -477,7 +477,11 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Erata");
+                    b.Property<string>("CustomURL");
+
+                    b.Property<string>("Description");
+
+                    b.Property<string>("Errata");
 
                     b.Property<int>("EventID");
 
