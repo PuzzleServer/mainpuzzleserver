@@ -38,7 +38,7 @@ namespace ServerCore.Pages.Events
             Event.AnswersAvailableBegin = DateTime.UtcNow.AddDays(2);
             Event.StandingsAvailableBegin = DateTime.UtcNow.AddDays(2);
             Event.LockoutIncorrectGuessLimit = 5;
-            Event.LockoutIncorrectGuessPeriod = 1;
+            Event.LockoutBaseDuration= 5;
             Event.LockoutDurationMultiplier = 2;
             Event.MaxSubmissionCount = 50;
             Event.MaxNumberOfTeams = 120;

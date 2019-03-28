@@ -9,12 +9,20 @@
   <ItemGroup>
     <Compile Remove="DataModel\**" />
     <Compile Remove="Data\**" />
+    <Compile Remove="Pages\Manage\**" />
+    <Compile Remove="Pages\Play\**" />
     <Content Remove="DataModel\**" />
     <Content Remove="Data\**" />
+    <Content Remove="Pages\Manage\**" />
+    <Content Remove="Pages\Play\**" />
     <EmbeddedResource Remove="DataModel\**" />
     <EmbeddedResource Remove="Data\**" />
+    <EmbeddedResource Remove="Pages\Manage\**" />
+    <EmbeddedResource Remove="Pages\Play\**" />
     <None Remove="DataModel\**" />
     <None Remove="Data\**" />
+    <None Remove="Pages\Manage\**" />
+    <None Remove="Pages\Play\**" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Content\nipd.png" />
@@ -35,8 +43,6 @@
   <ItemGroup>
     <Folder Include="Areas\Identity\Data\" />
     <Folder Include="Content\" />
-    <Folder Include="Pages\Manage\" />
-    <Folder Include="Pages\Play\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Data\Data.csproj" />

@@ -84,10 +84,14 @@ namespace ServerCore.Pages.Submissions
             }
             else if (submission.Response == null)
             {
+                int WrongSubmissionCount = Submissions
+                    .Where(s => s.Response == null)
+                    .Count();
+
                 // We also determine if the puzzle should be set to email-only mode.
                 if (IsPuzzleSubmissionLimitReached(
                         Event,
-                        Submissions,
+                        WrongSubmissionCount,
                         PuzzleState))
                 {
                     await PuzzleStateHelper.SetEmailOnlyModeAsync(_context,
@@ -102,8 +106,7 @@ namespace ServerCore.Pages.Submissions
                     // we will do the lockout computations now.
                     DateTime? lockoutExpiryTime = ComputeLockoutExpiryTime(
                         Event,
-                        Submissions,
-                        PuzzleState);
+                        WrongSubmissionCount);
 
                     if (lockoutExpiryTime != null)
                     {
@@ -174,10 +177,7 @@ namespace ServerCore.Pages.Submissions
         ///     lockout.
         /// </summary>
         /// <param name="ev"></param>
-        /// <param name="submissions">
-        ///     Expects submissions in chronological order
-        /// </param>
-        /// <param name="puzzleState"></param>
+        /// <param name="WrongSubmissionCount"></param>
         /// <returns>
         ///     If the team should be locked out, returns the time when a team
         ///     can enter submissions again.
@@ -185,77 +185,39 @@ namespace ServerCore.Pages.Submissions
         /// </returns>
         private static DateTime? ComputeLockoutExpiryTime(
             Event ev,
-            IList<Submission> submissions,
-            PuzzleStatePerTeam puzzleState)
+            int WrongSubmissionCount)
         {
-            int consecutiveWrongSubmissions = 0;
-
-            /**
-             * Count the number of submissions in the past N minutes where N is
-             * the LockoutIncorrectGuessPeriod set for the event. If that count
-             * exceeds the LockoutIncorrectGuessLimit set for the event, then
-             * the team should be locked out of that puzzle.
-             */
-
-            foreach (Submission s in submissions.Reverse())
-            {
-                // Do not increment on partials
-                if (s.Response != null)
-                {
-                    continue;
-                }
-
-                if (s.TimeSubmitted.AddMinutes(ev.LockoutIncorrectGuessPeriod)
-                        .CompareTo(DateTime.UtcNow) < 0)
-                {
-                    break;
-                }
-
-                ++consecutiveWrongSubmissions;
-            }
-
-            if (consecutiveWrongSubmissions <= ev.LockoutIncorrectGuessLimit) {
+            if (WrongSubmissionCount < ev.LockoutIncorrectGuessLimit) {
                 return null;
             }
 
-            /**
-             * The lockout duration is determined by the difference between the
-             * count of wrong submissions in the lockout period and the lockout
-             * limit. That difference is multiplied by the event's 
-             * LockoutDurationMultiplier to determine the lockout time in
-             * minutes.
-             */
-
-            return DateTime.UtcNow.AddMinutes(
-                (consecutiveWrongSubmissions -
-                 ev.LockoutIncorrectGuessLimit) *
-                ev.LockoutDurationMultiplier);
-
+            return DateTime.UtcNow.AddMinutes(Math.Max(
+                ev.LockoutBaseDuration,
+                WrongSubmissionCount * ev.LockoutDurationMultiplier));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ev"></param>
+        /// <param name="WrongSubmissionCount"></param>
+        /// <param name="puzzleState"></param>
+        /// <returns>
+        ///     True if the team should be locked out of this puzzle.
+        ///     False otherwise.
+        /// </returns>
         private static bool IsPuzzleSubmissionLimitReached(
             Event ev,
-            IList<Submission> submissions,
+            int WrongSubmissionCount,
             PuzzleStatePerTeam puzzleState)
         {
-            uint wrongSubmissions = 0;
-
-            foreach (Submission s in submissions)
-            {
-                if (s.Response == null)
-                {
-                    wrongSubmissions++;
-                }
-            }
-
-            if (wrongSubmissions < puzzleState.WrongSubmissionCountBuffer)
+            if (WrongSubmissionCount < puzzleState.WrongSubmissionCountBuffer)
             {
                 return false;
             }
 
-            return wrongSubmissions - puzzleState.WrongSubmissionCountBuffer >=
+            return WrongSubmissionCount - puzzleState.WrongSubmissionCountBuffer >=
                 ev.MaxSubmissionCount;
-
         }
     }
 }

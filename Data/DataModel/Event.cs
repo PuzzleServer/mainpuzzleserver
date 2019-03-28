@@ -139,11 +139,10 @@ namespace ServerCore.DataModel
         public bool AllowFeedback { get; set; }
 
         /// <summary>
-        /// The window of time where if a team enters a certain number of
-        /// incorrect answers would cause the team to be locked out of
-        /// submitting additional answers for a brief amount of time.
+        /// This is the minimum amount of time in minutes a team's lockout
+        /// duration should be for a specific puzzle.
         /// </summary>
-        public double LockoutIncorrectGuessPeriod { get; set; }
+        public double LockoutBaseDuration { get; set; }
 
         /// <summary>
         /// The amount of incorrect submissions required to initiate a lockout.
@@ -152,6 +151,9 @@ namespace ServerCore.DataModel
 
         /// <summary>
         /// The multiplier for the lockout duration for consecutive lockouts.
+        /// This is multiplied by the number of incorrect submissions to
+        /// determine the lockout duration (in minutes). If the product is less
+        /// than LockoutBaseDuration, then the base duration will be used.
         /// </summary>
         public double LockoutDurationMultiplier { get; set; }
 
