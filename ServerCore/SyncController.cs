@@ -226,7 +226,7 @@ namespace ServerCore.Pages
             // Get a list of all the puzzles this team has solved from this event.
 
             List<Puzzle> solves = await (from state in context.PuzzleStatePerTeam
-                                         where state.TeamID == teamId && state.SolvedTime != null && state.Puzzle.Event.ID == eventId
+                                         where state.TeamID == teamId && state.SolvedTime != null
                                          select state.Puzzle).ToListAsync();
 
             int maxSolveCount = 0;

@@ -60,7 +60,7 @@ Registered Teams: <b>@Model.Teams.Count/@Model.Event.MaxNumberOfTeams</b>, Regis
                 <th>
                     Current team size
                 </th>
-                @if (Model.EventRole == ModelBases.EventRole.play && !Model.UserOnTeam && Model.Event.IsTeamMembershipChangeActive)
+                @if (Model.EventRole == ModelBases.EventRole.play && Model.Event.IsTeamMembershipChangeActive)
                 {
                     <th>Request to join</th>
                 }
@@ -81,7 +81,7 @@ Registered Teams: <b>@Model.Teams.Count/@Model.Event.MaxNumberOfTeams</b>, Regis
                     <td>
                         @Html.DisplayFor(modelItem => item.Value)
                     </td>
-                    @if (Model.EventRole == ModelBases.EventRole.play && !Model.UserOnTeam && Model.Event.IsTeamMembershipChangeActive)
+                    @if (Model.EventRole == ModelBases.EventRole.play && Model.Event.IsTeamMembershipChangeActive)
                     {
                         <td>
                             @if (item.Key == Model.AppliedTeam)
