@@ -62,7 +62,12 @@ namespace ServerCore.Pages.Teams
 
             // join 'em (note: just getting all properties for max flexibility, can pick and choose columns for perf later)
             // Note: EF gotcha is that you have to join into anonymous types in order to not lose valuable stuff
-            var visiblePuzzlesQ = puzzlesInEventQ.Join(stateForTeamQ, (puzzle => puzzle.ID), (state => state.PuzzleID), (Puzzle, State) => new { Puzzle, State });
+            var visiblePuzzlesQ = from Puzzle puzzle in puzzlesInEventQ
+                                  join PuzzleStatePerTeam pspt in stateForTeamQ on puzzle.ID equals pspt.PuzzleID
+                                  join ContentFile joinContent in _context.ContentFiles on puzzle equals joinContent.Puzzle into fileJoin
+                                  from ContentFile content in fileJoin.DefaultIfEmpty()
+                                  where content == null || content.FileType == ContentFileType.Puzzle
+                                  select new { Puzzle = puzzle, State = pspt, Content = content };
 
             switch (sort ?? DefaultSort)
             {
@@ -88,7 +93,7 @@ namespace ServerCore.Pages.Teams
                     throw new ArgumentException($"unknown sort: {sort}");
             }
 
-            PuzzlesWithState = (await visiblePuzzlesQ.ToListAsync()).Select(x => new PuzzleWithState(x.Puzzle, x.State)).ToList();
+            PuzzlesWithState = (await visiblePuzzlesQ.ToListAsync()).Select(x => new PuzzleWithState(x.Puzzle, x.State, x.Content)).ToList();
         }
 
         public SortOrder? SortForColumnLink(SortOrder ascendingSort, SortOrder descendingSort)
@@ -112,11 +117,13 @@ namespace ServerCore.Pages.Teams
         {
             public Puzzle Puzzle { get; }
             public PuzzleStatePerTeam State { get; }
+            public ContentFile Content { get; }
 
-            public PuzzleWithState(Puzzle puzzle, PuzzleStatePerTeam state)
+            public PuzzleWithState(Puzzle puzzle, PuzzleStatePerTeam state, ContentFile content)
             {
-                this.Puzzle = puzzle;
-                this.State = state;
+                Puzzle = puzzle;
+                State = state;
+                Content = content;
             }
         }
 

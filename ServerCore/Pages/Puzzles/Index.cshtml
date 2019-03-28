@@ -40,19 +40,19 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Puzzles[0].Name)
+                @Html.DisplayNameFor(model => model.Puzzles[0].Puzzle.Name)
             </th>
             <th>
                 Puzzle file
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Puzzles[0].Group)
+                @Html.DisplayNameFor(model => model.Puzzles[0].Puzzle.Group)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Puzzles[0].OrderInGroup)
+                @Html.DisplayNameFor(model => model.Puzzles[0].Puzzle.OrderInGroup)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Puzzles[0].SolveValue)
+                @Html.DisplayNameFor(model => model.Puzzles[0].Puzzle.SolveValue)
             </th>
             <th>
                 Puzzle
@@ -82,74 +82,74 @@
         {
             <tr>
                 <td>
-                    <a asp-Page="./Details" asp-route-puzzleid=@item.ID>@Html.DisplayFor(modelItem => item.Name)</a>
+                    <a asp-Page="./Details" asp-route-puzzleid=@item.Puzzle.ID>@Html.DisplayFor(modelItem => item.Puzzle.Name)</a>
                 </td>
                 <td>
-                    @if (item.CustomURL != null)
+                    @if (item.Puzzle.CustomURL != null)
                     {
-                        <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item)">Link</a>
+                        <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.Puzzle, Model.Event.ID)">Link</a>
                     }
-                    else if (item.PuzzleFile != null)
+                    else if (item.Content != null)
                     {
-                        @Html.ActionLink("File", "Index", "Files", new { eventId = Model.Event.ID, filename = item.PuzzleFile.ShortName })
-                    }
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Group)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.OrderInGroup)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.SolveValue)
-                </td>
-                <td>
-                    @if (item.IsPuzzle)
-                    {
-                        <p>&#10004;</p>
+                        @Html.ActionLink("File", "Index", "Files", new { eventId = Model.Event.ID, filename = item.Content.ShortName })
                     }
                 </td>
                 <td>
-                    @if (item.IsMetaPuzzle)
+                    @Html.DisplayFor(modelItem => item.Puzzle.Group)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Puzzle.OrderInGroup)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Puzzle.SolveValue)
+                </td>
+                <td>
+                    @if (item.Puzzle.IsPuzzle)
                     {
                         <p>&#10004;</p>
                     }
                 </td>
                 <td>
-                    @if (item.IsFinalPuzzle)
+                    @if (item.Puzzle.IsMetaPuzzle)
                     {
                         <p>&#10004;</p>
                     }
                 </td>
                 <td>
-                    @if (item.IsCheatCode)
+                    @if (item.Puzzle.IsFinalPuzzle)
                     {
                         <p>&#10004;</p>
                     }
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.MinPrerequisiteCount)
+                    @if (item.Puzzle.IsCheatCode)
+                    {
+                        <p>&#10004;</p>
+                    }
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.SupportEmailAlias)
+                    @Html.DisplayFor(modelItem => item.Puzzle.MinPrerequisiteCount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Puzzle.SupportEmailAlias)
                 </td>
                 <td>
                     <div class="shortcut-menu-dropdown">
                         <span><a>Jump to...</a></span>
                         <div class="shortcut-menu-dropdown-content">
-                            <a asp-Page="./Details" asp-route-puzzleid=@item.ID>Details</a><br />
-                            <a asp-Page="./Edit" asp-route-puzzleid=@item.ID>Edit</a><br />
-                            <a asp-Page="./FileManagement" asp-route-puzzleid=@item.ID>Files</a><br />
-                            <a asp-page="/Responses/Index" asp-route-puzzleid=@item.ID>Responses</a><br />
-                            <a asp-page="/Hints/Index" asp-route-puzzleid=@item.ID>Hints</a><br />
-                            <a asp-page="/Pieces/Index" asp-route-puzzleid=@item.ID>Pieces</a><br />
+                            <a asp-Page="./Details" asp-route-puzzleid=@item.Puzzle.ID>Details</a><br />
+                            <a asp-Page="./Edit" asp-route-puzzleid=@item.Puzzle.ID>Edit</a><br />
+                            <a asp-Page="./FileManagement" asp-route-puzzleid=@item.Puzzle.ID>Files</a><br />
+                            <a asp-page="/Responses/Index" asp-route-puzzleid=@item.Puzzle.ID>Responses</a><br />
+                            <a asp-page="/Hints/Index" asp-route-puzzleid=@item.Puzzle.ID>Hints</a><br />
+                            <a asp-page="/Pieces/Index" asp-route-puzzleid=@item.Puzzle.ID>Pieces</a><br />
                             ------<br />
-                            <a asp-page="./Status" asp-route-puzzleid=@item.ID>Status</a><br />
-                            <a asp-page="/Submissions/AuthorIndex" asp-route-puzzleid=@item.ID>Submissions</a><br />
-                            <a asp-page="/Hints/AuthorIndex" asp-route-puzzleid=@item.ID>Hints Taken</a><br />
-                            <a asp-Page="./Feedback" asp-route-puzzleid=@item.ID>Feedback</a><br />
+                            <a asp-page="./Status" asp-route-puzzleid=@item.Puzzle.ID>Status</a><br />
+                            <a asp-page="/Submissions/AuthorIndex" asp-route-puzzleid=@item.Puzzle.ID>Submissions</a><br />
+                            <a asp-page="/Hints/AuthorIndex" asp-route-puzzleid=@item.Puzzle.ID>Hints Taken</a><br />
+                            <a asp-Page="./Feedback" asp-route-puzzleid=@item.Puzzle.ID>Feedback</a><br />
                             ------<br />
-                            <a asp-Page="./Delete" asp-route-puzzleid="@item.ID">Delete</a>
+                            <a asp-Page="./Delete" asp-route-puzzleid="@item.Puzzle.ID">Delete</a>
                         </div>
                     </div>
                 </td>
