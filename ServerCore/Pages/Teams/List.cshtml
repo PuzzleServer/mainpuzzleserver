@@ -46,9 +46,11 @@
         <a asp-page="Create">Create a new team</a>
     }
 </p>
-<h4>Registered Teams: @Model.Teams.Count/@Model.Event.MaxNumberOfTeams, Registered Players: @Model.PlayerCount/@(Model.Event.MaxNumberOfTeams * Model.Event.MaxTeamSize)</h4>
-@if (Model.Event.IsTeamRegistrationActive)
+<h4>Total registrations</h4>
+Registered Teams: <b>@Model.Teams.Count/@Model.Event.MaxNumberOfTeams</b>, Registered Players: <b>@Model.PlayerCount/@(Model.Event.MaxNumberOfTeams * Model.Event.MaxTeamSize)</b>
+@if (Model.Event.IsTeamMembershipChangeActive)
 {
+    <h4>Teams looking for players</h4>
     <table class="table">
         <thead>
             <tr>

@@ -1,8 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using ServerCore.DataModel;
 using ServerCore.ModelBases;
 
@@ -73,10 +76,22 @@ namespace ServerCore.Pages.Puzzles
                     break;
             }
 
-            _context.Puzzles.Add(p);
-            _context.PuzzleAuthors.Add(new PuzzleAuthors() { Puzzle = p, Author = LoggedInUser });
+            using (IDbContextTransaction transaction = _context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable))
+            {
+                _context.Puzzles.Add(p);
+                _context.PuzzleAuthors.Add(new PuzzleAuthors() { Puzzle = p, Author = LoggedInUser });
 
-            await _context.SaveChangesAsync();
+                var teamIDs = await (from Team team in _context.Teams
+                                       where team.Event == Event
+                                       select team.ID).ToListAsync();
+                foreach (int teamID in teamIDs)
+                {
+                    _context.PuzzleStatePerTeam.Add(new PuzzleStatePerTeam() { Puzzle = p, TeamID = teamID });
+                }
+                await _context.SaveChangesAsync();
+
+                transaction.Commit();
+            }
 
             return RedirectToPage("./Edit", new { puzzleId = p.ID });
         }
