@@ -1803,11 +1803,12 @@ function handle_sync_success(data)
     }
 
     try {
-        if ("site_version" in data) {
+        if ("site_version" in data && $.isNumeric(data.site_version)) {
             if (window.g.site_version == null) {
                 window.g.site_version = data.site_version;
             }
-            else if (window.g.site_version != data.site_version) {
+            else if (window.g.site_version < data.site_version) {
+                window.g.site_version = null;
                 window.location.reload();
             }
         }
@@ -1907,7 +1908,7 @@ function send_sync_request(requesting_tokens)
     }
 
     $.ajax( { type : "POST",
-              url : "/@Model.EventId/api/Sync/@Model.MetapuzzleId/",
+              url : "/@Model.EventId/@Model.MetapuzzleId/api/Sync/",
               data : params })
      .done(function (data, status, xhr) { handle_sync_success(data); })
      .fail(handle_sync_fail)
@@ -2254,7 +2255,7 @@ function initialize_page()
         e.preventDefault();
         });
 
-    window.onbeforeunload = function(e) { send_sync_request(); };
+    window.onbeforeunload = function(e) { window.g.site_version = null; send_sync_request(); };
     window.g.initializing = false;
 }
 
