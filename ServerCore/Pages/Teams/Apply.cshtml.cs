@@ -46,7 +46,7 @@ namespace ServerCore.Pages.Teams
                                      select member).FirstOrDefaultAsync();
             if (playerTeam != null)
             {
-                return RedirectToPage("./Details", new { eventId = Event.ID, eventRole = EventRole, teamId = playerTeam.Team.ID });
+                return RedirectToPage("./Details", new { teamId = playerTeam.Team.ID });
             }
 
             Team = await (from Team t in _context.Teams

@@ -32,13 +32,13 @@ namespace ServerCore.Pages.Teams
                 return Challenge();
             }
 
-            if (await LoggedInUser.IsPlayerInEvent(_context, Event))
+            TeamMembers playerTeam = await (from member in _context.TeamMembers
+                                            where member.Member == LoggedInUser &&
+                                            member.Team.Event == Event
+                                            select member).FirstOrDefaultAsync();
+            if (playerTeam != null)
             {
-                UserOnTeam = true;
-            }
-            else
-            {
-                UserOnTeam = false;
+                return RedirectToPage("./Details", new { teamId = playerTeam.Team.ID });
             }
 
             var applications = from TeamApplication application in _context.TeamApplications
