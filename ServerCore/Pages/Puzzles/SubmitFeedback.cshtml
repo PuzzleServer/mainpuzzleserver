@@ -26,7 +26,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Feedback.Difficulty" class="control-label"></label>
-                <input asp-for="Feedback.Difficulty" type="range" min="@Model.MinRating" max="@Model.MaxRating" step="1" class="slider" id="difficultySlider">
+                <input asp-for="Feedback.Difficulty" type="range" min="@DataModel.Feedback.MinRating" max="@DataModel.Feedback.MaxRating" step="1" class="slider" id="difficultySlider">
                 <label id="difficultyLabel">NULL</label>
                 <script>
                     var diffslider = document.getElementById("difficultySlider");
@@ -41,7 +41,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Feedback.Fun" class="control-label"></label>
-                <input asp-for="Feedback.Fun" type="range" min="@Model.MinRating" max="@Model.MaxRating" step="1" class="slider" id="funSlider">
+                <input asp-for="Feedback.Fun" type="range" min="@DataModel.Feedback.MinRating" max="@DataModel.Feedback.MaxRating" step="1" class="slider" id="funSlider">
                 <label id="funLabel">NULL</label>
                 <script>
                     var funslider = document.getElementById("funSlider");
@@ -54,6 +54,21 @@
                     }
                 </script>
             </div>
+            <!--
+            The code below displays an option to the user to anonymize their feedback.    
+            <div class="form-group">
+                <label asp-for="Feedback.IsAnonymous" class="control-label">Keep feedback anonymous</label>
+                <table>
+                    <tr>
+                        <input asp-for="Feedback.IsAnonymous" class="form-control" />
+                        <td>
+                            <p>Checking this box will hide your email from the puzzle author when they go to view this feedback. You may want to check this if you do not wish to be contacted by a puzzle author to follow up on your feedback.</p>
+                            <span asp-validation-for="Feedback.IsAnonymous" class="text-danger"></span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            -->
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-default" />
             </div>
