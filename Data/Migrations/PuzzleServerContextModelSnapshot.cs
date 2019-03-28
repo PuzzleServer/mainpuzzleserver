@@ -445,6 +445,8 @@ namespace Data.Migrations
 
                     b.HasKey("ID");
 
+                    b.HasIndex("ProgressLevel");
+
                     b.HasIndex("PuzzleID");
 
                     b.ToTable("Pieces");
