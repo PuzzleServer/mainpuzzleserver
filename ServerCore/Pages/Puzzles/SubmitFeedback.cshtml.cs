@@ -87,7 +87,6 @@ namespace ServerCore.Pages.Puzzles
             {
                 editableFeedback.SubmissionTime = DateTime.UtcNow;
                 editableFeedback.Submitter = LoggedInUser;
-                editableFeedback.IsAnonymous = Feedback.IsAnonymous;
                 editableFeedback.Difficulty = Feedback.Difficulty;
                 editableFeedback.Fun = Feedback.Fun;
                 editableFeedback.WrittenFeedback = Feedback.WrittenFeedback;

@@ -46,20 +46,12 @@
     <tbody>
 @foreach (var item in Model.Feedbacks) {
         <tr>
-            @if (item.IsAnonymous)
-            {
-            <td>Hidden</td>
-            <td>Hidden</td>
-            }
-            else
-            {
             <td>
                 @Html.DisplayFor(modelItem => item.Submitter.Name)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Submitter.Email)
             </td>
-            }
             <td>
                 @Html.DisplayFor(modelItem => item.SubmissionTime)
             </td>

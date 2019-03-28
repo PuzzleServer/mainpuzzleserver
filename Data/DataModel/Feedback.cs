@@ -16,7 +16,7 @@ namespace ServerCore.DataModel
         }
 
         public const int MinRating = 1;
-        public const int AvgRating = 1;
+        public const int AvgRating = 5;
         public const int MaxRating = 10;
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -35,12 +35,6 @@ namespace ServerCore.DataModel
         /// The time the feedback was submitted.
         /// </summary>
         public DateTime SubmissionTime { get; set; }
-
-        /// <summary>
-        /// True if the puzzle author should not be able to see details about
-        /// the user.
-        /// </summary>
-        public bool IsAnonymous { get; set; }
 
         /// <summary>
         /// The feedback text submitted by the user.
