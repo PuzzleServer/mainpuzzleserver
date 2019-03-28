@@ -23,6 +23,10 @@ namespace ServerCore.Pages.Teams
         {
             public Hint Hint { get; set; }
             public bool IsUnlocked { get; set; }
+            public int Discount { get; set; }
+
+            public int BaseCost { get { return Math.Abs(Hint.Cost); } }
+            public int AdjustedCost { get { return Math.Max(0, Math.Abs(Hint.Cost) + Discount); } }
         }
 
         public IList<HintWithState> Hints { get; set; }
@@ -47,17 +51,27 @@ namespace ServerCore.Pages.Teams
             return Page();
         }
 
+        private async Task<IList<HintWithState>> GetAllHints(int puzzleId, int teamId)
+        {
+            Hints = await (from Hint hint in _context.Hints
+                             join HintStatePerTeam state in _context.HintStatePerTeam on hint.Id equals state.HintID
+                             where state.TeamID == teamId && hint.Puzzle.ID == puzzleId
+                             orderby hint.DisplayOrder, hint.Description
+                             select new HintWithState { Hint = hint, IsUnlocked = state.IsUnlocked }).ToListAsync();
+
+            int discount = Hints.Min(hws => (hws.IsUnlocked && hws.Hint.Cost < 0) ? hws.Hint.Cost : 0);
+            foreach (HintWithState hint in Hints) {
+                hint.Discount = discount;
+            }
+            return Hints;
+        }
+
         private async Task PopulateUI(int puzzleId, int teamId)
         {
             PuzzleName = await (from Puzzle in _context.Puzzles
                                 where Puzzle.ID == puzzleId
                                 select Puzzle.Name).FirstOrDefaultAsync();
-            Hints = await
-                (from Hint hint in _context.Hints
-                 join HintStatePerTeam state in _context.HintStatePerTeam on hint.Id equals state.HintID
-                 where state.TeamID == teamId && hint.Puzzle.ID == puzzleId
-                 orderby hint.DisplayOrder, hint.Description
-                 select new HintWithState { Hint = hint, IsUnlocked = state.IsUnlocked }).ToListAsync();
+            Hints = await GetAllHints(puzzleId, teamId);
         }
 
         public async Task<IActionResult> OnPostUnlockAsync(int hintID, int puzzleId, int teamId)
@@ -88,15 +102,17 @@ namespace ServerCore.Pages.Teams
 
             if (!state.IsUnlocked)
             {
-                int cost = hint.Cost;
-                if (Team.HintCoinCount < cost)
+                Hints = await GetAllHints(puzzleId, teamId);
+                HintWithState hintToUnlock = Hints.SingleOrDefault(hws => hws.Hint.Id == hintID);
+
+                if (Team.HintCoinCount < hintToUnlock.AdjustedCost)
                 {
                     return NotFound();
                 }
 
                 state.UnlockTime = DateTime.UtcNow;
-                Team.HintCoinCount -= cost;
-                Team.HintCoinsUsed += cost;
+                Team.HintCoinCount -= hintToUnlock.AdjustedCost;
+                Team.HintCoinsUsed += hintToUnlock.AdjustedCost;
                 await _context.SaveChangesAsync();
             }
 

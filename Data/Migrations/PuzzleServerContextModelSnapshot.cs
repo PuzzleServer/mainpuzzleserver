@@ -510,6 +510,8 @@ namespace Data.Migrations
 
                     b.Property<int>("OrderInGroup");
 
+                    b.Property<int>("PuzzleVersion");
+
                     b.Property<int>("SolveValue");
 
                     b.Property<string>("SupportEmailAlias");

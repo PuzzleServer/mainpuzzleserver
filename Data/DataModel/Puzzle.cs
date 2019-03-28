@@ -145,6 +145,16 @@ namespace ServerCore.DataModel
         public int MaxAnnotationKey { get; set; } = 0;
 
         /// <summary>
+        /// This is an author-settable version number, so that the author can indicate that something
+        /// about their puzzle has changed.  It also automatically gets updated by the files controller
+        /// whenever the author uploads any new file for the puzle.  The sync API can be used by any
+        /// client to find out the version number of a puzzle, which it can use for various purposes.
+        /// For instance, an HTML page might unlock itself, or display a message to the user that the
+        /// puzzle has been updated.
+        /// </summary>
+        public int PuzzleVersion { get; set; } = 0;
+
+        /// <summary>
         /// All of the content files associated with this puzzle
         /// </summary>
         public virtual ICollection<ContentFile> Contents { get; set; }
