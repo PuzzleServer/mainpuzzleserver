@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -51,13 +52,6 @@ namespace ServerCore
         {
             CloudBlobContainer eventContainer = await GetOrCreateEventContainerAsync(eventId);
 
-            // Obfuscate the file by putting it in a random directory
-            byte[] manglingBytes = new byte[16];
-            RandomNumberGenerator.Fill(manglingBytes);
-            // Turn the random bytes into legal URL characters
-            string mangledString = Convert.ToBase64String(manglingBytes).Replace('/', '_');
-            CloudBlobDirectory puzzleDirectory = eventContainer.GetDirectoryReference(mangledString);
-
             CloudBlockBlob blob = puzzleDirectory.GetBlockBlobReference(fileName);
             if (fileExtensionProvider.TryGetContentType(fileName, out string contentType))
             {
@@ -68,6 +62,34 @@ namespace ServerCore
         }
 
         /// <summary>
+        /// Uploads a set of blobs to the same directory
+        /// </summary>
+        /// <param name="files">A dictionary of files. Keys are file names. The caller should ensure they are safe to use in a URL.
+        /// The values are streams with the contents of the files</param>
+        /// <param name="eventId">Event the files will be used in</param>
+        /// <returns>A dictionary with key of the file names and value of the urls of the files in blob storage</returns>
+        public static async Task<Dictionary<string, Uri>> UploadBlobsAsync(Dictionary<string, Stream> files, int eventId)
+        {
+            CloudBlobDirectory puzzleDirectory = await GetRandomDirectoryAsync(eventId);
+            Dictionary<string, Uri> fileUrls = new Dictionary<string, Uri>(files.Count);
+
+            foreach (KeyValuePair<string, Stream> file in files)
+            {
+                CloudBlockBlob blob = puzzleDirectory.GetBlockBlobReference(file.Key);
+                if (fileExtensionProvider.TryGetContentType(file.Key, out string contentType))
+                {
+                    blob.Properties.ContentType = contentType;
+                }
+
+                await blob.UploadFromStreamAsync(file.Value);
+
+                fileUrls[file.Key] = blob.Uri;
+            }
+
+            return fileUrls;
+        }
+
+        /// <summary>
         /// Deletes a file from blob storage
         /// </summary>
         /// <param name="fileUri">Full URL of the file to delete</param>
@@ -75,6 +97,23 @@ namespace ServerCore
         {
             CloudBlob blobToDelete = new CloudBlob(fileUri, StorageAccount.Credentials);
             await blobToDelete.DeleteIfExistsAsync();
+        }
+
+        /// <summary>
+        /// Gets a reference to a random directory
+        /// </summary>
+        /// <param name="eventId">Event the directory should be associated with</param>
+        private static async Task<CloudBlobDirectory> GetRandomDirectoryAsync(int eventId)
+        {
+            CloudBlobContainer eventContainer = await GetOrCreateEventContainerAsync(eventId);
+
+            // Obfuscate the file by putting it in a random directory
+            byte[] manglingBytes = new byte[16];
+            RandomNumberGenerator.Fill(manglingBytes);
+            // Turn the random bytes into legal URL characters
+            string mangledString = Convert.ToBase64String(manglingBytes).Replace('/', '_');
+            CloudBlobDirectory puzzleDirectory = eventContainer.GetDirectoryReference(mangledString);
+            return puzzleDirectory;
         }
 
         /// <summary>
