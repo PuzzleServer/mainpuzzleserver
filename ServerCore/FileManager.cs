@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.StaticFiles;
@@ -23,6 +24,31 @@ namespace ServerCore
         /// <returns>Url of the file in blob storage</returns>
         public static async Task<Uri> UploadBlobAsync(string fileName, int eventId, Stream contents)
         {
+            CloudBlockBlob blob = await CreateNewBlob(fileName, eventId);
+
+            await blob.UploadFromStreamAsync(contents);
+            return blob.Uri;
+        }
+
+        /// <summary>
+        /// Copies a file in blob storage
+        /// </summary>
+        /// <param name="fileName">Name of the file to upload. The caller should ensure it is safe to use in a URL</param>
+        /// <param name="eventId">Event the file will be used in</param>
+        /// <param name="sourceUri">Uri of the blob to be copied</param>
+        /// <returns>Url of the file in blob storage</returns>
+        public static async Task<Uri> CloneBlobAsync(string fileName, int eventId, Uri sourceUri)
+        {
+            CloudBlockBlob blobSource = new CloudBlockBlob(sourceUri, StorageAccount.Credentials);
+
+            CloudBlockBlob blob = await CreateNewBlob(fileName, eventId);
+            await blob.StartCopyAsync(blobSource);
+
+            return blob.Uri;
+        }
+
+        private static async Task<CloudBlockBlob> CreateNewBlob(string fileName, int eventId)
+        {
             CloudBlobContainer eventContainer = await GetOrCreateEventContainerAsync(eventId);
 
             // Obfuscate the file by putting it in a random directory
@@ -37,8 +63,8 @@ namespace ServerCore
             {
                 blob.Properties.ContentType = contentType;
             }
-            await blob.UploadFromStreamAsync(contents);
-            return blob.Uri;
+
+            return blob;
         }
 
         /// <summary>
