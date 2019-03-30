@@ -44,12 +44,6 @@ namespace ServerCore
             CloudBlockBlob blob = await CreateNewBlob(fileName, eventId);
             await blob.StartCopyAsync(blobSource);
 
-            while (blob.CopyState.Status == CopyStatus.Pending)
-            {
-                await Task.Delay(1000);
-                await blob.FetchAttributesAsync();
-            }
-
             return blob.Uri;
         }
 
