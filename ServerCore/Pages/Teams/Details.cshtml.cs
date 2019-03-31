@@ -88,6 +88,11 @@ namespace ServerCore.Pages.Teams
 
             _context.TeamMembers.Remove(member);
             await _context.SaveChangesAsync();
+            
+            if (EventRole == EventRole.play && member.Member == LoggedInUser)
+            {
+                return RedirectToPage("./List");
+            }
             return RedirectToPage("./Details", new { teamId = teamId });
         }
 
