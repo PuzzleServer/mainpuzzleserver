@@ -28,6 +28,7 @@ namespace ServerCore.Pages.Teams
         {
             List<Team> allTeams = await (from team in _context.Teams
                               where team.Event == Event
+                              orderby team.Name
                               select team).ToListAsync();
             Teams = await (from team in _context.Teams
                            where team.Event == Event
