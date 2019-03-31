@@ -64,7 +64,7 @@ namespace ServerCore.Pages.Teams
             // Note: EF gotcha is that you have to join into anonymous types in order to not lose valuable stuff
             var visiblePuzzlesQ = from Puzzle puzzle in puzzlesInEventQ
                                   join PuzzleStatePerTeam pspt in stateForTeamQ on puzzle.ID equals pspt.PuzzleID
-                                  join ContentFile joinContent in _context.ContentFiles.Where((j) => j.FileType == ContentFileType.Puzzle) on puzzle equals joinContent.Puzzle into fileJoin
+                                  join ContentFile joinContent in _context.ContentFiles.Where((j) => j.Event == Event && j.FileType == ContentFileType.Puzzle) on puzzle equals joinContent.Puzzle into fileJoin
                                   from ContentFile content in fileJoin.DefaultIfEmpty()
                                   select new { Puzzle = puzzle, State = pspt, Content = content };
 
