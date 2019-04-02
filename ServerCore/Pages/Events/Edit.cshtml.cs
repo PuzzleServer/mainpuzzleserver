@@ -40,7 +40,7 @@ namespace ServerCore.Pages.Events
 
             await _context.SaveChangesAsync();
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("./Details");
         }
     }
 }

@@ -9,6 +9,9 @@
 }
 
 <h2>@Model.Event.Name: Import</h2>
+<div>
+    <a asp-page="./Details">Cancel</a>
+</div>
 
 <form method="post" enctype="multipart/form-data">
     <input type="hidden" asp-for="Event.ID" />

@@ -153,7 +153,7 @@ namespace ServerCore.Pages.Events
                 transaction.Commit();
             }
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("./Details");
         }
     }
 }
