@@ -1,6 +1,48 @@
 ﻿@page "/{eventId}/{eventRole}/Teams/{teamId}/Hints/{puzzleId}"
 @model ServerCore.Pages.Teams.HintsModel
 
+<style>
+    button:disabled {
+        color: #aaaaaa;
+    }
+
+    /*
+     * Strikeout style for hints
+     */
+    .strike1 {
+        position: relative;
+    }
+    .strike1:before {
+        color: red;
+        position: absolute;
+        content: "";
+        left: 0;
+        top: 50%;
+        right: 0;
+        border-top: 1px solid;
+        border-color: inherit;
+        -webkit-transform: rotate(-35deg);
+        -moz-transform: rotate(-35deg);
+        -ms-transform: rotate(-35deg);
+        -o-transform: rotate(-35deg);
+        transform: rotate(-35deg);
+    }
+    .strike2:after {
+        color: red;
+        position: absolute;
+        content: "";
+        left: 0;
+        top: 50%;
+        right: 0;
+        border-top: 1px solid;
+        border-color: inherit;
+        -webkit-transform: rotate(35deg);
+        -moz-transform: rotate(35deg);
+        -ms-transform: rotate(35deg);
+        -o-transform: rotate(35deg);
+        transform: rotate(35deg);
+    }
+</style>
 @{
     ViewData["Title"] = "Hints";
     ViewData["AdminRoute"] = "/Puzzles/Index";
@@ -14,7 +56,16 @@
     <a asp-page="/Teams/Play">Back to puzzle list</a>
 </div>
 
-You have @Model.Team.HintCoinCount hint ticket(s).
+You have <b>
+    @if (Model.Team.HintCoinCount > 0)
+    {
+        @Model.Team.HintCoinCount
+    }
+    else
+    {
+        <text>no</text>
+    }
+</b> hint tickets.
 
 <table class="table">
     <thead>
@@ -23,10 +74,7 @@ You have @Model.Team.HintCoinCount hint ticket(s).
                 @Html.DisplayNameFor(model => model.Hints[0].Hint.Description)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Hints[0].Hint.Content)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Hints[0].Hint.Cost)
+                <text>Hint</text>
             </th>
             <th></th>
             <th></th>
@@ -44,41 +92,52 @@ You have @Model.Team.HintCoinCount hint ticket(s).
                     {
                         @Html.DisplayFor(modelItem => hint.Hint.Content)
                     }
-                </td>
-                <td>
-                    @if (!hint.IsUnlocked)
+                    else
                     {
-                        if (hint.Hint.Cost == 0)
+                        <b>Cost:</b>
+                        if (hint.AdjustedCost < hint.BaseCost)
+                        {
+                            <span class="strike1 strike2">&nbsp;@hint.BaseCost&nbsp;</span>
+                        }
+                        if (hint.AdjustedCost == 0)
                         {
                             <text>FREE</text>
                         }
                         else
                         {
-                            @Html.DisplayFor(modelItem => hint.Hint.Cost)
+                            @hint.AdjustedCost
                         }
                     }
-                </td>
-                <td>
+
                     @if (!hint.IsUnlocked)
                     {
-                    <form method="post">
-                        @if (Model.Team.HintCoinCount >= hint.Hint.Cost)
-                        {
-                            <button type="submit" asp-route-hintId="@hint.Hint.Id" asp-route-teamId="@Model.Team.ID" asp-route-puzzleId="@Model.PuzzleID" asp-page-handler="Unlock" onclick="return confirm('Are you sure you want to spend @hint.Hint.Cost tickets to find out &quot;@hint.Hint.Description&quot;?')">Unlock</button>
-                        }
-                        else
-                        {
-                            <button type="submit" asp-page-handler="Unlock" disabled>Unlock</button>
-                        }
-                    </form>
+                        <form method="post" style="display:inline-block">
+                            @if (Model.Team.HintCoinCount >= hint.AdjustedCost)
+                            {
+                                <button type="submit" asp-route-hintId="@hint.Hint.Id" 
+                                    asp-route-teamId="@Model.Team.ID" 
+                                    asp-route-puzzleId="@Model.PuzzleID" 
+                                    asp-page-handler="Unlock" 
+                                    onclick="return confirm('Are you sure you want to spend @hint.AdjustedCost tickets to find out &quot;@hint.Hint.Description&quot;?')" 
+                                    style="margin-left: 5px; margin-right: 5px;">Unlock</button>
+                            }
+                            else
+                            {
+                                <button type="submit" disabled 
+                                    style="margin-left: 5px; margin-right: 5px;">Unlock</button>
+                                if (hint.AdjustedCost - Model.Team.HintCoinCount == 1)
+                                {
+                                    <text>You need 1 more ticket to unlock.</text>
+                                }
+                                else
+                                {
+                                    <text>You need @(hint.AdjustedCost - Model.Team.HintCoinCount) more tickets to unlock.</text>
+                                }
+                            }
+                        </form>
                     }
                 </td>
-                <td>
-                    @if (Model.Team.HintCoinCount < hint.Hint.Cost)
-                    {
-                        <div>@(hint.Hint.Cost - Model.Team.HintCoinCount) more ticket(s) required</div>
-                    }
-                </td>
+                <td></td>
             </tr>
         }
     </tbody>

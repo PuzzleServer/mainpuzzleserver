@@ -70,6 +70,8 @@ namespace ServerCore.Pages.Puzzles
                 return NotFound();
             }
 
+            bool changeMade = false;
+
             if (PuzzleFile != null)
             {
                 // Remove previous puzzle files
@@ -83,6 +85,7 @@ namespace ServerCore.Pages.Puzzles
                     _context.ContentFiles.Remove(oldFile);
                 }
                 await UploadFileAsync(PuzzleFile, ContentFileType.Puzzle);
+                changeMade = true;
             }
 
             if (AnswerFile != null)
@@ -98,6 +101,7 @@ namespace ServerCore.Pages.Puzzles
                     _context.ContentFiles.Remove(oldFile);
                 }
                 await UploadFileAsync(AnswerFile, ContentFileType.Answer);
+                changeMade = true;
             }
 
             if (PuzzleMaterialFiles != null)
@@ -105,6 +109,7 @@ namespace ServerCore.Pages.Puzzles
                 foreach (IFormFile materialFile in PuzzleMaterialFiles)
                 {
                     await UploadFileAsync(materialFile, ContentFileType.PuzzleMaterial);
+                    changeMade = true;
                 }
             }
 
@@ -113,7 +118,13 @@ namespace ServerCore.Pages.Puzzles
                 foreach (IFormFile solveToken in SolveTokenFiles)
                 {
                     await UploadFileAsync(solveToken, ContentFileType.SolveToken);
+                    changeMade = true;
                 }
+            }
+
+            if (changeMade)
+            {
+                Puzzle.PuzzleVersion = Puzzle.PuzzleVersion + 1;
             }
 
             try
@@ -158,6 +169,7 @@ namespace ServerCore.Pages.Puzzles
 
             await FileManager.DeleteBlobAsync(fileToDelete.Url);
             Puzzle.Contents.Remove(fileToDelete);
+            Puzzle.PuzzleVersion = Puzzle.PuzzleVersion + 1;
 
             try
             {

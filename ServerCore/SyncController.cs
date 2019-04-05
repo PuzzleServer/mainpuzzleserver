@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -35,8 +36,13 @@ namespace ServerCore.Pages
             /// <summary>
             ///   The list of puzzled IDs to check whether they're solved yet.  Could be null.
             /// </summary>
-
             public readonly List<int> QueryPuzzleIds;
+
+            /// <summary>
+            ///   If QueryAllInGroup is true, it means to  also query all puzzle IDs in the same
+            ///   group as the puzzle being synced, in addition to any specified in QueryPuzzleIds.
+            /// </summary>
+            public readonly bool QueryAllInGroup;
 
             /// <summary>
             ///   If MinSolveCount isn't null, the requester wants any pieces the user has earned
@@ -65,12 +71,13 @@ namespace ServerCore.Pages
             public readonly DateTime? LastSyncTime;
 
             public DecodedSyncRequest(List<int> query_puzzle_ids, int? min_solve_count, string annotations, string last_sync_time,
-                                      int maxAnnotationKey, ref SyncResponse response)
+                                      int maxAnnotationKey, bool query_all_in_group, ref SyncResponse response)
             {
-                // The query_puzzle_ids and min_solve_count fields are already perfectly fine, so just copy them.
+                // The query_puzzle_ids, min_solve_count, and query_all_in_group fields are already perfectly fine, so just copy them.
 
                 QueryPuzzleIds = query_puzzle_ids;
                 MinSolveCount = min_solve_count;
+                QueryAllInGroup = query_all_in_group;
 
                 // The last_sync_time field is a JSON-converted DateTime.  Or at least, it's supposed to be;
                 // we need to check.  Note that this string is one that we (the server) encoded.  We do DateTime
@@ -152,7 +159,7 @@ namespace ServerCore.Pages
                 errors.Add(newError);
             }
 
-            public void SetSiteVersion(string siteVersion)
+            public void SetSiteVersion(int siteVersion)
             {
                 response["site_version"] = siteVersion;
             }
@@ -192,28 +199,11 @@ namespace ServerCore.Pages
         }
 
         /// <summary>
-        ///   Sometimes, an author finds a bug in a puzzle page and would like that puzzle page to
-        ///   reload itself to get the changes.  If that puzzle page periodically invokes the sync
-        ///   API, the sync API provides a way to achieve this.  The sync response indicates the
-        ///   current "version" of the puzzle, essentially telling the requesting page to reload
-        ///   itself if it's different from the last time it found out the version.
-        ///
-        ///   So, the point of GetSiteVersion is to return a string that changes with every update
-        ///   to the page of the corresponding puzzle.
-        /// </summary>
-        private string GetSiteVersion(Puzzle puzzle)
-        {
-            // if (puzzle.ID == 8) { return "2" };   // use a line like this to indicate a puzzle-specific version
-            // if (puzzle.ID == 97) { return "3" };  // use a line like this to indicate a puzzle-specific version
-            return "1";
-        }
-
-        /// <summary>
         ///   This routine handles sync request aspects that require fetching a list of all the puzzles the team
         ///   has solved.
         /// </summary>
         private async Task HandleSyncAspectsRequiringListOfSolvedPuzzles(DecodedSyncRequest request, SyncResponse response,
-                                                                         string groupExcludedFromSolveCount, int teamId, int eventId)
+                                                                         string puzzleGroup, int teamId, int eventId)
         {
             // If the requester isn't asking for pieces (by setting MinSolveCount to null), and isn't asking about
             // whether any puzzle IDs are solved, we can save time by not querying the list of solved puzzles.
@@ -236,7 +226,7 @@ namespace ServerCore.Pages
             // Get a list of all the puzzles this team has solved from this event.
 
             List<Puzzle> solves = await (from state in context.PuzzleStatePerTeam
-                                         where state.TeamID == teamId && state.SolvedTime != null && state.Puzzle.Event.ID == eventId
+                                         where state.TeamID == teamId && state.SolvedTime != null
                                          select state.Puzzle).ToListAsync();
 
             int maxSolveCount = 0;
@@ -244,16 +234,20 @@ namespace ServerCore.Pages
             foreach (var solvedPuzzle in solves) {
                 // If the request is asking whether certain puzzles are solved, check if it's
                 // in the set and, if so, put it in the list of solved puzzles to inform the
-                // requester of.
+                // requester of.  Also, if we've been asked to query all puzzles in the puzzle's
+                // group and this is one of them, put it in the list of solved puzzles.
                     
                 if (queryPuzzleIdSet != null && queryPuzzleIdSet.Contains(solvedPuzzle.ID)) {
                     solvedPuzzles.Add(solvedPuzzle.ID);
                 }
+                else if (request.QueryAllInGroup && solvedPuzzle.Group == puzzleGroup) {
+                    solvedPuzzles.Add(solvedPuzzle.ID);
+                }
 
-                // When counting solves, only count puzzles if they're not in the group that doesn't
-                // count toward the solve count, and only if they're worth at least 10 points.
+                // When counting solves, only count puzzles if they're not in the same group
+                // as the puzzle being synced, and only if they're worth at least 10 points.
 
-                if (groupExcludedFromSolveCount == null || solvedPuzzle.Group != groupExcludedFromSolveCount) {
+                if (puzzleGroup == null || solvedPuzzle.Group != puzzleGroup) {
                     if (solvedPuzzle.SolveValue >= 10) {
                         maxSolveCount += 1;
                     }
@@ -411,7 +405,8 @@ namespace ServerCore.Pages
         }
 
         public async Task<Dictionary<string, object>> GetSyncResponse(int eventId, int teamId, int puzzleId, List<int> query_puzzle_ids,
-                                                                      int? min_solve_count, string annotations, string last_sync_time)
+                                                                      int? min_solve_count, string annotations, string last_sync_time,
+                                                                      bool queryAllInGroup)
         {
             SyncResponse response = new SyncResponse();
 
@@ -435,17 +430,15 @@ namespace ServerCore.Pages
             // Get the site version for this puzzle, so that if it's changed since the last time the
             // requester sync'ed, the requester will know to reload itself.
 
-            response.SetSiteVersion(GetSiteVersion(thisPuzzle));
+            response.SetSiteVersion(thisPuzzle.PuzzleVersion);
 
             // Decode the request.  If there are any errors, return an error response.
 
             DecodedSyncRequest request = new DecodedSyncRequest(query_puzzle_ids, min_solve_count, annotations, last_sync_time,
-                                                                thisPuzzle.MaxAnnotationKey, ref response);
+                                                                thisPuzzle.MaxAnnotationKey, queryAllInGroup, ref response);
 
             // Do any processing that requires fetching the list of all puzzles this team has
-            // solved.  Pass thisPuzzle.Group as the groupExcludedFromSolveCount parameter so that,
-            // when counting solves, we don't count solves in the same group as this puzzle as part
-            // of the solve count.
+            // solved.
 
             await HandleSyncAspectsRequiringListOfSolvedPuzzles(request, response, thisPuzzle.Group, teamId, eventId);
 
@@ -461,7 +454,6 @@ namespace ServerCore.Pages
         }
     }
 
-    [Route("{eventId}/api/Sync/{puzzleId}")]
     public class SyncController : Controller
     {
         private readonly PuzzleServerContext context;
@@ -475,6 +467,7 @@ namespace ServerCore.Pages
         
         // POST api/Sync
         [HttpPost]
+        [Route("{eventId}/{puzzleId}/api/Sync/")]
         public async Task<IActionResult> Post(string eventId, int puzzleId, List<int> query_puzzle_ids, int? min_solve_count, string annotations,
                                               string last_sync_time)
         {
@@ -489,8 +482,85 @@ namespace ServerCore.Pages
 
             var helper = new SyncHelper(context);
             var response = await helper.GetSyncResponse(currentEvent.ID, team.ID, puzzleId, query_puzzle_ids, min_solve_count,
-                                                        annotations, last_sync_time);
+                                                        annotations, last_sync_time, false);
             return Json(response);
+        }
+        
+        // GET api/Sync/client
+        [HttpGet]
+        [Route("{eventId}/{puzzleId}/api/Sync/client/")]
+        public async Task<IActionResult> Index(string eventId, int puzzleId)
+        {
+            Event currentEvent = await EventHelper.GetEventFromEventId(context, eventId);
+            if (currentEvent == null)
+            {
+                return Content("ERROR:  That event doesn't exist");
+            }
+            
+            PuzzleUser user = await PuzzleUser.GetPuzzleUserForCurrentUser(context, User, userManager);
+            if (user == null)
+            {
+                return Content("ERROR:  You aren't logged in");
+            }
+
+            Team team = await UserEventHelper.GetTeamForPlayer(context, currentEvent, user);
+            if (team == null)
+            {
+                return Content("ERROR:  You're not on a team");
+            }
+
+            Puzzle thisPuzzle = await context.Puzzles.FirstOrDefaultAsync(m => m.ID == puzzleId);
+            if (thisPuzzle == null)
+            {
+                return Content("ERROR:  That's not a valid puzzle ID");
+            }
+
+            if (!currentEvent.AreAnswersAvailableNow) {
+                var puzzleState = await (from state in context.PuzzleStatePerTeam
+                                         where state.Puzzle == thisPuzzle && state.Team == team
+                                         select state).FirstOrDefaultAsync();
+                if (puzzleState == null || puzzleState.UnlockedTime == null)
+                {
+                    return Content("ERROR:  You haven't unlocked this puzzle yet");
+                }
+            }
+
+            // Start doing a sync asynchronously while we download the file contents.
+
+            var helper = new SyncHelper(context);
+            Task<Dictionary<string, object>> responseTask = helper.GetSyncResponse(currentEvent.ID, team.ID, puzzleId, null, 0, null, null, true);
+
+            // Find the material file with the latest-alphabetically ShortName that contains the substring "client".
+
+            var materialFile = await (from f in context.ContentFiles
+                                      where f.Puzzle == thisPuzzle && f.FileType == ContentFileType.PuzzleMaterial && f.ShortName.Contains("client")
+                                      orderby f.ShortName descending
+                                      select f).FirstOrDefaultAsync();
+            if (materialFile == null)
+            {
+                return Content("ERROR:  There's no sync client registered for this puzzle");
+            }
+
+            // Download that material file.
+
+            string fileContents;
+            using (var wc = new System.Net.WebClient())
+            {
+                fileContents = await wc.DownloadStringTaskAsync(materialFile.Url);
+            }
+
+            // Wait for the asynchronous sync we started earlier to complete, then serialize
+            // its results and use them to replace the substring "@SYNC" where it appears
+            // in the downloaded file contents.
+
+            Dictionary<string, object> response = await responseTask;
+            var responseSerialized = JsonConvert.SerializeObject(response);
+            var initialSyncString = HttpUtility.JavaScriptStringEncode(responseSerialized);
+            fileContents = fileContents.Replace("@SYNC", initialSyncString);
+
+            // Return the file contents to the user.
+
+            return Content(fileContents, "text/html");
         }
     }
 }

@@ -445,6 +445,8 @@ namespace Data.Migrations
 
                     b.HasKey("ID");
 
+                    b.HasIndex("ProgressLevel");
+
                     b.HasIndex("PuzzleID");
 
                     b.ToTable("Pieces");
@@ -509,6 +511,8 @@ namespace Data.Migrations
                         .IsRequired();
 
                     b.Property<int>("OrderInGroup");
+
+                    b.Property<int>("PuzzleVersion");
 
                     b.Property<int>("SolveValue");
 

@@ -63,5 +63,8 @@
     <Content Update="Pages\Shared\_EventNavigationPartial.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Pages\Teams\AllTeams.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
   </ItemGroup>
 </Project>

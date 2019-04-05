@@ -1,0 +1,63 @@
+﻿@page "/{eventId}/{eventRole}/Teams/{teamId}/Answers"
+@model ServerCore.Pages.Teams.AnswersModel
+@{
+    ViewData["Title"] = "Answers";
+    ViewData["AdminRoute"] = "/Puzzles/Index";
+    ViewData["AuthorRoute"] = "/Puzzles/Index";
+}
+
+<h2>Unlocked Answers</h2>
+<hr />
+<div>
+    <a asp-page="/Teams/Play" asp-route-teamId="@Model.TeamID">Back to puzzle list</a>
+</div>
+<br />
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <a asp-page="./Answers" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(AnswersModel.SortOrder.TimeSubmittedAscending, AnswersModel.SortOrder.TimeSubmittedDecending))">
+                    Solved Time
+                </a>
+            </th>
+            <th>
+                <a asp-page="./Answers" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(AnswersModel.SortOrder.GroupAscending, AnswersModel.SortOrder.GroupDescending))">
+                    Group
+                </a>
+            </th>
+            <th>
+                <a asp-page="./Answers" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(AnswersModel.SortOrder.PuzzleNameAscending, AnswersModel.SortOrder.PuzzleNameDescending))">
+                    Puzzle
+                </a>
+            </th>
+            <th>
+                Submission
+            </th>
+            <th>
+                Response
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.CorrectSubmissions)
+        {
+        <tr>
+            <td>
+                @item.TimeSubmitted
+            </td>
+            <td>
+                @item.Puzzle.Group
+            </td>
+            <td>
+                @item.Puzzle.Name
+            </td>
+            <td>
+                @item.SubmissionText
+            </td>
+            <td>
+                @item.Response.ResponseText
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

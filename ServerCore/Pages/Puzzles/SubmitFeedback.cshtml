@@ -26,7 +26,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Feedback.Difficulty" class="control-label"></label>
-                <input asp-for="Feedback.Difficulty" type="range" min="@Model.MinRating" max="@Model.MaxRating" step="1" class="slider" id="difficultySlider">
+                <input asp-for="Feedback.Difficulty" type="range" min="@DataModel.Feedback.MinRating" max="@DataModel.Feedback.MaxRating" step="1" class="slider" id="difficultySlider">
                 <label id="difficultyLabel">NULL</label>
                 <script>
                     var diffslider = document.getElementById("difficultySlider");
@@ -41,7 +41,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Feedback.Fun" class="control-label"></label>
-                <input asp-for="Feedback.Fun" type="range" min="@Model.MinRating" max="@Model.MaxRating" step="1" class="slider" id="funSlider">
+                <input asp-for="Feedback.Fun" type="range" min="@DataModel.Feedback.MinRating" max="@DataModel.Feedback.MaxRating" step="1" class="slider" id="funSlider">
                 <label id="funLabel">NULL</label>
                 <script>
                     var funslider = document.getElementById("funSlider");

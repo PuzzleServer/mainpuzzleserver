@@ -28,13 +28,13 @@ namespace ServerCore.Helpers
             await context.SaveChangesAsync();
         }
 
-        public static string GetFormattedUrl(Puzzle puzzle)
+        public static string GetFormattedUrl(Puzzle puzzle, int eventId)
         {
             if (puzzle.CustomURL == null)
             {
                 return null;
             }
-            string formattedUrl = puzzle.CustomURL.Replace("{puzzleId}", $"{puzzle.ID}").Replace("{eventId}", $"{puzzle.Event.ID}");
+            string formattedUrl = puzzle.CustomURL.Replace("{puzzleId}", $"{puzzle.ID}").Replace("{eventId}", $"{eventId}");
             return formattedUrl;
         }
     }
