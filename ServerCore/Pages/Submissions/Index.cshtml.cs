@@ -127,17 +127,19 @@ namespace ServerCore.Pages.Submissions
 
         public async Task<IActionResult> OnGetAsync(int puzzleId)
         {
-            // TODO: Once auth exists, we need to check if the team has access
-            // to this puzzle.
-
             await SetupContext(puzzleId);
 
             if (PuzzleState.SolvedTime != null)
             {
-                Submission correctSubmission = this.Submissions?.Last();
-                if (correctSubmission != null)
+                Submission correctSubmission = null;
+                if (this.Submissions?.Count > 0)
                 {
+                    correctSubmission = this.Submissions.Last();
                     AnswerToken = correctSubmission.SubmissionText;
+                }
+                else
+                {
+                    AnswerToken = "(marked as solved by admin or author)";
                 }
             }
 
