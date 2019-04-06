@@ -11,6 +11,19 @@ namespace ServerCore.DataModel
     /// </summary>
     public class ContentFile
     {
+        public ContentFile()
+        {
+        }
+
+        public ContentFile(ContentFile source)
+        {
+            FileType = source.FileType;
+            Event = source.Event;
+            ShortName = source.ShortName;
+            UrlString = source.UrlString;
+            Puzzle = source.Puzzle;
+        }
+
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 

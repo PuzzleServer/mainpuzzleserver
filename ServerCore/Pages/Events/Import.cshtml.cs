@@ -145,7 +145,15 @@ namespace ServerCore.Pages.Events
                         }
                     }
 
-                    // TODO: ContentFiles
+                    // ContentFiles
+                    foreach (ContentFile contentFile in _context.ContentFiles.Where((c) => c.Puzzle == sourcePuzzle))
+                    {
+                        ContentFile newFile = new ContentFile(contentFile);
+                        newFile.Event = Event;
+                        newFile.Puzzle = puzzleCloneMap[contentFile.Puzzle.ID];
+                        newFile.Url = await FileManager.CloneBlobAsync(contentFile.ShortName, Event.ID, contentFile.Url);
+                        _context.ContentFiles.Add(newFile);
+                    }
                 }
 
                 // Step 5: Final save and commit
@@ -153,7 +161,7 @@ namespace ServerCore.Pages.Events
                 transaction.Commit();
             }
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("./Details");
         }
     }
 }

@@ -17,7 +17,12 @@ namespace ServerCore.Pages.Teams
         /// <summary>
         /// All teams
         /// </summary>
-        public Dictionary<Team, int> Teams { get; set; }
+        public List<Team> Teams { get; set; }
+
+        /// <summary>
+        /// For each team ID, its player count
+        /// </summary>
+        public Dictionary<int, int> PlayerCountByTeamID { get; set; }
 
         /// <summary>
         /// Count of all players on teams
@@ -26,24 +31,42 @@ namespace ServerCore.Pages.Teams
 
         protected async Task LoadTeamDataAsync()
         {
-            List<Team> allTeams = await (from team in _context.Teams
-                              where team.Event == Event
-                              select team).ToListAsync();
+            // Join the teams table with the players table to get a dictionary mapping team IDs to player counts.
+            // Launch this asynchronously so we can overlap it with the next query.
+
+            Task<Dictionary<int, int>> PlayerCountByTeamIDTask =
+                (from team in _context.Teams
+                 where team.Event == Event
+                 join teamMember in _context.TeamMembers on team equals teamMember.Team
+                 group teamMember by teamMember.Team into teamCounts
+                 select new { TeamID = teamCounts.Key.ID, Count = teamCounts.Count() }
+                ).ToDictionaryAsync(x => x.TeamID, x => x.Count);
+
+            // Get a list of all teams in alphabetical order by team name.
+
             Teams = await (from team in _context.Teams
                            where team.Event == Event
-                           join teamMember in _context.TeamMembers on team equals teamMember.Team
-                           group teamMember by teamMember.Team into teamCounts
-                           select new { Team = teamCounts.Key, Count = teamCounts.Count() }).ToDictionaryAsync(x => x.Team, x => x.Count);
+                           orderby team.Name
+                           select team).ToListAsync();
 
-            foreach (Team team in allTeams)
+            // Now, wait for the asynchronous dictionary-construction task we launched earlier to complete.
+
+            PlayerCountByTeamID = await PlayerCountByTeamIDTask;
+
+            // Loop through all the teams to accomplish two things:
+            //
+            // (1) Make sure that the PlayerCountByTeamID dictionary has every team ID in Teams among its keys.
+            // (2) Add up all the player counts to get PlayerCount.
+
+            foreach (Team team in Teams)
             {
-                if (!Teams.ContainsKey(team))
+                if (!PlayerCountByTeamID.ContainsKey(team.ID))
                 {
-                    Teams[team] = 0;
+                    PlayerCountByTeamID[team.ID] = 0;
                 }
                 else
                 {
-                    PlayerCount += Teams[team];
+                    PlayerCount += PlayerCountByTeamID[team.ID];
                 }
             }
         }

@@ -23,11 +23,17 @@ namespace ServerCore.DataModel
         [Required]
         public virtual Puzzle Puzzle { get; set; }
 
+        [ForeignKey("Puzzle")]
+        public int PuzzleID { get; set; }
+
         /// <summary>
         /// The team giving the submission
         /// </summary>
         [Required]
         public virtual Team Team { get; set; }
+
+        [ForeignKey("Team")]
+        public int TeamID { get; set; }
 
         /// <summary>
         /// The exact user giving the submission

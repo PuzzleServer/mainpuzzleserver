@@ -10,7 +10,9 @@
 }
 
 <h2>Puzzles</h2>
-
+<div>
+    <a asp-page="/Teams/Answers" asp-route-teamId="@Model.TeamID">View All Correct Answers</a>
+</div>
 <table class="table">
     <thead>
         <tr>
@@ -52,11 +54,11 @@
             <td>
                 @if (item.Puzzle.CustomURL != null)
                 {
-                    <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.Puzzle)">@item.Puzzle.Name</a>
+                    <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.Puzzle, Model.Event.ID)">@item.Puzzle.Name</a>
                 }
-                else if (item.Puzzle.PuzzleFile != null)
+                else if (item.Content != null)
                 {
-                    @Html.ActionLink(item.Puzzle.Name, "Index", "Files", new { eventId = Model.Event.ID, filename = item.Puzzle.PuzzleFile.ShortName })
+                    @Html.ActionLink(item.Puzzle.Name, "Index", "Files", new { eventId = Model.Event.ID, filename = item.Content.ShortName })
                 }
                 else
                 {
