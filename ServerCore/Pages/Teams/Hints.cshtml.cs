@@ -59,9 +59,13 @@ namespace ServerCore.Pages.Teams
                              orderby hint.DisplayOrder, hint.Description
                              select new HintWithState { Hint = hint, IsUnlocked = state.IsUnlocked }).ToListAsync();
 
-            int discount = Hints.Min(hws => (hws.IsUnlocked && hws.Hint.Cost < 0) ? hws.Hint.Cost : 0);
-            foreach (HintWithState hint in Hints) {
-                hint.Discount = discount;
+            if (Hints.Count > 0)
+            {
+                int discount = Hints.Min(hws => (hws.IsUnlocked && hws.Hint.Cost < 0) ? hws.Hint.Cost : 0);
+                foreach (HintWithState hint in Hints)
+                {
+                    hint.Discount = discount;
+                }
             }
             return Hints;
         }
