@@ -47,6 +47,7 @@ public class MailHelper
 
     public void Send(IEnumerable<string> recipients, bool bcc, string subject, string body)
     {
+        // See https://www.mailjet.com/docs/code/c/c-sharp for sample code from Mailjet.
         if (!Enabled)
         {
             if (!IsDev)
@@ -64,13 +65,27 @@ public class MailHelper
         {
             msg.To.Add(new MailAddress(ToAddressForBCC));
             foreach (string recipient in recipients) {
-                msg.Bcc.Add(new MailAddress(recipient));
+                try
+                {
+                    msg.Bcc.Add(new MailAddress(recipient));
+                }
+                catch (FormatException)
+                {
+                    ;  // ignore
+                }
             }
         }
         else
         {
             foreach (string recipient in recipients) {
-                msg.To.Add(new MailAddress(recipient));
+                try
+                {
+                    msg.To.Add(new MailAddress(recipient));
+                }
+                catch (FormatException)
+                {
+                    ;  // ignore
+                }
             }
         }
 
@@ -78,6 +93,8 @@ public class MailHelper
         msg.Body = body;
 
         SmtpClient client = new SmtpClient("in.mailjet.com", 587);
+        // Unlike port 25 which is for general SMTP, port 587 is for
+        // MSA (Message Submission Agent) use and is authenticated.
         client.DeliveryMethod = SmtpDeliveryMethod.Network;
         client.EnableSsl = true;
         client.UseDefaultCredentials = false;
