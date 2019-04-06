@@ -131,11 +131,9 @@ namespace ServerCore.Pages.Submissions
 
             if (PuzzleState.SolvedTime != null)
             {
-                Submission correctSubmission = null;
                 if (this.Submissions?.Count > 0)
                 {
-                    correctSubmission = this.Submissions.Last();
-                    AnswerToken = correctSubmission.SubmissionText;
+                    AnswerToken = this.Submissions.Last().SubmissionText;
                 }
                 else
                 {
