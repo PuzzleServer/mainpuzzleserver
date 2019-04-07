@@ -16,19 +16,22 @@ namespace ServerCore.Areas.Deployment
             {
                 services.AddDbContext<PuzzleServerContext>
                     (options => options.UseLazyLoadingProxies()
-                        .UseSqlServer(configuration.GetConnectionString("PuzzleServerSQLConnectionString")));
+                        .UseSqlServer(configuration.GetConnectionString("PuzzleServerSQLConnectionString"),
+                        contextOptions => contextOptions.EnableRetryOnFailure()));
             }
             else if (env.IsProduction() && (Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") == "puzzlehunt" || Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") == "puzzleday"))
             {
                 services.AddDbContext<PuzzleServerContext>
                     (options => options.UseLazyLoadingProxies()
-                        .UseSqlServer(configuration.GetConnectionString("PuzzleServerSQLConnectionString")));
+                        .UseSqlServer(configuration.GetConnectionString("PuzzleServerSQLConnectionString"),
+                        contextOptions => contextOptions.EnableRetryOnFailure()));
             }
             else
             {
                 services.AddDbContext<PuzzleServerContext>
                     (options => options.UseLazyLoadingProxies()
-                       .UseSqlServer(configuration.GetConnectionString("PuzzleServerContextLocal")));
+                       .UseSqlServer(configuration.GetConnectionString("PuzzleServerContextLocal"),
+                       contextOptions => contextOptions.EnableRetryOnFailure()));
             }
         }
     }
