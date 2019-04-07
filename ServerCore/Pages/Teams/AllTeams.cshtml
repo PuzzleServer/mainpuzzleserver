@@ -32,10 +32,10 @@ Registered Teams: <b>@Model.Teams.Count/@Model.Event.MaxNumberOfTeams</b>, Regis
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Name)
+                    @Html.DisplayFor(modelItem => item.Key.Name)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => @Model.PlayerCountByTeamID[item.ID])
+                    @Html.DisplayFor(modelItem => item.Value)
                 </td>
             </tr>
         }
