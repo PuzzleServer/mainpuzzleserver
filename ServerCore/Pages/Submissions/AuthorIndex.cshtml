@@ -49,7 +49,7 @@
                 </th>
                 <th>
                     <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.ResponseAscending, AuthorIndexModel.SortOrder.ResponseDescending))">
-                        @Html.DisplayNameFor(model => model.Submissions[0].Response.ResponseText)
+                        @Html.DisplayNameFor(model => model.Submissions[0].ResponseText)
                     </a>
                 </th>
                 <th>
@@ -70,16 +70,16 @@
             {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Submitter.Name)
+                    @Html.DisplayFor(modelItem => item.SubmitterName)
                 </td>
                 <td>
-                    <a asp-page="AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@item.Team.ID">@Html.DisplayFor(modelItem => item.Team.Name)</a>
+                    <a asp-page="AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@item.TeamID">@Html.DisplayFor(modelItem => item.TeamName)</a>
                 </td>
                 <td>
-                    <a asp-page="AuthorIndex" asp-route-puzzleId="@item.Puzzle.ID" asp-route-teamId="@Model.Team?.ID">@Html.DisplayFor(modelItem => item.Puzzle.Name)</a>
+                    <a asp-page="AuthorIndex" asp-route-puzzleId="@item.PuzzleID" asp-route-teamId="@Model.Team?.ID">@Html.DisplayFor(modelItem => item.PuzzleName)</a>
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Response.ResponseText)
+                    @Html.DisplayFor(modelItem => item.ResponseText)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.SubmissionText)
