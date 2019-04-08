@@ -54,11 +54,11 @@
             <td>
                 @if (item.Puzzle.CustomURL != null)
                 {
-                    <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.Puzzle, Model.Event.ID)">@item.Puzzle.Name</a>
+                    <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.Puzzle, Model.Event.ID)" target="_blank">@item.Puzzle.Name</a>
                 }
                 else if (item.Content != null)
                 {
-                    @Html.ActionLink(item.Puzzle.Name, "Index", "Files", new { eventId = Model.Event.ID, filename = item.Content.ShortName })
+                    @Html.ActionLink(item.Puzzle.Name, "Index", "Files", new { eventId = Model.Event.ID, filename = item.Content.ShortName }, new { target = "_blank" })
                 }
                 else
                 {
