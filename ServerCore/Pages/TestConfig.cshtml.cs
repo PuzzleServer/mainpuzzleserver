@@ -19,15 +19,14 @@ namespace ServerCore.Pages
             {
                 return StatusCode(500, "MailHelper was not initialized.");
             }
+            MailHelper.Singleton.Send(
+                new List<string> { "puzztech@service.microsoft.com" },
+                "This is a test from PuzzleServer",
+                "This test is from https://github.com/PuzzleServer/mainpuzzleserver");
             if (!MailHelper.Singleton.Enabled)
             {
-                return StatusCode(500, "MailHelper was initialized, but not configured properly.");
+                return StatusCode(500, "MailHelper was initialized, but not configured properly. Mail sent to debug output.");
             }
-            await (Task.Run(
-                () => MailHelper.Singleton.Send(
-                    new List<string> { "puzztech@service.microsoft.com" }, true,
-                    "This is a test from PuzzleServer",
-                    "This test is from https://github.com/PuzzleServer/mainpuzzleserver")));
             return RedirectToPage();
         }
     }

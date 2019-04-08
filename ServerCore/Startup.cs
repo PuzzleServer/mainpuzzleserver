@@ -20,7 +20,7 @@ namespace ServerCore
         {
             Configuration = configuration;
             hostingEnvironment = env;
-            MailHelper.initialize(Configuration, env.IsDevelopment());
+            MailHelper.Initialize(Configuration, env.IsDevelopment());
         }
 
         public Startup(IHostingEnvironment env)
@@ -32,7 +32,7 @@ namespace ServerCore
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = configBuilder.Build();
-            MailHelper.initialize(Configuration, env.IsDevelopment());
+            MailHelper.Initialize(Configuration, env.IsDevelopment());
 
             hostingEnvironment = env;
         }
