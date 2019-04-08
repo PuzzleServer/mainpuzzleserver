@@ -19,7 +19,7 @@ namespace ServerCore.Pages
             {
                 return StatusCode(500, "MailHelper was not initialized.");
             }
-            MailHelper.Singleton.Send(
+            MailHelper.Singleton.SendPlaintextBcc(
                 new List<string> { "puzztech@service.microsoft.com" },
                 "This is a test from PuzzleServer",
                 "This test is from https://github.com/PuzzleServer/mainpuzzleserver");
