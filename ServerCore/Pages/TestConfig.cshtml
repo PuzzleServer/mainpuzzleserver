@@ -1,0 +1,27 @@
+﻿@page "/testconfig"
+@model ServerCore.Pages.TestConfigModel
+@{
+}
+<style>
+    button:disabled {
+        color: #aaaaaa;
+    }
+</style>
+<script>
+    function confirmSendTest() {
+        var t = confirm('Are you sure you want to send a real test email to puzztech@service.microsoft.com?');
+        document.getElementById('SendTestEmail').disabled = t;
+        return t;
+    }
+</script>
+<h2>Test Configuration</h2>
+
+<p>This page is used to test server configuration. It is only for sysadmins.</p>
+
+<form method="post" style="display:inline-block" onsubmit="return confirmSendTest()">
+    <button type="submit" id="SendTestEmail"
+            asp-page-handler="SendTestEmail"
+            style="margin-left: 5px; margin-right: 5px;">
+        Send Test Email
+    </button>
+</form>
