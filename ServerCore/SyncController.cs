@@ -253,9 +253,14 @@ namespace ServerCore.Pages
                     }
                 }
 
-                // If the user solved a cheat code, treat it as a solve count of 1000.
+                // If the user solved a cheat code in this group, treat it as a solve count of 1000.
+                // The reason we require the cheat code to be in the same group as the puzzle being
+                // sync'ed is to defend against mistakes by authors in other groups.  If an author
+                // of a puzzle in another group accidentally sets the cheat-code flag on their
+                // puzzle, we don't want to consequently give all teams that solve it all pieces of
+                // the puzzle being sync'ed.
 
-                if (solvedPuzzle.IsCheatCode) {
+                if (solvedPuzzle.IsCheatCode && solvedPuzzle.Group == puzzleGroup) {
                     maxSolveCount += 1000;
                 }
             }
