@@ -15,6 +15,8 @@ namespace ServerCore.Pages.Teams
     [Authorize(Policy = "PlayerIsOnTeam")]
     public class HintsModel : EventSpecificPageModel
     {
+        private static bool IsBeta = true;  // TODO: I don't know how to tell if this is a beta; this code seems not to have the event object available
+
         public HintsModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
         }
@@ -51,17 +53,23 @@ namespace ServerCore.Pages.Teams
             return Page();
         }
 
-        private async Task<IList<HintWithState>> GetAllHints(int puzzleId, int teamId)
+        private async Task<IList<HintWithState>> GetAllHints(int puzzleID, int teamID)
         {
             Hints = await (from Hint hint in _context.Hints
                              join HintStatePerTeam state in _context.HintStatePerTeam on hint.Id equals state.HintID
-                             where state.TeamID == teamId && hint.Puzzle.ID == puzzleId
+                             where state.TeamID == teamID && hint.Puzzle.ID == puzzleID
                              orderby hint.DisplayOrder, hint.Description
                              select new HintWithState { Hint = hint, IsUnlocked = state.IsUnlocked }).ToListAsync();
+            bool solved = await PuzzleStateHelper.IsPuzzleSolved(_context, puzzleID, teamID);
 
             if (Hints.Count > 0)
             {
                 int discount = Hints.Min(hws => (hws.IsUnlocked && hws.Hint.Cost < 0) ? hws.Hint.Cost : 0);
+                if (solved && IsBeta)
+                {
+                    // During the beta, once a puzzle is solved, all other hints become free.
+                    discount = -999;
+                }
                 foreach (HintWithState hint in Hints)
                 {
                     hint.Discount = discount;
