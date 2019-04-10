@@ -15,8 +15,6 @@ namespace ServerCore.Pages.Teams
     [Authorize(Policy = "PlayerIsOnTeam")]
     public class HintsModel : EventSpecificPageModel
     {
-        private static bool IsBeta = true;  // TODO: I don't know how to tell if this is a beta; this code seems not to have the event object available
-
         public HintsModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
         }
@@ -65,9 +63,12 @@ namespace ServerCore.Pages.Teams
             if (Hints.Count > 0)
             {
                 int discount = Hints.Min(hws => (hws.IsUnlocked && hws.Hint.Cost < 0) ? hws.Hint.Cost : 0);
+                bool IsBeta = Event.Name.ToLower().Contains("beta");
                 if (solved && IsBeta)
                 {
-                    // During the beta, once a puzzle is solved, all other hints become free.
+                    // During a beta, once a puzzle is solved, all other hints become free.
+                    // There's no IsBeta flag on an event, so check the name.
+                    // We can change this in the unlikely event there's a beta-themed hunt.
                     discount = -999;
                 }
                 foreach (HintWithState hint in Hints)
