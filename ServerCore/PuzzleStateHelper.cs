@@ -301,6 +301,19 @@ namespace ServerCore
             await context.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Get the solved status of a single puzzle. 
+        /// Do not use if you want to get status of many puzzles as it will be very inefficient.
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<bool> IsPuzzleSolved(PuzzleServerContext context, int puzzleID, int teamID)
+        {
+            DateTime? solved = await (from PuzzleStatePerTeam pspt in context.PuzzleStatePerTeam
+                                      where pspt.PuzzleID == puzzleID && pspt.TeamID == teamID
+                                      select pspt.SolvedTime).FirstOrDefaultAsync();
+            return solved != null;
+        }
+
         private static DateTime LastGlobalExpiry;
         private static Dictionary<int, DateTime> TimedUnlockExpiryCache = new Dictionary<int, DateTime>();
         private static TimeSpan ClosestExpirySpacing = TimeSpan.FromSeconds(2);
