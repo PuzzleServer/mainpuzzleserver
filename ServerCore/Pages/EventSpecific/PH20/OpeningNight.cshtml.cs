@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -56,7 +58,14 @@ namespace ServerCore.Pages.EventSpecific.PH20
 
             string json = JsonConvert.SerializeObject(solvedBackstagePuzzles);
             string escapedJson = Uri.EscapeDataString(json);
-            return Redirect($"http://localhost:2549/openingnight/{escapedJson}");
+            byte[] macKey = Encoding.ASCII.GetBytes(puzzle.Description);
+            HMACSHA1 hasher = new HMACSHA1(macKey);
+            byte[] jsonBytes = Encoding.ASCII.GetBytes(escapedJson);
+            byte[] mac = hasher.ComputeHash(jsonBytes);
+            string macString = Convert.ToBase64String(mac);
+            string escapedMacString = Uri.EscapeDataString(macString);
+
+            return Redirect($"http://localhost:2549/openingnight/{escapedMacString}/{escapedJson}");
         }
     }
 }
