@@ -19,6 +19,15 @@ namespace ServerCore.Pages.Events
 
         public async Task OnGetAsync()
         {
+            Dictionary<int, string> teamNameLookup = new Dictionary<int, string>();
+
+            // build an ID-to-name mapping to improve perf
+            var names = await _context.Teams.Where(t => t.Event == Event)
+                .Select(t => new { t.ID, t.Name })
+                .ToListAsync();
+
+            names.ForEach(t => teamNameLookup[t.ID] = t.Name);
+
             // get the page data: puzzle, solve count, top three fastest
             var puzzlesData = await PuzzleStateHelper.GetSparseQuery(_context, this.Event, null, null)
                 .Where(s => s.SolvedTime != null && s.Puzzle.IsPuzzle)
@@ -26,7 +35,7 @@ namespace ServerCore.Pages.Events
                 .Select(g => new {
                     Puzzle = g.Key,
                     SolveCount = g.Count(),
-                    Fastest = g.OrderBy(s => s.SolvedTime - s.UnlockedTime).Take(3).Select(s => new { s.Team.ID, s.Team.Name, Time = s.SolvedTime - s.UnlockedTime})
+                    Fastest = g.OrderBy(s => s.SolvedTime - s.UnlockedTime).Take(3).Select(s => new { s.Team.ID, Time = s.SolvedTime - s.UnlockedTime})
                 })
                 .OrderByDescending(p => p.SolveCount).ThenBy(p => p.Puzzle.Name)
                 .ToListAsync();
@@ -40,7 +49,7 @@ namespace ServerCore.Pages.Events
                     Puzzle = data.Puzzle,
                     SolveCount = data.SolveCount,
                     SortOrder = i,
-                    Fastest = data.Fastest.Select(f => new FastRecord() { ID = f.ID, Name = f.Name, Time = f.Time }).ToArray()
+                    Fastest = data.Fastest.Select(f => new FastRecord() { ID = f.ID, Name = teamNameLookup[f.ID], Time = f.Time }).ToArray()
                 };
 
                 puzzles.Add(stats);
