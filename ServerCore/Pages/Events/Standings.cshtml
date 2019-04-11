@@ -43,7 +43,8 @@
             <tbody>
         @for (int y = 0; y < Model.Teams.Count; y++) {
             var team = Model.Teams[y];
-                <tr>
+            var finished = team.FinalMetaSolveTime < DateTime.MaxValue;
+                <tr style="font-weight:@(finished ? "bold" : "normal")">
                     <td>
                         @(team.Rank)
                     </td>
