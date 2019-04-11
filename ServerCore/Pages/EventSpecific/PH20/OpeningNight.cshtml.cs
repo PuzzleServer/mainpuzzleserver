@@ -56,9 +56,7 @@ namespace ServerCore.Pages.EventSpecific.PH20
 
             string json = JsonConvert.SerializeObject(solvedBackstagePuzzles);
             string escapedJson = Uri.EscapeDataString(json);
-            UriBuilder builder = new UriBuilder("http://wwww.example.com");
-            builder.Query = $"solveData={escapedJson}";
-            return Redirect(builder.ToString());
+            return Redirect($"http://localhost:2549/openingnight/{escapedJson}");
         }
     }
 }
