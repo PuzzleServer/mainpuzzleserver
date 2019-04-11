@@ -255,7 +255,7 @@ namespace ServerCore
                 states[i].IsEmailOnlyMode = value;
                 if (value == true)
                 {
-                    states[i].WrongSubmissionCountBuffer += 50;
+                    states[i].WrongSubmissionCountBuffer += eventObj.MaxSubmissionCount;
                 }
             }
 
@@ -569,6 +569,14 @@ namespace ServerCore
 
                     await context.SaveChangesAsync();
                     transaction.Commit();
+
+                    var teamMembers = await (from TeamMembers tm in context.TeamMembers
+                                             join Submission sub in context.Submissions on tm.Team equals sub.Team
+                                             where sub.Puzzle == response.Puzzle && sub.SubmissionText == response.SubmittedText
+                                             select tm.Member.Email).ToListAsync();
+                    MailHelper.Singleton.SendPlaintextBcc(teamMembers,
+                        $"Response updated for '{response.SubmittedText}' on {response.Puzzle.Name}",
+                        $"The new response for this submission is: '{response.ResponseText}'.");
                 }
             }
         }

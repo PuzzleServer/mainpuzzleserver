@@ -53,6 +53,16 @@ namespace ServerCore.Pages.Hints
             try
             {
                 await _context.SaveChangesAsync();
+
+                var puzzleName = await _context.Hints.Where(m => m.Id == Hint.Id).Select(m => m.Puzzle.Name).FirstOrDefaultAsync();
+
+                var teamMembers = await (from TeamMembers tm in _context.TeamMembers
+                                         join HintStatePerTeam hspt in _context.HintStatePerTeam on tm.Team equals hspt.Team
+                                         where hspt.Hint.Id == Hint.Id
+                                         select tm.Member.Email).ToListAsync();
+                MailHelper.Singleton.SendPlaintextBcc(teamMembers,
+                    $"Hint updated for '{Hint.Description}' on {puzzleName}",
+                    $"The new content for this hint is: '{Hint.Content}'.");
             }
             catch (DbUpdateConcurrencyException)
             {
