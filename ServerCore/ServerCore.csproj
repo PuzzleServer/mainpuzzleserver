@@ -54,6 +54,9 @@
     <Content Update="Pages\Events\AddAdminOrAuthor.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Pages\Puzzles\Checklist.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Pages\Puzzles\_puzzleManagementLayout.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

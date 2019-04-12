@@ -32,9 +32,10 @@
 <h2>@Model.Event.Name Puzzles (@Model.Puzzles.Count):</h2>
 
 <p>
-    <a asp-page="Create">Create New</a> |
-    <a asp-page="/Submissions/AuthorIndex">View All Submissions</a> |
-    <a asp-page="/Hints/AuthorIndex">View All Hints Taken</a>
+    <a asp-page="Create">Create new</a> |
+    <a asp-page="/Submissions/AuthorIndex">View all submissions</a> |
+    <a asp-page="/Hints/AuthorIndex">View all hints taken</a> |
+    <a asp-page="/Puzzles/Checklist">View puzzle checklist</a>
 </p>
 <table class="table">
     <thead>
@@ -87,11 +88,11 @@
                 <td>
                     @if (item.Puzzle.CustomURL != null)
                     {
-                        <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.Puzzle, Model.Event.ID)">Link</a>
+                        <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.Puzzle, Model.Event.ID)" target="_blank">Link</a>
                     }
                     else if (item.Content != null)
                     {
-                        @Html.ActionLink("File", "Index", "Files", new { eventId = Model.Event.ID, filename = item.Content.ShortName })
+                        @Html.ActionLink("File", "Index", "Files", new { eventId = Model.Event.ID, filename = item.Content.ShortName }, new { target = "_blank" })
                     }
                 </td>
                 <td>

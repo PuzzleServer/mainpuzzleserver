@@ -64,9 +64,7 @@ namespace ServerCore.Pages.Teams
             // Note: EF gotcha is that you have to join into anonymous types in order to not lose valuable stuff
             var visiblePuzzlesQ = from Puzzle puzzle in puzzlesInEventQ
                                   join PuzzleStatePerTeam pspt in stateForTeamQ on puzzle.ID equals pspt.PuzzleID
-                                  join ContentFile joinContent in _context.ContentFiles.Where((j) => j.Event == Event && j.FileType == ContentFileType.Puzzle) on puzzle equals joinContent.Puzzle into fileJoin
-                                  from ContentFile content in fileJoin.DefaultIfEmpty()
-                                  select new { Puzzle = puzzle, State = pspt, Content = content };
+                                  select new { Puzzle = puzzle, State = pspt };
 
             switch (sort ?? DefaultSort)
             {
@@ -92,7 +90,16 @@ namespace ServerCore.Pages.Teams
                     throw new ArgumentException($"unknown sort: {sort}");
             }
 
-            PuzzlesWithState = (await visiblePuzzlesQ.ToListAsync()).Select(x => new PuzzleWithState(x.Puzzle, x.State, x.Content)).ToList();
+            Dictionary<int, ContentFile> files = await (from file in _context.ContentFiles
+                                                        where file.Event == Event && file.FileType == ContentFileType.Puzzle
+                                                        select file).ToDictionaryAsync(file => file.Puzzle.ID);
+
+            PuzzlesWithState = new List<PuzzleWithState>();
+            foreach(var visiblePuzzle in await visiblePuzzlesQ.ToListAsync())
+            {
+                files.TryGetValue(visiblePuzzle.Puzzle.ID, out ContentFile content);
+                PuzzlesWithState.Add(new PuzzleWithState(visiblePuzzle.Puzzle, visiblePuzzle.State, content));
+            }
         }
 
         public SortOrder? SortForColumnLink(SortOrder ascendingSort, SortOrder descendingSort)

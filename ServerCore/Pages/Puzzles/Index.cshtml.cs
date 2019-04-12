@@ -28,22 +28,21 @@ namespace ServerCore.Pages.Puzzles
 
         public async Task<IActionResult> OnGetAsync()
         {
-            IQueryable<Puzzle> query;
+            List<Puzzle> puzzles = await PuzzleHelper.GetPuzzles(_context, Event, LoggedInUser, EventRole);
+            Dictionary<int, ContentFile> puzzleFiles = await (from file in _context.ContentFiles
+                                                              where file.Event == Event && file.FileType == ContentFileType.Puzzle
+                                                              select file).ToDictionaryAsync(file => file.Puzzle.ID);
 
-            if (EventRole == EventRole.admin)
+            Puzzles = new List<PuzzleView>();
+            foreach (Puzzle puzzle in puzzles)
             {
-                query = _context.Puzzles.Where(p => p.Event == Event);
+                puzzleFiles.TryGetValue(puzzle.ID, out ContentFile content);
+                Puzzles.Add(new PuzzleView()
+                {
+                    Puzzle = puzzle,
+                    Content = content
+                });
             }
-            else
-            {
-                query = UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser);
-            }
-
-            Puzzles = await (from Puzzle p in query
-                             join ContentFile joinFile in _context.ContentFiles.Where((j) => j.Event == Event && j.FileType == ContentFileType.Puzzle) on p equals joinFile.Puzzle into fileJoin
-                             from ContentFile file in fileJoin.DefaultIfEmpty()
-                             orderby p.Group, p.OrderInGroup, p.Name
-                             select new PuzzleView { Puzzle = p, Content = file }).ToListAsync();
 
             return Page();
         }

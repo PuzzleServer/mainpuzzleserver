@@ -23,8 +23,7 @@ namespace ServerCore.Pages.Teams
         {
         }
 
-
-        public IList<Submission> CorrectSubmissions { get; set; }
+        public IList<SubmissionView> CorrectSubmissions { get; set; }
 
         public int TeamID { get; set; }
 
@@ -37,9 +36,7 @@ namespace ServerCore.Pages.Teams
             TeamID = teamId;
 
             IQueryable<Submission> submissions = _context.Submissions
-                .Include((s)=>s.Response)
-                .Where((s) => s.TeamID == teamId && s.Response.IsSolution)
-                .Include((s)=>s.Puzzle);
+                .Where((s) => s.TeamID == teamId && s.Response.IsSolution);
 
             this.Sort = sort;
             switch (sort ?? DefaultSort) {
@@ -65,7 +62,16 @@ namespace ServerCore.Pages.Teams
                     throw new Exception("Sort order is not mapped");
             }
 
-            CorrectSubmissions = await submissions.ToListAsync();
+            CorrectSubmissions = await submissions
+                .Select(s => new SubmissionView()
+                {
+                    TimeSubmitted = s.TimeSubmitted,
+                    Group = s.Puzzle.Group,
+                    Name = s.Puzzle.Name,
+                    SubmissionText = s.SubmissionText,
+                    ResponseText = s.Response.ResponseText
+                })
+                .ToListAsync();
         }
 
         public SortOrder? SortForColumnLink(SortOrder ascending, SortOrder descending)
@@ -89,6 +95,15 @@ namespace ServerCore.Pages.Teams
             PuzzleNameDescending,
             GroupAscending,
             GroupDescending
+        }
+
+        public class SubmissionView
+        {
+            public DateTime TimeSubmitted { get; set; }
+            public string Group { get; set; }
+            public string Name { get; set; }
+            public string SubmissionText { get; set; }
+            public string ResponseText { get; set; }
         }
     }
 }
