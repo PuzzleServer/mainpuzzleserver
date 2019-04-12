@@ -117,7 +117,7 @@ namespace ServerCore.Helpers
             await context.SaveChangesAsync();
 
             MailHelper.Singleton.SendPlaintextWithoutBcc(new string[] { team.PrimaryContactEmail, user.Email },
-                $"{user.Name} has now joined {team.Name}!",
+                $"{Event.Name}: {user.Name} has now joined {team.Name}!",
                 $"Have a great time!");
 
             return new Tuple<bool, string>(true, "");

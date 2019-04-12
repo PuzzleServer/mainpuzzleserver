@@ -572,10 +572,10 @@ namespace ServerCore
 
                     var teamMembers = await (from TeamMembers tm in context.TeamMembers
                                              join Submission sub in context.Submissions on tm.Team equals sub.Team
-                                             where sub.Puzzle == response.Puzzle && sub.SubmissionText == response.SubmittedText
+                                             where sub.PuzzleID == response.PuzzleID && sub.SubmissionText == response.SubmittedText
                                              select tm.Member.Email).ToListAsync();
                     MailHelper.Singleton.SendPlaintextBcc(teamMembers,
-                        $"Response updated for '{response.SubmittedText}' on {response.Puzzle.Name}",
+                        $"{puzzle.Event.Name}: {response.Puzzle.Name} Response updated for '{response.SubmittedText}'",
                         $"The new response for this submission is: '{response.ResponseText}'.");
                 }
             }

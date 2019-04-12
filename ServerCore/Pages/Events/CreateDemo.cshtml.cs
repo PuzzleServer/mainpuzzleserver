@@ -361,7 +361,7 @@ namespace ServerCore.Pages.Events
                 Team team2 = new Team { Name = "Team Babs", Event = Event, IsLookingForTeammates = true };
                 _context.Teams.Add(team2);
 
-                Team team3 = new Team { Name = "Team Buster", Event = Event, IsLookingForTeammates = true };
+                Team team3 = new Team { Name = "Team Buster", Event = Event, IsLookingForTeammates = false };
                 _context.Teams.Add(team3);
 
                 Team teamLoneWolf = null;
