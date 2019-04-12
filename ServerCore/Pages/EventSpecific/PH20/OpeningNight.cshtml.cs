@@ -62,10 +62,9 @@ namespace ServerCore.Pages.EventSpecific.PH20
             HMACSHA1 hasher = new HMACSHA1(macKey);
             byte[] jsonBytes = Encoding.ASCII.GetBytes(escapedJson);
             byte[] mac = hasher.ComputeHash(jsonBytes);
-            string macString = Convert.ToBase64String(mac);
-            string escapedMacString = Uri.EscapeDataString(macString);
+            string macString = Convert.ToBase64String(mac).Replace('/', '_').Replace('+', '.');
 
-            return Redirect($"http://localhost:2549/openingnight/{escapedMacString}/{escapedJson}");
+            return Redirect($"http://localhost:2549/openingnight/{macString}/{escapedJson}");
         }
     }
 }
