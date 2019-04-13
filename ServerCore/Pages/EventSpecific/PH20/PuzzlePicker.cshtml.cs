@@ -23,6 +23,7 @@ namespace ServerCore.Pages.EventSpecific.PH20
         {
         }
 
+        public Puzzle CurrentPuzzle { get; set; }
         public List<Puzzle> PuzzleOptions { get; set; }
         public int PrereqPuzzleId { get; set; }
 
@@ -38,8 +39,8 @@ namespace ServerCore.Pages.EventSpecific.PH20
                 return NotFound();
             }
 
-            // Restrict this page to whistle stops
-            if (puzzle.MinutesOfEventLockout == 0)
+            // Restrict this page to whistle stop non-puzzles
+            if (puzzle.MinutesOfEventLockout == 0 && !puzzle.IsPuzzle)
             {
                 return NotFound();
             }
@@ -59,6 +60,8 @@ namespace ServerCore.Pages.EventSpecific.PH20
             {
                 return NotFound();
             }
+
+            CurrentPuzzle = puzzle;
 
             // Treat all locked puzzles where this is a prerequisite as puzzles that can be unlocked
             PuzzleOptions = await (from pspt in puzzleStateQuery
@@ -80,8 +83,8 @@ namespace ServerCore.Pages.EventSpecific.PH20
                 return NotFound();
             }
 
-            // Restrict this page to whistle stops
-            if (puzzle.MinutesOfEventLockout == 0)
+            // Restrict this page to whistle stop non-puzzles
+            if (puzzle.MinutesOfEventLockout == 0 && !puzzle.IsPuzzle)
             {
                 return NotFound();
             }
@@ -133,7 +136,22 @@ namespace ServerCore.Pages.EventSpecific.PH20
                 transaction.Commit();
             }
 
-            return RedirectToPage("../../Teams/Play", new { EventId = Event.ID, EventRole = EventRole, teamId = team.ID });
+            Puzzle puzzleToUnlock = await (from p in _context.Puzzles
+                                           where p.ID == unlockId
+                                           select p).FirstOrDefaultAsync();
+
+            string puzzleUrl;
+
+            if (puzzleToUnlock.CustomURL != null)
+            {
+                puzzleUrl = PuzzleHelper.GetFormattedUrl(puzzleToUnlock, Event.ID);
+            }
+            else
+            {
+                puzzleUrl = puzzleToUnlock.PuzzleFile.UrlString;
+            }
+
+            return Redirect(puzzleUrl);
         }
     }
 }
