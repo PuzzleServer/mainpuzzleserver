@@ -40,7 +40,7 @@ namespace ServerCore.Pages.EventSpecific.PH20
             }
 
             // Restrict this page to whistle stop non-puzzles
-            if (puzzle.MinutesOfEventLockout == 0 && !puzzle.IsPuzzle)
+            if (puzzle.MinutesOfEventLockout == 0 || puzzle.IsPuzzle)
             {
                 return NotFound();
             }
@@ -84,7 +84,7 @@ namespace ServerCore.Pages.EventSpecific.PH20
             }
 
             // Restrict this page to whistle stop non-puzzles
-            if (puzzle.MinutesOfEventLockout == 0 && !puzzle.IsPuzzle)
+            if (puzzle.MinutesOfEventLockout == 0 || puzzle.IsPuzzle)
             {
                 return NotFound();
             }
