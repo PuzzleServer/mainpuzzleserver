@@ -64,7 +64,7 @@ namespace ServerCore.Pages.EventSpecific.PH20
             byte[] mac = hasher.ComputeHash(jsonBytes);
             string macString = Convert.ToBase64String(mac).Replace('/', '_').Replace('+', '.');
 
-            return Redirect($"http://localhost:2549/openingnight/{macString}/{escapedJson}");
+            return Redirect($"https://ph20backstage.azurewebsites.net/openingnight/{macString}/{escapedJson}");
         }
     }
 }
