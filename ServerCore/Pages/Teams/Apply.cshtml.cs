@@ -74,11 +74,9 @@ namespace ServerCore.Pages.Teams
 
             await _context.SaveChangesAsync();
 
-            // TODO I am well aware that it would be far better to include a direct link to the details page,
-            // but I cannot for the life of me figure out how to generate a URL for a Razor page.
-            MailHelper.Singleton.SendPlaintextWithoutBcc(new string[] { Team.PrimaryContactEmail, LoggedInUser.Email },
+            MailHelper.Singleton.SendPlaintextOneAddress(Team.PrimaryContactEmail,
                 $"{Event.Name}: {LoggedInUser.Name} is applying to join {Team.Name}",
-                $"To accept or reject this request, visit your team page.");
+                $"You can contact {LoggedInUser.Name} at {LoggedInUser.Email}. To accept or reject this request, visit your team page at http://puzzlehunt.azurewebsites.net/{Event.ID}/play/Teams/{Team.ID}/Details.");
 
             return Page();
         }
