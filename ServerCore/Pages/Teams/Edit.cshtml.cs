@@ -32,6 +32,15 @@ namespace ServerCore.Pages.Teams
 
         public async Task<IActionResult> OnPostAsync()
         {
+            if (string.IsNullOrEmpty(Team.PrimaryContactEmail))
+            {
+                ModelState.AddModelError("Team.PrimaryContactEmail", "An email is required.");
+            }
+            else if (!MailHelper.IsValidEmail(Team.PrimaryContactEmail))
+            {
+                ModelState.AddModelError("Team.PrimaryContactEmail", "This email address is not valid.");
+            }
+
             ModelState.Remove("Team.Event");
             if (!ModelState.IsValid)
             {
