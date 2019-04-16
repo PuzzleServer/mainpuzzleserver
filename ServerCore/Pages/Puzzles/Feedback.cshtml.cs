@@ -10,7 +10,6 @@ using ServerCore.Helpers;
 using ServerCore.ModelBases;
 using System.ComponentModel.DataAnnotations;
 
-
 namespace ServerCore.Pages.Puzzles
 {
     /// <summary>
