@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -23,7 +22,7 @@ namespace ServerCore.Pages.Events
 
         public string AuthorEmails { get; set; }
 
-        public IList<TeamMembers> Players { get; set; }
+        public IList<MemberView> Players { get; set; }
 
         public string PlayerEmails { get; set; }
 
@@ -39,12 +38,7 @@ namespace ServerCore.Pages.Events
                 .Where(admin => admin.Event == Event).Select(admin => admin.Admin)
                 .ToListAsync();
 
-            StringBuilder adminEmailList = new StringBuilder("");
-            foreach (PuzzleUser admin in Admins)
-            {
-                adminEmailList.Append(admin.Email + "; ");
-            }
-            AdminEmails = adminEmailList.ToString();
+            AdminEmails = String.Join("; ", Admins.Select(a => a.Email));
 
             // Get authors
 
@@ -58,31 +52,25 @@ namespace ServerCore.Pages.Events
                                                      select new { authorId = puzzleGroup.Key, count = puzzleGroup.Count() })
                                                      .ToDictionaryAsync(x => x.authorId, x => x.count);
 
-            StringBuilder authorEmailList = new StringBuilder("");
             Authors = new List<Tuple<PuzzleUser, int>>();
             foreach (PuzzleUser author in allAuthors)
             {
-                authorEmailList.Append(author.Email + "; ");
                 int puzzleCount = allPuzzles.ContainsKey(author.ID) ? allPuzzles[author.ID] : 0;
                 Authors.Add(new Tuple<PuzzleUser, int>(author, puzzleCount));
             }
-            AuthorEmails = authorEmailList.ToString();
+
+            AuthorEmails = String.Join("; ", allAuthors.Select(a => a.Email));
 
             // Get players
 
             Players = await _context.TeamMembers
                 .Where(member => member.Team.Event == Event)
+                .Select(tm => new MemberView() { ID = tm.Member.ID, Name = tm.Member.Name, Email = tm.Member.Email, EmployeeAlias = tm.Member.EmployeeAlias, TeamID = tm.Team.ID, TeamName = tm.Team.Name })
                 .ToListAsync();
 
-            StringBuilder playerEmailList = new StringBuilder("");
-            foreach (TeamMembers Player in Players)
-            {
-                playerEmailList.Append(Player.Member.Email + "; ");
-            }
-            PlayerEmails = playerEmailList.ToString();
+            PlayerEmails = String.Join("; ", Players.Select(p => p.Email));
 
             // Return page
-
             return Page();
         }
 
@@ -110,6 +98,16 @@ namespace ServerCore.Pages.Events
             _context.EventAuthors.Remove(Author);
             await _context.SaveChangesAsync();
             return RedirectToPage("/Events/Players");
+        }
+
+        public class MemberView
+        {
+            public int ID { get; set; }
+            public string Name { get; set; }
+            public string Email { get; set; }
+            public string EmployeeAlias { get; set; }
+            public int TeamID { get; set; }
+            public string TeamName { get; set; }
         }
     }
 }
