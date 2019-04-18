@@ -74,6 +74,10 @@ namespace ServerCore.Pages.Teams
 
             await _context.SaveChangesAsync();
 
+            MailHelper.Singleton.SendPlaintextOneAddress(Team.PrimaryContactEmail,
+                $"{Event.Name}: {LoggedInUser.Name} is applying to join {Team.Name}",
+                $"You can contact {LoggedInUser.Name} at {LoggedInUser.Email}. To accept or reject this request, visit your team page at http://puzzlehunt.azurewebsites.net/{Event.ID}/play/Teams/{Team.ID}/Details.");
+
             return Page();
         }
     }
