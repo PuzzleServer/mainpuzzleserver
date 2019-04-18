@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Mail;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
 
 /// <summary>
@@ -204,5 +205,33 @@ your email as the contact address for a team, then you also need to remove it on
         Debug.WriteLine("Subject: " + subject);
         Debug.WriteLine("Body: " + body);
         Debug.WriteLine("----------------------------------------");
+    }
+
+    /// <summary>
+    /// Is the string a valid email or list of comma/semicolon-separated emails?
+    /// Errs on the side of allowing false positives rather than having false negatives.
+    /// </summary>
+    public static bool IsValidEmail(string s)
+    {
+        if (string.IsNullOrEmpty(s))
+        {
+            return false;
+        }
+
+        string[] addresses = s.Split(',', ';');
+
+        try
+        {
+            foreach (string address in addresses)
+            {
+                MailAddress mailAddress = new MailAddress(address.Trim());
+            }
+
+            return true;
+        }
+        catch (FormatException)
+        {
+            return false;
+        }
     }
 }
