@@ -1,6 +1,9 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
+using ServerCore.ModelBases;
 
 namespace ServerCore.Helpers
 {
@@ -36,6 +39,22 @@ namespace ServerCore.Helpers
             }
             string formattedUrl = puzzle.CustomURL.Replace("{puzzleId}", $"{puzzle.ID}").Replace("{eventId}", $"{eventId}");
             return formattedUrl;
+        }
+
+        public static async Task<List<Puzzle>> GetPuzzles(PuzzleServerContext context, Event Event, PuzzleUser user, EventRole role)
+        {
+            IQueryable<Puzzle> query;
+
+            if (role == EventRole.admin)
+            {
+                query = context.Puzzles.Where(p => p.Event == Event);
+            }
+            else
+            {
+                query = UserEventHelper.GetPuzzlesForAuthorAndEvent(context, Event, user);
+            }
+
+            return await query.OrderBy(p => p.Group).ThenBy(p => p.OrderInGroup).ThenBy(p => p.Name).ToListAsync();
         }
     }
 }

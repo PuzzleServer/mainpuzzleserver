@@ -28,18 +28,7 @@ namespace ServerCore.Pages.Puzzles
 
         public async Task<IActionResult> OnGetAsync()
         {
-            IQueryable<Puzzle> query;
-
-            if (EventRole == EventRole.admin)
-            {
-                query = _context.Puzzles.Where(p => p.Event == Event);
-            }
-            else
-            {
-                query = UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser);
-            }
-
-            List<Puzzle> puzzles = await query.ToListAsync();
+            List<Puzzle> puzzles = await PuzzleHelper.GetPuzzles(_context, Event, LoggedInUser, EventRole);
             Dictionary<int, ContentFile> puzzleFiles = await (from file in _context.ContentFiles
                                                               where file.Event == Event && file.FileType == ContentFileType.Puzzle
                                                               select file).ToDictionaryAsync(file => file.Puzzle.ID);

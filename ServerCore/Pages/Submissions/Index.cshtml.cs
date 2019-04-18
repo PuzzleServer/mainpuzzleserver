@@ -95,6 +95,12 @@ namespace ServerCore.Pages.Submissions
                         submission.Puzzle,
                         submission.Team,
                         true);
+
+                    var authors = await _context.PuzzleAuthors.Where((pa) => pa.Puzzle == submission.Puzzle).Select((pa) => pa.Author.Email).ToListAsync();
+
+                    MailHelper.Singleton.SendPlaintextBcc(authors,
+                        $"{Event.Name}: Team {submission.Team.Name} is in email mode for {submission.Puzzle.Name}",
+                        "");
                 }
                 else
                 {
