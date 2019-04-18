@@ -128,16 +128,16 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Players[0].Member.Name)
+                @Html.DisplayNameFor(model => model.Players[0].Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Players[0].Member.Email)
+                @Html.DisplayNameFor(model => model.Players[0].Email)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Players[0].Member.EmployeeAlias)
+                @Html.DisplayNameFor(model => model.Players[0].EmployeeAlias)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Players[0].Team.Name)
+                Team Name
             </th>
             <th></th>
         </tr>
@@ -149,21 +149,21 @@
                 <td>
                     @if (Model.LoggedInUser.IsGlobalAdmin)
                     {
-                        <a asp-area="Identity" asp-page="/Account/Edit" asp-route-userId="@item.Member.ID" asp-route-returnUrl="@Request.GetEncodedUrl()">@Html.DisplayFor(modelItem => item.Member.Name)</a>
+                        <a asp-area="Identity" asp-page="/Account/Edit" asp-route-userId="@item.ID" asp-route-returnUrl="@Request.GetEncodedUrl()">@Html.DisplayFor(modelItem => item.Name)</a>
                     }
                     else
                     {
-                        @Html.DisplayFor(modelItem => item.Member.Name)
+                        @Html.DisplayFor(modelItem => item.Name)
                     }
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Member.Email)
+                    @Html.DisplayFor(modelItem => item.Email)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Member.EmployeeAlias)
+                    @Html.DisplayFor(modelItem => item.EmployeeAlias)
                 </td>
                 <td>
-                    <a asp-page="/Teams/Members" asp-route-teamId="@item.Team.ID">@Html.DisplayFor(modelItem => item.Team.Name)</a>
+                    <a asp-page="/Teams/Details" asp-route-teamId="@item.TeamID">@Html.DisplayFor(modelItem => item.TeamName)</a>
                 </td>
                 <td></td>
             </tr>
