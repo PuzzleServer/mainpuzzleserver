@@ -15,6 +15,13 @@
     <a asp-page="/Teams/Play" asp-route-teamId="@Model.Team.ID">Back to puzzle list</a>
 </div>
 <br />
+@if (!string.IsNullOrEmpty(Model.Puzzle.Errata))
+{
+    <div style="font-size:16px;">
+        <span style="color: red; font-weight:600;">Errata: </span>@Model.Puzzle.Errata
+    </div>
+    <br />
+}
 <div class="row">
     <div class="col-md-4">
         @if (!string.IsNullOrEmpty(Model.AnswerToken))
@@ -86,20 +93,20 @@
         <tbody>
             @foreach (var item in Model.Submissions)
             {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.TimeSubmitted)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Submitter.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.SubmissionText)
-                </td>
-                <td>
-                    @(item.Response != null ? item.Response.ResponseText : "Incorrect")
-                </td>
-            </tr>
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TimeSubmitted)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Submitter.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SubmissionText)
+                    </td>
+                    <td>
+                        @(item.Response != null ? item.Response.ResponseText : "Incorrect")
+                    </td>
+                </tr>
             }
         </tbody>
     </table>
@@ -125,7 +132,7 @@
                 }
                 var timeDeltaSeconds = Math.floor((unlockTime - Date.now()) / 1000);
                 if (timeDeltaSeconds <= 0) {
-                    window.location.reload(false); 
+                    window.location.reload(false);
                 }
                 var minutesLeft = Math.floor(timeDeltaSeconds / 60);
                 var secondsLeft = timeDeltaSeconds % 60;
