@@ -51,17 +51,26 @@ namespace ServerCore.Pages.Teams
             return Page();
         }
 
-        private async Task<IList<HintWithState>> GetAllHints(int puzzleId, int teamId)
+        private async Task<IList<HintWithState>> GetAllHints(int puzzleID, int teamID)
         {
             Hints = await (from Hint hint in _context.Hints
                              join HintStatePerTeam state in _context.HintStatePerTeam on hint.Id equals state.HintID
-                             where state.TeamID == teamId && hint.Puzzle.ID == puzzleId
+                             where state.TeamID == teamID && hint.Puzzle.ID == puzzleID
                              orderby hint.DisplayOrder, hint.Description
                              select new HintWithState { Hint = hint, IsUnlocked = state.IsUnlocked }).ToListAsync();
+            bool solved = await PuzzleStateHelper.IsPuzzleSolved(_context, puzzleID, teamID);
 
             if (Hints.Count > 0)
             {
                 int discount = Hints.Min(hws => (hws.IsUnlocked && hws.Hint.Cost < 0) ? hws.Hint.Cost : 0);
+                bool IsBeta = Event.Name.ToLower().Contains("beta");
+                if (solved && IsBeta)
+                {
+                    // During a beta, once a puzzle is solved, all other hints become free.
+                    // There's no IsBeta flag on an event, so check the name.
+                    // We can change this in the unlikely event there's a beta-themed hunt.
+                    discount = -999;
+                }
                 foreach (HintWithState hint in Hints)
                 {
                     hint.Discount = discount;

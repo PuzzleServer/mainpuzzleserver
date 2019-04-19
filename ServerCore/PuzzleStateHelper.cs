@@ -255,7 +255,7 @@ namespace ServerCore
                 states[i].IsEmailOnlyMode = value;
                 if (value == true)
                 {
-                    states[i].WrongSubmissionCountBuffer += 50;
+                    states[i].WrongSubmissionCountBuffer += eventObj.MaxSubmissionCount;
                 }
             }
 
@@ -299,6 +299,19 @@ namespace ServerCore
             }
 
             await context.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Get the solved status of a single puzzle. 
+        /// Do not use if you want to get status of many puzzles as it will be very inefficient.
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<bool> IsPuzzleSolved(PuzzleServerContext context, int puzzleID, int teamID)
+        {
+            DateTime? solved = await (from PuzzleStatePerTeam pspt in context.PuzzleStatePerTeam
+                                      where pspt.PuzzleID == puzzleID && pspt.TeamID == teamID
+                                      select pspt.SolvedTime).FirstOrDefaultAsync();
+            return solved != null;
         }
 
         private static DateTime LastGlobalExpiry;
@@ -556,6 +569,14 @@ namespace ServerCore
 
                     await context.SaveChangesAsync();
                     transaction.Commit();
+
+                    var teamMembers = await (from TeamMembers tm in context.TeamMembers
+                                             join Submission sub in context.Submissions on tm.Team equals sub.Team
+                                             where sub.PuzzleID == response.PuzzleID && sub.SubmissionText == response.SubmittedText
+                                             select tm.Member.Email).ToListAsync();
+                    MailHelper.Singleton.SendPlaintextBcc(teamMembers,
+                        $"{puzzle.Event.Name}: {response.Puzzle.Name} Response updated for '{response.SubmittedText}'",
+                        $"The new response for this submission is: '{response.ResponseText}'.");
                 }
             }
         }

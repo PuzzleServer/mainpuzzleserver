@@ -69,28 +69,28 @@ Registered Teams: <b>@Model.Teams.Count/@Model.Event.MaxNumberOfTeams</b>, Regis
         <tbody>
             @foreach (var item in Model.Teams)
             {
-                if (!item.IsLookingForTeammates)
+                if (!item.Key.IsLookingForTeammates)
                 {
                     continue;
                 }
 
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Name)
+                        @Html.DisplayFor(modelItem => item.Key.Name)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => @Model.PlayerCountByTeamID[item.ID])
+                        @Html.DisplayFor(modelItem => item.Value)
                     </td>
                     @if (Model.EventRole == ModelBases.EventRole.play && Model.Event.IsTeamMembershipChangeActive)
                     {
                         <td>
-                            @if (item == Model.AppliedTeam)
+                            @if (item.Key == Model.AppliedTeam)
                             {
                                 <span><b>Request pending</b></span>
                             }
                             else
                             {
-                                <a asp-page="./Apply" asp-route-teamId="@item.ID">Request to join</a>
+                                <a asp-page="./Apply" asp-route-teamId="@item.Key.ID">Request to join</a>
                             }
                         </td>
                     }
