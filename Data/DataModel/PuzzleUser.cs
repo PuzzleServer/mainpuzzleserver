@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -44,6 +45,10 @@ namespace ServerCore.DataModel
             return await dbContext.PuzzleUsers.Where(user => user.IdentityUserId == identityUserId).FirstOrDefaultAsync();
         }
 
+        private static ConcurrentDictionary<string, PuzzleUser> puzzleUserCache = new ConcurrentDictionary<string, PuzzleUser>();
+        private static DateTime expiryTime = DateTime.MinValue;
+        private static TimeSpan expiryWindow = TimeSpan.FromMinutes(1);
+
         /// <summary>
         /// Returns the PuzzleUser for the currently signed in player
         /// </summary>
@@ -65,7 +70,26 @@ namespace ServerCore.DataModel
             }
 
             string userId = userManager.GetUserId(user);
-            return await dbContext.PuzzleUsers.Where(u => u.IdentityUserId == userId).FirstOrDefaultAsync();
+
+            PuzzleUser result;
+
+            DateTime now = DateTime.UtcNow;
+            if (now > expiryTime)
+            {
+                puzzleUserCache.Clear();
+                expiryTime = now + expiryWindow;
+            }
+            else
+            {
+                if (puzzleUserCache.TryGetValue(userId, out result))
+                {
+                    return result;
+                }
+            }
+
+            result = await dbContext.PuzzleUsers.Where(u => u.IdentityUserId == userId).FirstOrDefaultAsync();
+            puzzleUserCache[userId] = result;
+            return result;
         }
 
         /// <summary>
@@ -73,9 +97,9 @@ namespace ServerCore.DataModel
         /// </summary>
         /// <param name="thisEvent">The event that's being checked</param>
         /// <param name="puzzleServerContext">Current PuzzleServerContext</param>
-        public async Task<bool> IsAuthorForEvent(PuzzleServerContext puzzleServerContext, Event thisEvent)
+        public Task<bool> IsAuthorForEvent(PuzzleServerContext dbContext, Event thisEvent)
         {
-            return await puzzleServerContext.EventAuthors.Where(a => a.Author.ID == ID && a.Event.ID == thisEvent.ID).AnyAsync();
+            return thisEvent.IsAuthorInEvent(dbContext, this);
         }
 
         /// <summary>
@@ -83,9 +107,9 @@ namespace ServerCore.DataModel
         /// </summary>
         /// <param name="thisEvent">The event that's being checked</param>
         /// <param name="puzzleServerContext">Current PuzzleServerContext</param>
-        public async Task<bool> IsAdminForEvent(PuzzleServerContext dbContext, Event thisEvent)
+        public Task<bool> IsAdminForEvent(PuzzleServerContext dbContext, Event thisEvent)
         {
-            return await dbContext.EventAdmins.Where(a => a.Admin.ID == ID && a.Event.ID == thisEvent.ID).AnyAsync();
+            return thisEvent.IsAdminInEvent(dbContext, this);
         }
 
 
@@ -94,9 +118,9 @@ namespace ServerCore.DataModel
         /// </summary>
         /// <param name="thisEvent">The event that's being checked</param>
         /// <param name="puzzleServerContext">Current PuzzleServerContext</param>
-        public async Task<bool> IsPlayerInEvent(PuzzleServerContext dbContext, Event thisEvent)
+        public Task<bool> IsPlayerInEvent(PuzzleServerContext dbContext, Event thisEvent)
         {
-            return await dbContext.TeamMembers.Where(tm => tm.Member.ID == ID && tm.Team.Event.ID == thisEvent.ID).AnyAsync();
+            return thisEvent.IsPlayerInEvent(dbContext, this);
         }
     }
 }

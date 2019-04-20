@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace ServerCore.DataModel
 {
@@ -161,5 +165,52 @@ namespace ServerCore.DataModel
         /// in email-only mode.
         /// </summary>
         public uint MaxSubmissionCount { get; set; }
+
+        // note: these caches do not expire because the entire Event object will expire
+        private ConcurrentDictionary<int, bool> playerDictionary = new ConcurrentDictionary<int, bool>();
+        private ConcurrentDictionary<int, bool> authorDictionary = new ConcurrentDictionary<int, bool>();
+        private ConcurrentDictionary<int, bool> adminDictionary = new ConcurrentDictionary<int, bool>();
+
+        public async Task<bool> IsPlayerInEvent(PuzzleServerContext dbContext, PuzzleUser puzzleUser)
+        {
+            bool isPlayer;
+
+            if (playerDictionary.TryGetValue(puzzleUser.ID, out isPlayer))
+            {
+                return isPlayer;
+            }
+
+            isPlayer = await dbContext.TeamMembers.Where(tm => tm.Member.ID == puzzleUser.ID && tm.Team.Event.ID == ID).AnyAsync();
+            playerDictionary[puzzleUser.ID] = isPlayer;
+            return isPlayer;
+        }
+
+        public async Task<bool> IsAuthorInEvent(PuzzleServerContext dbContext, PuzzleUser puzzleUser)
+        {
+            bool isAuthor;
+
+            if (authorDictionary.TryGetValue(puzzleUser.ID, out isAuthor))
+            {
+                return isAuthor;
+            }
+
+            isAuthor = await dbContext.EventAuthors.Where(a => a.Author.ID == puzzleUser.ID && a.Event.ID == ID).AnyAsync();
+            authorDictionary[puzzleUser.ID] = isAuthor;
+            return isAuthor;
+        }
+
+        public async Task<bool> IsAdminInEvent(PuzzleServerContext dbContext, PuzzleUser puzzleUser)
+        {
+            bool isAdmin;
+
+            if (adminDictionary.TryGetValue(puzzleUser.ID, out isAdmin))
+            {
+                return isAdmin;
+            }
+
+            isAdmin = await dbContext.EventAdmins.Where(a => a.Admin.ID == puzzleUser.ID && a.Event.ID == ID).AnyAsync();
+            adminDictionary[puzzleUser.ID] = isAdmin;
+            return isAdmin;
+        }
     }
 }

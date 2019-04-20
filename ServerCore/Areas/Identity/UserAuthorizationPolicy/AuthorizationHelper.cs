@@ -44,7 +44,7 @@ namespace ServerCore.Areas.Identity
             return null;
         }
 
-        public static async Task<Team> GetTeamFromContext(AuthorizationHandlerContext context)
+        public static int? GetTeamIdFromContext(AuthorizationHandlerContext context)
         {
             if (context.Resource is AuthorizationFilterContext filterContext)
             {
@@ -52,8 +52,7 @@ namespace ServerCore.Areas.Identity
 
                 if (Int32.TryParse(teamIdAsString, out int teamId))
                 {
-                    PuzzleServerContext puzzleServerContext = (PuzzleServerContext)filterContext.HttpContext.RequestServices.GetService(typeof(PuzzleServerContext));
-                    return await puzzleServerContext.Teams.Where(e => e.ID == teamId).FirstOrDefaultAsync();
+                    return teamId;
                 }
             }
 
@@ -136,14 +135,14 @@ namespace ServerCore.Areas.Identity
         public static async Task IsPlayerOnTeamCheck(AuthorizationHandlerContext authContext, PuzzleServerContext dbContext, UserManager<IdentityUser> userManager, IAuthorizationRequirement requirement)
         {
             PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
-            Team team = await AuthorizationHelper.GetTeamFromContext(authContext);
+            int? teamId = AuthorizationHelper.GetTeamIdFromContext(authContext);
             Event thisEvent = await AuthorizationHelper.GetEventFromContext(authContext);
             EventRole role = AuthorizationHelper.GetEventRoleFromContext(authContext);
 
             if (thisEvent != null && role == EventRole.play)
             {
                 Team userTeam = await UserEventHelper.GetTeamForPlayer(dbContext, thisEvent, puzzleUser);
-                if (userTeam != null && userTeam.ID == team.ID)
+                if (userTeam != null && userTeam.ID == teamId)
                 {
                     authContext.Succeed(requirement);
                 }
