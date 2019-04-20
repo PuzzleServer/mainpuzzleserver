@@ -51,9 +51,16 @@
             <td>
                 @item.Name
             </td>
-            <td>
-                @item.SubmissionText
-            </td>
+            @if(string.IsNullOrEmpty(item.SubmissionText)) {
+                <td>
+                    None (marked as solved by admin)
+                </td>
+            }
+            else {
+                <td>
+                    @item.SubmissionText
+                </td>
+            }
             <td>
                 @item.ResponseText
             </td>
