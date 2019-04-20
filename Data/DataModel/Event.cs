@@ -175,7 +175,9 @@ namespace ServerCore.DataModel
         {
             bool isPlayer;
 
-            if (playerDictionary.TryGetValue(puzzleUser.ID, out isPlayer))
+            // Only use the cache if the result is true. This lets a newly added player get started right away.
+            // If we have a lot of invalid players, rethink.
+            if (playerDictionary.TryGetValue(puzzleUser.ID, out isPlayer) && isPlayer)
             {
                 return isPlayer;
             }
