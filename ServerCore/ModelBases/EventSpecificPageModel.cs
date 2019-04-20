@@ -13,7 +13,6 @@ using ServerCore.Helpers;
 
 namespace ServerCore.ModelBases
 {
-    [Authorize(Policy = "IsRegisteredForEvent")]
     public abstract class EventSpecificPageModel : PageModel
     {
         [FromRoute]
@@ -47,31 +46,53 @@ namespace ServerCore.ModelBases
             userManager = manager;
         }
 
+        private bool? isRegisteredUser;
         public async Task<bool> IsRegisteredUser()
         {
             if (LoggedInUser == null)
             {
                 return false;
             }
-            return await LoggedInUser.IsPlayerInEvent(_context, Event);
+
+            if (isRegisteredUser == null)
+            {
+                isRegisteredUser = await LoggedInUser.IsPlayerInEvent(_context, Event);
+            }
+
+            return isRegisteredUser.Value;
         }
 
+
+        private bool? isEventAuthor;
         public async Task<bool> IsEventAuthor()
         {
             if (LoggedInUser == null)
             {
                 return false;
             }
-            return await LoggedInUser.IsAuthorForEvent(_context, Event);
+
+            if (isEventAuthor == null)
+            {
+                isEventAuthor = await LoggedInUser.IsAuthorForEvent(_context, Event);
+            }
+
+            return isEventAuthor.Value;
         }
 
+        private bool? isEventAdmin;
         public async Task<bool> IsEventAdmin()
         {
             if (LoggedInUser == null)
             {
                 return false;
             }
-            return await LoggedInUser.IsAdminForEvent(_context, Event);
+
+            if (isEventAdmin == null)
+            {
+                isEventAdmin = await LoggedInUser.IsAdminForEvent(_context, Event);
+            }
+
+            return isEventAdmin.Value;
         }
 
         public async Task<int> GetTeamId()

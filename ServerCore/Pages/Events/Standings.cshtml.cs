@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
@@ -9,6 +10,7 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Events
 {
+    [Authorize(Policy = "IsRegisteredForEvent")]
     public class StandingsModel : EventSpecificPageModel
     {
         public List<TeamStats> Teams { get; private set; }
