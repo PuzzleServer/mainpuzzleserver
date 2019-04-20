@@ -35,43 +35,51 @@ namespace ServerCore.Pages.Teams
         {
             TeamID = teamId;
 
-            IQueryable<Submission> submissions = _context.Submissions
+            IQueryable<PuzzleStatePerTeam> puzzleStates = _context.PuzzleStatePerTeam
+                .Where((state) => state.TeamID == teamId && state.SolvedTime != null);
+
+            IQueryable<Submission> correctSubmissions = _context.Submissions
                 .Where((s) => s.TeamID == teamId && s.Response.IsSolution);
 
+            IQueryable<SubmissionView> finalSubmissions = puzzleStates.GroupJoin(
+                correctSubmissions,
+                (state) => state.PuzzleID,
+                (submission) => submission.PuzzleID,
+                (state, submissions) => new SubmissionView()
+                    {
+                        SolvedTime = state.SolvedTime.Value,
+                        Group = state.Puzzle.Group,
+                        Name = state.Puzzle.Name,
+                        SubmissionText = submissions == null || submissions.Count() == 0 ? null : submissions.First().SubmissionText,
+                        ResponseText = submissions == null || submissions.Count() == 0 ? null : submissions.First().Response.ResponseText
+                    }
+                );
+            
             this.Sort = sort;
             switch (sort ?? DefaultSort) {
                 case SortOrder.PuzzleNameAscending:
-                    submissions = submissions.OrderBy(s => s.Puzzle.Name);
+                    finalSubmissions = finalSubmissions.OrderBy(s => s.Name);
                     break;
                 case SortOrder.PuzzleNameDescending:
-                    submissions = submissions.OrderByDescending(s => s.Puzzle.Name);
+                    finalSubmissions = finalSubmissions.OrderByDescending(s => s.Name);
                     break;
-                case SortOrder.TimeSubmittedAscending:
-                    submissions = submissions.OrderBy(s => s.TimeSubmitted);
+                case SortOrder.SolvedTimeAscending:
+                    finalSubmissions = finalSubmissions.OrderBy(s => s.SolvedTime);
                     break;
-                case SortOrder.TimeSubmittedDecending:
-                    submissions = submissions.OrderByDescending(s => s.TimeSubmitted);
+                case SortOrder.SolvedTimeDecending:
+                    finalSubmissions = finalSubmissions.OrderByDescending(s => s.SolvedTime);
                     break;
                 case SortOrder.GroupAscending:
-                    submissions = submissions.OrderBy(s => s.Puzzle.Group);
+                    finalSubmissions = finalSubmissions.OrderBy(s => s.Group);
                     break;
                 case SortOrder.GroupDescending:
-                    submissions = submissions.OrderByDescending(s => s.Puzzle.Group);
+                    finalSubmissions = finalSubmissions.OrderByDescending(s => s.Group);
                     break;
                 default:
                     throw new Exception("Sort order is not mapped");
             }
 
-            CorrectSubmissions = await submissions
-                .Select(s => new SubmissionView()
-                {
-                    TimeSubmitted = s.TimeSubmitted,
-                    Group = s.Puzzle.Group,
-                    Name = s.Puzzle.Name,
-                    SubmissionText = s.SubmissionText,
-                    ResponseText = s.Response.ResponseText
-                })
-                .ToListAsync();
+            CorrectSubmissions = finalSubmissions.ToList();
         }
 
         public SortOrder? SortForColumnLink(SortOrder ascending, SortOrder descending)
@@ -89,8 +97,8 @@ namespace ServerCore.Pages.Teams
 
         public enum SortOrder
         {
-            TimeSubmittedAscending,
-            TimeSubmittedDecending,
+            SolvedTimeAscending,
+            SolvedTimeDecending,
             PuzzleNameAscending,
             PuzzleNameDescending,
             GroupAscending,
@@ -99,7 +107,7 @@ namespace ServerCore.Pages.Teams
 
         public class SubmissionView
         {
-            public DateTime TimeSubmitted { get; set; }
+            public DateTime SolvedTime { get; set; }
             public string Group { get; set; }
             public string Name { get; set; }
             public string SubmissionText { get; set; }
