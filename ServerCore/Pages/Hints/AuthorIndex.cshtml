@@ -77,7 +77,7 @@
                     @Html.DisplayFor(modelItem => item.Hint.Cost)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.UnlockTime)
+                    <time>@item.UnlockTime?.ToString("yyyy-MM-ddTHH:mm:ssZ")</time>
                 </td>
             </tr>
             }
