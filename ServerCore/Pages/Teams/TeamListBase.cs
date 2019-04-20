@@ -34,10 +34,11 @@ namespace ServerCore.Pages.Teams
             // Join the teams table with the players table to get a dictionary mapping team IDs to player counts.
 
             PlayerCountByTeamID = await
-              _context.Teams.Join(_context.TeamMembers, team => team.ID, teamMember => teamMember.Team.ID, (team, teamMember) => team.ID)
-                            .GroupBy(x => x)
-                            .Select(x => new { TeamID = x.Key, Count = x.Count() })
-                            .ToDictionaryAsync(x => x.TeamID, x => x.Count);
+                _context.Teams.Where(team => team.Event == Event)
+                              .Join(_context.TeamMembers, team => team.ID, teamMember => teamMember.Team.ID, (team, teamMember) => team.ID)
+                              .GroupBy(x => x)
+                              .Select(x => new { TeamID = x.Key, Count = x.Count() })
+                              .ToDictionaryAsync(x => x.TeamID, x => x.Count);
 
             // Get a list of all teams in alphabetical order by team name.
 
