@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -28,6 +29,7 @@ namespace ServerCore.Pages.Puzzles
             public int PrerequisitesCount { get; set; }
             public ResponseData Responses { get; set; }
             public int Hints { get; set; }
+            public int TotalHintCost { get; set; }
         }
 
         public class ResponseData
@@ -37,6 +39,10 @@ namespace ServerCore.Pages.Puzzles
         }
 
         public List<PuzzleView> PuzzleData { get; set; }
+
+        public int TotalHints { get; set; }
+
+        public int TotalHintCost { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -60,10 +66,10 @@ namespace ServerCore.Pages.Puzzles
                                                                    where response.Puzzle.Event == Event
                                                                    group response by response.PuzzleID into responseList
                                                                    select new { Puzzle = responseList.Key, Responses = new ResponseData { ResponseCount = responseList.Count(), HasAnswer = (from r in responseList where r.IsSolution select r).Count() > 0 } }).ToDictionaryAsync(x => x.Puzzle, x => x.Responses);
-            Dictionary<int, int> puzzleHints = await (from hint in _context.Hints
+            Dictionary<int, IEnumerable<int>> puzzleHints = await (from hint in _context.Hints
                                                       where hint.Puzzle.Event == Event
                                                       group hint by hint.Puzzle.ID into hints
-                                                      select new { Puzzle = hints.Key, HintCount = hints.Count() }).ToDictionaryAsync(x => x.Puzzle, x => x.HintCount);
+                                                      select new { Puzzle = hints.Key, Hints = (from h in hints select h.Cost) }).ToDictionaryAsync(x => x.Puzzle, x => x.Hints);
 
             PuzzleData = new List<PuzzleView>();
             foreach (Puzzle puzzle in puzzles)
@@ -73,7 +79,28 @@ namespace ServerCore.Pages.Puzzles
                 puzzleAnswers.TryGetValue(puzzle.ID, out ContentFile puzzleAnswer);
                 puzzlePrereqs.TryGetValue(puzzle.ID, out List<string> prereqs);
                 puzzleResponses.TryGetValue(puzzle.ID, out ResponseData responses);
-                puzzleHints.TryGetValue(puzzle.ID, out int hints);
+                puzzleHints.TryGetValue(puzzle.ID, out IEnumerable<int> hints);
+
+                int totalHintCostThisPuzzle = 0;
+                int hintsCountThisPuzzle = 0;
+                if (hints != null)
+                {
+                    int minHintCostThisPuzzle = 0;
+
+                    hintsCountThisPuzzle = hints.Count();
+                    foreach (int cost in hints)
+                    {
+                        minHintCostThisPuzzle = Math.Min(minHintCostThisPuzzle, cost);
+                    }
+
+                    totalHintCostThisPuzzle = Math.Abs(minHintCostThisPuzzle);
+
+                    foreach (int cost in hints)
+                    {
+                        totalHintCostThisPuzzle += Math.Max(0, cost + minHintCostThisPuzzle);
+                    }
+                }
+
                 PuzzleData.Add(new PuzzleView()
                 {
                     Puzzle = puzzle,
@@ -83,8 +110,12 @@ namespace ServerCore.Pages.Puzzles
                     Prerequisites = prereqs != null ? string.Join(", ", prereqs) : "",
                     PrerequisitesCount = prereqs != null ? prereqs.Count() : 0,
                     Responses = responses != null ? responses : new ResponseData { ResponseCount = 0, HasAnswer = false },
-                    Hints = hints
+                    Hints = hintsCountThisPuzzle,
+                    TotalHintCost = totalHintCostThisPuzzle
                 });
+
+                TotalHints += hintsCountThisPuzzle;
+                TotalHintCost += totalHintCostThisPuzzle;
             }
 
             return Page();

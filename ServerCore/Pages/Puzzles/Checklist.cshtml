@@ -45,60 +45,85 @@
             <th>
                 Hint count
             </th>
+            <th>
+                Hint cost
+            </th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model.PuzzleData)
         {
+            <tr>
+                <td>
+                    <a asp-Page="./Details" asp-route-puzzleid=@item.Puzzle.ID>@Html.DisplayFor(modelItem => item.Puzzle.Name)</a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Puzzle.Group)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Authors)
+                </td>
+                <td>
+                    @if (item.Puzzle.CustomURL != null)
+                    {
+                        <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.Puzzle, Model.Event.ID)" target="_blank">Link</a>
+                    }
+                    else if (item.PuzzleFile != null)
+                    {
+                        @Html.ActionLink("File", "Index", "Files", new { eventId = Model.Event.ID, filename = item.PuzzleFile.ShortName }, new { target = "_blank" })
+                    }
+                </td>
+                <td>
+                    @if (item.AnswerFile != null)
+                    {
+                        @Html.ActionLink("File", "Index", "Files", new { eventId = Model.Event.ID, filename = item.AnswerFile.ShortName }, new { target = "_blank" })
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Puzzle.MinPrerequisiteCount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Prerequisites)
+                    @if (item.Puzzle.MinPrerequisiteCount > item.PrerequisitesCount)
+                    {
+                        <font color="red">WARNING: Fewer prereqs than min</font>
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Responses.ResponseCount)
+                </td>
+                <td>
+                    @if (item.Responses.HasAnswer)
+                    {
+                        <p>&#10004;</p>
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Hints)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TotalHintCost)
+                </td>
+            </tr>
+        }
         <tr>
             <td>
-                <a asp-Page="./Details" asp-route-puzzleid=@item.Puzzle.ID>@Html.DisplayFor(modelItem => item.Puzzle.Name)</a>
+                <b>Total</b>
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>
+                @Model.TotalHints
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Puzzle.Group)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Authors)
-            </td>
-            <td>
-                @if (item.Puzzle.CustomURL != null)
-                {
-                    <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.Puzzle, Model.Event.ID)" target="_blank">Link</a>
-                }
-                else if (item.PuzzleFile != null)
-                {
-                    @Html.ActionLink("File", "Index", "Files", new { eventId = Model.Event.ID, filename = item.PuzzleFile.ShortName }, new { target = "_blank" })
-                }
-            </td>
-            <td>
-                @if (item.AnswerFile != null)
-                {
-                    @Html.ActionLink("File", "Index", "Files", new { eventId = Model.Event.ID, filename = item.AnswerFile.ShortName }, new { target = "_blank" })
-                }
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Puzzle.MinPrerequisiteCount)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Prerequisites)
-                @if (item.Puzzle.MinPrerequisiteCount > item.PrerequisitesCount)
-                {
-                    <font color="red">WARNING: Fewer prereqs than min</font>
-                }
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Responses.ResponseCount)
-            </td>
-            <td>
-                @if (item.Responses.HasAnswer)
-                {
-                    <p>&#10004;</p>
-                }
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Hints)
+                @Model.TotalHintCost
             </td>
         </tr>
-        }
     </tbody>
 </table>
