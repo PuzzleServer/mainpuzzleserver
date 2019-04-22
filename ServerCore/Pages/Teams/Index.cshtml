@@ -30,6 +30,10 @@
     }
 </p>
 <h4>Registered Teams: @Model.Teams.Count/@Model.Event.MaxNumberOfTeams, Registered Players: @Model.PlayerCount/@(Model.Event.MaxNumberOfTeams * Model.Event.MaxTeamSize)</h4>
+@if (Model.EventRole == ModelBases.EventRole.admin)
+{
+    <a asp-page="/Events/Mailer" asp-route-group="AllPrimaryContacts">Email all team primary contacts from the bulk mailer</a>
+}
 <table class="table">
     <thead>
         <tr>
@@ -60,59 +64,60 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.Teams) {
-        <tr>
-            <td>
-                <a asp-page="./Status" asp-route-teamId="@item.Key.ID">@Html.DisplayFor(modelItem => item.Key.Name)</a>
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Value)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Key.RoomID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Key.CustomRoom)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Key.PrimaryContactEmail)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Key.PrimaryPhoneNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Key.SecondaryPhoneNumber)
-            </td>
-            <td>
-                @if (Model.EventRole == ModelBases.EventRole.admin)
-                {
-                    <div class="shortcut-menu-dropdown">
-                        <span><a>Jump to...</a></span>
-                        <div class="shortcut-menu-dropdown-content">
-                            <a asp-page="./Details" asp-route-teamId="@item.Key.ID">Details</a><br />
-                            <a asp-page="./Edit" asp-route-teamId="@item.Key.ID">Edit</a><br />
-                            ------<br />
-                            <a asp-page="./Status" asp-route-teamId="@item.Key.ID">Status</a><br />
-                            <a asp-page="/Submissions/AuthorIndex" asp-route-teamId="@item.Key.ID">Submissions</a><br />
-                            <a asp-page="/Hints/AuthorIndex" asp-route-teamId="@item.Key.ID">Hints Taken</a><br />
-                            ------<br />
-                            <a asp-page="./Delete" asp-route-teamId="@item.Key.ID">Delete</a>
+        @foreach (var item in Model.Teams)
+        {
+            <tr>
+                <td>
+                    <a asp-page="./Status" asp-route-teamId="@item.Key.ID">@Html.DisplayFor(modelItem => item.Key.Name)</a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Value)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Key.RoomID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Key.CustomRoom)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Key.PrimaryContactEmail)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Key.PrimaryPhoneNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Key.SecondaryPhoneNumber)
+                </td>
+                <td>
+                    @if (Model.EventRole == ModelBases.EventRole.admin)
+                    {
+                        <div class="shortcut-menu-dropdown">
+                            <span><a>Jump to...</a></span>
+                            <div class="shortcut-menu-dropdown-content">
+                                <a asp-page="./Details" asp-route-teamId="@item.Key.ID">Details</a><br />
+                                <a asp-page="./Edit" asp-route-teamId="@item.Key.ID">Edit</a><br />
+                                ------<br />
+                                <a asp-page="./Status" asp-route-teamId="@item.Key.ID">Status</a><br />
+                                <a asp-page="/Submissions/AuthorIndex" asp-route-teamId="@item.Key.ID">Submissions</a><br />
+                                <a asp-page="/Hints/AuthorIndex" asp-route-teamId="@item.Key.ID">Hints Taken</a><br />
+                                ------<br />
+                                <a asp-page="./Delete" asp-route-teamId="@item.Key.ID">Delete</a>
+                            </div>
                         </div>
-                    </div>
-                }
-                else
-                {
-                    <div class="shortcut-menu-dropdown">
-                        <span><a>Jump to...</a></span>
-                        <div class="shortcut-menu-dropdown-content">
-                            <a asp-page="./Status" asp-route-teamId="@item.Key.ID">Status</a><br />
-                            <a asp-page="/Submissions/AuthorIndex" asp-route-teamId="@item.Key.ID">Submissions</a><br />
-                            <a asp-page="/Hints/AuthorIndex" asp-route-teamId="@item.Key.ID">Hints Taken</a><br />
+                    }
+                    else
+                    {
+                        <div class="shortcut-menu-dropdown">
+                            <span><a>Jump to...</a></span>
+                            <div class="shortcut-menu-dropdown-content">
+                                <a asp-page="./Status" asp-route-teamId="@item.Key.ID">Status</a><br />
+                                <a asp-page="/Submissions/AuthorIndex" asp-route-teamId="@item.Key.ID">Submissions</a><br />
+                                <a asp-page="/Hints/AuthorIndex" asp-route-teamId="@item.Key.ID">Hints Taken</a><br />
+                            </div>
                         </div>
-                    </div>
-                }
-            </td>
-        </tr>
-}
+                    }
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
