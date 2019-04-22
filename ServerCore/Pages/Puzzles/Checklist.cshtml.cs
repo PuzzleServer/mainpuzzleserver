@@ -61,7 +61,7 @@ namespace ServerCore.Pages.Puzzles
             Dictionary<int, List<string>> puzzlePrereqs = await (from prerequisite in _context.Prerequisites
                                                                  where prerequisite.Puzzle.Event == Event
                                                                  group prerequisite by prerequisite.PuzzleID into prereqs
-                                                                 select new { Puzzle = prereqs.Key, Prereqs = (from p in prereqs select p.Prerequisite.Name).ToList() }).ToDictionaryAsync(x => x.Puzzle, x => x.Prereqs);
+                                                                 select new { Puzzle = prereqs.Key, Prereqs = (from p in prereqs orderby p.Prerequisite.Name select p.Prerequisite.Name).ToList() }).ToDictionaryAsync(x => x.Puzzle, x => x.Prereqs);
             Dictionary<int, ResponseData> puzzleResponses = await (from response in _context.Responses
                                                                    where response.Puzzle.Event == Event
                                                                    group response by response.PuzzleID into responseList
@@ -85,19 +85,24 @@ namespace ServerCore.Pages.Puzzles
                 int hintsCountThisPuzzle = 0;
                 if (hints != null)
                 {
-                    int minHintCostThisPuzzle = 0;
+                    int totalDiscount = 0;
 
                     hintsCountThisPuzzle = hints.Count();
                     foreach (int cost in hints)
                     {
-                        minHintCostThisPuzzle = Math.Min(minHintCostThisPuzzle, cost);
+                        totalDiscount = Math.Min(totalDiscount, cost);
                     }
 
-                    totalHintCostThisPuzzle = Math.Abs(minHintCostThisPuzzle);
+                    // totalDiscount is 0 or negative. Start with that cost (flipped to positive
+                    // as it must be paid in order to reduce the cost of the others.
+                    totalHintCostThisPuzzle = -totalDiscount;
 
                     foreach (int cost in hints)
                     {
-                        totalHintCostThisPuzzle += Math.Max(0, cost + minHintCostThisPuzzle);
+                        // Negative cost hints will be ignored because Max(0,negative) is 0.
+                        // Positive cost hints will only be counted for the cost above the discount.
+                        // (The discount is counted against each other hint.)
+                        totalHintCostThisPuzzle += Math.Max(0, cost + totalDiscount);
                     }
                 }
 
