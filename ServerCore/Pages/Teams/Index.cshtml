@@ -29,6 +29,12 @@
         <a asp-page="Create">Create New</a>
     }
 </p>
+@if  (Model.Event.IsInternEvent)
+{
+    <div>
+        <a asp-page="/Swag/Report">Intern T-shirts and Lunch</a>
+    </div>
+}
 <h4>Registered Teams: @Model.Teams.Count/@Model.Event.MaxNumberOfTeams, Registered Players: @Model.PlayerCount/@(Model.Event.MaxNumberOfTeams * Model.Event.MaxTeamSize)</h4>
 <table class="table">
     <thead>

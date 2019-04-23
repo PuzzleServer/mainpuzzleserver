@@ -63,7 +63,14 @@
                 <dd>
                     @if (Model.Team.CustomRoom == null)
                     {
-                        <div>(none - please enter this before the start of the event)</div>
+                        @if (Model.Event.IsInternEvent)
+                        {
+                            <div>(none - will be selected by the organizers prior to the start of the event)</div>
+                        }
+                        else
+                        {
+                            <div>(none - please enter this before the start of the event)</div>
+                        }
                     }
                     else
                     {

@@ -662,6 +662,31 @@ namespace Data.Migrations
                     b.ToTable("Submissions");
                 });
 
+            modelBuilder.Entity("ServerCore.DataModel.Swag", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("EventId");
+
+                    b.Property<string>("Lunch");
+
+                    b.Property<string>("LunchModifications");
+
+                    b.Property<int>("PlayerId");
+
+                    b.Property<string>("ShirtSize");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("PlayerId");
+
+                    b.ToTable("Swag");
+                });
+
             modelBuilder.Entity("ServerCore.DataModel.Team", b =>
                 {
                     b.Property<int>("ID")
@@ -960,6 +985,19 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Team")
                         .WithMany("Submissions")
                         .HasForeignKey("TeamID1");
+                });
+
+            modelBuilder.Entity("ServerCore.DataModel.Swag", b =>
+                {
+                    b.HasOne("ServerCore.DataModel.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Player")
+                        .WithMany()
+                        .HasForeignKey("PlayerId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Team", b =>
