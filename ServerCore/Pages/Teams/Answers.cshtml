@@ -16,7 +16,7 @@
     <thead>
         <tr>
             <th>
-                <a asp-page="./Answers" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(AnswersModel.SortOrder.TimeSubmittedAscending, AnswersModel.SortOrder.TimeSubmittedDecending))">
+                <a asp-page="./Answers" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(AnswersModel.SortOrder.SolvedTimeAscending, AnswersModel.SortOrder.SolvedTimeDecending))">
                     Solved Time
                 </a>
             </th>
@@ -43,7 +43,7 @@
         {
         <tr>
             <td>
-                @Html.Raw(Model.LocalTime(item.TimeSubmitted))
+                @Html.Raw(Model.LocalTime(item.SolvedTime))
             </td>
             <td>
                 @item.Group
@@ -51,9 +51,16 @@
             <td>
                 @item.Name
             </td>
-            <td>
-                @item.SubmissionText
-            </td>
+            @if(string.IsNullOrEmpty(item.SubmissionText)) {
+                <td>
+                    None (marked as solved by admin)
+                </td>
+            }
+            else {
+                <td>
+                    @item.SubmissionText
+                </td>
+            }
             <td>
                 @item.ResponseText
             </td>
