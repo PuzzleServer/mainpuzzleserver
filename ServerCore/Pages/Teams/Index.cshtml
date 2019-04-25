@@ -8,6 +8,29 @@
     ViewData["PlayRoute"] = "/Teams/Details";
 }
 
+<!-- TODO - figure out why site.min.css isn't working & remove this once it is -->
+<!-- Github issue https://github.com/PuzzleServer/mainpuzzleserver/issues/413 -->
+<style>
+    .shortcut-menu-dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .shortcut-menu-dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        padding: 12px 16px;
+        z-index: 1;
+    }
+
+    .shortcut-menu-dropdown:hover .shortcut-menu-dropdown-content {
+        display: block;
+    }
+</style>
+
 <h2>All Teams</h2>
 
 <p>
@@ -64,60 +87,61 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.Teams) {
-        <tr>
-            <td>
-                <a asp-page="./Status" asp-route-teamId="@item.ID">@Html.DisplayFor(modelItem => item.Name)</a>
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => @Model.PlayerCountByTeamID[item.ID])
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RoomID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CustomRoom)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PrimaryContactEmail)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PrimaryPhoneNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SecondaryPhoneNumber)
-            </td>
-            <td>
-                @if (Model.EventRole == ModelBases.EventRole.admin)
-                {
-                    <div class="shortcut-menu-dropdown">
-                        <span><a>Jump to...</a></span>
-                        <div class="shortcut-menu-dropdown-content">
-                            <a asp-page="./Details" asp-route-teamId="@item.ID">Details</a><br />
-                            <a asp-page="./Edit" asp-route-teamId="@item.ID">Edit</a><br />
-                            <a asp-page="/Events/Mailer" asp-route-group="Players" asp-route-teamId="@item.ID">Mail Players</a><br />
-                            ------<br />
-                            <a asp-page="./Status" asp-route-teamId="@item.ID">Status</a><br />
-                            <a asp-page="/Submissions/AuthorIndex" asp-route-teamId="@item.ID">Submissions</a><br />
-                            <a asp-page="/Hints/AuthorIndex" asp-route-teamId="@item.ID">Hints Taken</a><br />
-                            ------<br />
-                            <a asp-page="./Delete" asp-route-teamId="@item.ID">Delete</a>
+        @foreach (var item in Model.Teams)
+        {
+            <tr>
+                <td>
+                    <a asp-page="./Status" asp-route-teamId="@item.ID">@Html.DisplayFor(modelItem => item.Name)</a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => @Model.PlayerCountByTeamID[item.ID])
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RoomID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CustomRoom)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PrimaryContactEmail)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PrimaryPhoneNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SecondaryPhoneNumber)
+                </td>
+                <td>
+                    @if (Model.EventRole == ModelBases.EventRole.admin)
+                    {
+                        <div class="shortcut-menu-dropdown">
+                            <span><a>Jump to...</a></span>
+                            <div class="shortcut-menu-dropdown-content">
+                                <a asp-page="./Details" asp-route-teamId="@item.ID">Details</a><br />
+                                <a asp-page="./Edit" asp-route-teamId="@item.ID">Edit</a><br />
+                                <a asp-page="/Events/Mailer" asp-route-group="Players" asp-route-teamId="@item.ID">Mail Players</a><br />
+                                ------<br />
+                                <a asp-page="./Status" asp-route-teamId="@item.ID">Status</a><br />
+                                <a asp-page="/Submissions/AuthorIndex" asp-route-teamId="@item.ID">Submissions</a><br />
+                                <a asp-page="/Hints/AuthorIndex" asp-route-teamId="@item.ID">Hints Taken</a><br />
+                                ------<br />
+                                <a asp-page="./Delete" asp-route-teamId="@item.ID">Delete</a>
+                            </div>
                         </div>
-                    </div>
-                }
-                else
-                {
-                    <div class="shortcut-menu-dropdown">
-                        <span><a>Jump to...</a></span>
-                        <div class="shortcut-menu-dropdown-content">
-                            <a asp-page="./Status" asp-route-teamId="@item.ID">Status</a><br />
-                            <a asp-page="/Submissions/AuthorIndex" asp-route-teamId="@item.ID">Submissions</a><br />
-                            <a asp-page="/Hints/AuthorIndex" asp-route-teamId="@item.ID">Hints Taken</a><br />
+                    }
+                    else
+                    {
+                        <div class="shortcut-menu-dropdown">
+                            <span><a>Jump to...</a></span>
+                            <div class="shortcut-menu-dropdown-content">
+                                <a asp-page="./Status" asp-route-teamId="@item.ID">Status</a><br />
+                                <a asp-page="/Submissions/AuthorIndex" asp-route-teamId="@item.ID">Submissions</a><br />
+                                <a asp-page="/Hints/AuthorIndex" asp-route-teamId="@item.ID">Hints Taken</a><br />
+                            </div>
                         </div>
-                    </div>
-                }
-            </td>
-        </tr>
-}
+                    }
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
