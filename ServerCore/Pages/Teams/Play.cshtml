@@ -78,7 +78,7 @@
                 <a asp-page="/Submissions/Index" asp-route-puzzleId="@item.Puzzle.ID">
                     @if (item.State.SolvedTime != null)
                     {
-                        <text>Solved on </text><time>@item.State.SolvedTime.Value.ToString("yyyy-MM-ddTHH:mm:ssZ")</time>
+                        <text>Solved on </text>@Html.Raw(Model.LocalTime(item.State.SolvedTime))
                     }
                     else if (@Model.Event.IsAnswerSubmissionActive)
                     {

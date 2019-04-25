@@ -77,7 +77,7 @@
                     @Html.DisplayFor(modelItem => item.Hint.Cost)
                 </td>
                 <td>
-                    <time>@item.UnlockTime?.ToString("yyyy-MM-ddTHH:mm:ssZ")</time>
+                    @Html.Raw(Model.LocalTime(item.UnlockTime))
                 </td>
             </tr>
             }

@@ -85,7 +85,7 @@
                     @Html.DisplayFor(modelItem => item.SubmissionText)
                 </td>
                 <td>
-                    <time>@item.TimeSubmitted.ToString("yyyy-MM-ddTHH:mm:ssZ")</time>
+                    @Html.Raw(Model.LocalTime(item.TimeSubmitted))
                 </td>
             </tr>
             }

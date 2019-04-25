@@ -55,7 +55,7 @@
                     }
                     else
                     {
-                        <time>@item.UnlockedTime.Value.ToString("yyyy-MM-ddTHH:mm:ssZ")</time>
+                        @Html.Raw(Model.LocalTime(item.UnlockedTime))
                         <a asp-page-handler="UnlockState" asp-route-sort="@Model.Sort" asp-route-teamId="@item.Team.ID" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-value="false" onclick="return confirm('Are you sure you want to mark @(item.Team.Name) as locked?')"> X</a>
                     }
                 </td>
@@ -66,7 +66,7 @@
                     }
                     else
                     {
-                        <time>@item.SolvedTime.Value.ToString("yyyy-MM-ddTHH:mm:ssZ")</time>
+                        @Html.Raw(Model.LocalTime(item.SolvedTime))
                         <a asp-page-handler="SolveState" asp-route-sort="@Model.Sort" asp-route-teamId="@item.Team.ID" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-value="false" onclick="return confirm('Are you sure you want to mark @(item.Team.Name) as unsolved?')"> X</a>
                     }
                 </td>

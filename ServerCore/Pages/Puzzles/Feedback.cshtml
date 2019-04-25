@@ -68,7 +68,7 @@ else
                     @Html.DisplayFor(modelItem => item.Submitter.Email)
                 </td>
                 <td>
-                    <time>@item.Feedback.SubmissionTime.ToString("yyyy-MM-ddTHH:mm:ssZ")</time>
+                    @Html.Raw(Model.LocalTime(item.Feedback.SubmissionTime))
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Feedback.WrittenFeedback)
