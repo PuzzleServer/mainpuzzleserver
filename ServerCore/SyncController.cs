@@ -354,7 +354,7 @@ namespace ServerCore.Pages
             // Check to see if the annotation already exists.  If so, update it and we're done.
 
             Annotation existingAnnotation =
-                await context.Annotations.SingleOrDefaultAsync(a => a.PuzzleID == puzzleId && a.TeamID == teamId && a.Key == key);
+                await context.Annotations.FirstOrDefaultAsync(a => a.PuzzleID == puzzleId && a.TeamID == teamId && a.Key == key);
             if (existingAnnotation != null)
             {
                 context.Entry(existingAnnotation).State = EntityState.Detached;
