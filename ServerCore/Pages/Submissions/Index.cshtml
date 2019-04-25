@@ -96,7 +96,7 @@
             {
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => item.TimeSubmitted)
+                        @Html.Raw(Model.LocalTime(item.TimeSubmitted))
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Submitter.Name)
