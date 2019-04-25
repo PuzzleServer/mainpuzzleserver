@@ -41,19 +41,18 @@ namespace ServerCore.Pages.Teams
             IQueryable<Submission> correctSubmissions = _context.Submissions
                 .Where((s) => s.TeamID == teamId && s.Response.IsSolution);
 
-            IQueryable<SubmissionView> finalSubmissions = puzzleStates.GroupJoin(
-                correctSubmissions,
-                (state) => state.PuzzleID,
-                (submission) => submission.PuzzleID,
-                (state, submissions) => new SubmissionView()
-                    {
-                        SolvedTime = state.SolvedTime.Value,
-                        Group = state.Puzzle.Group,
-                        Name = state.Puzzle.Name,
-                        SubmissionText = submissions == null || submissions.Count() == 0 ? null : submissions.First().SubmissionText,
-                        ResponseText = submissions == null || submissions.Count() == 0 ? null : submissions.First().Response.ResponseText
-                    }
-                );
+            IQueryable<SubmissionView> finalSubmissions = 
+                from state in puzzleStates
+                join submission in correctSubmissions on state.PuzzleID equals submission.PuzzleID into joinedStateSubmission
+                from joinedSubmission in joinedStateSubmission.DefaultIfEmpty()
+                select new SubmissionView
+                {
+                    SolvedTime = state.SolvedTime.Value,
+                    Group = state.Puzzle.Group,
+                    Name = state.Puzzle.Name,
+                    SubmissionText = joinedSubmission.SubmissionText,
+                    ResponseText = joinedSubmission.Response.ResponseText
+                };
             
             this.Sort = sort;
             switch (sort ?? DefaultSort) {
