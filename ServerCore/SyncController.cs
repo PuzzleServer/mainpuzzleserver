@@ -288,6 +288,104 @@ namespace ServerCore.Pages
         }
 
         /// <summary>
+        ///   This routine updates a single existing annotation.  As we do so, we increment
+        ///   its version number and update its timestamp.
+        ///
+        ///   This routine is only meant to be called when we know an annotation exists
+        ///   with the given puzzle ID, team ID, and key.  In other words, this routine
+        ///   is called when we need to update that annotation.
+        /// </summary>
+        private async Task UpdateOneAnnotation(SyncResponse response, int puzzleId, int teamId, int key, string contents)
+        {
+          // You may wonder why we're using ExecuteSqlCommandAsync instead of "normal"
+          // Entity Framework database functions.  The answer is that we need to atomically
+          // update the Version field of the record, and Entity Framework has no way of
+          // expressing that directly.
+          //
+          // The reason we want to update the version number atomically is that we rely
+          // on the version number being a unique identifier of an annotation.  We don't
+          // want the following scenario:
+          //
+          // Alice tries to set the annotation for key 17 to A, and simultaneously Bob
+          // tries to set it to B.  Each reads the current version number, finds it to be
+          // 3, and updates the annotation to have version 4.  Both of these updates may
+          // succeed, but one will overwrite the other; let's say Bob's write happens last
+          // and "wins".  So Alice may believe that version 4 is A when actually version 4
+          // is B.  When Alice asks for the current version, she'll be told it's version 4,
+          // and Alice will believe this means it's A.  So Alice will believe that A is
+          // what's stored in the database even though it's not.  Alice and Bob's computers
+          // will display different annotations for the same key, indefinitely.
+          //
+          // Note that we need a version number because the timestamp isn't guaranteed to
+          // be unique.  So in the example above Alice and Bob might wind up updating with
+          // the same timestamp.
+          //
+          // You may also wonder why we use DateTime.Now instead of letting the database
+          // assign the timestamp itself.  The reason is that the database might be running
+          // on a different machine than the puzzle server, and it might be using a different
+          // time zone.
+          
+          try {
+              var sqlCommand = "UPDATE Annotations SET Version = Version + 1, Contents = @Contents, Timestamp = @Timestamp WHERE PuzzleID = @PuzzleID AND TeamID = @TeamID AND [Key] = @Key";
+              int result = await context.Database.ExecuteSqlCommandAsync(sqlCommand,
+                                                                         new SqlParameter("@Contents", contents),
+                                                                         new SqlParameter("@Timestamp", DateTime.Now),
+                                                                         new SqlParameter("@PuzzleID", puzzleId),
+                                                                         new SqlParameter("@TeamID", teamId),
+                                                                         new SqlParameter("@Key", key));
+              if (result != 1) {
+                  response.AddError("Annotation update failed.");
+              }
+          }
+          catch (DbUpdateException) {
+              response.AddError("Encountered error while trying to update annotation.");
+          }
+          catch (Exception) {
+              response.AddError("Miscellaneous error while trying to update annotation.");
+          }
+        }
+
+        /// <summary>
+        ///   This routine takes a single annotation that the requester has uploaded, and inserts
+        ///   it if it doesn't exist and updates it otherwise.
+        /// </summary>
+        private async Task InsertOrUpdateOneAnnotation(SyncResponse response, int puzzleId, int teamId, int key, string contents)
+        {
+            // Check to see if the annotation already exists.  If so, update it and we're done.
+
+            Annotation existingAnnotation =
+                await context.Annotations.SingleOrDefaultAsync(a => a.PuzzleID == puzzleId && a.TeamID == teamId && a.Key == key);
+            if (existingAnnotation != null)
+            {
+                context.Entry(existingAnnotation).State = EntityState.Detached;
+                UpdateOneAnnotation(response, puzzleId, teamId, key, contents);
+            }
+            else
+            {
+                // The annotation doesn't exist yet.  So, try to generate a new annotation, with version 1.
+
+                Annotation annotation = new Annotation { PuzzleID = puzzleId, TeamID = teamId, Key = key,
+                                                         Version = 1, Contents = contents, Timestamp = DateTime.Now };
+                try {
+                    context.Annotations.Add(annotation);
+                    await context.SaveChangesAsync();
+                }
+                catch (DbUpdateException) {
+                    // If the insert fails, there must already be an annotation there with the
+                    // same puzzle ID, team ID, and key.  (This means there was a race condition:
+                    // between the time we checked for the existence of a matching annotation and
+                    // now, there was another insert.)  So, we need to update the existing one.
+    
+                    // But first, we need to detach the annotation from the context so the context
+                    // doesn't think the annotation is in the database.
+    
+                    context.Entry(annotation).State = EntityState.Detached;
+                    UpdateOneAnnotation(response, puzzleId, teamId, key, contents);
+                }
+            }
+        }
+
+        /// <summary>
         ///   This routine stores in the database any annotations the requester has uploaded.
         /// </summary>
         private async Task StoreAnnotations(DecodedSyncRequest request, SyncResponse response, int puzzleId, int teamId)
@@ -297,75 +395,7 @@ namespace ServerCore.Pages
             }
 
             foreach (var annotationRequest in request.AnnotationRequests) {
-                // Try to generate this as a new annotation, with version 1.
-
-                Annotation annotation = new Annotation();
-                annotation.PuzzleID = puzzleId;
-                annotation.TeamID = teamId;
-                annotation.Key = annotationRequest.key;
-                annotation.Version = 1;
-                annotation.Contents = annotationRequest.contents;
-                annotation.Timestamp = DateTime.Now;
-
-                try {
-                    context.Annotations.Add(annotation);
-                    await context.SaveChangesAsync();
-                }
-                catch (DbUpdateException) {
-                    // If the insert fails, there must already be an annotation there with the
-                    // same puzzle ID, team ID, and key.  So we need to update the existing one.
-                    // As we do so, we increment its version number and update its timestamp.
-                    //
-                    // You may wonder why we're using ExecuteSqlCommandAsync instead of "normal"
-                    // Entity Framework database functions.  The answer is that we need to atomically
-                    // update the Version field of the record, and Entity Framework has no way of
-                    // expressing that directly.
-                    //
-                    // The reason we want to update the version number atomically is that we rely
-                    // on the version number being a unique identifier of an annotation.  We don't
-                    // want the following scenario:
-                    //
-                    // Alice tries to set the annotation for key 17 to A, and simultaneously Bob
-                    // tries to set it to B.  Each reads the current version number, finds it to be
-                    // 3, and updates the annotation to have version 4.  Both of these updates may
-                    // succeed, but one will overwrite the other; let's say Bob's write happens last
-                    // and "wins".  So Alice may believe that version 4 is A when actually version 4
-                    // is B.  When Alice asks for the current version, she'll be told it's version 4,
-                    // and Alice will believe this means it's A.  So Alice will believe that A is
-                    // what's stored in the database even though it's not.  Alice and Bob's computers
-                    // will display different annotations for the same key, indefinitely.
-                    //
-                    // Note that we need a version number because the timestamp isn't guaranteed to
-                    // be unique.  So in the example above Alice and Bob might wind up updating with
-                    // the same timestamp.
-                    //
-                    // You may also wonder why we use DateTime.Now instead of letting the database
-                    // assign the timestamp itself.  The reason is that the database might be running
-                    // on a different machine than the puzzle server, and it might be using a different
-                    // time zone.
-
-                    // First, detach the annotation from the context so the context doesn't think the annotation is in the database.
-                    context.Entry(annotation).State = EntityState.Detached;
-                    
-                    try {
-                        var sqlCommand = "UPDATE Annotations SET Version = Version + 1, Contents = @Contents, Timestamp = @Timestamp WHERE PuzzleID = @PuzzleID AND TeamID = @TeamID AND [Key] = @Key";
-                        int result = await context.Database.ExecuteSqlCommandAsync(sqlCommand,
-                                                                                   new SqlParameter("@Contents", annotationRequest.contents),
-                                                                                   new SqlParameter("@Timestamp", DateTime.Now),
-                                                                                   new SqlParameter("@PuzzleID", puzzleId),
-                                                                                   new SqlParameter("@TeamID", teamId),
-                                                                                   new SqlParameter("@Key", annotationRequest.key));
-                        if (result != 1) {
-                            response.AddError("Annotation update failed.");
-                        }
-                    }
-                    catch (DbUpdateException) {
-                        response.AddError("Encountered error while trying to update annotation.");
-                    }
-                    catch (Exception) {
-                        response.AddError("Miscellaneous error while trying to update annotation.");
-                    }
-                }
+                await InsertOrUpdateOneAnnotation(response, puzzleId, teamId, annotationRequest.key, annotationRequest.contents);
             }
         }
 
