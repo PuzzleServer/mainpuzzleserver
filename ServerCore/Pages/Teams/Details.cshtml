@@ -31,6 +31,10 @@
 {
     <div>
         <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID">Edit team details</a> |
+        @if (Model.EventRole == ModelBases.EventRole.admin)
+        {
+            <text><a asp-page="/Events/Mailer" asp-route-group="Players" asp-route-teamId="@Model.Team.ID">Mail Players</a> |</text>
+        }
         <a asp-page="./Delete" asp-route-teamId="@Model.Team.ID">Delete team</a>
     </div>
 }
