@@ -245,10 +245,11 @@ namespace ServerCore.Pages
                 }
 
                 // When counting solves, only count puzzles if they're not in the same group
-                // as the puzzle being synced, and only if they're worth at least 10 points.
+                // as the puzzle being synced, and only if they're worth at least 10 points
+                // and exactly 0 hint coins.
 
                 if (puzzleGroup == null || solvedPuzzle.Group != puzzleGroup) {
-                    if (solvedPuzzle.SolveValue >= 10) {
+                    if (solvedPuzzle.SolveValue >= 10 && solvedPuzzle.HintCoinsForSolve == 0) {
                         maxSolveCount += 1;
                     }
                 }
