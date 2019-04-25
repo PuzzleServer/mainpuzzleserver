@@ -18,9 +18,14 @@ namespace ServerCore.Pages.Events
     {
         public enum MailGroup
         {
-            AllPlayers,
-            AllPrimaryContacts
+            Players,
+            PrimaryContacts
         }
+
+        [BindProperty]
+        public int? TeamID { get; set; }
+
+        public Team Team { get; set; }
 
         [BindProperty]
         public MailGroup Group { get; set; }
@@ -37,9 +42,15 @@ namespace ServerCore.Pages.Events
         {
         }
 
-        public IActionResult OnGet(MailGroup group)
+        public async Task<IActionResult> OnGetAsync(MailGroup group, int? teamId)
         {
             Group = group;
+            TeamID = teamId;
+
+            if (teamId != null)
+            {
+                Team = await _context.Teams.FindAsync(teamId);
+            }
             return Page();
         }
 
@@ -54,16 +65,36 @@ namespace ServerCore.Pages.Events
 
             switch(Group)
             {
-                case MailGroup.AllPlayers:
-                    addresses = await _context.TeamMembers.Where(tm => tm.Team.Event == Event).Select(tm => tm.Member.Email).ToListAsync();
+                case MailGroup.Players:
+                    if (TeamID == null)
+                    {
+                        addresses = await _context.TeamMembers.Where(tm => tm.Team.Event == Event).Select(tm => tm.Member.Email).ToListAsync();
+                    }
+                    else
+                    {
+                        addresses = await _context.TeamMembers.Where(tm => tm.Team.ID == TeamID).Select(tm => tm.Member.Email).ToListAsync();
+                    }
                     break;
-                case MailGroup.AllPrimaryContacts:
-                    var primaries = await _context.Teams.Where(t => t.Event == Event).Select(t => t.PrimaryContactEmail).ToListAsync();
+                case MailGroup.PrimaryContacts:
+                    List<string> primaries;
+
+                    if (TeamID == null)
+                    {
+                        primaries = await _context.Teams.Where(t => t.Event == Event).Select(t => t.PrimaryContactEmail).ToListAsync();
+                    }
+                    else
+                    {
+                        primaries = await _context.Teams.Where(t => t.ID == TeamID).Select(t => t.PrimaryContactEmail).ToListAsync();
+                    }
+
                     List<string> primariesSplit = new List<string>();
 
                     foreach (string p in primaries)
                     {
-                        primariesSplit.AddRange(p.Split(',', ';'));
+                        if (p != null)
+                        {
+                            primariesSplit.AddRange(p.Split(',', ';'));
+                        }
                     }
 
                     addresses = primariesSplit;
