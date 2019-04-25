@@ -87,6 +87,11 @@ namespace ServerCore.ModelBases
             }
         }
 
+        public string LocalTime(DateTime? date)
+        {
+            return TimeHelper.LocalTime(date);
+        }
+
         public class EventBinder : IModelBinder
         {
             public async Task BindModelAsync(ModelBindingContext bindingContext)

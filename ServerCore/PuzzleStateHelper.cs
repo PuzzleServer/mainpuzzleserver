@@ -148,7 +148,11 @@ namespace ServerCore
 
             for (int i = 0; i < states.Count; i++)
             {
-                states[i].UnlockedTime = value;
+                // Only allow unlock time to be modified if we were relocking it (setting it to null) or unlocking it for the first time 
+                if (value == null || states[i].UnlockedTime == null)
+                {
+                    states[i].UnlockedTime = value;
+                }
             }
             await context.SaveChangesAsync();
         }
@@ -184,7 +188,11 @@ namespace ServerCore
 
             for (int i = 0; i < states.Count; i++)
             {
-                states[i].SolvedTime = value;
+                // Only allow solved time to be modified if it is being marked as unsolved (set to null) or if it is being solved for the first time
+                if (value == null || states[i].SolvedTime == null)
+                {
+                    states[i].SolvedTime = value;
+                }
             }
 
             // Award hint coins

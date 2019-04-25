@@ -43,7 +43,7 @@
         {
         <tr>
             <td>
-                @item.SolvedTime
+                @Html.Raw(Model.LocalTime(item.SolvedTime))
             </td>
             <td>
                 @item.Group

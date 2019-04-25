@@ -40,6 +40,7 @@ namespace ServerCore.DataModel
             SupportEmailAlias = source.SupportEmailAlias;
             CustomURL = source.CustomURL;
             Description = source.Description;
+            Errata = source.Errata;
         }
 
         /// <summary>
@@ -164,6 +165,11 @@ namespace ServerCore.DataModel
         /// If null, the event email address should be used instead.
         /// </summary>
         public string SupportEmailAlias { get; set; }
+
+        /// <summary>
+        /// Errata
+        /// </summary>
+        public string Errata { get; set; }
 
         /// <summary>
         /// A custom URL the puzzle should link to instead of an associated file
