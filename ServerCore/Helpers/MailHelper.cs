@@ -177,8 +177,18 @@ your email as the contact address for a team, then you also need to remove it on
     /// <param name="recipients"></param>
     private static void AddRecipients(MailAddressCollection collection, IEnumerable<string> recipients)
     {
+        if (recipients == null)
+        {
+            return;
+        }
+
         foreach (string recipient in recipients)
         {
+            if (recipient == null)
+            {
+                continue;
+            }
+
             string[] addresses = recipient.Split(EmailSeparators);
             foreach (string address in addresses)
             {
