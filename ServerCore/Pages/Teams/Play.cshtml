@@ -54,15 +54,19 @@
             <td>
                 @if (item.Puzzle.CustomURL != null)
                 {
-                    <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.Puzzle, Model.Event.ID)" target="_blank">@item.Puzzle.Name</a>
+                <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.Puzzle, Model.Event.ID)" target="_blank">@item.Puzzle.Name</a>
                 }
                 else if (item.Content != null)
                 {
-                    @Html.ActionLink(item.Puzzle.Name, "Index", "Files", new { eventId = Model.Event.ID, filename = item.Content.ShortName }, new { target = "_blank" })
+                @Html.ActionLink(item.Puzzle.Name, "Index", "Files", new { eventId = Model.Event.ID, filename = item.Content.ShortName }, new { target = "_blank" })
                 }
                 else
                 {
-                    @Html.DisplayFor(modelItem => item.Puzzle.Name)
+                @if (item.Puzzle.Errata != null)
+                {
+                <text>&#x26A0; </text>
+                }
+                @Html.DisplayFor(modelItem => item.Puzzle.Name)
                 }
             </td>
             @if (showAnswers)
@@ -100,3 +104,5 @@
     }
     </tbody>
 </table>
+
+<p>Note: Puzzles with a &#x26A0; before the name have errata, which will be provided on that puzzle's answer submission page.</p>
