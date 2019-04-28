@@ -149,14 +149,25 @@ your email as the contact address for a team, then you also need to remove it on
         msg.Subject = subject;
         msg.Body = body;
 
+        bool added;
         if (bcc)
         {
             msg.To.Add(new MailAddress(ToAddressForBCC));
-            AddRecipients(msg.Bcc, recipients);
+            added = AddRecipients(msg.Bcc, recipients);
         }
         else
         {
-            AddRecipients(msg.To, recipients);
+            added = AddRecipients(msg.To, recipients);
+        }
+
+        if (!added)
+        {
+            // Don't send the mail if there are no recipients.
+            if (!IsDev)
+            {
+                Debug.WriteLine("Mail not sent - no recipients.");
+            }
+            return;
         }
 
         SmtpClient client = new SmtpClient("in.mailjet.com", 587);
@@ -175,11 +186,12 @@ your email as the contact address for a team, then you also need to remove it on
     /// </summary>
     /// <param name="collection"></param>
     /// <param name="recipients"></param>
-    private static void AddRecipients(MailAddressCollection collection, IEnumerable<string> recipients)
+    private static bool AddRecipients(MailAddressCollection collection, IEnumerable<string> recipients)
     {
+        bool added = false;
         if (recipients == null)
         {
-            return;
+            return false;
         }
 
         foreach (string recipient in recipients)
@@ -195,6 +207,7 @@ your email as the contact address for a team, then you also need to remove it on
                 try
                 {
                     collection.Add(new MailAddress(address.Trim()));
+                    added = true;
                 }
                 catch (FormatException)
                 {
@@ -202,6 +215,7 @@ your email as the contact address for a team, then you also need to remove it on
                 }
             }
         }
+        return added;
     }
 
     private void WriteMailToConsole(IEnumerable<string> recipients, bool bcc, string subject, string body)
@@ -219,7 +233,7 @@ your email as the contact address for a team, then you also need to remove it on
 
     /// <summary>
     /// Is the string a valid email or list of comma/semicolon-separated emails?
-    /// Errs on the side of allowing false positives rather than having false negatives.
+    /// (As defined by System.Net.Mail.MailAddress.)
     /// </summary>
     public static bool IsValidEmail(string s)
     {
