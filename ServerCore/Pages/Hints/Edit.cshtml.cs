@@ -60,9 +60,12 @@ namespace ServerCore.Pages.Hints
                                          join HintStatePerTeam hspt in _context.HintStatePerTeam on tm.Team equals hspt.Team
                                          where hspt.Hint.Id == Hint.Id && hspt.UnlockTime != null
                                          select tm.Member.Email).ToListAsync();
-                MailHelper.Singleton.SendPlaintextBcc(teamMembers,
-                    $"{Event.Name}: Hint updated for {puzzleName}",
-                    $"The new content for '{Hint.Description}' is: '{Hint.Content}'.");
+                if (teamMembers.Count > 0)
+                {
+                    MailHelper.Singleton.SendPlaintextBcc(teamMembers,
+                        $"{Event.Name}: Hint updated for {puzzleName}",
+                        $"The new content for '{Hint.Description}' is: '{Hint.Content}'.");
+                }
             }
             catch (DbUpdateConcurrencyException)
             {

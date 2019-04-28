@@ -582,9 +582,12 @@ namespace ServerCore
                                              join Submission sub in context.Submissions on tm.Team equals sub.Team
                                              where sub.PuzzleID == response.PuzzleID && sub.SubmissionText == response.SubmittedText
                                              select tm.Member.Email).ToListAsync();
-                    MailHelper.Singleton.SendPlaintextBcc(teamMembers,
-                        $"{puzzle.Event.Name}: {response.Puzzle.Name} Response updated for '{response.SubmittedText}'",
-                        $"The new response for this submission is: '{response.ResponseText}'.");
+                    if (teamMembers.Count > 0)
+                    {
+                        MailHelper.Singleton.SendPlaintextBcc(teamMembers,
+                            $"{puzzle.Event.Name}: {response.Puzzle.Name} Response updated for '{response.SubmittedText}'",
+                            $"The new response for this submission is: '{response.ResponseText}'.");
+                    }
                 }
             }
         }
