@@ -22,6 +22,12 @@ public class MailHelper
     private static readonly char[] EmailSeparators = { ',', ';' };
 
     /// <summary>
+    /// Mailjet has an undocumented limit of 50 recipients at a time.
+    /// This constant leaves 1 for the bcc address and 9 more just in case. :-)
+    /// </summary>
+    private const int MAX_RECIPIENTS = 40;
+
+    /// <summary>
     /// This unsubscribe footer is needed because the lack of one will give us a higher
     /// spamminess score with some email services and might damage deliverability for
     /// everyone. Our mail is transactional, not commercial, so we do not need to comply
@@ -122,6 +128,18 @@ your email as the contact address for a team, then you also need to remove it on
 
     private void SendInternal(IEnumerable<string> recipients, bool bcc, string subject, string body, bool isHtml)
     {
+        List<string> addresses = FlattenAddressLists(recipients);
+        while (addresses.Count > 0)
+        {
+            int n = Math.Min(addresses.Count, MAX_RECIPIENTS);
+            List<string> someAddresses = addresses.GetRange(0, n);
+            addresses.RemoveRange(0, n);
+            SendInternal2(someAddresses, bcc, subject, body, isHtml);
+        }
+    }
+
+    private void SendInternal2(IEnumerable<string> recipients, bool bcc, string subject, string body, bool isHtml)
+    {
         // See https://www.mailjet.com/docs/code/c/c-sharp for sample code from Mailjet.
 
         MailMessage msg = new MailMessage();
@@ -170,16 +188,16 @@ your email as the contact address for a team, then you also need to remove it on
     }
 
     /// <summary>
-    /// Add a list of recipients to an address collection.
-    /// Each recipient may be a comma- or semicolon-separated list of addresses.
+    /// Flatten comma- or semicolon-separated list of addresses to a flat list.
     /// </summary>
     /// <param name="collection"></param>
     /// <param name="recipients"></param>
-    private static void AddRecipients(MailAddressCollection collection, IEnumerable<string> recipients)
+    private static List<string> FlattenAddressLists(IEnumerable<string> recipients)
     {
+        List<string> result = new List<string>();
         if (recipients == null)
         {
-            return;
+            return result;
         }
 
         foreach (string recipient in recipients)
@@ -192,14 +210,36 @@ your email as the contact address for a team, then you also need to remove it on
             string[] addresses = recipient.Split(EmailSeparators);
             foreach (string address in addresses)
             {
-                try
+                if (!String.IsNullOrWhiteSpace(address))
                 {
-                    collection.Add(new MailAddress(address.Trim()));
+                    result.Add(address.Trim());
                 }
-                catch (FormatException)
-                {
-                    ;  // ignore
-                }
+            }
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Add a list of recipients to an address collection.
+    /// </summary>
+    /// <param name="collection"></param>
+    /// <param name="recipients"></param>
+    private static void AddRecipients(MailAddressCollection collection, IEnumerable<string> recipients)
+    {
+        if (recipients == null)
+        {
+            return;
+        }
+
+        foreach (string address in recipients)
+        {
+            try
+            {
+                collection.Add(new MailAddress(address));
+            }
+            catch (FormatException)
+            {
+                ;  // ignore
             }
         }
     }
