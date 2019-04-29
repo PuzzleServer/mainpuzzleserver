@@ -54,7 +54,20 @@ namespace ServerCore.Helpers
                 query = UserEventHelper.GetPuzzlesForAuthorAndEvent(context, Event, user);
             }
 
-            return await query.OrderBy(p => p.Group).ThenBy(p => p.OrderInGroup).ThenBy(p => p.Name).ToListAsync();
+            List<Puzzle> puzzles = await query.OrderBy(p => p.Group).ThenBy(p => p.OrderInGroup).ThenBy(p => p.Name).ToListAsync();
+
+            // Can't just .OrderBy(p => p.IsFinalPuzzle) because only the last meta in the final group has
+            // that flag set but the entire group should be ordered last. Instead, find the name of the group
+            //  that contains the final puzzle and then move that entire group to the end. And just to be
+            // safe, we collect all the final groups in case there's more than one.  Note that this does not
+            // move the final puzzle itself within the group since the author can control that themselves.
+            HashSet<string> finalGroups = (from p in puzzles
+                                           where p.IsFinalPuzzle
+                                           select p.Group).ToHashSet();
+            puzzles = puzzles.Where(p => !finalGroups.Contains(p.Group))
+                .Concat(puzzles.Where(p => finalGroups.Contains(p.Group)))
+                .ToList();
+            return puzzles;
         }
     }
 }
