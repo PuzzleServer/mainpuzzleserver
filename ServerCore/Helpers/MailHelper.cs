@@ -23,9 +23,9 @@ public class MailHelper
 
     /// <summary>
     /// Mailjet has an undocumented limit of 50 recipients at a time.
-    /// This constant leaves 1 for the bcc address and 1 just in case.
+    /// This constant leaves 1 for the bcc address and 9 more just in case. :-)
     /// </summary>
-    private const int MAX_RECIPIENTS = 48;
+    private const int MAX_RECIPIENTS = 40;
 
     /// <summary>
     /// This unsubscribe footer is needed because the lack of one will give us a higher
@@ -210,10 +210,9 @@ your email as the contact address for a team, then you also need to remove it on
             string[] addresses = recipient.Split(EmailSeparators);
             foreach (string address in addresses)
             {
-                string a = address.Trim();
-                if (a != "")
+                if (!String.IsNullOrWhiteSpace(address))
                 {
-                    result.Add(a);
+                    result.Add(address.Trim());
                 }
             }
         }
