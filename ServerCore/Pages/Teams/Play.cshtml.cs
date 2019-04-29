@@ -98,7 +98,7 @@ namespace ServerCore.Pages.Teams
 
             Dictionary<int, ContentFile> files = await (from file in _context.ContentFiles
                                                         where file.Event == Event && file.FileType == ContentFileType.Puzzle
-                                                        select file).ToDictionaryAsync(file => file.Puzzle.ID);
+                                                        select file).ToDictionaryAsync(file => file.PuzzleID);
 
             foreach(var puzzleView in PuzzleViews)
             {
@@ -110,7 +110,7 @@ namespace ServerCore.Pages.Teams
             {
                 Dictionary<int, ContentFile> answers = await (from file in _context.ContentFiles
                                                             where file.Event == Event && file.FileType == ContentFileType.Answer
-                                                            select file).ToDictionaryAsync(file => file.Puzzle.ID);
+                                                            select file).ToDictionaryAsync(file => file.PuzzleID);
 
                 foreach (var puzzleView in PuzzleViews)
                 {

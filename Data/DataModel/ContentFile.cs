@@ -69,7 +69,7 @@ namespace ServerCore.DataModel
         /// <summary>
         /// Foreign key to the Puzzles table. Do not use directly; use <see cref="Puzzle"/>
         /// </summary>
-        //public int PuzzleID { get; set; }
+        public int PuzzleID { get; set; }
 
         /// <summary>
         /// The puzzle this file belongs to
