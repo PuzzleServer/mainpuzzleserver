@@ -33,6 +33,8 @@ namespace ServerCore.Pages.Teams
 
         public bool ShowAnswers { get; set; }
 
+        public bool AllowFeedback { get; set; }
+
         public async Task OnGetAsync(SortOrder? sort, int teamId)
         {
             TeamID = teamId;
@@ -49,6 +51,7 @@ namespace ServerCore.Pages.Teams
             this.Sort = sort;
 
             ShowAnswers = Event.AnswersAvailableBegin <= DateTime.UtcNow;
+            AllowFeedback = Event.AllowFeedback;
 
             // all puzzles for this event that are real puzzles
             var puzzlesInEventQ = _context.Puzzles.Where(puzzle => puzzle.Event.ID == this.Event.ID && puzzle.IsPuzzle);
