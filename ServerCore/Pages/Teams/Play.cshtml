@@ -39,9 +39,12 @@
             <th>
                 Hints
             </th>
+            @if (Model.AllowFeedback)
+            {
             <th>
                 Feedback
             </th>
+            }
         </tr>
     </thead>
     <tbody>
@@ -92,9 +95,12 @@
             <td>
                 <a asp-page="./Hints" asp-route-puzzleid="@item.ID" asp-route-teamId="@Model.TeamID">Hints</a>
             </td>
+            @if (Model.AllowFeedback)
+            {
             <td>
                 <a asp-Page="/Puzzles/SubmitFeedback" asp-route-puzzleid="@item.ID">Submit feedback</a>
             </td>
+            }
         </tr>
     }
     </tbody>
