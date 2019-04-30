@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
 /// <summary>
@@ -73,7 +74,7 @@ your email as the contact address for a team, then you also need to remove it on
     /// </summary>
     public void SendPlaintextOneAddress(string recipient, string subject, string body)
     {
-        SendInternal(new List<string> { recipient }, false, subject, body, false);
+        SendInternalAsync(new List<string> { recipient }, false, subject, body, false);
     }
 
     /// <summary>
@@ -81,7 +82,7 @@ your email as the contact address for a team, then you also need to remove it on
     /// </summary>
     public void SendHtmlOneAddress(string recipient, string subject, string body)
     {
-        SendInternal(new List<string> { recipient }, false, subject, body, true);
+        SendInternalAsync(new List<string> { recipient }, false, subject, body, true);
     }
 
     /// <summary>
@@ -92,7 +93,7 @@ your email as the contact address for a team, then you also need to remove it on
     /// </summary>
     public void SendPlaintextBcc(IEnumerable<string> recipients, string subject, string body)
     {
-        SendInternal(recipients, true, subject, body, false);
+        SendInternalAsync(recipients, true, subject, body, false);
     }
 
     /// <summary>
@@ -103,7 +104,7 @@ your email as the contact address for a team, then you also need to remove it on
     /// </summary>
     public void SendHtmlBcc(IEnumerable<string> recipients, string subject, string body)
     {
-        SendInternal(recipients, true, subject, body, true);
+        SendInternalAsync(recipients, true, subject, body, true);
     }
 
     /// <summary>
@@ -113,7 +114,7 @@ your email as the contact address for a team, then you also need to remove it on
     /// </summary>
     public void SendPlaintextWithoutBcc(IEnumerable<string> recipients, string subject, string body)
     {
-        SendInternal(recipients, false, subject, body, false);
+        SendInternalAsync(recipients, false, subject, body, false);
     }
 
     /// <summary>
@@ -123,10 +124,10 @@ your email as the contact address for a team, then you also need to remove it on
     /// </summary>
     public void SendHtmlWithoutBcc(IEnumerable<string> recipients, string subject, string body)
     {
-        SendInternal(recipients, false, subject, body, true);
+        SendInternalAsync(recipients, false, subject, body, true);
     }
 
-    private void SendInternal(IEnumerable<string> recipients, bool bcc, string subject, string body, bool isHtml)
+    private async void SendInternalAsync(IEnumerable<string> recipients, bool bcc, string subject, string body, bool isHtml)
     {
         List<string> addresses = FlattenAddressLists(recipients);
         while (addresses.Count > 0)
@@ -134,11 +135,12 @@ your email as the contact address for a team, then you also need to remove it on
             int n = Math.Min(addresses.Count, MAX_RECIPIENTS);
             List<string> someAddresses = addresses.GetRange(0, n);
             addresses.RemoveRange(0, n);
-            SendInternal2(someAddresses, bcc, subject, body, isHtml);
+            SendInternal2Async(someAddresses, bcc, subject, body, isHtml);
+            await Task.Delay(1000);
         }
     }
 
-    private void SendInternal2(IEnumerable<string> recipients, bool bcc, string subject, string body, bool isHtml)
+    private async void SendInternal2Async(IEnumerable<string> recipients, bool bcc, string subject, string body, bool isHtml)
     {
         // See https://www.mailjet.com/docs/code/c/c-sharp for sample code from Mailjet.
 
@@ -184,7 +186,7 @@ your email as the contact address for a team, then you also need to remove it on
         client.EnableSsl = true;
         client.UseDefaultCredentials = false;
         client.Credentials = new NetworkCredential(PublicSecret, PrivateSecret);
-        client.SendMailAsync(msg);
+        await client.SendMailAsync(msg);
     }
 
     /// <summary>
