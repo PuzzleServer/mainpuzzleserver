@@ -54,7 +54,7 @@
                 @Html.DisplayFor(modelItem => item.Group)
             </td>
             <td>
-                @if (item.Errata != null)
+                @if (!string.IsNullOrWhiteSpace(item.Errata))
                 {
                 <text>&#x26A0; </text>
                 }
