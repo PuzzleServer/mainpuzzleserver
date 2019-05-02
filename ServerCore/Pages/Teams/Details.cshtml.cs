@@ -64,9 +64,9 @@ namespace ServerCore.Pages.Teams
 
         public async Task<IActionResult> OnGetRemoveMemberAsync(int teamId, int teamMemberId)
         {
-            if (EventRole == EventRole.play && !Event.IsTeamRegistrationActive)
+            if (EventRole == EventRole.play && !Event.IsTeamMembershipChangeActive)
             {
-                return NotFound("Membership changes are not open.");
+                return NotFound("Team membership change is not currently active.");
             }
 
             TeamMembers member = await _context.TeamMembers.FirstOrDefaultAsync(m => m.ID == teamMemberId && m.Team.ID == teamId);
