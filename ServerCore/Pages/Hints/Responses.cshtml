@@ -1,0 +1,57 @@
+﻿@page "/{eventId}/{eventRole}/Hints/Responses"
+@model ServerCore.Pages.Hints.ResponsesModel
+@{
+    ViewData["Title"] = "Responses";
+    ViewData["AdminRoute"] = "../Hints/Responses";
+    ViewData["AuthorRoute"] = "../Hints/Responses";
+}
+
+<h2>All Hint Responses</h2>
+
+<br />
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    <a asp-page="./AuthorIndex" asp-route-sort="@(Model.SortForColumnLink(ResponsesModel.SortOrder.PuzzleAscending, ResponsesModel.SortOrder.PuzzleDescending))">
+                        Puzzle
+                    </a>
+                </th>
+                <th>
+                    <a asp-page="./AuthorIndex" asp-route-sort="@(Model.SortForColumnLink(ResponsesModel.SortOrder.DescriptionAscending, ResponsesModel.SortOrder.DescriptionDescending))">
+                        @Html.DisplayNameFor(model => model.HintViews[0].Description)
+                    </a>
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.HintViews[0].Content)
+                </th>
+                <th>
+                    <a asp-page="./AuthorIndex" asp-route-sort="@(Model.SortForColumnLink(ResponsesModel.SortOrder.CostAscending, ResponsesModel.SortOrder.CostDescending))">
+                        @Html.DisplayNameFor(model => model.HintViews[0].Cost)
+                    </a>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.HintViews)
+            {
+            <tr>
+                <td>
+                    <a asp-page="AuthorIndex">@Html.DisplayFor(modelItem => item.PuzzleName)</a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Content)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Cost)
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
