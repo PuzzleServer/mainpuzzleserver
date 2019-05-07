@@ -77,7 +77,7 @@ namespace ServerCore.Pages.Teams
                 }
 
                 // if the event is over, show all hints
-                if (Event.AreAnswersAvailableNow)
+                if (Event.AreAnswersAvailableNow && Team.Name.Contains("Archive"))
                 {
                     foreach (HintWithState hint in Hints)
                     {
