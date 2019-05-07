@@ -117,7 +117,7 @@ namespace ServerCore.Pages.Teams
 
                 foreach (var puzzleView in PuzzleViews)
                 {
-                    files.TryGetValue(puzzleView.ID, out ContentFile answer);
+                    answers.TryGetValue(puzzleView.ID, out ContentFile answer);
                     puzzleView.Answer = answer;
                 }
             }
