@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -18,7 +19,7 @@ namespace ServerCore.Pages.Hints
         {
         }
 
-        public List<HintStatePerTeam> HintStatePerTeam { get; set; }
+        public List<HintView> HintViews { get; set; }
 
         public Puzzle Puzzle { get; set; }
 
@@ -38,28 +39,36 @@ namespace ServerCore.Pages.Hints
                 {
                     if (teamId == null)
                     {
-                        HintStatePerTeam = await _context.HintStatePerTeam.Where((h) => h.UnlockTime != null && h.Team.Event == Event).ToListAsync();
+                        HintViews = await _context.HintStatePerTeam.Where((h) => h.UnlockTime != null && h.Team.Event == Event)
+                            .Select(hspt => new HintView { TeamId = hspt.TeamID, TeamName = hspt.Team.Name, PuzzleId = hspt.Hint.Puzzle.ID, PuzzleName = hspt.Hint.Puzzle.Name, Description = hspt.Hint.Description, Cost = hspt.Hint.Cost, UnlockTime = hspt.UnlockTime  })
+                            .ToListAsync();
                     }
                     else
                     {
-                        HintStatePerTeam = await _context.HintStatePerTeam.Where((h) => h.UnlockTime != null && h.TeamID == teamId).ToListAsync();
+                        HintViews = await _context.HintStatePerTeam.Where((h) => h.UnlockTime != null && h.TeamID == teamId)
+                            .Select(hspt => new HintView { TeamId = hspt.TeamID, TeamName = hspt.Team.Name, PuzzleId = hspt.Hint.Puzzle.ID, PuzzleName = hspt.Hint.Puzzle.Name, Description = hspt.Hint.Description, Cost = hspt.Hint.Cost, UnlockTime = hspt.UnlockTime })
+                            .ToListAsync();
                     }
                 }
                 else
                 {
                     // Surely there is a way to get a join to do a bunch of this work, but joins are simply not for me. Someone else can fix later.
                     var hintStatePerTeam = new List<HintStatePerTeam>();
-                    var authorPuzzles = await UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser).ToListAsync();
+                    var authorPuzzleIDs = await UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser).Select(p => p.ID).ToListAsync();
 
                     if (teamId == null)
                     {
-                        HintStatePerTeam = await _context.HintStatePerTeam.Where((h) => h.UnlockTime != null && h.Team.Event == Event).ToListAsync();
-                        HintStatePerTeam = HintStatePerTeam.Where((h) => authorPuzzles.Contains(h.Hint.Puzzle)).ToList();
+                        HintViews = await _context.HintStatePerTeam.Where((h) => h.UnlockTime != null && h.Team.Event == Event)
+                            .Select(hspt => new HintView { TeamId = hspt.TeamID, TeamName = hspt.Team.Name, PuzzleId = hspt.Hint.Puzzle.ID, PuzzleName = hspt.Hint.Puzzle.Name, Description = hspt.Hint.Description, Cost = hspt.Hint.Cost, UnlockTime = hspt.UnlockTime })
+                            .ToListAsync();
+                        HintViews = HintViews.Where((h) => authorPuzzleIDs.Contains(h.PuzzleId)).ToList();
                     }
                     else
                     {
-                        HintStatePerTeam = await _context.HintStatePerTeam.Where((h) => h.UnlockTime != null && h.TeamID == teamId).ToListAsync();
-                        HintStatePerTeam = HintStatePerTeam.Where((h) => authorPuzzles.Contains(h.Hint.Puzzle)).ToList();
+                        HintViews = await _context.HintStatePerTeam.Where((h) => h.UnlockTime != null && h.TeamID == teamId)
+                            .Select(hspt => new HintView { TeamId = hspt.TeamID, TeamName = hspt.Team.Name, PuzzleId = hspt.Hint.Puzzle.ID, PuzzleName = hspt.Hint.Puzzle.Name, Description = hspt.Hint.Description, Cost = hspt.Hint.Cost, UnlockTime = hspt.UnlockTime })
+                            .ToListAsync();
+                        HintViews = HintViews.Where((h) => authorPuzzleIDs.Contains(h.PuzzleId)).ToList();
                     }
                 }
             }
@@ -79,11 +88,15 @@ namespace ServerCore.Pages.Hints
 
                 if (teamId == null)
                 {
-                    HintStatePerTeam = await _context.HintStatePerTeam.Where((h) => h.UnlockTime != null && h.Hint.Puzzle == Puzzle).ToListAsync();
+                    HintViews = await _context.HintStatePerTeam.Where((h) => h.UnlockTime != null && h.Hint.Puzzle == Puzzle)
+                            .Select(hspt => new HintView { TeamId = hspt.TeamID, TeamName = hspt.Team.Name, PuzzleId = hspt.Hint.Puzzle.ID, PuzzleName = hspt.Hint.Puzzle.Name, Description = hspt.Hint.Description, Cost = hspt.Hint.Cost, UnlockTime = hspt.UnlockTime })
+                            .ToListAsync();
                 }
                 else
                 {
-                    HintStatePerTeam = await _context.HintStatePerTeam.Where((h) => h.UnlockTime != null && h.TeamID == teamId && h.Hint.Puzzle == Puzzle).ToListAsync();
+                    HintViews = await _context.HintStatePerTeam.Where((h) => h.UnlockTime != null && h.TeamID == teamId && h.Hint.Puzzle == Puzzle)
+                            .Select(hspt => new HintView { TeamId = hspt.TeamID, TeamName = hspt.Team.Name, PuzzleId = hspt.Hint.Puzzle.ID, PuzzleName = hspt.Hint.Puzzle.Name, Description = hspt.Hint.Description, Cost = hspt.Hint.Cost, UnlockTime = hspt.UnlockTime })
+                            .ToListAsync();
                 }
             }
 
@@ -100,34 +113,34 @@ namespace ServerCore.Pages.Hints
             switch (sort ?? DefaultSort)
             {
                 case SortOrder.TeamAscending:
-                    HintStatePerTeam.Sort((a, b) => a.Team.Name.CompareTo(b.Team.Name));
+                    HintViews.Sort((a, b) => a.TeamName.CompareTo(b.TeamName));
                     break;
                 case SortOrder.TeamDescending:
-                    HintStatePerTeam.Sort((a, b) => -a.Team.Name.CompareTo(b.Team.Name));
+                    HintViews.Sort((a, b) => -a.TeamName.CompareTo(b.TeamName));
                     break;
                 case SortOrder.PuzzleAscending:
-                    HintStatePerTeam.Sort((a, b) => a.Hint.Puzzle.Name.CompareTo(b.Hint.Puzzle.Name));
+                    HintViews.Sort((a, b) => a.PuzzleName.CompareTo(b.PuzzleName));
                     break;
                 case SortOrder.PuzzleDescending:
-                    HintStatePerTeam.Sort((a, b) => -a.Hint.Puzzle.Name.CompareTo(b.Hint.Puzzle.Name));
+                    HintViews.Sort((a, b) => -a.PuzzleName.CompareTo(b.PuzzleName));
                     break;
                 case SortOrder.DescriptionAscending:
-                    HintStatePerTeam.Sort((a, b) => a.Hint.Description.CompareTo(b.Hint.Description));
+                    HintViews.Sort((a, b) => a.Description.CompareTo(b.Description));
                     break;
                 case SortOrder.DescriptionDescending:
-                    HintStatePerTeam.Sort((a, b) => -a.Hint.Description.CompareTo(b.Hint.Description));
+                    HintViews.Sort((a, b) => -a.Description.CompareTo(b.Description));
                     break;
                 case SortOrder.CostAscending:
-                    HintStatePerTeam.Sort((a, b) => a.Hint.Cost.CompareTo(b.Hint.Cost));
+                    HintViews.Sort((a, b) => a.Cost.CompareTo(b.Cost));
                     break;
                 case SortOrder.CostDescending:
-                    HintStatePerTeam.Sort((a, b) => -a.Hint.Cost.CompareTo(b.Hint.Cost));
+                    HintViews.Sort((a, b) => -a.Cost.CompareTo(b.Cost));
                     break;
                 case SortOrder.TimeAscending:
-                    HintStatePerTeam.Sort((a, b) => a.UnlockTime.Value.CompareTo(b.UnlockTime.Value));
+                    HintViews.Sort((a, b) => a.UnlockTime.Value.CompareTo(b.UnlockTime.Value));
                     break;
                 case SortOrder.TimeDescending:
-                    HintStatePerTeam.Sort((a, b) => -a.UnlockTime.Value.CompareTo(b.UnlockTime.Value));
+                    HintViews.Sort((a, b) => -a.UnlockTime.Value.CompareTo(b.UnlockTime.Value));
                     break;
             }
 
@@ -149,6 +162,17 @@ namespace ServerCore.Pages.Hints
             }
 
             return result;
+        }
+
+        public class HintView
+        {
+            public int TeamId { get; set; }
+            public string TeamName { get; set; }
+            public int PuzzleId { get; set; }
+            public string PuzzleName { get; set; }
+            public string Description { get; set; }
+            public int Cost { get; set; }
+            public DateTime? UnlockTime { get; set; }
         }
 
         public enum SortOrder
