@@ -16,7 +16,7 @@ namespace ServerCore.Pages.Swag
     /// Model for the author/admin's view of the feedback items for a specific puzzle
     /// /used for viewing and aggregating feedback for a specific puzzle
     /// </summary>
-    [Authorize(Policy = "IsEventAdminOrEventAuthor")]
+    [Authorize(Policy = "IsEventAdmin")]
     public class SwagReportModel : EventSpecificPageModel
     {
         public SwagReportModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
