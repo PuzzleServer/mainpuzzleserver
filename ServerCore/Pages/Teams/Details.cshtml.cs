@@ -13,7 +13,7 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Teams
 {
-    // Redirects to application pages / handles auth inside the OnGetAsync method
+    // Includes redirects which requires custom auth - always call the AuthChecks method & check the passed value at the start of any method
     [AllowAnonymous]
     public class DetailsModel : EventSpecificPageModel
     {
@@ -26,28 +26,44 @@ namespace ServerCore.Pages.Teams
         public string Emails { get; set; }
         public IList<Tuple<PuzzleUser, int>> Users { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int teamId = -1)
+        private async Task<(bool passed, IActionResult redirect)> AuthChecks(int teamId)
         {
-            if (teamId == -1)
+            // Force the user to log in
+            if (LoggedInUser == null)
             {
-                return NotFound("Missing team id");
+                return (false, Challenge());
             }
 
-            // Auth checks (only allow admins OR players who are on the team)
+            //Only allow admins OR players who are on the team)
             int playerTeamId = await GetTeamId();
-            if (!(EventRole == EventRole.admin || (EventRole == EventRole.play && playerTeamId == teamId)))
+            if (!((EventRole == EventRole.admin && await IsEventAdmin()) || (EventRole == EventRole.play && playerTeamId == teamId)))
             {
                 // Redirect players to the relevant page
                 if (EventRole == EventRole.play)
                 {
                     if (playerTeamId != -1)
                     {
-                        return RedirectToPage("./Details", new { teamId = playerTeamId });
+                        return (false, RedirectToPage("./Details", new { teamId = playerTeamId }));
                     }
-                    return RedirectToPage("./Apply", new { teamId = teamId });
+                    return (false, RedirectToPage("./Apply", new { teamId = teamId }));
                 }
                 // Everyone else gets an error
-                return NotFound("You do not have permission to veiw the details of this team.");
+                return (false, NotFound("You do not have permission to view the details of this team."));
+            }
+            return (true, null);
+        }
+
+        public async Task<IActionResult> OnGetAsync(int teamId = -1)
+        {
+            var authResult = await AuthChecks(teamId);
+            if (!authResult.passed)
+            {
+                return authResult.redirect;
+            }
+
+            if (teamId == -1)
+            {
+                return NotFound("Missing team id");
             }
 
             Team = await _context.Teams.FirstOrDefaultAsync(m => m.ID == teamId);
@@ -79,9 +95,10 @@ namespace ServerCore.Pages.Teams
 
         public async Task<IActionResult> OnGetRemoveMemberAsync(int teamId, int teamMemberId)
         {
-            if (LoggedInUser == null)
+            var authResult = await AuthChecks(teamId);
+            if (!authResult.passed)
             {
-                return Challenge();
+                return authResult.redirect;
             }
 
             if (EventRole == EventRole.play && !Event.IsTeamMembershipChangeActive)
@@ -118,6 +135,12 @@ namespace ServerCore.Pages.Teams
 
         public async Task<IActionResult> OnGetAddMemberAsync(int teamId, int userId, int applicationId)
         {
+            var authResult = await AuthChecks(teamId);
+            if (!authResult.passed)
+            {
+                return authResult.redirect;
+            }
+
             if (EventRole == EventRole.play && !Event.IsTeamMembershipChangeActive)
             {
                 return NotFound("Team membership change is not currently active.");
