@@ -13,7 +13,8 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Teams
 {
-    [Authorize(Policy = "IsEventAdminOrPlayerOnTeam")]
+    // Redirects to application pages / handles auth inside the OnGetAsync method
+    [AllowAnonymous]
     public class DetailsModel : EventSpecificPageModel
     {
         public DetailsModel(PuzzleServerContext context, UserManager<IdentityUser> manager) : base(context, manager)
@@ -31,11 +32,25 @@ namespace ServerCore.Pages.Teams
             {
                 return NotFound("Missing team id");
             }
-            else
+
+            // Auth checks (only allow admins OR players who are on the team)
+            int playerTeamId = await GetTeamId();
+            if (!(EventRole == EventRole.admin || (EventRole == EventRole.play && playerTeamId == teamId)))
             {
-                Team = await _context.Teams.FirstOrDefaultAsync(m => m.ID == teamId);
+                // Redirect players to the relevant page
+                if (EventRole == EventRole.play)
+                {
+                    if (playerTeamId != -1)
+                    {
+                        return RedirectToPage("./Details", new { teamId = playerTeamId });
+                    }
+                    return RedirectToPage("./Apply", new { teamId = teamId });
+                }
+                // Everyone else gets an error
+                return NotFound("You do not have permission to veiw the details of this team.");
             }
 
+            Team = await _context.Teams.FirstOrDefaultAsync(m => m.ID == teamId);
             if (Team == null)
             {
                 return NotFound("No team found with id '" + teamId + "'.");
@@ -64,6 +79,11 @@ namespace ServerCore.Pages.Teams
 
         public async Task<IActionResult> OnGetRemoveMemberAsync(int teamId, int teamMemberId)
         {
+            if (LoggedInUser == null)
+            {
+                return Challenge();
+            }
+
             if (EventRole == EventRole.play && !Event.IsTeamMembershipChangeActive)
             {
                 return NotFound("Team membership change is not currently active.");
