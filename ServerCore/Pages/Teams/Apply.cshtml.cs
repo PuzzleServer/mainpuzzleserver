@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
+using ServerCore.Helpers;
 using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Teams
@@ -23,7 +25,7 @@ namespace ServerCore.Pages.Teams
 
         public Team Team { get; set; }
 
-        public async Task<IActionResult> OnGet(int teamID)
+        public async Task<IActionResult> OnGet(int teamID, string password)
         {
             if (LoggedInUser == null)
             {
@@ -56,6 +58,16 @@ namespace ServerCore.Pages.Teams
             if (Team == null)
             {
                 return NotFound();
+            }
+
+            if (password != null && password == Team.Password)
+            {
+                Tuple<bool, string> result = await TeamHelper.AddMemberAsync(_context, Event, EventRole, teamID, LoggedInUser.ID);
+                if (result.Item1)
+                {
+                    return RedirectToPage("./Details", new { teamId = teamID });
+                }
+                return NotFound(result.Item2);
             }
 
             // Only handle one application at a time for a player to avoid spamming all teams

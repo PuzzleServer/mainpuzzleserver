@@ -15,7 +15,7 @@ namespace Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
+                .HasAnnotation("ProductVersion", "2.1.8-servicing-32085")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -217,8 +217,7 @@ namespace Data.Migrations
 
                     b.Property<int>("FileType");
 
-                    b.Property<int?>("PuzzleID")
-                        .IsRequired();
+                    b.Property<int>("PuzzleID");
 
                     b.Property<string>("ShortName")
                         .IsRequired();
@@ -695,6 +694,8 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("Bio");
+
                     b.Property<string>("CustomRoom");
 
                     b.Property<int>("EventID");
@@ -706,6 +707,8 @@ namespace Data.Migrations
                     b.Property<bool>("IsLookingForTeammates");
 
                     b.Property<string>("Name");
+
+                    b.Property<string>("Password");
 
                     b.Property<string>("PrimaryContactEmail");
 
