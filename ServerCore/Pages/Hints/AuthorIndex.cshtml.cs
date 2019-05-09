@@ -52,23 +52,21 @@ namespace ServerCore.Pages.Hints
                 }
                 else
                 {
-                    // Surely there is a way to get a join to do a bunch of this work, but joins are simply not for me. Someone else can fix later.
-                    var hintStatePerTeam = new List<HintStatePerTeam>();
-                    var authorPuzzleIDs = await UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser).Select(p => p.ID).ToListAsync();
-
                     if (teamId == null)
                     {
-                        HintViews = await _context.HintStatePerTeam.Where((h) => h.UnlockTime != null && h.Team.Event == Event)
-                            .Select(hspt => new HintView { TeamId = hspt.TeamID, TeamName = hspt.Team.Name, PuzzleId = hspt.Hint.Puzzle.ID, PuzzleName = hspt.Hint.Puzzle.Name, Description = hspt.Hint.Description, Cost = hspt.Hint.Cost, UnlockTime = hspt.UnlockTime })
-                            .ToListAsync();
-                        HintViews = HintViews.Where((h) => authorPuzzleIDs.Contains(h.PuzzleId)).ToList();
+                        HintViews = await (from p in UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser)
+                                           join hspt in _context.HintStatePerTeam on p equals hspt.Hint.Puzzle
+                                           where hspt.UnlockTime != null
+                                           select new HintView { TeamId = hspt.TeamID, TeamName = hspt.Team.Name, PuzzleId = hspt.Hint.Puzzle.ID, PuzzleName = hspt.Hint.Puzzle.Name, Description = hspt.Hint.Description, Cost = hspt.Hint.Cost, UnlockTime = hspt.UnlockTime })
+                                           .ToListAsync();
                     }
                     else
                     {
-                        HintViews = await _context.HintStatePerTeam.Where((h) => h.UnlockTime != null && h.TeamID == teamId)
-                            .Select(hspt => new HintView { TeamId = hspt.TeamID, TeamName = hspt.Team.Name, PuzzleId = hspt.Hint.Puzzle.ID, PuzzleName = hspt.Hint.Puzzle.Name, Description = hspt.Hint.Description, Cost = hspt.Hint.Cost, UnlockTime = hspt.UnlockTime })
-                            .ToListAsync();
-                        HintViews = HintViews.Where((h) => authorPuzzleIDs.Contains(h.PuzzleId)).ToList();
+                        HintViews = await (from p in UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser)
+                                           join hspt in _context.HintStatePerTeam on p equals hspt.Hint.Puzzle
+                                           where hspt.UnlockTime != null && hspt.TeamID == teamId
+                                           select new HintView { TeamId = hspt.TeamID, TeamName = hspt.Team.Name, PuzzleId = hspt.Hint.Puzzle.ID, PuzzleName = hspt.Hint.Puzzle.Name, Description = hspt.Hint.Description, Cost = hspt.Hint.Cost, UnlockTime = hspt.UnlockTime })
+                                           .ToListAsync();
                     }
                 }
             }

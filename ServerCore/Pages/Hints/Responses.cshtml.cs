@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -36,14 +37,10 @@ namespace ServerCore.Pages.Hints
             }
             else
             {
-                // Surely there is a way to get a join to do a bunch of this work, but joins are simply not for me. Someone else can fix later.
-                var hintStatePerTeam = new List<HintStatePerTeam>();
-                var authorPuzzleIDs = await UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser).Select(p => p.ID).ToListAsync();
-
-                HintViews = await _context.Hints.Where(h => h.Puzzle.Event == Event)
-                    .Select(h => new HintView { PuzzleId = h.Puzzle.ID, PuzzleName = h.Puzzle.Name, Description = h.Description, Content = h.Content, Cost = h.Cost })
-                    .ToListAsync();
-                HintViews = HintViews.Where((h) => authorPuzzleIDs.Contains(h.PuzzleId)).ToList();
+                HintViews = await (from p in UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser)
+                                   join h in _context.Hints on p equals h.Puzzle
+                                   select new HintView { PuzzleId = p.ID, PuzzleName = p.Name, Description = h.Description, Content = h.Content, Cost = h.Cost })
+                                   .ToListAsync();
             }
 
             switch (sort ?? DefaultSort)
@@ -61,10 +58,10 @@ namespace ServerCore.Pages.Hints
                     HintViews.Sort((a, b) => -a.Description.CompareTo(b.Description));
                     break;
                 case SortOrder.CostAscending:
-                    HintViews.Sort((a, b) => a.Cost.CompareTo(b.Cost));
+                    HintViews.Sort((a, b) => Math.Abs(a.Cost).CompareTo(Math.Abs(b.Cost)));
                     break;
                 case SortOrder.CostDescending:
-                    HintViews.Sort((a, b) => -a.Cost.CompareTo(b.Cost));
+                    HintViews.Sort((a, b) => -Math.Abs(a.Cost).CompareTo(Math.Abs(b.Cost)));
                     break;
             }
 

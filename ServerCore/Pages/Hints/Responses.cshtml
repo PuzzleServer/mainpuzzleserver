@@ -14,12 +14,12 @@
         <thead>
             <tr>
                 <th>
-                    <a asp-page="./AuthorIndex" asp-route-sort="@(Model.SortForColumnLink(ResponsesModel.SortOrder.PuzzleAscending, ResponsesModel.SortOrder.PuzzleDescending))">
+                    <a asp-page="./Responses" asp-route-sort="@(Model.SortForColumnLink(ResponsesModel.SortOrder.PuzzleAscending, ResponsesModel.SortOrder.PuzzleDescending))">
                         Puzzle
                     </a>
                 </th>
                 <th>
-                    <a asp-page="./AuthorIndex" asp-route-sort="@(Model.SortForColumnLink(ResponsesModel.SortOrder.DescriptionAscending, ResponsesModel.SortOrder.DescriptionDescending))">
+                    <a asp-page="./Responses" asp-route-sort="@(Model.SortForColumnLink(ResponsesModel.SortOrder.DescriptionAscending, ResponsesModel.SortOrder.DescriptionDescending))">
                         @Html.DisplayNameFor(model => model.HintViews[0].Description)
                     </a>
                 </th>
@@ -27,7 +27,7 @@
                     @Html.DisplayNameFor(model => model.HintViews[0].Content)
                 </th>
                 <th>
-                    <a asp-page="./AuthorIndex" asp-route-sort="@(Model.SortForColumnLink(ResponsesModel.SortOrder.CostAscending, ResponsesModel.SortOrder.CostDescending))">
+                    <a asp-page="./Responses" asp-route-sort="@(Model.SortForColumnLink(ResponsesModel.SortOrder.CostAscending, ResponsesModel.SortOrder.CostDescending))">
                         @Html.DisplayNameFor(model => model.HintViews[0].Cost)
                     </a>
                 </th>
@@ -38,7 +38,7 @@
             {
             <tr>
                 <td>
-                    <a asp-page="AuthorIndex">@Html.DisplayFor(modelItem => item.PuzzleName)</a>
+                    @Html.DisplayFor(modelItem => item.PuzzleName)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Description)
