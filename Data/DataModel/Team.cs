@@ -41,5 +41,15 @@ namespace ServerCore.DataModel
         /// The number of hint coins this team currently has used
         /// </summary>
         public int HintCoinsUsed { get; set; }
+
+        /// <summary>
+        /// Team bio for the signups page
+        /// </summary>
+        public string Bio { get; set; }
+
+        /// <summary>
+        /// Machine generated password for the autoinvite link
+        /// </summary>
+        public string Password { get; set; }
     }
 }

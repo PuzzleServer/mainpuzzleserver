@@ -154,6 +154,10 @@
                 <ul class="nav navbar-nav">
                     <li><a asp-page="/EventSpecific/Index">Event</a></li>
                     <li><a asp-page="/Teams/Play" asp-route-teamId="@teamId">Puzzles</a></li>
+                    @if (Event.IsInternEvent)
+                    {
+                        <li><a asp-page="/Swag/Register">Lunch/T-Shirt</a></li>
+                    }
                     <li class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                             Teams
