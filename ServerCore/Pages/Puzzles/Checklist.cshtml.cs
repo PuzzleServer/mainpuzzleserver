@@ -54,10 +54,10 @@ namespace ServerCore.Pages.Puzzles
                                                                         select new { Puzzle = authorList.Key, Authors = (from a in authorList select a.Author.Name).ToList() }).ToDictionaryAsync(x => x.Puzzle, x => x.Authors);
             Dictionary<int, ContentFile> puzzleFiles = await (from file in _context.ContentFiles
                                                               where file.Event == Event && file.FileType == ContentFileType.Puzzle
-                                                              select file).ToDictionaryAsync(file => file.Puzzle.ID);
+                                                              select file).ToDictionaryAsync(file => file.PuzzleID);
             Dictionary<int, ContentFile> puzzleAnswers = await (from file in _context.ContentFiles
                                                                 where file.Event == Event && file.FileType == ContentFileType.Answer
-                                                                select file).ToDictionaryAsync(file => file.Puzzle.ID);
+                                                                select file).ToDictionaryAsync(file => file.PuzzleID);
             Dictionary<int, List<string>> puzzlePrereqs = await (from prerequisite in _context.Prerequisites
                                                                  where prerequisite.Puzzle.Event == Event
                                                                  group prerequisite by prerequisite.PuzzleID into prereqs
