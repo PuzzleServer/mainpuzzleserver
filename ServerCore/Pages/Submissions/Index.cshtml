@@ -18,7 +18,7 @@
 @if (!string.IsNullOrEmpty(Model.Puzzle.Errata))
 {
     <div style="font-size:16px;">
-        <span style="color: red; font-weight:600;">Errata: </span>@Model.Puzzle.Errata
+        <span style="color: red; font-weight:600;">&#x26A0; Errata: </span>@Model.Puzzle.Errata
     </div>
     <br />
 }
@@ -96,7 +96,7 @@
             {
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => item.TimeSubmitted)
+                        @Html.Raw(Model.LocalTime(item.TimeSubmitted))
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Submitter.Name)

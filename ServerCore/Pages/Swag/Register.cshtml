@@ -1,0 +1,78 @@
+@page "/{eventId}/{eventRole}/Swag/Register"
+@model ServerCore.Pages.Swag.SwagRegisterModel
+
+@{
+    ViewData["Title"] = "T-Shirt and Lunch";
+    ViewData["AdminRoute"] = "/";
+    ViewData["AuthorRoute"] = "/";
+    ViewData["PlayRoute"] = "../Swag/Register";
+    var isEditable = DateTime.UtcNow <= Model.Event.TeamMiscDataChangeEnd;
+}
+
+<h2>Order T-Shirt and Lunch for @Html.DisplayFor(model => model.Event.Name)</h2>
+
+@if (isEditable)
+{
+    <div class="alert alert-danger" role="alert">
+        Please make your selections by <time>@Model.Event.TeamMiscDataChangeEnd</time>.
+    </div>
+}
+else
+{
+    <div class="alert alert-danger" role="alert">
+        We're sorry, we cannot take any further requests at this time. We will have some extras available, but we cannot guarantee that there are enough or that we will have what you want..
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Swag.Lunch" class="control-label"></label>
+                <select asp-for="Swag.Lunch" class="form-control">
+                    <option value="turkey">Thinly sliced turkey extravaganza</option>
+                    <option value="beef">Big ol' block o' beef</option>
+                    <option value="salad">green things in a bowl</option>
+                </select>
+                <span asp-validation-for="Swag.Lunch" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Swag.LunchModifications" class="control-label"></label>
+                <textarea asp-for="Swag.LunchModifications" class="form-control"></textarea>
+                <span asp-validation-for="Swag.LunchModifications" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Swag.ShirtSize" class="control-label"></label>
+                <select asp-for="Swag.ShirtSize" class="form-control">
+                    <option value="MS">Mens' S</option>
+                    <option value="MM">Mens' M</option>
+                    <option value="ML">Mens' L</option>
+                    <option value="MXL">Mens' XL</option>
+                    <option value="M2XL">Mens' 2XL</option>
+                    <option value="M3XL">Mens' 3XL</option>
+                    <option value="M4XL">Mens' 4XL</option>
+                    <option value="WXS">Womens' XS</option>
+                    <option value="WS">Womens' S</option>
+                    <option value="WM">Womens' M</option>
+                    <option value="WL">Womens' L</option>
+                    <option value="WXL">Womens' XL</option>
+                    <option value="W2XL">Womens' 2XL</option>
+                    <option value="W3XL">Womens' 3XL</option>
+                    <option value="W4XL">Womens' 4XL</option>
+                </select>
+                <span asp-validation-for="Swag.ShirtSize" class="text-danger"></span>
+            </div>
+            @if (isEditable)
+            {
+            <div class="form-group">
+                <input type="submit" value="Update" class="btn btn-default" />
+            </div>
+            }
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

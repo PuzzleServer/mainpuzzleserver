@@ -58,39 +58,45 @@ Registered Teams: <b>@Model.Teams.Count/@Model.Event.MaxNumberOfTeams</b>, Regis
                     Team name
                 </th>
                 <th>
+                    Team bio
+                </th>
+                <th>
                     Current team size
                 </th>
                 @if (Model.EventRole == ModelBases.EventRole.play && Model.Event.IsTeamMembershipChangeActive)
                 {
-                    <th>Request to join</th>
+                <th>Request to join</th>
                 }
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model.Teams)
             {
-                if (!item.Key.IsLookingForTeammates)
+                if (!item.IsLookingForTeammates)
                 {
                     continue;
                 }
 
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Key.Name)
+                        @Html.DisplayFor(modelItem => item.Name)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Value)
+                        @Html.DisplayFor(modelItem => item.Bio)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => @Model.PlayerCountByTeamID[item.ID])
                     </td>
                     @if (Model.EventRole == ModelBases.EventRole.play && Model.Event.IsTeamMembershipChangeActive)
                     {
                         <td>
-                            @if (item.Key == Model.AppliedTeam)
+                            @if (item == Model.AppliedTeam)
                             {
                                 <span><b>Request pending</b></span>
                             }
                             else
                             {
-                                <a asp-page="./Apply" asp-route-teamId="@item.Key.ID">Request to join</a>
+                                <a asp-page="./Apply" asp-route-teamId="@item.ID">Request to join</a>
                             }
                         </td>
                     }

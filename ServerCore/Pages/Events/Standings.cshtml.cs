@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
@@ -9,6 +10,7 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Events
 {
+    [Authorize(Policy = "IsRegisteredForEvent")]
     public class StandingsModel : EventSpecificPageModel
     {
         public List<TeamStats> Teams { get; private set; }
@@ -25,32 +27,51 @@ namespace ServerCore.Pages.Events
         {
             Sort = sort;
 
-            var teamsData = await PuzzleStateHelper.GetSparseQuery(_context, this.Event, null, null)
-                .Where(s => s.SolvedTime != null && s.Puzzle.IsPuzzle)
-                .GroupBy(state => state.Team)
-                .Select(g => new {
-                    Team = g.Key,
-                    SolveCount = g.Count(),
-                    Score = g.Sum(s => s.Puzzle.SolveValue),
-                    FinalMetaSolveTime = g.Where(s => s.Puzzle.IsCheatCode).Any() ?
-                        DateTime.MaxValue :
-                        (g.Where(s => s.Puzzle.IsFinalPuzzle).Select(s => s.SolvedTime).FirstOrDefault() ?? DateTime.MaxValue)
-                })
-                .OrderBy(t => t.FinalMetaSolveTime).ThenByDescending(t => t.Score).ThenBy(t => t.Team.Name)
+            var puzzleData = await _context.Puzzles
+                .Where(p => p.Event == Event && p.IsPuzzle)
+                .ToDictionaryAsync(p => p.ID, p => new { p.SolveValue, p.IsCheatCode, p.IsFinalPuzzle });
+
+            var stateData = await PuzzleStateHelper.GetSparseQuery(_context, this.Event, null, null)
+                .Where(pspt => pspt.SolvedTime != null)
+                .Select(pspt => new { pspt.PuzzleID, pspt.TeamID, pspt.SolvedTime })
                 .ToListAsync();
 
-            var teams = new List<TeamStats>(teamsData.Count);
-            TeamStats prevStats = null;
-            for (int i = 0; i < teamsData.Count; i++)
+            var teams = await _context.Teams
+                .Where(t => t.Event == Event)
+                .ToListAsync();
+
+            Dictionary<int, TeamStats> teamStats = new Dictionary<int, TeamStats>(teams.Count);
+            foreach (var t in teams)
             {
-                var data = teamsData[i];
-                var stats = new TeamStats()
+                teamStats[t.ID] = new TeamStats { Team = t, FinalMetaSolveTime = DateTime.MaxValue };
+            }
+
+            foreach (var s in stateData)
+            {
+                if (!puzzleData.TryGetValue(s.PuzzleID, out var p) || !teamStats.TryGetValue(s.TeamID, out var ts))
                 {
-                    Team = data.Team,
-                    SolveCount = data.SolveCount,
-                    Score = data.Score,
-                    FinalMetaSolveTime = data.FinalMetaSolveTime
-                };
+                    continue;
+                }
+
+                ts.Score += p.SolveValue;
+                ts.SolveCount++;
+                if (p.IsCheatCode)
+                {
+                    ts.Cheated = true;
+                    ts.FinalMetaSolveTime = DateTime.MaxValue;
+                }
+                if (p.IsFinalPuzzle && !ts.Cheated)
+                {
+                    ts.FinalMetaSolveTime = s.SolvedTime.Value;
+                }
+            }
+
+            var teamsFinal = teamStats.Values.OrderBy(t => t.FinalMetaSolveTime).ThenByDescending(t => t.Score).ThenBy(t => t.Team.Name).ToList();
+
+            TeamStats prevStats = null;
+            for (int i = 0; i < teamsFinal.Count; i++)
+            {
+                var stats = teamsFinal[i];
 
                 if (prevStats == null || stats.FinalMetaSolveTime != prevStats.FinalMetaSolveTime || stats.Score != prevStats.Score)
                 {
@@ -61,7 +82,6 @@ namespace ServerCore.Pages.Events
                     stats.Rank = prevStats.Rank;
                 }
 
-                teams.Add(stats);
                 prevStats = stats;
             }
 
@@ -70,35 +90,35 @@ namespace ServerCore.Pages.Events
                 case SortOrder.RankAscending:
                     break;
                 case SortOrder.RankDescending:
-                    teams.Reverse();
+                    teamsFinal.Reverse();
                     break;
                 case SortOrder.NameAscending:
-                    teams.Sort((a, b) => a.Team.Name.CompareTo(b.Team.Name));
+                    teamsFinal = teamsFinal.OrderBy(ts => ts.Team.Name).ToList();
                     break;
                 case SortOrder.NameDescending:
-                    teams.Sort((a, b) => -a.Team.Name.CompareTo(b.Team.Name));
+                    teamsFinal = teamsFinal.OrderByDescending(ts => ts.Team.Name).ToList();
                     break;
                 case SortOrder.PuzzlesAscending:
-                    teams.Sort((a, b) => a.SolveCount.CompareTo(b.SolveCount));
+                    teamsFinal = teamsFinal.OrderBy(ts => ts.SolveCount).ThenBy(ts => ts.Rank).ThenBy(ts => ts.Team.Name).ToList();
                     break;
                 case SortOrder.PuzzlesDescending:
-                    teams.Sort((a, b) => -a.SolveCount.CompareTo(b.SolveCount));
+                    teamsFinal = teamsFinal.OrderByDescending(ts => ts.SolveCount).ThenByDescending(ts => ts.Rank).ThenByDescending(ts => ts.Team.Name).ToList();
                     break;
                 case SortOrder.ScoreAscending:
-                    teams.Sort((a, b) => a.Score.CompareTo(b.Score));
+                    teamsFinal = teamsFinal.OrderBy(ts => ts.Score).ThenBy(ts => ts.Rank).ThenBy(ts => ts.Team.Name).ToList();
                     break;
                 case SortOrder.ScoreDescending:
-                    teams.Sort((a, b) => -a.Score.CompareTo(b.Score));
+                    teamsFinal = teamsFinal.OrderByDescending(ts => ts.Score).ThenByDescending(ts => ts.Rank).ThenByDescending(ts => ts.Team.Name).ToList();
                     break;
                 case SortOrder.HintsUsedAscending:
-                    teams.Sort((a, b) => a.Score.CompareTo(b.Team.HintCoinsUsed));
+                    teamsFinal = teamsFinal.OrderBy(ts => ts.Team.HintCoinsUsed).ThenBy(ts => ts.Rank).ThenBy(ts => ts.Team.Name).ToList();
                     break;
                 case SortOrder.HintsUsedDescending:
-                    teams.Sort((a, b) => -a.Score.CompareTo(b.Team.HintCoinsUsed));
+                    teamsFinal = teamsFinal.OrderByDescending(ts => ts.Team.HintCoinsUsed).ThenByDescending(ts => ts.Rank).ThenByDescending(ts => ts.Team.Name).ToList();
                     break;
             }
 
-            this.Teams = teams;
+            this.Teams = teamsFinal;
         }
 
         public SortOrder? SortForColumnLink(SortOrder ascendingSort, SortOrder descendingSort)
@@ -121,6 +141,7 @@ namespace ServerCore.Pages.Events
         public class TeamStats
         {
             public Team Team;
+            public bool Cheated;
             public int SolveCount;
             public int Score;
             public int? Rank;

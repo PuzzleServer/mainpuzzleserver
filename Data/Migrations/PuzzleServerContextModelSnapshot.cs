@@ -15,7 +15,7 @@ namespace Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
+                .HasAnnotation("ProductVersion", "2.1.8-servicing-32085")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -217,8 +217,7 @@ namespace Data.Migrations
 
                     b.Property<int>("FileType");
 
-                    b.Property<int?>("PuzzleID")
-                        .IsRequired();
+                    b.Property<int>("PuzzleID");
 
                     b.Property<string>("ShortName")
                         .IsRequired();
@@ -664,11 +663,38 @@ namespace Data.Migrations
                     b.ToTable("Submissions");
                 });
 
+            modelBuilder.Entity("ServerCore.DataModel.Swag", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("EventId");
+
+                    b.Property<string>("Lunch");
+
+                    b.Property<string>("LunchModifications");
+
+                    b.Property<int>("PlayerId");
+
+                    b.Property<string>("ShirtSize");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("PlayerId");
+
+                    b.ToTable("Swag");
+                });
+
             modelBuilder.Entity("ServerCore.DataModel.Team", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Bio");
 
                     b.Property<string>("CustomRoom");
 
@@ -681,6 +707,8 @@ namespace Data.Migrations
                     b.Property<bool>("IsLookingForTeammates");
 
                     b.Property<string>("Name");
+
+                    b.Property<string>("Password");
 
                     b.Property<string>("PrimaryContactEmail");
 
@@ -962,6 +990,19 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Team")
                         .WithMany("Submissions")
                         .HasForeignKey("TeamID1");
+                });
+
+            modelBuilder.Entity("ServerCore.DataModel.Swag", b =>
+                {
+                    b.HasOne("ServerCore.DataModel.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Player")
+                        .WithMany()
+                        .HasForeignKey("PlayerId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Team", b =>
