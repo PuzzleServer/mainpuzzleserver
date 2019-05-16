@@ -103,11 +103,28 @@ namespace ServerCore.Pages.Puzzles
 
             Puzzle.ID = puzzleId; // to be safe
 
+            string oldErrata = await (from Puzzle puzzle in _context.Puzzles
+                                      where puzzle.ID == puzzleId
+                                      select puzzle.Errata).FirstOrDefaultAsync();
+
             _context.Attach(Puzzle).State = EntityState.Modified;
 
             try
             {
                 await _context.SaveChangesAsync();
+
+                if (Puzzle.Errata != oldErrata)
+                {
+                    // Notify relevant teams that the errata was updated
+                    List<string> teamMembers = await (from TeamMembers tm in _context.TeamMembers
+                                                      join PuzzleStatePerTeam pspt in _context.PuzzleStatePerTeam on tm.Team equals pspt.Team
+                                                      where pspt.PuzzleID == Puzzle.ID && pspt.UnlockedTime != null
+                                                      select tm.Member.Email).ToListAsync();
+
+                    MailHelper.Singleton.SendPlaintextBcc(teamMembers,
+                        $"{Event.Name}: Errata updated for {Puzzle.Name}",
+                        $"{Puzzle.Name} has been updated with the following errata:\n\n{Puzzle.Errata}");
+                }
             }
             catch (DbUpdateConcurrencyException)
             {
