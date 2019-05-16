@@ -41,11 +41,21 @@ else
         <span asp-validation-for="Team.RoomID" class="text-danger"></span>
     </div>
     -->
-            <div class="form-group">
-                <label asp-for="Team.CustomRoom" class="control-label">Team room</label>
-                <input asp-for="Team.CustomRoom" class="form-control" />
-                <span asp-validation-for="Team.CustomRoom" class="text-danger"></span>
-            </div>
+            @if (Model.Event.IsInternEvent && Model.EventRole == ModelBases.EventRole.play)
+            {
+                <div class="form-group">
+                    <label asp-for="Team.CustomRoom" class="control-label">Team room (selected by organizers)</label>
+                    <p>@Html.DisplayFor(model => model.Team.CustomRoom)</p>
+                </div>
+            }
+            else
+            {
+                <div class="form-group">
+                    <label asp-for="Team.CustomRoom" class="control-label">Team room</label>
+                    <input asp-for="Team.CustomRoom" class="form-control" />
+                    <span asp-validation-for="Team.CustomRoom" class="text-danger"></span>
+                </div>
+            }
             <div class="form-group">
                 <label asp-for="Team.PrimaryContactEmail" class="control-label">Primary contact e-mail(s), separated by , or ;</label>
                 <input asp-for="Team.PrimaryContactEmail" class="form-control" />
