@@ -91,6 +91,8 @@ namespace ServerCore.Pages.Teams
 
             Team.Event = Event;
 
+            Team.Password = Guid.NewGuid().ToString();
+
             using (IDbContextTransaction transaction = _context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable))
             {
                 if (await _context.Teams.Where((t) => t.Event == Event).CountAsync() >= Event.MaxNumberOfTeams)

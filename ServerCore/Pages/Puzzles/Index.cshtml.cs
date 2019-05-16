@@ -31,7 +31,7 @@ namespace ServerCore.Pages.Puzzles
             List<Puzzle> puzzles = await PuzzleHelper.GetPuzzles(_context, Event, LoggedInUser, EventRole);
             Dictionary<int, ContentFile> puzzleFiles = await (from file in _context.ContentFiles
                                                               where file.Event == Event && file.FileType == ContentFileType.Puzzle
-                                                              select file).ToDictionaryAsync(file => file.Puzzle.ID);
+                                                              select file).ToDictionaryAsync(file => file.PuzzleID);
 
             Puzzles = new List<PuzzleView>();
             foreach (Puzzle puzzle in puzzles)

@@ -26,7 +26,10 @@
     @if(Model.Team != null) { <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="">Clear Team Filter</a> }  
     @if(Model.Puzzle != null && Model.Team != null) { <text>|</text> <a asp-page="./AuthorIndex" asp-route-puzzleId="" asp-route-teamId="">Clear All Filters</a> }  
 </div>
-
+<br/>
+<div>
+    Submitted answers shown below are capitalized and stripped of non-alphanumeric characters
+</div>
 <br />
 <div>
     <table class="table">
@@ -85,7 +88,7 @@
                     @Html.DisplayFor(modelItem => item.SubmissionText)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.TimeSubmitted)
+                    @Html.Raw(Model.LocalTime(item.TimeSubmitted))
                 </td>
             </tr>
             }

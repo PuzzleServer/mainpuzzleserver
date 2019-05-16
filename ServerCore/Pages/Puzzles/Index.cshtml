@@ -8,6 +8,8 @@
     ViewData["PlayRoute"] = "/Teams/Play";
 }
 
+<!-- TODO - figure out why site.min.css isn't working & remove this once it is -->
+<!-- Github issue https://github.com/PuzzleServer/mainpuzzleserver/issues/413 -->
 <style>
     .shortcut-menu-dropdown {
         position: relative;
@@ -35,6 +37,7 @@
     <a asp-page="Create">Create new</a> |
     <a asp-page="/Submissions/AuthorIndex">View all submissions</a> |
     <a asp-page="/Puzzles/Feedback">View all feedback</a> |
+    <a asp-page="/Hints/Responses">View all hint responses</a> |
     <a asp-page="/Hints/AuthorIndex">View all hints taken</a> |
     <a asp-page="/Puzzles/Checklist">View puzzle checklist</a>
 </p>

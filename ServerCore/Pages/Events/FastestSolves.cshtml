@@ -2,6 +2,7 @@
 @model ServerCore.Pages.Events.FastestSolvesModel
 
 @{
+    @using System;
     ViewData["Title"] = "Fastest Solves";
     ViewData["AdminRoute"] = "/Events/FastestSolves";
     ViewData["AuthorRoute"] = "/Events/FastestSolves";
@@ -36,6 +37,8 @@
             <tbody>
         @for (int y = 0; y < Model.Puzzles.Count; y++) {
             var puzzle = Model.Puzzles[y];
+            Func<TimeSpan, string> convertTimeToString = ts => string.Format("{0:00}.{1:00}:{2:00}:{3:00}", ts.TotalDays, Math.Abs(ts.Hours), Math.Abs(ts.Minutes), Math.Abs(ts.Seconds));
+
                 <tr>
                     <td>
                         @(puzzle.SortOrder + 1)
@@ -50,19 +53,19 @@
                     <td>
                         @if (puzzle.Fastest.Length >= 1)
                         {
-                            <text>@puzzle.Fastest[0].Name (@puzzle.Fastest[0].Time)</text>
+                            <text>@puzzle.Fastest[0].Name (@convertTimeToString(puzzle.Fastest[0].Time.Value))</text>
                         }
                     </td>
                     <td>
                         @if (puzzle.Fastest.Length >= 2)
                         {
-                            <text>@puzzle.Fastest[1].Name (@puzzle.Fastest[1].Time)</text>
+                            <text>@puzzle.Fastest[1].Name (@convertTimeToString(puzzle.Fastest[1].Time.Value))</text>
                         }
                     </td>
                     <td>
                         @if (puzzle.Fastest.Length >= 3)
                         {
-                            <text>@puzzle.Fastest[2].Name (@puzzle.Fastest[2].Time)</text>
+                            <text>@puzzle.Fastest[2].Name (@convertTimeToString(puzzle.Fastest[2].Time.Value))</text>
                         }
                     </td>
                 </tr>

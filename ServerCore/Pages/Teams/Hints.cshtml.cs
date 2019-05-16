@@ -75,6 +75,15 @@ namespace ServerCore.Pages.Teams
                 {
                     hint.Discount = discount;
                 }
+
+                // if the event is over, show all hints
+                if (Event.AreAnswersAvailableNow && Team.Name.Contains("Archive"))
+                {
+                    foreach (HintWithState hint in Hints)
+                    {
+                        hint.IsUnlocked = true;
+                    }
+                }
             }
             return Hints;
         }
