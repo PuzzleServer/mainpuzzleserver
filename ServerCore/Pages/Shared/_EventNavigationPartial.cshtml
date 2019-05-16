@@ -156,7 +156,14 @@
                     <li><a asp-page="/Teams/Play" asp-route-teamId="@teamId">Puzzles</a></li>
                     @if (Event.IsInternEvent)
                     {
-                        <li><a asp-page="/Swag/Register">Lunch/T-Shirt</a></li>
+                        if (DateTime.UtcNow > Event.TeamMiscDataChangeEnd || await Model.HasSwag())
+                        {
+                            <li><a asp-page="/Swag/Register">Lunch/T-Shirt</a></li>
+                        }
+                        else
+                        {
+                            <li><a style="color:yellow" asp-page="/Swag/Register"> Order Lunch/T-Shirt by @(Event.TeamMiscDataChangeEnd.ToString("M/dd"))!</a></li>
+                        }
                     }
                     <li class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
@@ -223,7 +230,7 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li><a asp-page="/EventSpecific/Index">Event</a></li>
-                    <li><a asp-page="/Teams/List">Register</a></li>
+                    <li><a style="color:yellow" asp-page="/Teams/List">Register</a></li>
                     <li><a asp-page="/Teams/AllTeams">View all teams</a></li>
                     <li class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
