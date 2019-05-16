@@ -163,13 +163,58 @@ namespace ServerCore.Pages.Teams
             {
                 return Forbid();
             }
-            
+
             Tuple<bool, string> result = TeamHelper.AddMemberAsync(_context, Event, EventRole, teamId, userId).Result;
             if (result.Item1)
             {
                 return RedirectToPage("./Details", new { teamId = teamId });
             }
             return NotFound(result.Item2);
+        }
+
+        public async Task<IActionResult> OnGetRejectMemberAsync(int teamId, int userId, int applicationId)
+        {
+            var authResult = await AuthChecks(teamId);
+            if (!authResult.passed)
+            {
+                return authResult.redirect;
+            }
+
+            if (EventRole == EventRole.play && !Event.IsTeamMembershipChangeActive)
+            {
+                return NotFound("Team membership change is not currently active.");
+            }
+
+            TeamApplication application = await (from app in _context.TeamApplications
+                                                 where app.ID == applicationId
+                                                 select app).FirstOrDefaultAsync();
+            if (application == null)
+            {
+                return NotFound("Could not find application");
+            }
+
+            if (application.Player.ID != userId)
+            {
+                return NotFound("Mismatched player and application");
+            }
+            Team team = await _context.Teams.FirstOrDefaultAsync(m => m.ID == teamId);
+            if (application.Team != team)
+            {
+                return Forbid();
+            }
+
+            var allApplications = from app in _context.TeamApplications
+                                  where app.Player == application.Player &&
+                                  app.Team.Event == Event
+                                  select app;
+            _context.TeamApplications.RemoveRange(allApplications);
+            await _context.SaveChangesAsync();
+
+            MailHelper.Singleton.SendPlaintextWithoutBcc(new string[] { team.PrimaryContactEmail, application.Player.Email },
+                $"{Event.Name}: Your application was rejected from {team.Name}",
+                $"Sorry! You can apply to another team if you wish.");
+
+            return RedirectToPage("./Details", new { teamId = teamId });
         }
     }
 }
