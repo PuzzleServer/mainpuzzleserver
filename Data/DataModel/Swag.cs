@@ -19,7 +19,7 @@ namespace ServerCore.DataModel
         [Display(Name ="Lunch Selection")]
         public string Lunch { get; set; }
 
-        [Display(Name = "Modifications (e.g. no pickles, etc.)")]
+        [Display(Name = "Dietary Modifications (e.g. no cheese)")]
         public string LunchModifications { get; set; }
 
         [Display(Name = "T-Shirt Size")]

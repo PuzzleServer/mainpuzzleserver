@@ -14,7 +14,7 @@
 @if (isEditable)
 {
     <div class="alert alert-danger" role="alert">
-        Please make your selections by <time>@Model.Event.TeamMiscDataChangeEnd</time>.
+        Please make your selections by @Html.Raw(Model.LocalTime(Model.Event.TeamMiscDataChangeEnd)).
     </div>
 }
 else
@@ -31,9 +31,13 @@ else
             <div class="form-group">
                 <label asp-for="Swag.Lunch" class="control-label"></label>
                 <select asp-for="Swag.Lunch" class="form-control">
-                    <option value="turkey">Thinly sliced turkey extravaganza</option>
-                    <option value="beef">Big ol' block o' beef</option>
-                    <option value="salad">green things in a bowl</option>
+                    <option value="smoked-turkey">Smoked Turkey and Havarti Cheese</option>
+                    <option value="chipotle-chicken">Chipotle Chicken Sandwich</option>
+                    <option value="chicken-club">Honey Mustard Chicken Club</option>
+                    <option value="loaded-sub">Fully Loaded Sub</option>
+                    <option value="tom-mozz-avo">Tomato-Mozzarella-Avocado Sandwich (Vegetarian)</option>
+                    <option value="cobb-salad">Cobb Salad (chicken, egg, avocado, cheese)</option>
+                    <option value="none-of-the-above">None of the bove (explain in dietary modifications)</option>
                 </select>
                 <span asp-validation-for="Swag.Lunch" class="text-danger"></span>
             </div>
@@ -45,21 +49,19 @@ else
             <div class="form-group">
                 <label asp-for="Swag.ShirtSize" class="control-label"></label>
                 <select asp-for="Swag.ShirtSize" class="form-control">
-                    <option value="MS">Mens' S</option>
-                    <option value="MM">Mens' M</option>
-                    <option value="ML">Mens' L</option>
-                    <option value="MXL">Mens' XL</option>
-                    <option value="M2XL">Mens' 2XL</option>
-                    <option value="M3XL">Mens' 3XL</option>
-                    <option value="M4XL">Mens' 4XL</option>
-                    <option value="WXS">Womens' XS</option>
-                    <option value="WS">Womens' S</option>
-                    <option value="WM">Womens' M</option>
-                    <option value="WL">Womens' L</option>
-                    <option value="WXL">Womens' XL</option>
-                    <option value="W2XL">Womens' 2XL</option>
-                    <option value="W3XL">Womens' 3XL</option>
-                    <option value="W4XL">Womens' 4XL</option>
+                    <option value="MS">Mens' Small</option>
+                    <option value="MM">Mens' Medium</option>
+                    <option value="ML">Mens' Large</option>
+                    <option value="MXL">Mens' X-Large</option>
+                    <option value="M2XL">Mens' XX-Large</option>
+                    <option value="M3XL">Mens' XXX-Large</option>
+                    <option value="WXS">Womens' X-Small</option>
+                    <option value="WS">Womens' Small</option>
+                    <option value="WM">Womens' Medium</option>
+                    <option value="WL">Womens' Large</option>
+                    <option value="WXL">Womens' X-Large</option>
+                    <option value="W2XL">Womens' XX-Large</option>
+                    <option value="W3XL">Womens' XXX-Large</option>
                 </select>
                 <span asp-validation-for="Swag.ShirtSize" class="text-danger"></span>
             </div>

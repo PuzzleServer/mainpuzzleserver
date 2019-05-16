@@ -95,6 +95,11 @@ namespace ServerCore.ModelBases
             return isEventAdmin.Value;
         }
 
+        public async Task<bool> HasSwag()
+        {
+            return Event.IsInternEvent && await _context.Swag.Where(m => m.Event == Event && m.Player == LoggedInUser).AnyAsync();
+        }
+
         public async Task<int> GetTeamId()
         {
             if (EventRole == ModelBases.EventRole.play)
