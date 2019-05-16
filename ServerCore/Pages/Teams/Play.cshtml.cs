@@ -25,6 +25,8 @@ namespace ServerCore.Pages.Teams
 
         public IList<PuzzleView> PuzzleViews { get; set; }
 
+        public PuzzleStateFilter? StateFilter { get; set; }
+
         public int TeamID { get; set; }
 
         public SortOrder? Sort { get; set; }
@@ -35,7 +37,7 @@ namespace ServerCore.Pages.Teams
 
         public bool AllowFeedback { get; set; }
 
-        public async Task OnGetAsync(SortOrder? sort, int teamId)
+        public async Task OnGetAsync(SortOrder? sort, int teamId, PuzzleStateFilter? stateFilter)
         {
             TeamID = teamId;
             Team myTeam = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
@@ -49,6 +51,7 @@ namespace ServerCore.Pages.Teams
                 throw new Exception("Not currently registered for a team");
             }
             this.Sort = sort;
+            this.StateFilter = stateFilter;
 
             ShowAnswers = Event.AnswersAvailableBegin <= DateTime.UtcNow;
             AllowFeedback = Event.AllowFeedback;
@@ -97,13 +100,18 @@ namespace ServerCore.Pages.Teams
                     throw new ArgumentException($"unknown sort: {sort}");
             }
 
+            if (this.StateFilter == PuzzleStateFilter.Unsolved)
+            {
+                visiblePuzzlesQ = visiblePuzzlesQ.Where(puzzles => puzzles.SolvedTime == null);
+            }
+
             PuzzleViews = await visiblePuzzlesQ.ToListAsync();
 
             Dictionary<int, ContentFile> files = await (from file in _context.ContentFiles
                                                         where file.Event == Event && file.FileType == ContentFileType.Puzzle
                                                         select file).ToDictionaryAsync(file => file.PuzzleID);
 
-            foreach(var puzzleView in PuzzleViews)
+            foreach (var puzzleView in PuzzleViews)
             {
                 files.TryGetValue(puzzleView.ID, out ContentFile content);
                 puzzleView.Content = content;
@@ -112,8 +120,8 @@ namespace ServerCore.Pages.Teams
             if (ShowAnswers)
             {
                 Dictionary<int, ContentFile> answers = await (from file in _context.ContentFiles
-                                                            where file.Event == Event && file.FileType == ContentFileType.Answer
-                                                            select file).ToDictionaryAsync(file => file.PuzzleID);
+                                                              where file.Event == Event && file.FileType == ContentFileType.Answer
+                                                              select file).ToDictionaryAsync(file => file.PuzzleID);
 
                 foreach (var puzzleView in PuzzleViews)
                 {
@@ -161,6 +169,12 @@ namespace ServerCore.Pages.Teams
             GroupDescending,
             SolveAscending,
             SolveDescending
+        }
+
+        public enum PuzzleStateFilter
+        {
+            All,
+            Unsolved
         }
     }
 }

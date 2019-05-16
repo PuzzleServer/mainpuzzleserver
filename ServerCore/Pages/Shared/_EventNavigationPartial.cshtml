@@ -2,8 +2,13 @@
     var eventPage = Model as ServerCore.ModelBases.EventSpecificPageModel;
     var Event = eventPage?.Event;
     var EventRole = eventPage?.EventRole;
-    var IsRegistered = eventPage?.IsRegisteredUser().Result ?? false;
-    var teamId = eventPage?.GetTeamId().Result;
+    bool IsRegistered = false;
+    int? teamId = null;
+    if (eventPage != null)
+    {
+        IsRegistered = await eventPage.IsRegisteredUser();
+        teamId = await eventPage.GetTeamId();
+    }
 }
 
 <!--ADMIN NAV BAR-->

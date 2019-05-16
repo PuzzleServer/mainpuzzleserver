@@ -20,10 +20,15 @@
             <input type="hidden" asp-for="Puzzle.ID" />
             <label class="control-label">Puzzle File</label>
             <div>
-                @if (Model.Puzzle.PuzzleFile != null)
-                {
-                    @Html.ActionLink(Model.Puzzle.PuzzleFile.ShortName, "Index", "Files", new { eventId = Model.Event.ID, filename = Model.Puzzle.PuzzleFile.ShortName })
-                    <button type="submit" asp-route-id="@Model.Puzzle.ID" asp-route-fileId="@Model.Puzzle.PuzzleFile.ID" asp-page-handler="Delete">Delete</button>
+                @{                    
+                    var puzzleFile = Model.Puzzle.PuzzleFile;
+
+                    if (puzzleFile != null)
+                    {
+                        @Html.ActionLink(puzzleFile.ShortName, "Index", "Files", new { eventId = Model.Event.ID, filename = puzzleFile.ShortName })
+                        <a href="@puzzleFile.UrlString">[Raw]</a>
+                        <button type="submit" asp-route-id="@Model.Puzzle.ID" asp-route-fileId="@puzzleFile.ID" asp-page-handler="Delete">Delete</button>
+                    }
                 }
             </div>
             <input asp-for="PuzzleFile" class="form-control" style="height:auto" />
@@ -32,10 +37,15 @@
 
             <label class="control-label">Answer File</label>
             <div>
-                @if (Model.Puzzle.AnswerFile != null)
-                {
-                    @Html.ActionLink(Model.Puzzle.AnswerFile.ShortName, "Index", "Files", new { eventId = Model.Event.ID, filename = Model.Puzzle.AnswerFile.ShortName })
-                    <button type="submit" asp-route-id="@Model.Puzzle.ID" asp-route-fileId="@Model.Puzzle.AnswerFile.ID" asp-page-handler="Delete">Delete</button>
+                @{
+                    var answerFile = Model.Puzzle.AnswerFile;
+                    if (answerFile != null)
+                    {
+                        @Html.ActionLink(answerFile.ShortName, "Index", "Files", new { eventId = Model.Event.ID, filename = answerFile.ShortName })
+                        <a href="@answerFile.UrlString">[Raw]</a>
+    
+                        <button type="submit" asp-route-id="@Model.Puzzle.ID" asp-route-fileId="@answerFile.ID" asp-page-handler="Delete">Delete</button>
+                    }
                 }
             </div>
             <input asp-for="AnswerFile" class="form-control" style="height:auto" />
@@ -43,11 +53,12 @@
             <hr />
 
             <label class="control-label">Materials</label>
-            @foreach (var puzzleFile in Model.Puzzle.Materials)
+            @foreach (var material in Model.Puzzle.Materials)
             {
                 <p>
-                    @Html.ActionLink(puzzleFile.ShortName, "Index", "Files", new { eventId = Model.Event.ID, filename = puzzleFile.ShortName })
-                    <button type="submit" asp-route-id="@Model.Puzzle.ID" asp-route-fileId="@puzzleFile.ID" asp-page-handler="Delete">Delete</button>
+                    @Html.ActionLink(material.ShortName, "Index", "Files", new { eventId = Model.Event.ID, filename = material.ShortName })
+                    <a href="@material.UrlString">[Raw]</a>
+                    <button type="submit" asp-route-id="@Model.Puzzle.ID" asp-route-fileId="@material.ID" asp-page-handler="Delete">Delete</button>
                 </p>
             }
             <input asp-for="PuzzleMaterialFiles" class="form-control" style="height:auto" />
@@ -59,6 +70,7 @@
             {
                 <p>
                     @Html.ActionLink(solveFile.ShortName, "Index", "Files", new { eventId = Model.Event.ID, filename = solveFile.ShortName })
+                    <a href="@solveFile.UrlString">[Raw]</a>
                     <button type="submit" asp-route-id="@Model.Puzzle.ID" asp-route-fileId="@solveFile.ID" asp-page-handler="Delete">Delete</button>
                 </p>
             }
