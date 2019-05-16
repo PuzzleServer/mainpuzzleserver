@@ -706,7 +706,8 @@ namespace Data.Migrations
 
                     b.Property<bool>("IsLookingForTeammates");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .IsRequired();
 
                     b.Property<string>("Password");
 
