@@ -1,6 +1,9 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
+    @{
+        var ev = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Event;
+    }
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Microsoft Puzzle Server</title>
@@ -16,6 +19,13 @@
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
     </environment>
 
+    <!-- TODO: Make this actually scalable and correct -->
+    @if (ev != null)
+    {
+        <link rel="stylesheet" href="~/css/@(ev.UrlString)/styles.css" />
+    }
+    <link href="https://fonts.googleapis.com/css?family=Montserrat|Staatliches" rel="stylesheet">
+
     <!-- TODO: Remove when menus are implemented -->
     <style>
         .nav i {
@@ -25,10 +35,10 @@
     </style>
 </head>
 <body>
-    @{
-        var Event = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Event;
-        var EventRole = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.EventRole;
-    }
+@{
+    var Event = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Event;
+    var EventRole = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.EventRole;
+}
     <!--CURRENT NAV BAR-->
     @if (Event == null)
     {
