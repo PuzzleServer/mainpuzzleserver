@@ -1,0 +1,55 @@
+@page  "/{eventId}/{eventRole}/Swag/Report"
+@model ServerCore.Pages.Swag.SwagReportModel
+
+@{
+    ViewData["Title"] = "Lunch/TShirt Report";
+    ViewData["AdminRoute"] = "../Swag/Report";
+    ViewData["AuthorRoute"] = "../Swag/Report";
+    ViewData["PlayRoute"] = "../Swag/Report";
+}
+
+<h2>Lunch and T-Shirt Report</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.SwagViews[0].TeamName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SwagViews[0].PlayerName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SwagViews[0].Lunch)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SwagViews[0].LunchModifications)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SwagViews[0].ShirtSize)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.SwagViews)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(model => item.TeamName)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.PlayerName)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Lunch)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.LunchModifications)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.ShirtSize)
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

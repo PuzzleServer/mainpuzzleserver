@@ -13,7 +13,8 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Teams
 {
-    [Authorize(Policy = "IsEventAdminOrPlayerOnTeam")]
+    // Includes redirects which requires custom auth - always call the AuthChecks method & check the passed value at the start of any method
+    [AllowAnonymous]
     public class DetailsModel : EventSpecificPageModel
     {
         public DetailsModel(PuzzleServerContext context, UserManager<IdentityUser> manager) : base(context, manager)
@@ -25,17 +26,47 @@ namespace ServerCore.Pages.Teams
         public string Emails { get; set; }
         public IList<Tuple<PuzzleUser, int>> Users { get; set; }
 
+        private async Task<(bool passed, IActionResult redirect)> AuthChecks(int teamId)
+        {
+            // Force the user to log in
+            if (LoggedInUser == null)
+            {
+                return (false, Challenge());
+            }
+
+            //Only allow admins OR players who are on the team)
+            int playerTeamId = await GetTeamId();
+            if (!((EventRole == EventRole.admin && await IsEventAdmin()) || (EventRole == EventRole.play && playerTeamId == teamId)))
+            {
+                // Redirect players to the relevant page
+                if (EventRole == EventRole.play)
+                {
+                    if (playerTeamId != -1)
+                    {
+                        return (false, RedirectToPage("./Details", new { teamId = playerTeamId }));
+                    }
+                    return (false, RedirectToPage("./Apply", new { teamId = teamId }));
+                }
+                // Everyone else gets an error
+                return (false, NotFound("You do not have permission to view the details of this team."));
+            }
+            return (true, null);
+        }
+
         public async Task<IActionResult> OnGetAsync(int teamId = -1)
         {
+            var authResult = await AuthChecks(teamId);
+            if (!authResult.passed)
+            {
+                return authResult.redirect;
+            }
+
             if (teamId == -1)
             {
                 return NotFound("Missing team id");
             }
-            else
-            {
-                Team = await _context.Teams.FirstOrDefaultAsync(m => m.ID == teamId);
-            }
 
+            Team = await _context.Teams.FirstOrDefaultAsync(m => m.ID == teamId);
             if (Team == null)
             {
                 return NotFound("No team found with id '" + teamId + "'.");
@@ -64,6 +95,12 @@ namespace ServerCore.Pages.Teams
 
         public async Task<IActionResult> OnGetRemoveMemberAsync(int teamId, int teamMemberId)
         {
+            var authResult = await AuthChecks(teamId);
+            if (!authResult.passed)
+            {
+                return authResult.redirect;
+            }
+
             if (EventRole == EventRole.play && !Event.IsTeamMembershipChangeActive)
             {
                 return NotFound("Team membership change is not currently active.");
@@ -98,6 +135,12 @@ namespace ServerCore.Pages.Teams
 
         public async Task<IActionResult> OnGetAddMemberAsync(int teamId, int userId, int applicationId)
         {
+            var authResult = await AuthChecks(teamId);
+            if (!authResult.passed)
+            {
+                return authResult.redirect;
+            }
+
             if (EventRole == EventRole.play && !Event.IsTeamMembershipChangeActive)
             {
                 return NotFound("Team membership change is not currently active.");
