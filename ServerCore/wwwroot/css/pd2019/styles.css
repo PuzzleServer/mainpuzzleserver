@@ -3,7 +3,7 @@
     font-family: 'Staatliches';
     text-transform: uppercase;
     font-size: 8rem;
-    color: #557C5A; /*#7C6E55;*/
+    color: #557C5A;
 }
 
 .pd2019-logo {
@@ -33,7 +33,7 @@
     min-width: 50rem;
     margin: 1rem;
     padding: 2rem 1rem;
-    background-color: rgba(191, 241, 169, 0.11); /*rgba(241, 218, 169, 0.33);*/
+    background-color: rgba(191, 241, 169, 0.11);
     border: 1px dashed #B2A171;
     border-radius: 0 2rem;
 }
@@ -43,14 +43,14 @@
     font-size: 2.4rem;
 }
     
-    /* pd2019 overrides */
+/* pd2019 overrides */
 body {
     font-family: 'Montserrat';
     font-size: 1.4rem;
 }
 
 .player-menu {
-    background-color: #293D2C;/*#483F32;*/
+    background-color: #293D2C;
     border-color: #080808;
     font-weight: bold;
 }

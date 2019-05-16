@@ -2,6 +2,8 @@
 <html>
 <head>
     @{
+        // Using ev here so that it isn't the same as Event that we bind in the <body>
+        // Works fine if we use Event, but VS will yell at you with an error in the IDE
         var ev = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Event;
     }
     <meta charset="utf-8" />
