@@ -274,10 +274,10 @@
                                 @Html.DisplayNameFor(model => model.Users[0].Item1.EmployeeAlias)
                             </th>
                             <th>
-                                Approve player
+                                Approve application
                             </th>
                             <th>
-                                Reject player
+                                Reject application
                             </th>
                         </tr>
                     </thead>
@@ -302,10 +302,10 @@
                                     }
                                 </td>
                                 <td>
-                                    <a asp-page-handler="AddMember" asp-route-teamId="@Model.Team.ID" asp-route-userId="@item.Item1.ID" asp-route-applicationId="@item.Item2">Approve</a>
+                                    <a asp-page-handler="AddMember" asp-route-teamId="@Model.Team.ID" asp-route-applicationId="@item.Item2">Approve</a>
                                 </td>
                                 <td>
-                                    <a asp-page-handler="RejectMember" asp-route-teamId="@Model.Team.ID" asp-route-userId="@item.Item1.ID" asp-route-applicationId="@item.Item2">Reject</a>
+                                    <a asp-page-handler="RejectMember" asp-route-teamId="@Model.Team.ID" asp-route-applicationId="@item.Item2">Reject</a>
                                 </td>
                             </tr>
                         }

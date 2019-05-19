@@ -118,12 +118,12 @@ namespace ServerCore.Helpers
                 $"{Event.Name}: {user.Name} has now joined {team.Name}!",
                 $"Have a great time!");
 
-            currentTeamMembers = await context.TeamMembers.Where(members => members.Team.ID == team.ID).ToListAsync();
-            if (currentTeamMembers.Count >= Event.MaxTeamSize)
+            var teamCount = await context.TeamMembers.Where(members => members.Team.ID == team.ID).CountAsync();
+            if (teamCount >= Event.MaxTeamSize)
             {
-                var extraApplications = from app in context.TeamApplications
+                var extraApplications = await (from app in context.TeamApplications
                                         where app.Team == team
-                                        select app;
+                                        select app).ToListAsync();
                 context.TeamApplications.RemoveRange(extraApplications);
 
                 var extraApplicationMails = from app in extraApplications
