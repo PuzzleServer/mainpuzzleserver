@@ -14,7 +14,7 @@
 <!--ADMIN NAV BAR-->
 @if (Event != null && EventRole != null && EventRole == ModelBases.EventRole.admin)
 {
-    <nav class="navbar navbar-inverse navbar-fixed-top admin-menu">
+    <nav class="navbar navbar-inverse navbar-static-top admin-menu">
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -23,10 +23,14 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" data-toggle="dropdown" href="#">
-                    @Event.Name - Admin
-                </a>
-                <partial name="/Pages/Shared/_RoleSwitcherPartial.cshtml" />
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a class="navbar-brand" data-toggle="dropdown" href="#">
+                            @Event.Name - Admin
+                        </a>
+                        <partial name="/Pages/Shared/_RoleSwitcherPartial.cshtml" />
+                    </li>
+                </ul>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
@@ -83,7 +87,7 @@
 <!--AUTHOR NAV BAR-->
 @if (Event != null && EventRole != null && EventRole == ModelBases.EventRole.author)
 {
-    <nav class="navbar navbar-inverse navbar-fixed-top author-menu">
+    <nav class="navbar navbar-inverse navbar-static-top author-menu">
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -92,10 +96,14 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" data-toggle="dropdown" href="#">
-                    @Event.Name - Author
-                </a>
-                <partial name="/Pages/Shared/_RoleSwitcherPartial.cshtml" />
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a class="navbar-brand" data-toggle="dropdown" href="#">
+                            @Event.Name - Author
+                        </a>
+                        <partial name="/Pages/Shared/_RoleSwitcherPartial.cshtml" />
+                    </li>
+                </ul>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
@@ -141,7 +149,7 @@
 <!--REGISTERED PLAYER NAV BAR-->
 @if (Event != null && (EventRole == null || (EventRole != ModelBases.EventRole.admin && EventRole != ModelBases.EventRole.author)) && IsRegistered)
 {
-    <nav class="navbar navbar-inverse navbar-fixed-top player-menu">
+    <nav class="navbar navbar-inverse navbar-static-top player-menu">
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -150,10 +158,14 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" data-toggle="dropdown" href="#">
-                    @Event.Name
-                </a>
-                <partial name="/Pages/Shared/_RoleSwitcherPartial.cshtml" />
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a class="navbar-brand" data-toggle="dropdown" href="#">
+                            @Event.Name
+                        </a>
+                        <partial name="/Pages/Shared/_RoleSwitcherPartial.cshtml" />
+                    </li>
+                </ul>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
@@ -163,11 +175,11 @@
                     {
                         if (DateTime.UtcNow > Event.TeamMiscDataChangeEnd || await Model.HasSwag())
                         {
-                            <li><a asp-page="/Swag/Register">Lunch/T-Shirt</a></li>
+                            <li><a asp-page="/Swag/Register" title="Lunch/T-Shirt">&#x1f96a/&#x1f455</a></li>
                         }
                         else
                         {
-                            <li><a style="color:yellow" asp-page="/Swag/Register"> Order Lunch/T-Shirt by @(Event.TeamMiscDataChangeEnd.ToString("M/dd"))!</a></li>
+                            <li><a style="color:yellow" asp-page="/Swag/Register" title="Lunch/T-Shirt">&#x1f96a/&#x1f455 by @(Event.TeamMiscDataChangeEnd.ToString("M/dd"))!</a></li>
                         }
                     }
                     <li class="dropdown">
@@ -218,7 +230,7 @@
 <!--UNREGISTERED PLAYER NAV BAR-->
 @if (Event != null && (EventRole == null || (EventRole != ModelBases.EventRole.admin && EventRole != ModelBases.EventRole.author)) && !IsRegistered)
 {
-    <nav class="navbar navbar-inverse navbar-fixed-top player-menu">
+    <nav class="navbar navbar-inverse navbar-static-top player-menu">
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -227,10 +239,14 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" data-toggle="dropdown" href="#">
-                    @Event.Name
-                </a>
-                <partial name="/Pages/Shared/_RoleSwitcherPartial.cshtml" />
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a class="navbar-brand" data-toggle="dropdown" href="#">
+                            @Event.Name
+                        </a>
+                        <partial name="/Pages/Shared/_RoleSwitcherPartial.cshtml" />
+                    </li>
+                </ul>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">

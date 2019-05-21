@@ -1,11 +1,6 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    @{
-        // Using ev here so that it isn't the same as Event that we bind in the <body>
-        // Works fine if we use Event, but VS will yell at you with an error in the IDE
-        var ev = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Event;
-    }
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Microsoft Puzzle Server</title>
@@ -22,19 +17,17 @@
     </environment>
 
     <!-- TODO: Make this actually scalable and correct -->
-    @if (ev != null)
-    {
-        <link rel="stylesheet" href="~/css/@(ev.UrlString)/styles.css" />
+    @{
+        // Using ev here so that it isn't the same as Event that we bind in the <body>
+        // Works fine if we use Event, but VS will yell at you with an error in the IDE
+        var ev = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Event;
+        if (ev != null && ev.UrlString == "pd2019")
+        {
+            <link rel="stylesheet" href="~/css/@(ev.UrlString)/styles.css" />
+        }
     }
     <link href="https://fonts.googleapis.com/css?family=Montserrat|Staatliches" rel="stylesheet">
 
-    <!-- TODO: Remove when menus are implemented -->
-    <style>
-        .nav i {
-            color: gray;
-            font-size: 10px;
-        }
-    </style>
 </head>
 <body>
 @{
@@ -44,7 +37,7 @@
     <!--CURRENT NAV BAR-->
     @if (Event == null)
     {
-        <nav class="navbar navbar-inverse navbar-fixed-top">
+        <nav class="navbar navbar-inverse navbar-static-top">
             <div class="container">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
