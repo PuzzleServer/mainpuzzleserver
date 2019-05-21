@@ -9,12 +9,18 @@
     var isEditable = DateTime.UtcNow <= Model.Event.TeamMiscDataChangeEnd;
 }
 
+<style>
+    .food-option-description {
+        font-style: italic;
+    }
+</style>
+
 <h2>Order T-Shirt and Lunch for @Html.DisplayFor(model => model.Event.Name)</h2>
 
 @if (isEditable)
 {
     <div class="alert alert-danger" role="alert">
-        Please make your selections by <time>@Model.Event.TeamMiscDataChangeEnd</time>.
+        Please make your selections by @Html.Raw(Model.LocalTime(Model.Event.TeamMiscDataChangeEnd)).
     </div>
 }
 else
@@ -29,39 +35,48 @@ else
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Swag.Lunch" class="control-label"></label>
-                <select asp-for="Swag.Lunch" class="form-control">
-                    <option value="turkey">Thinly sliced turkey extravaganza</option>
-                    <option value="beef">Big ol' block o' beef</option>
-                    <option value="salad">green things in a bowl</option>
+                <label asp-for="Swag.ShirtSize" class="control-label"></label>
+                <select asp-for="Swag.ShirtSize" class="form-control" required>
+                    <option value="MS">Mens' Small</option>
+                    <option value="MM">Mens' Medium</option>
+                    <option value="ML">Mens' Large</option>
+                    <option value="MXL">Mens' X-Large</option>
+                    <option value="M2XL">Mens' XX-Large</option>
+                    <option value="M3XL">Mens' XXX-Large</option>
+                    <option value="WXS">Womens' X-Small</option>
+                    <option value="WS">Womens' Small</option>
+                    <option value="WM">Womens' Medium</option>
+                    <option value="WL">Womens' Large</option>
+                    <option value="WXL">Womens' X-Large</option>
+                    <option value="W2XL">Womens' XX-Large</option>
+                    <option value="W3XL">Womens' XXX-Large</option>
                 </select>
+                <span asp-validation-for="Swag.ShirtSize" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Swag.Lunch" class="control-label"></label>
+                <br /><input asp-for="Swag.Lunch" type="radio" value="smoked-turkey" required/> Smoked Turkey and Havarti Cheese
+                <div class="food-option-description">Smoked turkey on freshly baked ciabatta with creamy havarti cheese, pesto-balsamic aioli, mixed greens and tomato.</div>
+                <br /><input asp-for="Swag.Lunch" type="radio" value="chipotle-chicken" /> Chipotle Chicken Sandwich
+                <div class="food-option-description">Chicken breast, avocado and pepper jack cheese on a baguette with chipotle mayonnaise, roasted peppers, lettuce and onion.</div>
+                <br /><input asp-for="Swag.Lunch" type="radio" value="chicken-club" /> Honey Mustard Chicken Club
+                <div class="food-option-description">Roasted chicken breast with a creamy honey mustard sauce, crisp bacon, Swiss cheese, gourmet greens and sliced tomato. Comes on a fresh baked brioche roll.</div>
+                <br /><input asp-for="Swag.Lunch" type="radio" value="loaded-sub" /> Fully Loaded Sub
+                <div class="food-option-description">Italian salami, roast turkey, ham, pepperjack cheese, cheddar cheese, sliced kalamata olives, sliced pepperoncini and tomato. Served on a fresh baguette with a side of Italian vinaigrette.</div>
+                <br /><input asp-for="Swag.Lunch" type="radio" value="tom-mozz-avo" /> Tomato-Mozzarella-Avocado Sandwich (Vegetarian)
+                <div class="food-option-description">Served on a freshly baked whole wheat ciabatta with pesto-balsamic aioli and leaf lettuce.</div>
+                <br /><input asp-for="Swag.Lunch" type="radio" value="cobb-salad" /> Cobb Salad
+                <div class="food-option-description">Lemon and herb marinated chicken breast, avocado, bleu cheese, bacon, tomato, scallions, and hard-boiled egg on mixed greens. Served with vinaigrette dressing.</div>
+                <br /><input asp-for="Swag.Lunch" type="radio" value="none-of-the-above" /> I cannot eat any of these
+                <div class="food-option-description">If you cannot have any of the options offered due to dietary restrictions, please describe them in the box below and we'll reach out to you about an alternative. If modifying one of the above options will work for you, please select that option and describe the required changes in the box below.</div>
+                <br /><input asp-for="Swag.Lunch" type="radio" value="no-food" /> I do not want any food, thanks
+                <div class="food-option-description">If you choose this option you will NOT get food on the day of the event.</div>
                 <span asp-validation-for="Swag.Lunch" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Swag.LunchModifications" class="control-label"></label>
                 <textarea asp-for="Swag.LunchModifications" class="form-control"></textarea>
                 <span asp-validation-for="Swag.LunchModifications" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Swag.ShirtSize" class="control-label"></label>
-                <select asp-for="Swag.ShirtSize" class="form-control">
-                    <option value="MS">Mens' S</option>
-                    <option value="MM">Mens' M</option>
-                    <option value="ML">Mens' L</option>
-                    <option value="MXL">Mens' XL</option>
-                    <option value="M2XL">Mens' 2XL</option>
-                    <option value="M3XL">Mens' 3XL</option>
-                    <option value="M4XL">Mens' 4XL</option>
-                    <option value="WXS">Womens' XS</option>
-                    <option value="WS">Womens' S</option>
-                    <option value="WM">Womens' M</option>
-                    <option value="WL">Womens' L</option>
-                    <option value="WXL">Womens' XL</option>
-                    <option value="W2XL">Womens' 2XL</option>
-                    <option value="W3XL">Womens' 3XL</option>
-                    <option value="W4XL">Womens' 4XL</option>
-                </select>
-                <span asp-validation-for="Swag.ShirtSize" class="text-danger"></span>
             </div>
             @if (isEditable)
             {

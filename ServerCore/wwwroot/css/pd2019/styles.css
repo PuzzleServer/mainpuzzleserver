@@ -1,0 +1,73 @@
+﻿/* Home page */
+.pd2019-title {
+    font-family: 'Staatliches';
+    text-transform: uppercase;
+    font-size: 8rem;
+    color: #557C5A;
+}
+
+.pd2019-logo {
+    min-width: 20rem;
+    max-width: 40rem;
+    margin: auto;
+    display: block;
+}
+
+.pd2019-emphasis {
+    font-weight: bold;
+    font-size: 1.8rem;
+}
+
+.pd2019-container-root {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.pd2019-container-logo {
+    flex: 1;
+}
+
+.pd2019-container-card {
+    flex: 2;
+    min-width: 50rem;
+    margin: 1rem;
+    padding: 2rem 1rem;
+    background-color: rgba(191, 241, 169, 0.11);
+    border: 1px dashed #B2A171;
+    border-radius: 0 2rem;
+}
+    
+.pd2019-container-card > h3 {
+    margin: 0 0 1rem 0;
+    font-size: 2.4rem;
+}
+    
+/* pd2019 overrides */
+body {
+    font-family: 'Montserrat';
+    font-size: 1.4rem;
+}
+
+.navbar-inverse .navbar-nav > .active > a,
+.navbar-inverse .navbar-nav > .active > a:hover,
+.navbar-inverse .navbar-nav > .active > a:focus {
+    color: #fff;
+    background-color: #587D5B;
+}
+
+.navbar-inverse .navbar-nav > .open > a,
+.navbar-inverse .navbar-nav > .open > a:hover,
+.navbar-inverse .navbar-nav > .open > a:focus {
+    color: #fff;
+    background-color: #587D5B;
+}
+
+.dropdown-menu > li > a {
+    padding: 0.8rem 2rem;
+    color: #587D5B;
+}
+
+.dropdown-menu .divider {
+    margin: 0;
+}

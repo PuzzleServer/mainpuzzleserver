@@ -11,6 +11,9 @@ namespace ServerCore.DataModel
         public int ID { get; set; }
         [Required]
         public virtual Event Event { get; set; }
+
+        [Required]
+        [RegularExpression("\\S+.*")]
         public string Name { get; set; }
 
         /// <summary>
