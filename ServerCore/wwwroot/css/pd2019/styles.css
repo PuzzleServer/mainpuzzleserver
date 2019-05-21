@@ -49,18 +49,6 @@ body {
     font-size: 1.4rem;
 }
 
-.player-menu {
-    background-color: #293D2C;
-    border-color: #080808;
-    font-weight: bold;
-}
-
-.author-menu {
-    background-color: #483F32;
-    border-color: #080808;
-    font-weight: bold;
-}
-
 .navbar-inverse .navbar-nav > .active > a,
 .navbar-inverse .navbar-nav > .active > a:hover,
 .navbar-inverse .navbar-nav > .active > a:focus {
