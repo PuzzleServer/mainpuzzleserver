@@ -129,10 +129,7 @@
                                 ------<br />
                                 <a asp-page="./Status" asp-route-teamId="@item.ID">Status</a><br />
                                 <a asp-page="/Submissions/AuthorIndex" asp-route-teamId="@item.ID">Submissions</a><br />
-                                @if (!Model.Event.HideHints)
-                                {
-                                    <a asp-page="/Hints/AuthorIndex" asp-route-teamId="@item.ID">Hints Taken</a><br />
-                                }
+                                <a asp-page="/Hints/AuthorIndex" asp-route-teamId="@item.ID">Hints Taken</a><br />
                                 ------<br />
                                 <a asp-page="./Delete" asp-route-teamId="@item.ID">Delete</a>
                             </div>
@@ -145,11 +142,7 @@
                             <div class="shortcut-menu-dropdown-content">
                                 <a asp-page="./Status" asp-route-teamId="@item.ID">Status</a><br />
                                 <a asp-page="/Submissions/AuthorIndex" asp-route-teamId="@item.ID">Submissions</a><br />
-                                @if (!Model.Event.HideHints)
-                                {
-                                    <a asp-page="/Hints/AuthorIndex" asp-route-teamId="@item.ID">Hints Taken</a><br />
-
-                                }
+                                <a asp-page="/Hints/AuthorIndex" asp-route-teamId="@item.ID">Hints Taken</a><br />
                             </div>
                         </div>
                     }

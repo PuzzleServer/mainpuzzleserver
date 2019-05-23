@@ -51,15 +51,12 @@
         <dd>
             @Html.DisplayFor(model => model.Puzzle.SolveValue)
         </dd>
-        @if (!Model.Event.HideHints)
-        {
-            <dt>
-                @Html.DisplayNameFor(model => model.Puzzle.HintCoinsForSolve)
-            </dt>
-            <dd>
-                @Html.DisplayFor(model => model.Puzzle.HintCoinsForSolve)
-            </dd>
-        }
+        <dt>
+            @Html.DisplayNameFor(model => model.Puzzle.HintCoinsForSolve)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Puzzle.HintCoinsForSolve)
+        </dd>
         <dt>
             @Html.DisplayNameFor(model => model.Puzzle.Token)
         </dt>

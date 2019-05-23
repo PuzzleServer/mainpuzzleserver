@@ -58,13 +58,6 @@
                 </div>
             </div>
             <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        <input asp-for="EditableEvent.HideHints" /> @Html.DisplayNameFor(model => model.EditableEvent.HideHints)
-                    </label>
-                </div>
-            </div>
-            <div class="form-group">
                 <label asp-for="EditableEvent.TeamRegistrationBegin" class="control-label"></label>
                 <input asp-for="EditableEvent.TeamRegistrationBegin" class="form-control" />
                 <span asp-validation-for="EditableEvent.TeamRegistrationBegin" class="text-danger"></span>

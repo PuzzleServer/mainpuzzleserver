@@ -33,14 +33,11 @@
                             @Html.DisplayNameFor(model => model.Teams[0].Score)
                         </a>
                     </th>
-                    @if (!Model.Event.HideHints)
-                    {
-                        <th>
-                            <a asp-page="./Standings" asp-route-sort="@(Model.SortForColumnLink(StandingsModel.SortOrder.HintsUsedAscending, StandingsModel.SortOrder.HintsUsedDescending))">
-                                Hint Tickets Used
-                            </a>
-                        </th>
-                    }
+                    <th>
+                        <a asp-page="./Standings" asp-route-sort="@(Model.SortForColumnLink(StandingsModel.SortOrder.HintsUsedAscending, StandingsModel.SortOrder.HintsUsedDescending))">
+                            Hint Tickets Used
+                        </a>
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -60,12 +57,9 @@
                     <td>
                         @Html.DisplayFor(modelItem => team.Score)
                     </td>
-                    @if (!Model.Event.HideHints)
-                    {
-                        <td>
-                            @Html.DisplayFor(modelItem => team.Team.HintCoinsUsed)
-                        </td>
-                    }
+                    <td>
+                        @Html.DisplayFor(modelItem => team.Team.HintCoinsUsed)
+                    </td>
                 </tr>
         }
             </tbody>
