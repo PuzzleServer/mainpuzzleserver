@@ -1,0 +1,10 @@
+﻿@page "/{eventId}/{eventRole}/samples"
+@model ServerCore.Pages.EventSpecific.SamplesModel
+@{
+    ViewData["Title"] = "Sample puzzles";
+    ViewData["AdminRoute"] = "/EventSpecific/Samples";
+    ViewData["AuthorRoute"] = "/EventSpecific/Samples";
+    ViewData["PlayRoute"] = "/EventSpecific/Samples";
+}
+
+<partial name="../Resources/SamplesPartial.cshtml" />
