@@ -68,7 +68,7 @@ namespace ServerCore.Pages.Teams
 
             // all puzzle states for this team that are unlocked (note: IsUnlocked bool is going to harm perf, just null check the time here)
             // Note that it's OK if some puzzles do not yet have a state record; those puzzles are clearly still locked and hence invisible.
-            var stateForTeamQ = _context.PuzzleStatePerTeam.Where(state => state.TeamID == this.TeamID && state.UnlockedTime != null);
+            var stateForTeamQ = _context.PuzzleStatePerTeam.Where(state => state.TeamID == this.TeamID && (this.Event.IsEventFinished || state.UnlockedTime != null));
 
             // join 'em (note: just getting all properties for max flexibility, can pick and choose columns for perf later)
             // Note: EF gotcha is that you have to join into anonymous types in order to not lose valuable stuff
