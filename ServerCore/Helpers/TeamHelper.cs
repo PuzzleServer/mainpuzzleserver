@@ -1,21 +1,8 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using ServerCore.DataModel;
-
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ServerCore.ModelBases;
-
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 using System.Linq;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
-using ServerCore.Helpers;
 using ServerCore.ModelBases;
 
 namespace ServerCore.Helpers
@@ -31,6 +18,13 @@ namespace ServerCore.Helpers
         /// <param name="team">Team to delete</param>
         public static async Task DeleteTeamAsync(PuzzleServerContext context, Team team)
         {
+            var memberEmails = await (from teamMember in context.TeamMembers
+                                      where teamMember.Team == team
+                                      select teamMember.Member.Email).ToListAsync();
+            var applicationEmails = await (from app in context.TeamApplications
+                                      where app.Team == team
+                                      select app.Player.Email).ToListAsync();
+
             var puzzleStates = from puzzleState in context.PuzzleStatePerTeam
                                where puzzleState.TeamID == team.ID
                                select puzzleState;
@@ -54,6 +48,10 @@ namespace ServerCore.Helpers
             context.Teams.Remove(team);
 
             await context.SaveChangesAsync();
+
+            MailHelper.Singleton.SendPlaintextBcc(memberEmails.Union(applicationEmails),
+                $"{team.Event.Name}: Team '{team.Name}' has been deleted",
+                $"Sorry! You can apply to another team if you wish, or create your own.");
         }
 
         /// <summary>
@@ -119,6 +117,22 @@ namespace ServerCore.Helpers
             MailHelper.Singleton.SendPlaintextWithoutBcc(new string[] { team.PrimaryContactEmail, user.Email },
                 $"{Event.Name}: {user.Name} has now joined {team.Name}!",
                 $"Have a great time!");
+
+            var teamCount = await context.TeamMembers.Where(members => members.Team.ID == team.ID).CountAsync();
+            if (teamCount >= Event.MaxTeamSize)
+            {
+                var extraApplications = await (from app in context.TeamApplications
+                                        where app.Team == team
+                                        select app).ToListAsync();
+                context.TeamApplications.RemoveRange(extraApplications);
+
+                var extraApplicationMails = from app in extraApplications
+                                            select app.Player.Email;
+
+                MailHelper.Singleton.SendPlaintextBcc(extraApplicationMails.ToList(),
+                    $"{Event.Name}: You can no longer join {team.Name} because it is now full",
+                    $"Sorry! You can apply to another team if you wish.");
+            }
 
             return new Tuple<bool, string>(true, "");
         }
