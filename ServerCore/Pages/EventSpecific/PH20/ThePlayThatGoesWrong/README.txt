@@ -30,7 +30,7 @@ To create and configure the puzzle, use the following steps:
    b) Set the CustomURL to
       https://puzzlehunt.azurewebsites.net/{eventId}/YYY/api/Sync/client/
       where YYY is the ID for the puzzle.
-   c) Click "Save properties"
+   c) Click "Save properties".
 
 The puzzle should now be operational.  Clicking its link will take you to the
 puzzle website.  If you want to navigate there directly, its URL is:
