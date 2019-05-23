@@ -107,3 +107,21 @@ table.ph-statemap tbody tr td.dark a {
 .shortcut-menu-dropdown:hover .shortcut-menu-dropdown-content {
     display: block;
 }
+
+.player-menu {
+    background-color: #293D2C;
+    border-color: #080808;
+    font-weight: bold;
+}
+
+.author-menu {
+    background-color: #483F32;
+    border-color: #080808;
+    font-weight: bold;
+}
+
+.admin-menu {
+    background-color: #330001;
+    border-color: #080808;
+    font-weight: bold;
+}

@@ -16,23 +16,28 @@
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
     </environment>
 
-    <!-- TODO: Remove when menus are implemented -->
-    <style>
-        .nav i {
-            color: gray;
-            font-size: 10px;
+    <!-- TODO: Make this actually scalable and correct -->
+    @{
+        // Using ev here so that it isn't the same as Event that we bind in the <body>
+        // Works fine if we use Event, but VS will yell at you with an error in the IDE
+        var ev = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Event;
+        if (ev != null && ev.UrlString == "pd2019")
+        {
+            <link rel="stylesheet" href="~/css/@(ev.UrlString)/styles.css" />
         }
-    </style>
+    }
+    <link href="https://fonts.googleapis.com/css?family=Montserrat|Staatliches" rel="stylesheet">
+
 </head>
 <body>
-    @{
-        var Event = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Event;
-        var EventRole = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.EventRole;
-    }
+@{
+    var Event = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Event;
+    var EventRole = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.EventRole;
+}
     <!--CURRENT NAV BAR-->
     @if (Event == null)
     {
-        <nav class="navbar navbar-inverse navbar-fixed-top">
+        <nav class="navbar navbar-inverse navbar-static-top">
             <div class="container">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -73,6 +78,7 @@
         <footer>
             <ul class="list-inline text-right">
                 <li><a href="mailto:@(Event?.ContactEmail ?? "puzzhunt@microsoft.com")">Contact Us</a></li>
+                <li><a href="mailto:puzztech@service.microsoft.com">Website Emergency?</a></li>
                 <li><a href="https://go.microsoft.com/fwlink/?LinkID=206977">Terms Of Use</a></li>
                 <li><a href="https://go.microsoft.com/fwlink/?LinkId=506942">Trademarks</a></li>
                 <li><a href="http://go.microsoft.com/fwlink/?LinkId=521839">Privacy &amp; Cookies</a></li>

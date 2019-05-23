@@ -4251,6 +4251,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 }
 .navbar-fixed-top,
 .navbar-fixed-bottom {
+  position: fixed;
   right: 0;
   left: 0;
   z-index: 1030;
@@ -4590,18 +4591,6 @@ fieldset[disabled] .navbar-default .btn-link:focus {
 .navbar-inverse {
   background-color: #222;
   border-color: #080808;
-}
-.player-menu {
-  background-color: #001a33;
-  border-color: #080808;
-}
-.author-menu {
-    background-color: #003319;
-    border-color: #080808;
-}
-.admin-menu {
-    background-color: #330001;
-    border-color: #080808;
 }
 .navbar-inverse .navbar-brand {
   color: #9d9d9d;

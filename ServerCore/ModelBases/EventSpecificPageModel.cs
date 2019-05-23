@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,6 @@ using ServerCore.Helpers;
 
 namespace ServerCore.ModelBases
 {
-    [Authorize(Policy = "IsRegisteredForEvent")]
     public abstract class EventSpecificPageModel : PageModel
     {
         [FromRoute]
@@ -24,19 +24,18 @@ namespace ServerCore.ModelBases
         [ModelBinder(typeof(RoleBinder))]
         public EventRole EventRole { get; set; }
 
-        private PuzzleUser loggedInUser;
-
-        public PuzzleUser LoggedInUser
+        /// <summary>
+        /// Runs before page actions
+        /// </summary>
+        public override async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
         {
-            get
-            {
-                if (loggedInUser == null)
-                {
-                    loggedInUser = PuzzleUser.GetPuzzleUserForCurrentUser(_context, User, userManager).Result;
-                }
-                return loggedInUser;
-            }
+            LoggedInUser = await PuzzleUser.GetPuzzleUserForCurrentUser(_context, User, userManager);
+
+            // Required to have the rest of page execution occur
+            await next.Invoke();
         }
+
+        public PuzzleUser LoggedInUser { get; private set; }
 
         protected readonly PuzzleServerContext _context;
         private readonly UserManager<IdentityUser> userManager;
@@ -47,31 +46,58 @@ namespace ServerCore.ModelBases
             userManager = manager;
         }
 
+        private bool? isRegisteredUser;
         public async Task<bool> IsRegisteredUser()
         {
             if (LoggedInUser == null)
             {
                 return false;
             }
-            return await LoggedInUser.IsPlayerInEvent(_context, Event);
+
+            if (isRegisteredUser == null)
+            {
+                isRegisteredUser = await LoggedInUser.IsPlayerInEvent(_context, Event);
+            }
+
+            return isRegisteredUser.Value;
         }
 
+
+        private bool? isEventAuthor;
         public async Task<bool> IsEventAuthor()
         {
             if (LoggedInUser == null)
             {
                 return false;
             }
-            return await LoggedInUser.IsAuthorForEvent(_context, Event);
+
+            if (isEventAuthor == null)
+            {
+                isEventAuthor = await LoggedInUser.IsAuthorForEvent(_context, Event);
+            }
+
+            return isEventAuthor.Value;
         }
 
+        private bool? isEventAdmin;
         public async Task<bool> IsEventAdmin()
         {
             if (LoggedInUser == null)
             {
                 return false;
             }
-            return await LoggedInUser.IsAdminForEvent(_context, Event);
+
+            if (isEventAdmin == null)
+            {
+                isEventAdmin = await LoggedInUser.IsAdminForEvent(_context, Event);
+            }
+
+            return isEventAdmin.Value;
+        }
+
+        public async Task<bool> HasSwag()
+        {
+            return Event.IsInternEvent && await _context.Swag.Where(m => m.Event == Event && m.Player == LoggedInUser).AnyAsync();
         }
 
         public async Task<int> GetTeamId()
@@ -85,6 +111,11 @@ namespace ServerCore.ModelBases
             {
                 return -1;
             }
+        }
+
+        public string LocalTime(DateTime? date)
+        {
+            return TimeHelper.LocalTime(date);
         }
 
         public class EventBinder : IModelBinder

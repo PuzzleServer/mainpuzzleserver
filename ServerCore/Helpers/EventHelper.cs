@@ -19,14 +19,15 @@ namespace ServerCore.Helpers
         {
             Event result = null;
 
-            // first, lookup by UrlString - this is the friendly name
-            result = await puzzleServerContext.Events.Where(e => e.UrlString == eventId).FirstOrDefaultAsync();
-
-            // otherwise, look up by int for legacy event support
-            // TODO: Delete when people have cleaned up their DBs
-            if (result == null && Int32.TryParse(eventId, out int eventIdAsInt))
+            // Decide whether to look up by friendly string or ID
+            if (int.TryParse(eventId, out int eventIdAsInt))
             {
                 result = await puzzleServerContext.Events.Where(e => e.ID == eventIdAsInt).FirstOrDefaultAsync();
+            }
+            else
+            {
+                // first, lookup by UrlString - this is the friendly name
+                result = await puzzleServerContext.Events.Where(e => e.UrlString == eventId).FirstOrDefaultAsync();
             }
 
             return result;
