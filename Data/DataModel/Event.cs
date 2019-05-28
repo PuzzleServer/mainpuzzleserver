@@ -161,5 +161,10 @@ namespace ServerCore.DataModel
         /// in email-only mode.
         /// </summary>
         public uint MaxSubmissionCount { get; set; }
+
+        /// <summary>
+        /// True if the hint system will not be used
+        /// </summary>
+        public bool HideHints { get; set; }
     }
 }
