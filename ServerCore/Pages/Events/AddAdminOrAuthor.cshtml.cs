@@ -74,6 +74,8 @@ namespace ServerCore.Pages.Events
             Admin.Event = Event;
 
             _context.EventAdmins.Add(Admin);
+            user.MayBeAdminOrAuthor = true;
+
             await _context.SaveChangesAsync();
             return RedirectToPage("/Events/Players");
         }
@@ -101,6 +103,8 @@ namespace ServerCore.Pages.Events
             Author.Event = Event;
 
             _context.EventAuthors.Add(Author);
+            user.MayBeAdminOrAuthor = true;
+
             await _context.SaveChangesAsync();
             return RedirectToPage("/Events/Players");
         }
