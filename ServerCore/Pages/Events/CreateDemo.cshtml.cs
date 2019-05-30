@@ -374,6 +374,8 @@ namespace ServerCore.Pages.Events
                 var demoCreatorUser = await PuzzleUser.GetPuzzleUserForCurrentUser(_context, User, _userManager);
                 if (demoCreatorUser != null)
                 {
+                    demoCreatorUser.MayBeAdminOrAuthor = true;
+
                     //
                     // Event admin/author
                     //
