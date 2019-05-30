@@ -96,20 +96,6 @@ namespace ServerCore.DataModel
             }
         }
 
-        /// <summary>
-        /// Returns whether or not the event is finished.
-        /// </summary>
-        /// <returns>True if the current date is after the the answer submission end time.</returns>
-        [NotMapped]
-        public bool IsEventFinished
-        {
-            get
-            {
-                return DateTime.UtcNow.CompareTo(EventBegin) > 0 && 
-                    DateTime.UtcNow.CompareTo(AnswerSubmissionEnd) > 0;
-            }
-        }
-
         public DateTime AnswersAvailableBegin { get; set; }
 
         /// <summary>
