@@ -29,6 +29,7 @@ namespace ServerCore.DataModel
             SolveValue = source.SolveValue;
             HintCoinsForSolve = source.HintCoinsForSolve;
             HintsAreCumulative = source.HintsAreCumulative;
+            HasDataConfirmation = source.HasDataConfirmation;
             Token = source.Token;
             Group = source.Group;
             OrderInGroup = source.OrderInGroup;
@@ -95,6 +96,11 @@ namespace ServerCore.DataModel
         /// whether to decrement future hint costs for this puzzle as hints are taken
         /// </summary>
         public bool HintsAreCumulative { get; set; }
+
+        /// <summary>
+        /// True if this puzzle has data confirmation
+        /// </summary>
+        public bool HasDataConfirmation { get; set; } = false;
 
         /// <summary>
         /// Reward if solved: Sometimes displayed publicly, sometimes used internally by meta engine
