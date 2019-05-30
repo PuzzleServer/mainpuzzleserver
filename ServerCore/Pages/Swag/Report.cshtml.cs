@@ -26,6 +26,7 @@ namespace ServerCore.Pages.Swag
         public class SwagView
         {
             public string PlayerName { get; set; }
+            public string PlayerEmail { get; set; }
             public string TeamName { get; set; }
             public string Lunch { get; set; }
             public string LunchModifications { get; set; }
@@ -44,6 +45,7 @@ namespace ServerCore.Pages.Swag
                                select new SwagView()
                                {
                                    PlayerName = t.Member.Name,
+                                   PlayerEmail = t.Member.Email,
                                    TeamName = t.Team.Name,
                                    Lunch = swagState == null ? null : swagState.Lunch,
                                    LunchModifications = swagState == null ? null : swagState.LunchModifications,
