@@ -36,18 +36,19 @@ namespace ServerCore.Pages.Swag
 
         public async Task<IActionResult> OnGetAsync(int? puzzleId)
         {
-            SwagViews = await (from s in _context.Swag
-                                   join t in _context.TeamMembers on s.PlayerId equals t.Member.ID
-                                   where s.Event == Event && t.Team.Event == Event
-                                   orderby t.Team.Name, s.ShirtSize
-                                   select new SwagView()
-                                   {
-                                       PlayerName = t.Member.Name,
-                                       TeamName = t.Team.Name,
-                                       Lunch = s.Lunch,
-                                       LunchModifications = s.LunchModifications,
-                                       ShirtSize = s.ShirtSize
-                                   }).ToListAsync();
+            SwagViews = await (from t in _context.TeamMembers
+                               join s in _context.Swag on t.Member.ID equals s.PlayerId into tmp
+                               from swagState in tmp.DefaultIfEmpty()
+                               where (swagState == null || swagState.Event == Event) && t.Team.Event == Event
+                               orderby t.Team.Name, swagState.ShirtSize
+                               select new SwagView()
+                               {
+                                   PlayerName = t.Member.Name,
+                                   TeamName = t.Team.Name,
+                                   Lunch = swagState == null ? null : swagState.Lunch,
+                                   LunchModifications = swagState == null ? null : swagState.LunchModifications,
+                                   ShirtSize = swagState == null ? null : swagState.ShirtSize
+                               }).ToListAsync();
             return Page();
         }
     }
