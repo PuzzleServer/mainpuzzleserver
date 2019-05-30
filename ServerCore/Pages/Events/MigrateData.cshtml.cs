@@ -12,6 +12,9 @@ using ServerCore.DataModel;
 
 namespace ServerCore.Pages.Events
 {
+    /// <summary>
+    /// Page for manually applying data changes to the database when they're not easily scripted
+    /// </summary>
     [Authorize(Policy = "IsGlobalAdmin")]
     public class MigrateDataModel : PageModel
     {
@@ -27,6 +30,9 @@ namespace ServerCore.Pages.Events
 
         }
 
+        /// <summary>
+        /// Sets the MayBeAdminOrAuthor bit for all admins and authors of all events
+        /// </summary>
         public async Task<IActionResult> OnPostMigrateAdminsAsync()
         {
             using (var transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable))
