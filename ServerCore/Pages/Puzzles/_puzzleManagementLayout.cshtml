@@ -10,7 +10,7 @@
 
 <div>
     <a asp-page="/Puzzles/Index">Back to puzzle list</a> ||
-    <a asp-page="/Puzzles/Details" asp-route-puzzleId="@puzzleId">Details</a> |
+    <a asp-page="/Puzzles/Edit" asp-route-puzzleId="@puzzleId">Details</a> |
     <a asp-page="/Puzzles/FileManagement" asp-route-puzzleId="@puzzleId">Files</a> |
     <a asp-page="/Responses/Index" asp-route-puzzleId="@puzzleId">Responses</a> |
     @if (shouldShowHints)
