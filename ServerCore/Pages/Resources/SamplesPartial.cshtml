@@ -1,0 +1,118 @@
+﻿<script>
+    var numHintsSampleSpock = 3;
+    var nextHintSampleSpock = 1;
+    var numHintsSampleCrop = 6;
+    var nextHintSampleCrop = 1;
+
+    function showHintSample(puzzle) {
+        switch (puzzle) {
+            case 'spock':
+                document.getElementById("sample_spockStep" + nextHintSampleSpock).style.display = 'list-item';
+                nextHintSampleSpock++;
+                if (nextHintSampleSpock > numHintsSampleSpock) {
+                    document.getElementById("sample_spockHintButton").style.display = 'none';
+                }
+                break;
+
+            case 'crop':
+                document.getElementById("sample_cropStep" + nextHintSampleCrop).style.display = 'list-item';
+                nextHintSampleCrop++;
+                if (nextHintSampleCrop > numHintsSampleCrop) {
+                    document.getElementById("sample_cropHintButton").style.display = 'none';
+                }
+                break;
+        }
+    }
+
+    function checkAnswerSample(puzzle) {
+        switch (puzzle) {
+            case 'spock':
+                var ansInput = document.getElementById("sample_spockInput");
+                var ansCorrect = document.getElementById("sample_spockCorrect");
+                var ansValue = ansInput.value.toUpperCase();
+
+                if ("PROSPER" == ansValue) {
+                    ansInput.style.backgroundColor = 'lightgreen';
+                    ansCorrect.style.display = 'inline';
+                } else {
+                    ansInput.style.backgroundColor = 'lightpink';
+                    ansCorrect.style.display = 'none';
+                }
+                break;
+
+            case 'crop':
+                var ansInput = document.getElementById("sample_cropInput");
+                var ansCorrect = document.getElementById("sample_cropCorrect");
+                var ansValue = ansInput.value.toUpperCase();
+
+                if ("TARO" == ansValue) {
+                    ansInput.style.backgroundColor = 'lightgreen';
+                    ansCorrect.style.display = 'inline';
+                } else {
+                    ansInput.style.backgroundColor = 'lightpink';
+                    ansCorrect.style.display = 'none';
+                }
+                break;
+        }
+    }
+</script>
+<div class="container">
+    <h2>The Search for Spock</h2>
+    <h3>
+        Here is a puzzle titled <em>The Search for Spock</em>
+    </h3>
+    <img src="~/images/samples/searchForSpock_puzzle.png" />
+    <h3>How to solve <em>The Search for Spock</em></h3>
+    <button id="sample_spockHintButton" onclick="showHintSample('spock')">Show next hint</button>
+    <ol>
+        <li id="sample_spockStep1" style="display:none">
+            You look at the title and think "hmm, I need to find all the Spocks that appear in the puzzle".
+        </li>
+        <li id="sample_spockStep2" style="display:none">
+            You do so and realize that some Spocks create contiguous shapes with other Spocks.<br />
+            <img src="~/images/samples/searchForSpock_solution.png" />
+        <li id="sample_spockStep3" style="display:none">
+            You arrive at the final answer, which involves completing the phrase, "Live long and ________"
+        </li>
+    </ol>
+    <h3>Check your answer for <em>The Search for Spock</em></h3>
+    <input id="sample_spockInput" autocomplete="off" placeholder="ANSWER" oninput="checkAnswerSample('spock')" style="text-transform:uppercase" />
+    <span id="sample_spockCorrect" style="display:none">Correct!</span>
+
+    <hr />
+
+    <h2>Crop Circles</h2>
+    <h3>
+        Here is a puzzle titled <em>Crop Circles</em>
+    </h3>
+    <img src="~/images/samples/cropCircles_puzzle.png" />
+    <h3>How to solve <em>Crop Circles</em></h3>
+    <button id="sample_cropHintButton" onclick="showHintSample('crop')">Show next hint</button>
+    <ol>
+        <li id="sample_cropStep1" style="display:none">
+            You look at the title and think "hmm, maybe I should break down each image into circles".
+        </li>
+        <li id="sample_cropStep2" style="display:none">
+            You do so and realize that each circle looks a little bit like letters.<br />
+            <img src="~/images/samples/cropCircles_progress_1.png" />
+        <li id="sample_cropStep3" style="display:none">
+            You keep going.<br />
+            <img src="~/images/samples/cropCircles_progress_2.png" />
+        </li>
+        <li id="sample_cropStep4" style="display:none">
+            You keep going.<br />
+            <img src="~/images/samples/cropCircles_progress_3.png" />
+        </li>
+        <li id="sample_cropStep5" style="display:none">
+            You keep going and realize that each set of letters will make a different crop with the addition of one letter at the end.<br />
+            <img src="~/images/samples/cropCircles_progress_4.png" />
+        </li>
+        <li id="sample_cropStep6" style="display:none">
+            You arrive at the final answer, which is those four letters chained together.
+        </li>
+    </ol>
+    <h3>Check your answer for <em>Crop Circles</em></h3>
+    <input id="sample_cropInput" autocomplete="off" placeholder="ANSWER" oninput="checkAnswerSample('crop')" style="text-transform:uppercase" />
+    <span id="sample_cropCorrect" style="display:none">Correct!</span>
+</div>
+

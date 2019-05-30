@@ -61,9 +61,12 @@
                     Solve
                 </a>
             </th>
-            <th>
-                Hints
-            </th>
+            @if (!Model.Event.HideHints)
+            {
+                <th>
+                    Hints
+                </th>
+            }
             @if (Model.AllowFeedback)
             {
                 <th>
@@ -123,9 +126,12 @@
                         }
                     </a>
                 </td>
-                <td>
-                    <a asp-page="./Hints" asp-route-puzzleid="@item.ID" asp-route-teamId="@Model.TeamID">Hints</a>
-                </td>
+                @if (!Model.Event.HideHints)
+                {
+                    <td>
+                        <a asp-page="./Hints" asp-route-puzzleid="@item.ID" asp-route-teamId="@Model.TeamID">Hints</a>
+                    </td>
+                }
                 @if (Model.AllowFeedback)
                 {
                     <td>

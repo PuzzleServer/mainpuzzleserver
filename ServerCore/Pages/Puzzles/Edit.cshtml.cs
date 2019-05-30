@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -103,11 +104,41 @@ namespace ServerCore.Pages.Puzzles
 
             Puzzle.ID = puzzleId; // to be safe
 
+            string oldErrata = await (from Puzzle puzzle in _context.Puzzles
+                                      where puzzle.ID == puzzleId
+                                      select puzzle.Errata).FirstOrDefaultAsync();
+
             _context.Attach(Puzzle).State = EntityState.Modified;
 
             try
             {
                 await _context.SaveChangesAsync();
+
+                // Check if the errata was updated, and notify teams accordingly if so.
+                // Changing from null to an empty string or vice-versa doesn't count.
+                if (!(String.IsNullOrEmpty(Puzzle.Errata) && String.IsNullOrEmpty(oldErrata)) && Puzzle.Errata != oldErrata)
+                {
+                    // Only notify teams who have unlocked this puzzle
+                    List<string> teamMembers = await (from TeamMembers tm in _context.TeamMembers
+                                                      join PuzzleStatePerTeam pspt in _context.PuzzleStatePerTeam on tm.Team equals pspt.Team
+                                                      where pspt.PuzzleID == Puzzle.ID && pspt.UnlockedTime != null
+                                                      select tm.Member.Email).ToListAsync();
+
+                    string subject, body;
+
+                    if (String.IsNullOrEmpty(Puzzle.Errata))
+                    {
+                        subject = $"{Event.Name}: Errata removed for {Puzzle.Name}";
+                        body = $"The errata for {Puzzle.Name} has been removed.";
+                    }
+                    else
+                    {
+                        subject = $"{Event.Name}: Errata updated for {Puzzle.Name}";
+                        body = $"{Puzzle.Name} has been updated with the following errata:\n\n{Puzzle.Errata}";
+                    }
+
+                    MailHelper.Singleton.SendPlaintextBcc(teamMembers, subject, body);
+                }
             }
             catch (DbUpdateConcurrencyException)
             {

@@ -55,6 +55,9 @@
     <WCFMetadata Include="Connected Services" />
   </ItemGroup>
   <ItemGroup>
+    <Content Update="Pages\EventSpecific\Samples.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Pages\EventSpecific\FAQ.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
@@ -68,6 +71,12 @@
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
     <Content Update="Pages\Puzzles\_puzzleManagementLayout.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Pages\Resources\Samples.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Pages\Resources\SamplesPartial.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
     <Content Update="Pages\Resources\pd2019\HomePartial.cshtml">

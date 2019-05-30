@@ -51,7 +51,7 @@ namespace ServerCore.Pages.Events
                 }
             }
 
-            return RedirectToPage("/Index");
+            return RedirectToPage("./Index");
         }
     }
 }
