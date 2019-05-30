@@ -593,6 +593,8 @@ namespace Data.Migrations
 
                     b.Property<bool>("IsGlobalAdmin");
 
+                    b.Property<bool>("MayBeAdminOrAuthor");
+
                     b.Property<string>("Name");
 
                     b.Property<string>("PhoneNumber");
