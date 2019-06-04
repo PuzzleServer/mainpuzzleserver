@@ -28,7 +28,7 @@ namespace ServerCore.Pages.Pieces
             }
 
             Team team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
-            int solvedPuzzleCount = await PuzzleStateHelper.GetSparseQuery(_context, Event, null, team, null).Where(ps => ps.SolvedTime != null && ps.Puzzle.SolveValue >= 10).CountAsync();
+            int solvedPuzzleCount = await _context.PuzzleStatePerTeam.Where(ps => ps.Team == team && ps.SolvedTime != null && ps.Puzzle.SolveValue >= 10).CountAsync();
 
             EarnedPieces = await _context.Pieces.Where(p => p.PuzzleID == puzzleId && p.ProgressLevel <= solvedPuzzleCount).OrderBy(p => p.ProgressLevel).ToListAsync();
 
