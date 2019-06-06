@@ -36,6 +36,7 @@ namespace ServerCore.Pages.Events
 
             Admins = await _context.EventAdmins
                 .Where(admin => admin.Event == Event).Select(admin => admin.Admin)
+                .OrderBy(admin => admin.Email)
                 .ToListAsync();
 
             AdminEmails = String.Join("; ", Admins.Select(a => a.Email));
@@ -44,6 +45,7 @@ namespace ServerCore.Pages.Events
 
             IList<PuzzleUser> allAuthors = await (from author in _context.EventAuthors
                                                   where author.Event == Event
+                                                  orderby author.Author.Email
                                                   select author.Author).ToListAsync();
 
             Dictionary<int, int> allPuzzles = await (from puzzleAuthor in _context.PuzzleAuthors
@@ -65,6 +67,7 @@ namespace ServerCore.Pages.Events
 
             Players = await _context.TeamMembers
                 .Where(member => member.Team.Event == Event)
+                .OrderBy(member => member.Member.Email)
                 .Select(tm => new MemberView() { ID = tm.Member.ID, Name = tm.Member.Name, Email = tm.Member.Email, EmployeeAlias = tm.Member.EmployeeAlias, TeamID = tm.Team.ID, TeamName = tm.Team.Name })
                 .ToListAsync();
 
