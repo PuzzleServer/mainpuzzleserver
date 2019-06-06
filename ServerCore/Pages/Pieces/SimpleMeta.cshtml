@@ -1,11 +1,11 @@
-﻿@page "/{eventId}/{eventRole}/Teams/{teamId}/InternMeta/{puzzleId}"
-@model ServerCore.Pages.Pieces.InternMetaModel
+﻿@page "/{eventId}/{eventRole}/Teams/{teamId}/SimpleMeta/{puzzleId}"
+@model ServerCore.Pages.Pieces.SimpleMetaModel
 
 @{
-    ViewData["Title"] = "Intern Puzzleday Meta";
+    ViewData["Title"] = $"{Model.Puzzle.Name} Meta";
 }
 
-<h2>Metapuzzle Pieces Earned</h2>
+<h2>@(Model.Puzzle.Name) Metapuzzle Pieces Earned</h2>
 
 <table class="table">
     <tbody>

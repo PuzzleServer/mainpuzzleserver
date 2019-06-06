@@ -7,6 +7,13 @@ using System.Linq;
 
 namespace ServerCore.DataModel
 {
+    public enum PieceMetaUsage
+    {
+        None,
+        GroupOnly,
+        EntireEvent
+    }
+
     /// <summary>
     /// A Puzzle is the record of a solvable puzzle in the database
     /// Sometimes a Puzzle is used as a workaround for things like time prerequisites
@@ -187,6 +194,11 @@ namespace ServerCore.DataModel
         /// Short description of the puzzle for authors or special pages
         /// </summary>
         public string Description { get; set; }
+
+        /// <summary>
+        /// Determines whether the puzzle can use the basic piece-driven meta.
+        /// </summary>
+        public PieceMetaUsage PieceMetaUsage { get; set; }
 
         //
         // WARNING: If you add new properties add them to the constructor as well so importing will work.

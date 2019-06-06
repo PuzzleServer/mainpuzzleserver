@@ -149,6 +149,10 @@
                                 <span asp-validation-for="Puzzle.Description" class="text-danger"></span>
                             </div>
                             <div class="form-group">
+                                <label asp-for="Puzzle.PieceMetaUsage" class="control-label"></label>
+                                <select class="form-control" asp-for="Puzzle.PieceMetaUsage" asp-items="Html.GetEnumSelectList<ServerCore.DataModel.PieceMetaUsage>()"></select>
+                            </div>
+                            <div class="form-group">
                                 <label asp-for="Puzzle.Errata" class="control-label"></label>
                                 <input asp-for="Puzzle.Errata" class="form-control" />
                                 <span asp-validation-for="Puzzle.Errata" class="text-danger"></span>
