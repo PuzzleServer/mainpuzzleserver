@@ -138,10 +138,10 @@ namespace ServerCore.Helpers
         }
 
         /// <summary>
-        /// Returns whether or not a user is a full-time microsoft employee
+        /// Returns whether or not a user is a microsoft employee that is not an intern (e.g. FTEs and contractors)
         /// </summary>
-        /// <returns>True if the user is a full-time microsoft employee and false otherwise</returns>
-        public static bool IsFTE(string email)
+        /// <returns>True if the user a microsoft employee that is not an intern</returns>
+        public static bool IsMicrosoftNonIntern(string email)
         {
             return email.EndsWith("@microsoft.com") && !email.StartsWith("t-");
         }

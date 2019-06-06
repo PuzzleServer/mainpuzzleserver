@@ -32,14 +32,10 @@ namespace ServerCore.Pages.Teams
                 return Challenge();
             }
 
-            if (EventRole != EventRole.play)
+            if (EventRole != EventRole.play
+                || (Event.IsInternEvent && TeamHelper.IsMicrosoftNonIntern(LoggedInUser.Email)))
             {
                 return Forbid();
-            }
-
-            if (Event.IsInternEvent && TeamHelper.IsFTE(LoggedInUser.Email))
-            {
-                return NotFound("FTEs cannot sign up for this intern-only event.");
             }
 
             if (!Event.IsTeamMembershipChangeActive)

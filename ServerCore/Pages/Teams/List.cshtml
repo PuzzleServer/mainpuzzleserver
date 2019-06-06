@@ -7,15 +7,15 @@
     ViewData["AuthorRoute"] = "/Teams/Index";
     ViewData["PlayRoute"] = "/Teams/List";
 
-    Boolean canRegister = Model.EventRole == ModelBases.EventRole.play && Model.Event.IsTeamMembershipChangeActive && !Model.IsFTEInInternEvent;
+    Boolean canRegister = Model.EventRole == ModelBases.EventRole.play && Model.Event.IsTeamMembershipChangeActive && !Model.IsMicrosoftNonIntern;
 }
 
 <p>
-    @if (Model.IsFTEInInternEvent)
+    @if (Model.IsMicrosoftNonIntern)
     {
         <h2>Registration Not Allowed for @Model.Event.Name</h2>
         <div>
-            We are sorry. This is an intern-only event, so no FTEs can register.
+            We are sorry. This is an intern-only event, so no full-time employees or contractors can register.
         </div>
     }
     else if (DateTime.UtcNow < Model.Event.TeamRegistrationBegin)

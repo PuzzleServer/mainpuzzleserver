@@ -27,14 +27,14 @@ namespace ServerCore.Pages.Teams
         public Team AppliedTeam { get; set; }
 
         /// <summary>
-        /// True if the person is allowed to register
+        /// True if the person is a non-intern microsoft employee in an intern event
         /// </summary>
-        public bool IsFTEInInternEvent { get; set; }
+        public bool IsMicrosoftNonIntern { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
-            IsFTEInInternEvent = Event.IsInternEvent
-                && TeamHelper.IsFTE(LoggedInUser.Email)
+            IsMicrosoftNonIntern = Event.IsInternEvent
+                && TeamHelper.IsMicrosoftNonIntern(LoggedInUser.Email)
                 && EventRole != ModelBases.EventRole.admin;
 
             if (LoggedInUser == null)
