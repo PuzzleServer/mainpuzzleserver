@@ -68,31 +68,18 @@ namespace ServerCore.Pages.Events
                 var duplicateSubGroups = await (from submission in _context.Submissions
                                                 group submission by new { submission.PuzzleID, submission.TeamID, submission.SubmissionText } into g
                                                 where g.Count() > 1
-                                                select new { g.Key, Count = g.Count() }).ToListAsync();
-
-                List<Task<int>> allFetches = new List<Task<int>>();
-                foreach (var dupeGroup in duplicateSubGroups)
-                {
-                    for (int i = 0; i < dupeGroup.Count - 1; i++)
-                    {
-                        Task<int> t = (from submission in _context.Submissions
-                                       where submission.PuzzleID == dupeGroup.Key.PuzzleID &&
-                                       submission.TeamID == dupeGroup.Key.TeamID &&
-                                       submission.SubmissionText == dupeGroup.Key.SubmissionText
-                                       select submission.ID).Skip(i).FirstAsync();
-                        allFetches.Add(t);
-                    }
-                }
-
-                await Task.WhenAll(allFetches);
+                                                select (from sub in g select sub.ID).ToArray()).ToListAsync();
 
                 List<Submission> submissionsToDelete = new List<Submission>();
-                foreach(Task<int> fetch in allFetches)
+                foreach(int[] dupeGroup in duplicateSubGroups)
                 {
-                    int subId = fetch.Result;
-                    Submission toDelete = new Submission() { ID = subId };
-                    _context.Attach(toDelete);
-                    submissionsToDelete.Add(toDelete);
+                    for (int i = 0; i < dupeGroup.Length - 1; i++)
+                    {
+                        int subId = dupeGroup[i];
+                        Submission toDelete = new Submission() { ID = subId };
+                        _context.Attach(toDelete);
+                        submissionsToDelete.Add(toDelete);
+                    }
                 }
                 _context.Submissions.RemoveRange(submissionsToDelete);
                 await _context.SaveChangesAsync();
