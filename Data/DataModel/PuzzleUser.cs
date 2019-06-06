@@ -34,6 +34,12 @@ namespace ServerCore.DataModel
         public bool VisibleToOthers { get; set; }
 
         /// <summary>
+        /// True if the user is or has been an admin or author in any event.
+        /// Saves querying whether a regular player is an admin or author of a particular event.
+        /// </summary>
+        public bool MayBeAdminOrAuthor { get; set; }
+
+        /// <summary>
         /// Returns the PuzzleUser for the given IdentityUser
         /// </summary>
         /// <param name="identityUserId">The string Id of an IdentityUser</param>
@@ -75,6 +81,11 @@ namespace ServerCore.DataModel
         /// <param name="puzzleServerContext">Current PuzzleServerContext</param>
         public async Task<bool> IsAuthorForEvent(PuzzleServerContext puzzleServerContext, Event thisEvent)
         {
+            if (!MayBeAdminOrAuthor)
+            {
+                return false;
+            }
+
             return await puzzleServerContext.EventAuthors.Where(a => a.Author.ID == ID && a.Event.ID == thisEvent.ID).AnyAsync();
         }
 
@@ -85,6 +96,11 @@ namespace ServerCore.DataModel
         /// <param name="puzzleServerContext">Current PuzzleServerContext</param>
         public async Task<bool> IsAdminForEvent(PuzzleServerContext dbContext, Event thisEvent)
         {
+            if (!MayBeAdminOrAuthor)
+            {
+                return false;
+            }
+
             return await dbContext.EventAdmins.Where(a => a.Admin.ID == ID && a.Event.ID == thisEvent.ID).AnyAsync();
         }
 

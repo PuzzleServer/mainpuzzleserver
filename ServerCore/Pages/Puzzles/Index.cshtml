@@ -90,7 +90,7 @@
         {
             <tr>
                 <td>
-                    <a asp-Page="./Details" asp-route-puzzleid=@item.Puzzle.ID>@Html.DisplayFor(modelItem => item.Puzzle.Name)</a>
+                    <a asp-Page="./Edit" asp-route-puzzleid=@item.Puzzle.ID>@Html.DisplayFor(modelItem => item.Puzzle.Name)</a>
                 </td>
                 <td>
                     @if (item.Puzzle.CustomURL != null)
@@ -145,8 +145,7 @@
                     <div class="shortcut-menu-dropdown">
                         <span><a>Jump to...</a></span>
                         <div class="shortcut-menu-dropdown-content">
-                            <a asp-Page="./Details" asp-route-puzzleid=@item.Puzzle.ID>Details</a><br />
-                            <a asp-Page="./Edit" asp-route-puzzleid=@item.Puzzle.ID>Edit</a><br />
+                            <a asp-Page="./Edit" asp-route-puzzleid=@item.Puzzle.ID>Details/Edit</a><br />
                             <a asp-Page="./FileManagement" asp-route-puzzleid=@item.Puzzle.ID>Files</a><br />
                             <a asp-page="/Responses/Index" asp-route-puzzleid=@item.Puzzle.ID>Responses</a><br />
                             @if (!Model.Event.HideHints) {
