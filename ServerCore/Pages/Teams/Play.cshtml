@@ -100,6 +100,11 @@
                     {
                         @Html.DisplayFor(modelItem => item.Name)
                     }
+
+                    @if (item.PieceMetaUsage != DataModel.PieceMetaUsage.None)
+                    {
+                        <text>(<a asp-page="/Pieces/SimpleMeta" asp-route-puzzleId="@item.ID">Meta Pieces</a>)</text>
+                    }
                 </td>
                 @if (Model.ShowAnswers)
                 {
