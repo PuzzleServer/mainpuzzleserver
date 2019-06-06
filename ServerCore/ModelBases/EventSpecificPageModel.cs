@@ -62,6 +62,16 @@ namespace ServerCore.ModelBases
             return isRegisteredUser.Value;
         }
 
+        /// <summary>
+        /// Checks whether or not it is an intern event and that the logged in user is allowed in it
+        /// </summary>
+        /// <returns>True if it is an intern event and the logged in user is allowed in</returns>
+        public bool IsNotAllowedInInternEvent()
+        {
+            return Event.IsInternEvent
+                && TeamHelper.IsMicrosoftNonIntern(LoggedInUser.Email)
+                && EventRole != EventRole.admin;
+        }
 
         private bool? isEventAuthor;
         public async Task<bool> IsEventAuthor()

@@ -27,7 +27,7 @@ namespace ServerCore.Pages.Teams
                 return Challenge();
             }
 
-            if (EventRole != EventRole.play && EventRole != EventRole.admin)
+            if ((EventRole != EventRole.play && EventRole != EventRole.admin) || IsNotAllowedInInternEvent())
             {
                 return Forbid();
             }
@@ -35,11 +35,6 @@ namespace ServerCore.Pages.Teams
             if (EventRole == EventRole.play && GetTeamId().Result != -1)
             {
                 return NotFound("You are already on a team and cannot create a new one.");
-            }
-
-            if (EventRole == EventRole.admin && !await LoggedInUser.IsAdminForEvent(_context, Event))
-            {
-                return Forbid();
             }
 
             if (!Event.IsTeamRegistrationActive && EventRole != EventRole.admin)

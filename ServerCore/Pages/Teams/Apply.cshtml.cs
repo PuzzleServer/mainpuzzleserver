@@ -32,8 +32,7 @@ namespace ServerCore.Pages.Teams
                 return Challenge();
             }
 
-            if (EventRole != EventRole.play
-                || (Event.IsInternEvent && TeamHelper.IsMicrosoftNonIntern(LoggedInUser.Email)))
+            if (EventRole != EventRole.play || IsNotAllowedInInternEvent())
             {
                 return Forbid();
             }

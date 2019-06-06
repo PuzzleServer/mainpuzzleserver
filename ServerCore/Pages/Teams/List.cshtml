@@ -7,11 +7,12 @@
     ViewData["AuthorRoute"] = "/Teams/Index";
     ViewData["PlayRoute"] = "/Teams/List";
 
-    Boolean canRegister = Model.EventRole == ModelBases.EventRole.play && Model.Event.IsTeamMembershipChangeActive && !Model.IsMicrosoftNonIntern;
+    bool isNotAllowedInInternEvent = Model.IsNotAllowedInInternEvent();
+    bool canRegister = Model.EventRole == ModelBases.EventRole.play && Model.Event.IsTeamMembershipChangeActive && !isNotAllowedInInternEvent;
 }
 
 <p>
-    @if (Model.IsMicrosoftNonIntern)
+    @if (isNotAllowedInInternEvent)
     {
         <h2>Registration Not Allowed for @Model.Event.Name</h2>
         <div>

@@ -26,17 +26,8 @@ namespace ServerCore.Pages.Teams
 
         public Team AppliedTeam { get; set; }
 
-        /// <summary>
-        /// True if the person is a non-intern microsoft employee in an intern event
-        /// </summary>
-        public bool IsMicrosoftNonIntern { get; set; }
-
         public async Task<IActionResult> OnGetAsync()
         {
-            IsMicrosoftNonIntern = Event.IsInternEvent
-                && TeamHelper.IsMicrosoftNonIntern(LoggedInUser.Email)
-                && EventRole != ModelBases.EventRole.admin;
-
             if (LoggedInUser == null)
             {
                 return Challenge();
