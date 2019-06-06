@@ -36,11 +36,11 @@ namespace ServerCore.Pages.Pieces
 
             switch(Puzzle.PieceMetaUsage)
             {
-                case PieceMetaUsage.Global:
+                case PieceMetaUsage.EntireEvent:
                     solvedPuzzleCount = await _context.PuzzleStatePerTeam.Where(ps => ps.Team == team && ps.SolvedTime != null && ps.Puzzle.SolveValue >= 10).CountAsync();
                     break;
 
-                case PieceMetaUsage.Group:
+                case PieceMetaUsage.GroupOnly:
                     solvedPuzzleCount = await _context.PuzzleStatePerTeam.Where(ps => ps.Team == team && ps.SolvedTime != null && ps.Puzzle.SolveValue >= 10 && ps.Puzzle.Group == Puzzle.Group).CountAsync();
                     break;
 
