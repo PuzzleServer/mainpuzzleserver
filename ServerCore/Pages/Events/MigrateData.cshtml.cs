@@ -38,11 +38,11 @@ namespace ServerCore.Pages.Events
             using (var transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable))
             {
                 List<PuzzleUser> allAdmins = await (from admin in _context.EventAdmins
-                                 select admin.Admin).ToListAsync();
+                                                    select admin.Admin).ToListAsync();
                 List<PuzzleUser> allAuthors = await (from author in _context.EventAuthors
                                                      select author.Author).ToListAsync();
 
-                foreach(PuzzleUser admin in allAdmins)
+                foreach (PuzzleUser admin in allAdmins)
                 {
                     admin.MayBeAdminOrAuthor = true;
                 }
@@ -51,6 +51,50 @@ namespace ServerCore.Pages.Events
                     author.MayBeAdminOrAuthor = true;
                 }
 
+                await _context.SaveChangesAsync();
+                transaction.Commit();
+            }
+
+            return Page();
+        }
+
+        /// <summary>
+        /// Deletes all duplicate submissions from the database
+        /// </summary>
+        public async Task<IActionResult> OnPostDeleteDuplicateSubmissionsAsync()
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable))
+            {
+                var duplicateSubGroups = await (from submission in _context.Submissions
+                                                group submission by new { submission.PuzzleID, submission.TeamID, submission.SubmissionText } into g
+                                                where g.Count() > 1
+                                                select new { g.Key, Count = g.Count() }).ToListAsync();
+
+                List<Task<int>> allFetches = new List<Task<int>>();
+                foreach (var dupeGroup in duplicateSubGroups)
+                {
+                    for (int i = 0; i < dupeGroup.Count - 1; i++)
+                    {
+                        Task<int> t = (from submission in _context.Submissions
+                                       where submission.PuzzleID == dupeGroup.Key.PuzzleID &&
+                                       submission.TeamID == dupeGroup.Key.TeamID &&
+                                       submission.SubmissionText == dupeGroup.Key.SubmissionText
+                                       select submission.ID).Skip(i).FirstAsync();
+                        allFetches.Add(t);
+                    }
+                }
+
+                await Task.WhenAll(allFetches);
+
+                List<Submission> submissionsToDelete = new List<Submission>();
+                foreach(Task<int> fetch in allFetches)
+                {
+                    int subId = fetch.Result;
+                    Submission toDelete = new Submission() { ID = subId };
+                    _context.Attach(toDelete);
+                    submissionsToDelete.Add(toDelete);
+                }
+                _context.Submissions.RemoveRange(submissionsToDelete);
                 await _context.SaveChangesAsync();
                 transaction.Commit();
             }
