@@ -11,7 +11,7 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Pieces
 {
-    [Authorize(Policy = "PlayerIsOnTeam")]
+    [Authorize(Policy = "PlayerCanSeePuzzle")]
     public class SimpleMetaModel : EventSpecificPageModel
     {
         public SimpleMetaModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
