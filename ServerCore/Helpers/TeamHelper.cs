@@ -136,5 +136,14 @@ namespace ServerCore.Helpers
 
             return new Tuple<bool, string>(true, "");
         }
+
+        /// <summary>
+        /// Returns whether or not a user is a full-time microsoft employee
+        /// </summary>
+        /// <returns>True if the user is a full-time microsoft employee and false otherwise</returns>
+        public static bool IsFTE(string email)
+        {
+            return email.EndsWith("@microsoft.com") && !email.StartsWith("t-");
+        }
     }
 }

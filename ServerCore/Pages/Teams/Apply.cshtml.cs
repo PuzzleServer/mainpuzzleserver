@@ -37,6 +37,11 @@ namespace ServerCore.Pages.Teams
                 return Forbid();
             }
 
+            if (Event.IsInternEvent && TeamHelper.IsFTE(LoggedInUser.Email))
+            {
+                return NotFound("FTEs cannot sign up for this intern-only event.");
+            }
+
             if (!Event.IsTeamMembershipChangeActive)
             {
                 return NotFound("Team membership change is not currently allowed.");

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
+using ServerCore.Helpers;
 
 namespace ServerCore.Pages.Teams
 {
@@ -25,8 +26,17 @@ namespace ServerCore.Pages.Teams
 
         public Team AppliedTeam { get; set; }
 
+        /// <summary>
+        /// True if the person is allowed to register
+        /// </summary>
+        public bool IsFTEInInternEvent { get; set; }
+
         public async Task<IActionResult> OnGetAsync()
         {
+            IsFTEInInternEvent = Event.IsInternEvent
+                && TeamHelper.IsFTE(LoggedInUser.Email)
+                && EventRole != ModelBases.EventRole.admin;
+
             if (LoggedInUser == null)
             {
                 return Challenge();

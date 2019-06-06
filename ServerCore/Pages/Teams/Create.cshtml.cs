@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using ServerCore.Areas.Identity;
 using ServerCore.DataModel;
+using ServerCore.Helpers;
 using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Teams
@@ -44,6 +45,11 @@ namespace ServerCore.Pages.Teams
             if (!Event.IsTeamRegistrationActive && EventRole != EventRole.admin)
             {
                 return NotFound();
+            }
+
+            if (Event.IsInternEvent && TeamHelper.IsFTE(LoggedInUser.Email) && EventRole != EventRole.admin)
+            {
+                return Forbid();
             }
 
             return Page();
