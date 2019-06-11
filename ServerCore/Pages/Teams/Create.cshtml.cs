@@ -29,7 +29,7 @@ namespace ServerCore.Pages.Teams
 
             if ((EventRole != EventRole.play && EventRole != EventRole.admin)
                 || IsNotAllowedInInternEvent()
-                || EventRole == EventRole.admin && !await LoggedInUser.IsAdminForEvent(_context, Event))
+                || (EventRole == EventRole.admin && !await LoggedInUser.IsAdminForEvent(_context, Event)))
             {
                 return Forbid();
             }
