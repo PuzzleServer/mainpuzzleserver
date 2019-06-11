@@ -27,7 +27,9 @@ namespace ServerCore.Pages.Teams
                 return Challenge();
             }
 
-            if ((EventRole != EventRole.play && EventRole != EventRole.admin) || IsNotAllowedInInternEvent())
+            if ((EventRole != EventRole.play && EventRole != EventRole.admin)
+                || IsNotAllowedInInternEvent()
+                || EventRole == EventRole.admin && !await LoggedInUser.IsAdminForEvent(_context, Event))
             {
                 return Forbid();
             }
@@ -60,7 +62,8 @@ namespace ServerCore.Pages.Teams
                 return NotFound();
             }
 
-            if (EventRole == EventRole.admin && !await LoggedInUser.IsAdminForEvent(_context, Event))
+            if ((EventRole == EventRole.admin && !await LoggedInUser.IsAdminForEvent(_context, Event))
+                || IsNotAllowedInInternEvent())
             {
                 return Forbid();
             }
