@@ -42,11 +42,6 @@ namespace ServerCore.Pages.Teams
                 return NotFound();
             }
 
-            if (Event.IsInternEvent && TeamHelper.IsMicrosoftNonIntern(LoggedInUser.Email) && EventRole != EventRole.admin)
-            {
-                return Forbid();
-            }
-
             return Page();
         }
 
