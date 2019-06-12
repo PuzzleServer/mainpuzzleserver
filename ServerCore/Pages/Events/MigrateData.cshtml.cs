@@ -38,11 +38,11 @@ namespace ServerCore.Pages.Events
             using (var transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable))
             {
                 List<PuzzleUser> allAdmins = await (from admin in _context.EventAdmins
-                                 select admin.Admin).ToListAsync();
+                                                    select admin.Admin).ToListAsync();
                 List<PuzzleUser> allAuthors = await (from author in _context.EventAuthors
                                                      select author.Author).ToListAsync();
 
-                foreach(PuzzleUser admin in allAdmins)
+                foreach (PuzzleUser admin in allAdmins)
                 {
                     admin.MayBeAdminOrAuthor = true;
                 }
@@ -51,6 +51,37 @@ namespace ServerCore.Pages.Events
                     author.MayBeAdminOrAuthor = true;
                 }
 
+                await _context.SaveChangesAsync();
+                transaction.Commit();
+            }
+
+            return Page();
+        }
+
+        /// <summary>
+        /// Deletes all duplicate submissions from the database
+        /// </summary>
+        public async Task<IActionResult> OnPostDeleteDuplicateSubmissionsAsync()
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable))
+            {
+                var duplicateSubGroups = await (from submission in _context.Submissions
+                                                group submission by new { submission.PuzzleID, submission.TeamID, submission.SubmissionText } into g
+                                                where g.Count() > 1
+                                                select (from sub in g select sub.ID).ToArray()).ToListAsync();
+
+                List<Submission> submissionsToDelete = new List<Submission>();
+                foreach(int[] dupeGroup in duplicateSubGroups)
+                {
+                    for (int i = 0; i < dupeGroup.Length - 1; i++)
+                    {
+                        int subId = dupeGroup[i];
+                        Submission toDelete = new Submission() { ID = subId };
+                        _context.Attach(toDelete);
+                        submissionsToDelete.Add(toDelete);
+                    }
+                }
+                _context.Submissions.RemoveRange(submissionsToDelete);
                 await _context.SaveChangesAsync();
                 transaction.Commit();
             }
