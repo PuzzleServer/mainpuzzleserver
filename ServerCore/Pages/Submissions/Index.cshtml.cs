@@ -36,6 +36,8 @@ namespace ServerCore.Pages.Submissions
 
         public IList<Puzzle> PuzzlesCausingGlobalLockout { get; set; }
 
+        public bool DuplicateSubmission { get; set; }
+
         public async Task<IActionResult> OnPostAsync(int puzzleId)
         {
             if (!this.Event.IsAnswerSubmissionActive)
@@ -52,6 +54,16 @@ namespace ServerCore.Pages.Submissions
 
             // Don't allow submissions after the answer has been found.
             if (PuzzleState.SolvedTime != null)
+            {
+                return Page();
+            }
+
+            // Soft enforcement of duplicates to give a friendly message in most cases
+            DuplicateSubmission = (from sub in Submissions
+                                   where sub.SubmissionText == ServerCore.DataModel.Response.FormatSubmission(SubmissionText)
+                                   select sub).Any();
+
+            if (DuplicateSubmission)
             {
                 return Page();
             }
