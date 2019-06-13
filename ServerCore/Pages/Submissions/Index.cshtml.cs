@@ -202,22 +202,26 @@ namespace ServerCore.Pages.Submissions
              * exceeds the LockoutIncorrectGuessLimit set for the event, then
              * the team should be locked out of that puzzle.
              */
+            DateTime incorrectGuessStartTime = DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(ev.LockoutIncorrectGuessPeriod));
 
-            foreach (Submission s in submissions.Reverse())
+            foreach (Submission s in submissions)
             {
-                // Do not increment on partials
-                if (s.Response != null)
+                // if the guess is before the incorrect window, ignore it
+                if (s.TimeSubmitted < incorrectGuessStartTime)
                 {
                     continue;
                 }
 
-                if (s.TimeSubmitted.AddMinutes(ev.LockoutIncorrectGuessPeriod)
-                        .CompareTo(DateTime.UtcNow) < 0)
+                if (s.Response == null)
                 {
-                    break;
+                    ++consecutiveWrongSubmissions;
                 }
-
-                ++consecutiveWrongSubmissions;
+                else
+                {
+                    // Do not increment on partials, decrement instead! This is a tweak to improve the lockout story for DC puzzles.
+                    // But don't overdecrement, lest we let people build a gigantic bank of free guesses.
+                    consecutiveWrongSubmissions = Math.Max(0, consecutiveWrongSubmissions - 1);
+                }
             }
 
             if (consecutiveWrongSubmissions <= ev.LockoutIncorrectGuessLimit) {
