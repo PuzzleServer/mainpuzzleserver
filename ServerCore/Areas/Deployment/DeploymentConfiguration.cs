@@ -18,7 +18,7 @@ namespace ServerCore.Areas.Deployment
                     (options => options.UseLazyLoadingProxies()
                         .UseSqlServer(configuration.GetConnectionString("PuzzleServerSQLConnectionString")));
             }
-            else if (env.IsProduction() && (Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") == "puzzlehunt" || Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") == "puzzleday"))
+            else if (env.IsProduction() && (Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") == "puzzlehunt" || Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") == "puzzleday" || Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") == "puzzlesafari"))
             {
                 services.AddDbContext<PuzzleServerContext>
                     (options => options.UseLazyLoadingProxies()
