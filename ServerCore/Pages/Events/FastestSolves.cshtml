@@ -7,21 +7,49 @@
     ViewData["AdminRoute"] = "/Events/FastestSolves";
     ViewData["AuthorRoute"] = "/Events/FastestSolves";
     ViewData["PlayRoute"] = "/Events/FastestSolves";
+
+    Boolean unsolvedFilter = Model.StateFilter == FastestSolvesModel.PuzzleStateFilter.Unsolved;
 }
 
 <h2>Fastest Solves</h2>
+<br/>
+<div>
+    <a class="radioButton"
+       asp-page="./FastestSolves"
+       asp-route-sort="@Model.Sort"
+       asp-route-stateFilter="@FastestSolvesModel.PuzzleStateFilter.All">
 
+        <input id="StateFilter" name="StateFilter" value="All" type="radio" @(unsolvedFilter ? "" : "checked")> All
+    </a>
+    <a class="radioButton"
+       asp-page="./FastestSolves"
+       asp-route-sort="@Model.Sort"
+       asp-route-stateFilter="@FastestSolvesModel.PuzzleStateFilter.Unsolved">
+
+        <input id="StateFilter" name="StateFilter" value="Unsolved" type="radio" @(unsolvedFilter ? "checked" : "")> Unsolved
+    </a>
+</div>
+<br/>
 <table class="table table-condensed">
             <thead>
                 <tr>
                     <th>
-                        Rank
+                        <a  asp-page="./FastestSolves" 
+                            asp-route-sort="@(Model.SortForColumnLink(FastestSolvesModel.SortOrder.PuzzleAscending,
+                                                                      FastestSolvesModel.SortOrder.PuzzleDescending))"
+                            asp-route-stateFilter="@Model.StateFilter">
+
+                            @Html.DisplayNameFor(model => model.Puzzles[0].Puzzle.Name)
+                        </a>
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Puzzles[0].Puzzle.Name)
-                    </th>
-                    <th>
-                        Teams
+                        <a  asp-page="./FastestSolves" 
+                            asp-route-sort="@(Model.SortForColumnLink(FastestSolvesModel.SortOrder.CountAscending,
+                                                                      FastestSolvesModel.SortOrder.CountDescending))"
+                            asp-route-stateFilter="@Model.StateFilter">
+
+                            Teams Solved
+                        </a>
                     </th>
                     <th>
                         First
@@ -32,6 +60,12 @@
                     <th>
                         Third
                     </th>
+                    @if (Model.CurrentTeam != null)
+                    {
+                        <th>
+                            Status for @Model.CurrentTeam.Name
+                        </th>
+                    }
                 </tr>
             </thead>
             <tbody>
@@ -40,9 +74,6 @@
             Func<TimeSpan, string> convertTimeToString = ts => string.Format("{0:00}.{1:00}:{2:00}:{3:00}", ts.TotalDays, Math.Abs(ts.Hours), Math.Abs(ts.Minutes), Math.Abs(ts.Seconds));
 
                 <tr>
-                    <td>
-                        @(puzzle.SortOrder + 1)
-                    </td>
                     <td>
                         @(puzzle.Puzzle.Name)
                     </td>
@@ -68,6 +99,19 @@
                             <text>@puzzle.Fastest[2].Name (@convertTimeToString(puzzle.Fastest[2].Time.Value))</text>
                         }
                     </td>
+                    @if (Model.CurrentTeam != null)
+                    {
+                        <th>
+                            @if (puzzle.IsSolved)
+                            {
+                                <text>Solved!</text>
+                            }
+                            else
+                            {
+                                <text>Unsolved</text>
+                            }
+                        </th>
+                    }
                 </tr>
         }
             </tbody>
