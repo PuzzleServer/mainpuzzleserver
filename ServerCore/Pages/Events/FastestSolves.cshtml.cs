@@ -28,6 +28,21 @@ namespace ServerCore.Pages.Events
         {
         }
 
+        public bool FilterUnlockedPuzzles(PuzzleStatePerTeam state)
+        {
+            if (state.TeamID != this.CurrentTeam?.ID)
+            {
+                return false;
+            }
+
+            if (state.UnlockedTime == null)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public async Task OnGetAsync(SortOrder? sort, PuzzleStateFilter? stateFilter)
         {
             this.Sort = sort;
@@ -50,23 +65,26 @@ namespace ServerCore.Pages.Events
                 .Select(g => new {
                     Puzzle = g.Key,
                     SolveCount = g.Count(),
-                    Fastest = g.OrderBy(s => s.SolvedTime - s.UnlockedTime).Take(3).Select(s => new { s.Team.ID, Time = s.SolvedTime - s.UnlockedTime}),
-                    IsSolvedByUserTeam = g.Where(state => state.TeamID == this.CurrentTeam.ID).Any()
+                    Fastest = g.OrderBy(s => s.SolvedTime - s.UnlockedTime).Take(3).Select(s => new { s.Team.ID, Time = s.SolvedTime - s.UnlockedTime }),
+                    IsSolvedByUserTeam = g.Where(s => s.Team == this.CurrentTeam).Any()
                 })
                 .OrderByDescending(p => p.SolveCount).ThenBy(p => p.Puzzle.Name)
                 .ToListAsync();
 
             var unlockedData = new HashSet<int>(
-                    await PuzzleStateHelper.GetSparseQuery(_context, this.Event, null, null)
-                    .Where(s => s.TeamID != this.CurrentTeam.ID && s.UnlockedTime != null)
-                    .Select(s => s.PuzzleID)
-                    .ToListAsync());
+                PuzzleStateHelper.GetSparseQuery(_context, this.Event, null, null)
+                    .Where(FilterUnlockedPuzzles)
+                    .Select(s => s.PuzzleID));
 
             var puzzles = new List<PuzzleStats>(puzzlesData.Count);
             for (int i = 0; i < puzzlesData.Count; i++)
             {
                 var data = puzzlesData[i];
-                if (!unlockedData.Contains(data.Puzzle.ID))
+
+                // For players, we will hide puzzles they have not unlocked yet.
+                if (EventRole == EventRole.play &&
+                    (unlockedData == null ||
+                     !unlockedData.Contains(data.Puzzle.ID)))
                 {
                     continue;
                 }
