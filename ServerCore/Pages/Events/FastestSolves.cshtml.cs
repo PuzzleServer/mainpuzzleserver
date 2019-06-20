@@ -28,21 +28,6 @@ namespace ServerCore.Pages.Events
         {
         }
 
-        public bool FilterUnlockedPuzzles(PuzzleStatePerTeam state)
-        {
-            if (state.TeamID != this.CurrentTeam?.ID)
-            {
-                return false;
-            }
-
-            if (state.UnlockedTime == null)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
         public async Task OnGetAsync(SortOrder? sort, PuzzleStateFilter? stateFilter)
         {
             this.Sort = sort;
@@ -71,10 +56,11 @@ namespace ServerCore.Pages.Events
                 .OrderByDescending(p => p.SolveCount).ThenBy(p => p.Puzzle.Name)
                 .ToListAsync();
 
-            var unlockedData = new HashSet<int>(
-                PuzzleStateHelper.GetSparseQuery(_context, this.Event, null, null)
-                    .Where(FilterUnlockedPuzzles)
-                    .Select(s => s.PuzzleID));
+            var unlockedData = this.CurrentTeam == null ? null : (new HashSet<int>(
+                await PuzzleStateHelper.GetSparseQuery(_context, this.Event, null, null)
+                    .Where(state => state.Team == this.CurrentTeam && state.UnlockedTime != null)
+                    .Select(s => s.PuzzleID)
+                    .ToListAsync()));
 
             var puzzles = new List<PuzzleStats>(puzzlesData.Count);
             for (int i = 0; i < puzzlesData.Count; i++)
