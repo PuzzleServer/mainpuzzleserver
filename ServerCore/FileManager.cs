@@ -50,7 +50,7 @@ namespace ServerCore
 
         private static async Task<CloudBlockBlob> CreateNewBlob(string fileName, int eventId)
         {
-            CloudBlobContainer eventContainer = await GetOrCreateEventContainerAsync(eventId);
+            CloudBlobDirectory puzzleDirectory = await GetRandomDirectoryAsync(eventId);
 
             CloudBlockBlob blob = puzzleDirectory.GetBlockBlobReference(fileName);
             if (fileExtensionProvider.TryGetContentType(fileName, out string contentType))
