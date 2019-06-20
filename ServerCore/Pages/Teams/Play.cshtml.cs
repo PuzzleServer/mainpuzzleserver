@@ -68,13 +68,14 @@ namespace ServerCore.Pages.Teams
 
             // all puzzle states for this team that are unlocked (note: IsUnlocked bool is going to harm perf, just null check the time here)
             // Note that it's OK if some puzzles do not yet have a state record; those puzzles are clearly still locked and hence invisible.
-            var stateForTeamQ = _context.PuzzleStatePerTeam.Where(state => state.TeamID == this.TeamID && state.UnlockedTime != null);
+            // All puzzles will show if all answers have been released)
+            var stateForTeamQ = _context.PuzzleStatePerTeam.Where(state => state.TeamID == this.TeamID && (ShowAnswers || state.UnlockedTime != null));
 
             // join 'em (note: just getting all properties for max flexibility, can pick and choose columns for perf later)
             // Note: EF gotcha is that you have to join into anonymous types in order to not lose valuable stuff
             var visiblePuzzlesQ = from Puzzle puzzle in puzzlesInEventQ
                                   join PuzzleStatePerTeam pspt in stateForTeamQ on puzzle.ID equals pspt.PuzzleID
-                                  select new PuzzleView { ID = puzzle.ID, Group = puzzle.Group, OrderInGroup = puzzle.OrderInGroup, Name = puzzle.Name, CustomUrl = puzzle.CustomURL, Errata = puzzle.Errata, SolvedTime = pspt.SolvedTime };
+                                  select new PuzzleView { ID = puzzle.ID, Group = puzzle.Group, OrderInGroup = puzzle.OrderInGroup, Name = puzzle.Name, CustomUrl = puzzle.CustomURL, Errata = puzzle.Errata, SolvedTime = pspt.SolvedTime, PieceMetaUsage = puzzle.PieceMetaUsage };
 
             switch (sort ?? DefaultSort)
             {
@@ -85,10 +86,10 @@ namespace ServerCore.Pages.Teams
                     visiblePuzzlesQ = visiblePuzzlesQ.OrderByDescending(pv => pv.Name);
                     break;
                 case SortOrder.GroupAscending:
-                    visiblePuzzlesQ = visiblePuzzlesQ.OrderBy(pv => pv.Group).ThenBy(pv => pv.OrderInGroup);
+                    visiblePuzzlesQ = visiblePuzzlesQ.OrderBy(pv => pv.Group).ThenBy(pv => pv.OrderInGroup).ThenBy(pv => pv.Name);
                     break;
                 case SortOrder.GroupDescending:
-                    visiblePuzzlesQ = visiblePuzzlesQ.OrderByDescending(pv => pv.Group).ThenByDescending(pv => pv.OrderInGroup);
+                    visiblePuzzlesQ = visiblePuzzlesQ.OrderByDescending(pv => pv.Group).ThenByDescending(pv => pv.OrderInGroup).ThenByDescending(pv => pv.Name);
                     break;
                 case SortOrder.SolveAscending:
                     visiblePuzzlesQ = visiblePuzzlesQ.OrderBy(pv => pv.SolvedTime ?? DateTime.MaxValue);
@@ -159,6 +160,7 @@ namespace ServerCore.Pages.Teams
             public DateTime? SolvedTime { get; set; }
             public ContentFile Content { get; set; }
             public ContentFile Answer { get; set; }
+            public PieceMetaUsage PieceMetaUsage { get; set; }
         }
 
         public enum SortOrder

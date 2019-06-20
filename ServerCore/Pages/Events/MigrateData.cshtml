@@ -1,0 +1,14 @@
+﻿@page
+@model ServerCore.Pages.Events.MigrateDataModel
+@{
+    ViewData["Title"] = "MigrateData";
+}
+
+<h2>MigrateData</h2>
+
+<p class="text-danger">Do not press any of these buttons unless you know what you're doing!</p>
+
+<form method="post">
+    <button type="submit" asp-page-handler="MigrateAdmins">Migrate Admins</button>
+    <button type="submit" asp-page-handler="DeleteDuplicateSubmissions">Delete duplicate submissions</button>
+</form>

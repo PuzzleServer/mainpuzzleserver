@@ -24,6 +24,13 @@
 }
 <div class="row">
     <div class="col-md-4">
+        @if (Model.Puzzle.HasDataConfirmation)
+        {
+            <div style="font-style:italic;">
+                Reminder: This puzzle supports data confirmation
+            </div>
+            <br />
+        }
         @if (!string.IsNullOrEmpty(Model.AnswerToken))
         {
             <div class="alert alert-success" role="alert">
@@ -56,6 +63,13 @@
         }
         else
         {
+             if (Model.DuplicateSubmission)
+            {
+                <div class="alert alert-danger" role="alert">
+                    You already submitted @Model.SubmissionText!
+                </div>
+            }
+
             <form method="post">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group">

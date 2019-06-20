@@ -11,6 +11,7 @@
     <Compile Remove="Migrations\20190111053724_EventId.cs" />
     <Compile Remove="Migrations\20190111053724_EventId.Designer.cs" />
     <Compile Remove="Migrations\20190214050904_CheatsAndWhistles.cs" />
+    <Compile Remove="Migrations\20190606021837_PieceMetaUsage.cs" />
   </ItemGroup>
 
   <ItemGroup>

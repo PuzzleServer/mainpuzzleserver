@@ -58,7 +58,7 @@
         {
         <tr>
             <td>
-                <a asp-Page="./Details" asp-route-puzzleid=@item.Puzzle.ID>@Html.DisplayFor(modelItem => item.Puzzle.Name)</a>
+                <a asp-Page="./Edit" asp-route-puzzleid=@item.Puzzle.ID>@Html.DisplayFor(modelItem => item.Puzzle.Name)</a>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Puzzle.Group)

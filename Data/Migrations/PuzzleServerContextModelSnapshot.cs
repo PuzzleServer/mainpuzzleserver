@@ -15,7 +15,7 @@ namespace Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
+                .HasAnnotation("ProductVersion", "2.1.8-servicing-32085")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -488,6 +488,8 @@ namespace Data.Migrations
 
                     b.Property<string>("Group");
 
+                    b.Property<bool>("HasDataConfirmation");
+
                     b.Property<int>("HintCoinsForSolve");
 
                     b.Property<bool>("HintsAreCumulative");
@@ -514,6 +516,8 @@ namespace Data.Migrations
                         .IsRequired();
 
                     b.Property<int>("OrderInGroup");
+
+                    b.Property<int>("PieceMetaUsage");
 
                     b.Property<int>("PuzzleVersion");
 
@@ -591,6 +595,8 @@ namespace Data.Migrations
 
                     b.Property<bool>("IsGlobalAdmin");
 
+                    b.Property<bool>("MayBeAdminOrAuthor");
+
                     b.Property<string>("Name");
 
                     b.Property<string>("PhoneNumber");
@@ -658,9 +664,10 @@ namespace Data.Migrations
 
                     b.HasIndex("SubmitterID");
 
-                    b.HasIndex("TeamID");
-
                     b.HasIndex("TeamID1");
+
+                    b.HasIndex("TeamID", "PuzzleID", "SubmissionText")
+                        .IsUnique();
 
                     b.ToTable("Submissions");
                 });
