@@ -117,7 +117,7 @@ namespace ServerCore
                 app.UseHsts();
                 PuzzleServerContext.UpdateDatabase(app);
             }
-            else if (env.IsProduction() && (Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") == "puzzlehunt" || Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") == "puzzleday" || Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") == "puzzlesafari"))
+            else if (env.IsProduction() && (Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") == "puzzlehunt" || Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") == "puzzleday"))
             {
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
