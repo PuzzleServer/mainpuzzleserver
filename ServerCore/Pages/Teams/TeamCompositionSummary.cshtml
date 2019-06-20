@@ -1,0 +1,83 @@
+﻿@page "/{eventId}/{eventRole}/Teams/TeamCompositionSummary"
+@model ServerCore.Pages.Teams.TeamCompositionSummaryModel
+@{
+    ViewData["Title"] = "Team Index";
+    ViewData["AdminRoute"] = "/Teams/TeamCompositionSummary";
+    ViewData["AuthorRoute"] = "/Teams/Index";
+    ViewData["PlayRoute"] = "/Teams/Index";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>TeamCompositionSummary</title>
+    <style>
+        td, th {
+            text-align:center;
+        }
+    </style>
+</head>
+<body>
+    <a asp-page="/Teams/Index">Back to team list</a>
+    <br />
+    <h2>Team Composition Summary</h2>
+    <div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Team Name
+                    </th>
+                    <th>
+                        Total
+                    </th>
+                    <th>
+                        Employee Count
+                    </th>
+                    <th>
+                        Intern Count
+                    </th>
+                    <th>
+                        Non-Microsoft Count
+                    </th>
+                    <th>
+                        Possible Employee Aliases
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var teamComp in Model.TeamCompositions)
+                {
+                    <tr>
+                        <td>
+                            <a asp-page="./Details" asp-route-teamId="@teamComp.TeamID">@teamComp.TeamName</a>
+                        </td>
+                        <td>
+                            @teamComp.Total
+                        </td>
+                        <td>
+                            @teamComp.MicrosoftNonInternCount
+                        </td>
+                        <td>
+                            @teamComp.InternCount
+                        </td>
+                        <td>
+                            @teamComp.NonMicrosoftCount
+                        </td>
+                        <td>
+                            @teamComp.PossibleEmployeeAliases.Count
+                            @if (teamComp.PossibleEmployeeAliases.Count > 0)
+                            {
+                                <br/>
+                                @string.Format("({0})", string.Join("; ", teamComp.PossibleEmployeeAliases))
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

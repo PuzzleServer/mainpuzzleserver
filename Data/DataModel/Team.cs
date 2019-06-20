@@ -9,6 +9,8 @@ namespace ServerCore.DataModel
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
+        
+        public int EventID { get; set; }
         [Required]
         public virtual Event Event { get; set; }
 
