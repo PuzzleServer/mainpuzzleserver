@@ -22,8 +22,6 @@ namespace ServerCore.Pages.Submissions
 
         public PuzzleStatePerTeam PuzzleState { get; set; }
 
-        //[BindProperty]
-        //[Required]
         public string SubmissionText { get; set; }
 
         private IList<Submission> Submissions { get; set; }
