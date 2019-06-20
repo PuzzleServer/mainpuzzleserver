@@ -45,7 +45,7 @@ table.ph-statemap > tbody > tr > td {
     vertical-align: middle;
 }
 
-table.ph-statemap > thead > tr > th:nth-child(1n+5) {
+table.ph-statemap > thead > tr > th:nth-child(1n+5) > a {
     font-weight: normal;
     writing-mode: vertical-rl;
 }
