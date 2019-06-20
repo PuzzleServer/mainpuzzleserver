@@ -86,10 +86,10 @@ namespace ServerCore.Pages.Teams
                     visiblePuzzlesQ = visiblePuzzlesQ.OrderByDescending(pv => pv.Name);
                     break;
                 case SortOrder.GroupAscending:
-                    visiblePuzzlesQ = visiblePuzzlesQ.OrderBy(pv => pv.Group).ThenBy(pv => pv.OrderInGroup);
+                    visiblePuzzlesQ = visiblePuzzlesQ.OrderBy(pv => pv.Group).ThenBy(pv => pv.OrderInGroup).ThenBy(pv => pv.Name);
                     break;
                 case SortOrder.GroupDescending:
-                    visiblePuzzlesQ = visiblePuzzlesQ.OrderByDescending(pv => pv.Group).ThenByDescending(pv => pv.OrderInGroup);
+                    visiblePuzzlesQ = visiblePuzzlesQ.OrderByDescending(pv => pv.Group).ThenByDescending(pv => pv.OrderInGroup).ThenByDescending(pv => pv.Name);
                     break;
                 case SortOrder.SolveAscending:
                     visiblePuzzlesQ = visiblePuzzlesQ.OrderBy(pv => pv.SolvedTime ?? DateTime.MaxValue);
