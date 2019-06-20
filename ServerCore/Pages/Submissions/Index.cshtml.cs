@@ -166,9 +166,6 @@ namespace ServerCore.Pages.Submissions
                 SubmitterName = LoggedInUser.Name
             });
 
-            // Clear the textbox for the next submission
-            ModelState.Clear();
-
             return Page();
         }
 
