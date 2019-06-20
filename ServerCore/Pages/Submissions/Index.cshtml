@@ -26,9 +26,9 @@
     <div class="col-md-4">
         @if (Model.Puzzle.HasDataConfirmation)
         {
-            <div style="font-style:italic;">
-                Reminder: This puzzle supports data confirmation
-            </div>
+        <div style="font-style:italic;">
+            <img src="~/images/DataConfirmationIcon.png" width="20" height="20" style="margin-bottom:3px" /> Reminder: This puzzle supports data confirmation
+        </div>
             <br />
         }
         @if (!string.IsNullOrEmpty(Model.AnswerToken))
