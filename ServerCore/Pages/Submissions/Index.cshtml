@@ -73,10 +73,12 @@
             <form method="post">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group">
-                    <label asp-for="SubmissionText" class="control-label">Answer</label>
-                    <input asp-for="SubmissionText" class="form-control" />
-                    <span style="font-size:12px">Submitted answers will automatically be capitalized and stripped of non-alphanumeric characters</span>
-                    <span asp-validation-for="SubmissionText" class="text-danger"></span>
+                    <label class="control-label">Answer</label>
+                    <input name="submissionText" class="form-control" data-val="true" data-val-required="Your answer cannot be empty" />
+                    <span style="font-size:12px">Submitted answers will automatically be capitalized and stripped of non-alphanumeric characters</span><br />
+                    @Html.ValidationSummary(true)
+                    <span class="text-danger"><span class="field-validation-valid" data-valmsg-for="submissionText" data-valmsg-replace="true"></span></span>
+                    @*<span asp-validation-for="SubmissionText" class="text-danger"></span>*@
                 </div>
                 <div class="form-group">
                     <input type="submit" value="Submit" class="btn btn-default" />
@@ -91,13 +93,13 @@
         <thead>
             <tr>
                 <th>
-                    @Html.DisplayNameFor(model => model.Submissions[0].TimeSubmitted)
+                    Time Submitted
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Submissions[0].Submitter.Name)
+                    Name
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Submissions[0].SubmissionText)
+                    Submission Text
                 </th>
                 <th>
                     Response
@@ -106,20 +108,20 @@
             </tr>
         </thead>
         <tbody>
-            @for (int i = Model.Submissions.Count-1; i >= 0; --i)
+            @for (int i = Model.SubmissionViews.Count-1; i >= 0; --i)
             {
                 <tr>
                     <td>
-                        @Html.Raw(Model.LocalTime(Model.Submissions[i].TimeSubmitted))
+                        @Html.Raw(Model.LocalTime(Model.SubmissionViews[i].Submission.TimeSubmitted))
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => Model.Submissions[i].Submitter.Name)
+                        @Html.DisplayFor(modelItem => Model.SubmissionViews[i].SubmitterName)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => Model.Submissions[i].SubmissionText)
+                        @Html.DisplayFor(modelItem => Model.SubmissionViews[i].Submission.SubmissionText)
                     </td>
                     <td>
-                        @(Model.Submissions[i].Response != null ? Model.Submissions[i].Response.ResponseText : "Incorrect")
+                        @(Model.SubmissionViews[i].Response != null ? Model.SubmissionViews[i].Response.ResponseText : "Incorrect")
                     </td>
                 </tr>
             }
