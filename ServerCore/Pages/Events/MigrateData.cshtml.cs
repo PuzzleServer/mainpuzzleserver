@@ -20,6 +20,8 @@ namespace ServerCore.Pages.Events
     {
         private readonly PuzzleServerContext _context;
 
+        public string Status { get; set; }
+
         public MigrateDataModel(PuzzleServerContext context, UserManager<IdentityUser> manager)
         {
             _context = context;
@@ -55,6 +57,8 @@ namespace ServerCore.Pages.Events
                 transaction.Commit();
             }
 
+            Status = "Admins and authors migrated";
+
             return Page();
         }
 
@@ -84,6 +88,62 @@ namespace ServerCore.Pages.Events
                 _context.Submissions.RemoveRange(submissionsToDelete);
                 await _context.SaveChangesAsync();
                 transaction.Commit();
+
+                Status = $"{submissionsToDelete.Count} duplicates removed";
+            }
+
+            return Page();
+        }
+
+        /// <summary>
+        /// Create missing PuzzleStatePerTeam rows from when they were lazily created
+        /// </summary>
+        public async Task<IActionResult> OnPostCreateMissingPSPTAsync()
+        {
+            List<int> allEvents = await (from ev in _context.Events
+                                         select ev.ID).ToListAsync();
+
+            var allPspts = await (from pspt in _context.PuzzleStatePerTeam
+                                  select new { pspt.PuzzleID, pspt.TeamID }).ToDictionaryAsync(pspt => (((ulong)pspt.PuzzleID) << 32) | (uint)pspt.TeamID);
+
+            List<PuzzleStatePerTeam> newPspts = new List<PuzzleStatePerTeam>();
+
+            foreach (int ev in allEvents)
+            {
+                List<int> allPuzzles = await (from puzzle in _context.Puzzles
+                                              where puzzle.EventID == ev
+                                              select puzzle.ID).ToListAsync();
+                List<int> allTeams = await (from team in _context.Teams
+                                            where team.EventID == ev
+                                            select team.ID).ToListAsync();
+
+                foreach (int puzzle in allPuzzles)
+                {
+                    foreach (int team in allTeams)
+                    {
+                        ulong key = (((ulong)puzzle) << 32) | (uint)team;
+                        if (!allPspts.ContainsKey(key))
+                        {
+                            PuzzleStatePerTeam newPspt = new PuzzleStatePerTeam()
+                            {
+                                PuzzleID = puzzle,
+                                TeamID = team,
+                            };
+
+                            newPspts.Add(newPspt);
+                        }
+                    }
+                }
+            }
+            if (newPspts.Count > 0)
+            {
+                _context.PuzzleStatePerTeam.AddRange(newPspts.ToArray());
+                await _context.SaveChangesAsync();
+                Status = $"Added {newPspts.Count} missing PuzzleStatePerTeam rows";
+            }
+            else
+            {
+                Status = "No new PuzzleStatePerTeam rows needed";
             }
 
             return Page();

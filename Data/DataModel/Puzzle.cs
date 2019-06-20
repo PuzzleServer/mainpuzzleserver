@@ -60,6 +60,11 @@ namespace ServerCore.DataModel
         /// <summary>
         /// The event the puzzle is a part of
         /// </summary>
+        public int EventID { get; set; }
+
+        /// <summary>
+        /// The event the puzzle is a part of
+        /// </summary>
         [Required]
         public virtual Event Event { get; set; }
 
