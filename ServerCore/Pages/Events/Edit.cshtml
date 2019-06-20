@@ -36,6 +36,11 @@
                 <span asp-validation-for="EditableEvent.HomePartial" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="EditableEvent.ContactEmail" class="control-label"></label>
+                <input asp-for="EditableEvent.ContactEmail" class="form-control" />
+                <span asp-validation-for="EditableEvent.ContactEmail" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="EditableEvent.MaxNumberOfTeams" class="control-label"></label>
                 <input asp-for="EditableEvent.MaxNumberOfTeams" class="form-control" />
                 <span asp-validation-for="EditableEvent.MaxNumberOfTeams" class="text-danger"></span>
