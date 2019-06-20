@@ -18,6 +18,10 @@
         <form method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Puzzle.ID" />
+            <p>
+                <input type="checkbox" asp-for="ExpandZipFiles" />
+                &lt;- Check this box to automatically extract the contents of zip files in materials or solve tokens into the same directory.
+            </p>
             <label class="control-label">Puzzle File</label>
             <div>
                 @{                    
@@ -53,7 +57,7 @@
             <hr />
 
             <label class="control-label">Materials</label>
-            @foreach (var material in Model.Puzzle.Materials)
+            @foreach (var material in Model.Puzzle.Materials.OrderBy(file => file.ShortName))
             {
                 <p>
                     @Html.ActionLink(material.ShortName, "Index", "Files", new { eventId = Model.Event.ID, filename = material.ShortName })
@@ -66,7 +70,7 @@
             <hr />
 
             <label class="control-label">Solve Token Files</label>
-            @foreach (var solveFile in Model.Puzzle.SolveTokenFiles)
+            @foreach (var solveFile in Model.Puzzle.SolveTokenFiles.OrderBy(file => file.ShortName))
             {
                 <p>
                     @Html.ActionLink(solveFile.ShortName, "Index", "Files", new { eventId = Model.Event.ID, filename = solveFile.ShortName })
