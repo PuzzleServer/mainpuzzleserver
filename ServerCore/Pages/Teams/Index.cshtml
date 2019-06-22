@@ -52,15 +52,18 @@
         <a asp-page="Create">Create New</a>
     }
 </p>
-@if  (Model.Event.IsInternEvent)
-{
-    <div>
-        <a asp-page="/Swag/Report">Intern T-shirts and Lunch</a>
-    </div>
-}
 <h4>Registered Teams: @Model.Teams.Count/@Model.Event.MaxNumberOfTeams, Registered Players: @Model.PlayerCount/@(Model.Event.MaxNumberOfTeams * Model.Event.MaxTeamSize)</h4>
 @if (Model.EventRole == ModelBases.EventRole.admin)
 {
+    <div>
+        Summaries:
+        <a asp-page="/Teams/TeamCompositionSummary">Team Composition</a> @("|")
+        @if (Model.Event.IsInternEvent)
+        {
+            <a asp-page="/Swag/Report">Intern T-shirts and Lunch</a> @("|")
+        }
+    </div>
+    <br />
     <a asp-page="/Events/Mailer" asp-route-group="PrimaryContacts">Email all team primary contacts from the bulk mailer</a>
 }
 <table class="table">
