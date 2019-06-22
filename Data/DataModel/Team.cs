@@ -9,6 +9,15 @@ namespace ServerCore.DataModel
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
+
+        /// <summary>
+        /// The event the team is a part of
+        /// </summary>
+        public int EventID { get; set; }
+
+        /// <summary>
+        /// The event the team is a part of
+        /// </summary>
         [Required]
         public virtual Event Event { get; set; }
 

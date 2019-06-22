@@ -8,7 +8,13 @@
 
 <p class="text-danger">Do not press any of these buttons unless you know what you're doing!</p>
 
+@if(Model.Status != null)
+{
+    <p class="text-danger">@Model.Status</p>
+}
+
 <form method="post">
-    <button type="submit" asp-page-handler="MigrateAdmins">Migrate Admins</button>
-    <button type="submit" asp-page-handler="DeleteDuplicateSubmissions">Delete duplicate submissions</button>
+    <button type="submit" asp-page-handler="MigrateAdmins">Migrate Admins</button><br />
+    <button type="submit" asp-page-handler="DeleteDuplicateSubmissions">Delete duplicate submissions</button><br />
+    <button type="submit" asp-page-handler="CreateMissingPSPT">Create missing PuzzleStatePerTeam rows</button><br />
 </form>
