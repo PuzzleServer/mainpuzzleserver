@@ -15,6 +15,17 @@ namespace ServerCore.DataModel
 
     public class Piece
     {
+        public Piece()
+        {
+        }
+
+        public Piece(Piece source)
+        {
+            PuzzleID = source.PuzzleID;
+            ProgressLevel = source.ProgressLevel;
+            Contents = source.Contents;
+        }
+
         /// <summary>
         /// The ID of this puzzle piece
         /// </summary>

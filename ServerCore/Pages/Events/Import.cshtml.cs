@@ -154,6 +154,15 @@ namespace ServerCore.Pages.Events
                         newFile.Url = await FileManager.CloneBlobAsync(contentFile.ShortName, Event.ID, contentFile.Url);
                         _context.ContentFiles.Add(newFile);
                     }
+
+                    // Pieces
+                    foreach (Piece piece in _context.Pieces.Where((p) => p.Puzzle == sourcePuzzle))
+                    {
+                        Piece newPiece = new Piece(piece);
+                        newPiece.Puzzle = puzzleCloneMap[piece.PuzzleID];
+                        newPiece.PuzzleID = puzzleCloneMap[piece.PuzzleID].ID; // unsure why I need this line for pieces but not others <shrug/>
+                        _context.Pieces.Add(newPiece);
+                    }
                 }
 
                 // Step 5: Final save and commit

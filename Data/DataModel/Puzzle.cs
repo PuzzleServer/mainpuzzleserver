@@ -49,6 +49,7 @@ namespace ServerCore.DataModel
             CustomURL = source.CustomURL;
             Description = source.Description;
             Errata = source.Errata;
+            PieceMetaUsage = source.PieceMetaUsage;
         }
 
         /// <summary>
@@ -56,6 +57,11 @@ namespace ServerCore.DataModel
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
+
+        /// <summary>
+        /// The event the puzzle is a part of
+        /// </summary>
+        public int EventID { get; set; }
 
         /// <summary>
         /// The event the puzzle is a part of

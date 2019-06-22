@@ -22,11 +22,11 @@ namespace ServerCore.Pages.Submissions
 
         public PuzzleStatePerTeam PuzzleState { get; set; }
 
-        [BindProperty]
-        [Required]
         public string SubmissionText { get; set; }
 
-        public IList<Submission> Submissions { get; set; }
+        private IList<Submission> Submissions { get; set; }
+
+        public List<SubmissionView> SubmissionViews { get; set; }
 
         public Puzzle Puzzle { get; set; }
 
@@ -38,11 +38,24 @@ namespace ServerCore.Pages.Submissions
 
         public bool DuplicateSubmission { get; set; }
 
-        public async Task<IActionResult> OnPostAsync(int puzzleId)
+        public class SubmissionView
         {
+            public Submission Submission { get; set; }
+            public Response Response { get; set; }
+            public string SubmitterName { get; set; }
+        }
+
+        public async Task<IActionResult> OnPostAsync(int puzzleId, string submissionText)
+        {
+            if (String.IsNullOrWhiteSpace(submissionText))
+            {
+                ModelState.AddModelError("submissionText", "Your answer cannot be empty");
+            }
+
+            SubmissionText = submissionText;
             if (!this.Event.IsAnswerSubmissionActive)
             {
-                return RedirectToPage("/Submissions/Index", new { puzzleid = puzzleId });
+                return Page();
             }
 
             await SetupContext(puzzleId);
@@ -58,9 +71,15 @@ namespace ServerCore.Pages.Submissions
                 return Page();
             }
 
+            // Don't accept posted submissions when a puzzle is causing lockout
+            if (PuzzlesCausingGlobalLockout.Count != 0 && !PuzzlesCausingGlobalLockout.Contains(Puzzle))
+            {
+                return Page();
+            }
+
             // Soft enforcement of duplicates to give a friendly message in most cases
             DuplicateSubmission = (from sub in Submissions
-                                   where sub.SubmissionText == ServerCore.DataModel.Response.FormatSubmission(SubmissionText)
+                                   where sub.SubmissionText == ServerCore.DataModel.Response.FormatSubmission(submissionText)
                                    select sub).Any();
 
             if (DuplicateSubmission)
@@ -71,7 +90,7 @@ namespace ServerCore.Pages.Submissions
             // Create submission and add it to list
             Submission submission = new Submission
             {
-                SubmissionText = SubmissionText,
+                SubmissionText = submissionText,
                 TimeSubmitted = DateTime.UtcNow,
                 Puzzle = PuzzleState.Puzzle,
                 Team = PuzzleState.Team,
@@ -93,6 +112,7 @@ namespace ServerCore.Pages.Submissions
                     submission.Team,
                     submission.TimeSubmitted);
 
+                AnswerToken = submission.SubmissionText;
             }
             else if (submission.Response == null)
             {
@@ -130,7 +150,6 @@ namespace ServerCore.Pages.Submissions
                             submission.Puzzle,
                             submission.Team,
                             lockoutExpiryTime);
-
                     }
                 }
             }
@@ -138,26 +157,19 @@ namespace ServerCore.Pages.Submissions
             _context.Submissions.Add(submission);
             await _context.SaveChangesAsync();
 
-            return RedirectToPage(
-                "/Submissions/Index",
-                new { puzzleid = puzzleId });
+            SubmissionViews.Add(new SubmissionView()
+            {
+                Submission = submission,
+                Response = submission.Response,
+                SubmitterName = LoggedInUser.Name
+            });
+
+            return Page();
         }
 
         public async Task<IActionResult> OnGetAsync(int puzzleId)
         {
             await SetupContext(puzzleId);
-
-            if (PuzzleState.SolvedTime != null)
-            {
-                if (this.Submissions?.Count > 0)
-                {
-                    AnswerToken = this.Submissions.Last().SubmissionText;
-                }
-                else
-                {
-                    AnswerToken = "(marked as solved by admin or author)";
-                }
-            }
 
             return Page();
         }
@@ -175,15 +187,41 @@ namespace ServerCore.Pages.Submissions
                     Event,
                     Puzzle,
                     Team))
-                .FirstOrDefaultAsync();
+                .FirstAsync();
 
-            Submissions = await _context.Submissions.Where(
-                (s) => s.Team == Team &&
-                       s.Puzzle == Puzzle)
-                .OrderBy(submission => submission.TimeSubmitted)
-                .ToListAsync();
+            SubmissionViews = await (from submission in _context.Submissions
+                                     join user in _context.PuzzleUsers on submission.Submitter equals user
+                                     join r in _context.Responses on submission.Response equals r into responses
+                                     from response in responses.DefaultIfEmpty()
+                                     where submission.Team == Team &&
+                                     submission.Puzzle == Puzzle
+                                     orderby submission.TimeSubmitted
+                                     select new SubmissionView()
+                                     {
+                                         Submission = submission,
+                                         Response = response,
+                                         SubmitterName = user.Name,
+                                     }).ToListAsync();
+
+            Submissions = new List<Submission>(SubmissionViews.Count);
+            foreach (SubmissionView submissionView in SubmissionViews)
+            {
+                Submissions.Add(submissionView.Submission);
+            }
 
             PuzzlesCausingGlobalLockout = await PuzzleStateHelper.PuzzlesCausingGlobalLockout(_context, Event, Team).ToListAsync();
+
+            if (PuzzleState.SolvedTime != null)
+            {
+                if (Submissions?.Count > 0)
+                {
+                    AnswerToken = Submissions.Last().SubmissionText;
+                }
+                else
+                {
+                    AnswerToken = "(marked as solved by admin or author)";
+                }
+            }
         }
 
         /// <summary>
