@@ -73,7 +73,7 @@ namespace ServerCore.Pages.Pieces
                 return await OnGetAsync(puzzleId);
             }
 
-            var currentPieces = _context.Pieces;
+            var currentPieces = await _context.Pieces.Where(p => p.PuzzleID == puzzleId).ToListAsync();
             _context.Pieces.RemoveRange(currentPieces);
             await _context.SaveChangesAsync();
 
