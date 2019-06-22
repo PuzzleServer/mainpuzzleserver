@@ -46,6 +46,7 @@ namespace ServerCore.Pages.Teams
             {
                 return Page();
             }
+            Team.EventID = Event.ID;
 
             Team existingTeam = await (from team in _context.Teams
                                 where team.ID == Team.ID

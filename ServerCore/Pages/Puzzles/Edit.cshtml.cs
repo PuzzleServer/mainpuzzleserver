@@ -103,6 +103,7 @@ namespace ServerCore.Pages.Puzzles
             }
 
             Puzzle.ID = puzzleId; // to be safe
+            Puzzle.EventID = Event.ID;
 
             string oldErrata = await (from Puzzle puzzle in _context.Puzzles
                                       where puzzle.ID == puzzleId
