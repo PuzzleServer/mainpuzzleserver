@@ -38,8 +38,6 @@ namespace ServerCore
                     .Where(state => state.Puzzle == puzzle && state.Team == team);
             }
 
-#pragma warning disable IDE0031 // despite the compiler message, "teamstate?.UnlockedTime", etc does not compile here
-
             if (puzzle != null)
             {
                 return context.PuzzleStatePerTeam.Where(state => state.Puzzle == puzzle);
@@ -51,7 +49,8 @@ namespace ServerCore
                 {
                     return from state in context.PuzzleStatePerTeam
                            join auth in context.PuzzleAuthors on state.PuzzleID equals auth.PuzzleID
-                           where state.Team == team
+                           where state.Team == team &&
+                           auth.Author == author
                            select state;
                 }
                 else
@@ -59,7 +58,6 @@ namespace ServerCore
                     return context.PuzzleStatePerTeam.Where(state => state.Team == team);
                 }
             }
-#pragma warning restore IDE0031
 
             throw new NotImplementedException("Full event query is NYI and may never be needed; use the sparse one");
         }
@@ -96,7 +94,18 @@ namespace ServerCore
 
             if (team != null)
             {
-                return context.PuzzleStatePerTeam.Where(state => state.Team == team);
+                if (author != null)
+                {
+                    return from state in context.PuzzleStatePerTeam
+                           join auth in context.PuzzleAuthors on state.PuzzleID equals auth.PuzzleID
+                           where state.Team == team &&
+                           auth.Author == author
+                           select state;
+                }
+                else
+                {
+                    return context.PuzzleStatePerTeam.Where(state => state.Team == team);
+                }
             }
 
             return context.PuzzleStatePerTeam.Where(state => state.Puzzle.Event == eventObj);
