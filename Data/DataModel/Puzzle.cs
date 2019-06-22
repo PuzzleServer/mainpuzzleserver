@@ -49,6 +49,7 @@ namespace ServerCore.DataModel
             CustomURL = source.CustomURL;
             Description = source.Description;
             Errata = source.Errata;
+            PieceMetaUsage = source.PieceMetaUsage;
         }
 
         /// <summary>
