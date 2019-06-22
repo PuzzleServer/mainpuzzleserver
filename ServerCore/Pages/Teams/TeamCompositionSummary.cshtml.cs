@@ -1,13 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
-using ServerCore.Helpers;
 using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Teams
@@ -21,6 +19,23 @@ namespace ServerCore.Pages.Teams
     {
         // AlphaNumeric or dashes only
         public Regex aliasRegex = new Regex("^[a-zA-Z0-9-]*$");
+
+        public enum SortEnum
+        {
+            NonMicrosoftAndPossibleAliases,
+            InternCount,
+            EmployeeCount,
+            NonMicrosoftCount,
+            PossibleEmployeeAliasas,
+            Total,
+            Title
+        }
+
+        public enum SortDirectionEnum
+        {
+            Descend,
+            Ascend
+        }
 
         public TeamCompositionSummaryModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
@@ -36,7 +51,7 @@ namespace ServerCore.Pages.Teams
 
             public int TeamID { get; }
             public string TeamName { get; set; }
-            public int MicrosoftNonInternCount { get; set; }
+            public int EmployeeCount { get; set; }
             public int InternCount { get; set; }
             public int NonMicrosoftCount { get; set; }
             public int Total { get; set; }
@@ -45,8 +60,15 @@ namespace ServerCore.Pages.Teams
 
         public IEnumerable<TeamComposition> TeamCompositions { get; set; }
 
-        public IActionResult OnGet()
+        public SortEnum SortBy { get; set; }
+
+        public SortDirectionEnum SortDirection { get; set; }
+
+        public IActionResult OnGet(SortEnum? sortBy, SortDirectionEnum? sortDirection)
         {
+            SortBy = sortBy ?? SortEnum.NonMicrosoftAndPossibleAliases;
+            SortDirection = sortDirection ?? SortDirectionEnum.Descend;
+
             TeamCompositions = _context.Teams.Where(team => team.EventID == Event.ID)
                 .Join(
                     _context.TeamMembers,
@@ -56,7 +78,43 @@ namespace ServerCore.Pages.Teams
                 .GroupBy(intermediate => intermediate.TeamID)
                 .Select(this.MapToTeamComposition);
 
+            if (SortDirection == SortDirectionEnum.Ascend)
+            {
+                TeamCompositions = TeamCompositions.OrderBy(this.GetSortSelector());
+            }
+            else
+            {
+                TeamCompositions = TeamCompositions.OrderByDescending(this.GetSortSelector());
+            }
+
             return Page();
+        }
+
+        public IActionResult OnPost(SortEnum sortBy, SortDirectionEnum sortDirection)
+        {
+            return RedirectToPage("./TeamCompositionSummary", new { sortBy = sortBy, sortDirection = sortDirection });
+        }
+
+        private Func<TeamComposition, string> GetSortSelector()
+        {
+            switch (SortBy)
+            {
+                case SortEnum.EmployeeCount:
+                    return teamComp => teamComp.EmployeeCount.ToString();
+                case SortEnum.InternCount:
+                    return teamComp => teamComp.InternCount.ToString();
+                case SortEnum.NonMicrosoftAndPossibleAliases:
+                    return teamComp => (teamComp.NonMicrosoftCount + teamComp.PossibleEmployeeAliases.Count).ToString();
+                case SortEnum.NonMicrosoftCount:
+                    return teamComp => teamComp.NonMicrosoftCount.ToString();
+                case SortEnum.PossibleEmployeeAliasas:
+                    return teamComp => teamComp.PossibleEmployeeAliases.Count.ToString();
+                case SortEnum.Total:
+                    return teamComp => teamComp.Total.ToString();
+                case SortEnum.Title:
+                default:
+                    return teamComp => teamComp.TeamName;
+            }
         }
 
         private TeamComposition MapToTeamComposition(IGrouping<int, IntermediateTeamMember> group)
@@ -78,7 +136,7 @@ namespace ServerCore.Pages.Teams
                     }
                     else
                     {
-                        toReturn.MicrosoftNonInternCount += 1;
+                        toReturn.EmployeeCount += 1;
                     }
                 }
                 else if (!string.IsNullOrEmpty(alias) && aliasRegex.IsMatch(alias))

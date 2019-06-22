@@ -17,12 +17,31 @@
         td, th {
             text-align:center;
         }
+
+        .sortButton {
+            padding: 0px 20px;
+        }
     </style>
 </head>
 <body>
     <a asp-page="/Teams/Index">Back to team list</a>
     <br />
     <h2>Team Composition Summary</h2>
+    <div>
+        <form method="post">
+            Sort by:
+            <span class="form-group">
+                <select asp-for="SortBy" asp-items="Html.GetEnumSelectList<TeamCompositionSummaryModel.SortEnum>()"></select>
+            </span>
+            <span class="form-group">
+                <select asp-for="SortDirection" asp-items="Html.GetEnumSelectList<TeamCompositionSummaryModel.SortDirectionEnum>()"></select>
+            </span>
+            <span class="form-group">
+                <input type="submit" value="Sort" class="btn btn-default sortButton" />
+            </span>
+        </form>
+    </div>
+    <br />
     <div>
         <table class="table">
             <thead>
@@ -58,7 +77,7 @@
                             @teamComp.Total
                         </td>
                         <td>
-                            @teamComp.MicrosoftNonInternCount
+                            @teamComp.EmployeeCount
                         </td>
                         <td>
                             @teamComp.InternCount
@@ -70,7 +89,7 @@
                             @teamComp.PossibleEmployeeAliases.Count
                             @if (teamComp.PossibleEmployeeAliases.Count > 0)
                             {
-                                <br/>
+                                <br />
                                 @string.Format("({0})", string.Join("; ", teamComp.PossibleEmployeeAliases))
                             }
                         </td>
