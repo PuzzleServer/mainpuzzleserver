@@ -37,7 +37,10 @@ namespace ServerCore.Pages.Teams
             Ascend
         }
 
-        public TeamCompositionSummaryModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
+        public TeamCompositionSummaryModel(
+            PuzzleServerContext serverContext, 
+            UserManager<IdentityUser> userManager) 
+            : base(serverContext, userManager)
         {
         }
 
@@ -74,7 +77,12 @@ namespace ServerCore.Pages.Teams
                     _context.TeamMembers,
                     team => team.ID,
                     teamMember => teamMember.Team.ID,
-                    (team, teamMember) => new IntermediateTeamMember() { TeamID = team.ID, TeamName = team.Name, TeamMember = teamMember.Member })
+                    (team, teamMember) => new IntermediateTeamMember()
+                    {
+                        TeamID = team.ID,
+                        TeamName = team.Name,
+                        TeamMember = teamMember.Member
+                    })
                 .GroupBy(intermediate => intermediate.TeamID)
                 .Select(this.MapToTeamComposition);
 
@@ -92,7 +100,12 @@ namespace ServerCore.Pages.Teams
 
         public IActionResult OnPost(SortEnum sortBy, SortDirectionEnum sortDirection)
         {
-            return RedirectToPage("./TeamCompositionSummary", new { sortBy = sortBy, sortDirection = sortDirection });
+            return RedirectToPage(
+                "./TeamCompositionSummary", 
+                new {
+                    sortBy = sortBy,
+                    sortDirection = sortDirection
+                });
         }
 
         private Func<TeamComposition, string> GetSortSelector()
