@@ -64,6 +64,12 @@ namespace ServerCore.Pages.Submissions
             {
                 return Page();
             }
+            
+            // Don't allow submissions if the team is locked out.
+            if (PuzzleState.IsTeamLockedOut())
+            {
+                return Page();
+            }
 
             // Don't allow submissions after the answer has been found.
             if (PuzzleState.SolvedTime != null)
