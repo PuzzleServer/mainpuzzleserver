@@ -28,6 +28,14 @@
     }
     <link href="https://fonts.googleapis.com/css?family=Montserrat|Staatliches" rel="stylesheet">
 
+    @{
+        var refresh = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Refresh;
+        if (refresh.HasValue)
+        {
+            <meta http-equiv="refresh" content="@refresh.Value"/>
+        }
+    }
+
 </head>
 <body>
 @{

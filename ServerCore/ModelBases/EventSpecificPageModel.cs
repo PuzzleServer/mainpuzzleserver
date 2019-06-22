@@ -24,6 +24,8 @@ namespace ServerCore.ModelBases
         [ModelBinder(typeof(RoleBinder))]
         public EventRole EventRole { get; set; }
 
+        public int? Refresh { get; set; }
+
         /// <summary>
         /// Runs before page actions
         /// </summary>
