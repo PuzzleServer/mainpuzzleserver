@@ -276,7 +276,7 @@ namespace ServerCore.Pages
             if (request.MinSolveCount != null && maxSolveCount >= request.MinSolveCount) {
                 List<Piece> pieces = await (from piece in context.Pieces
                                             where piece.ProgressLevel >= request.MinSolveCount && piece.ProgressLevel <= maxSolveCount
-                                                  && piece.PuzzleID = puzzleId
+                                                  && piece.PuzzleID == puzzleId
                                             select piece).ToListAsync();
                 response.SetMinAndMaxSolveCountAndPieces(request.MinSolveCount.Value, maxSolveCount, pieces);
             }
