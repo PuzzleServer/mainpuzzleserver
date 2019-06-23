@@ -62,6 +62,7 @@ namespace ServerCore.Pages.Submissions
             }
 
             IQueryable<IncorrectCountsView> incorrectCounts = submissionsQ
+                .Where(submission => submission.Response == null)
                 .GroupBy(submission => Tuple.Create<string,int>
                 (
                     submission.SubmissionText,
