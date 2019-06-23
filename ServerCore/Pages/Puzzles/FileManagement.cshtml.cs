@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -23,7 +25,6 @@ namespace ServerCore.Pages.Puzzles
         {
         }
 
-        //[BindProperty]
         public Puzzle Puzzle { get; set; }
 
         [BindProperty]
@@ -37,6 +38,9 @@ namespace ServerCore.Pages.Puzzles
 
         [BindProperty]
         public List<IFormFile> SolveTokenFiles { get; set; }
+
+        [BindProperty]
+        public bool ExpandZipFiles { get; set; }
 
         /// <summary>
         /// Handler for listing files
@@ -203,6 +207,13 @@ namespace ServerCore.Pages.Puzzles
         /// </summary>
         private async Task UploadFileAsync(IFormFile uploadedFile, ContentFileType fileType)
         {
+            if ((fileType == ContentFileType.PuzzleMaterial || fileType == ContentFileType.SolveToken) &&
+                Path.GetExtension(uploadedFile.FileName).Equals(".zip", StringComparison.OrdinalIgnoreCase) && ExpandZipFiles)
+            {
+                await UploadZipAsync(uploadedFile, fileType);
+                return;
+            }
+
             ContentFile file = new ContentFile();
             string fileName = WebUtility.UrlEncode(Path.GetFileName(uploadedFile.FileName));
 
@@ -214,6 +225,34 @@ namespace ServerCore.Pages.Puzzles
             file.Url = await FileManager.UploadBlobAsync(fileName, Event.ID, uploadedFile.OpenReadStream());
 
             _context.ContentFiles.Add(file);
+        }
+
+        /// <summary>
+        /// Extracts the contents of a zip file and uploads the contents into a single directory
+        /// </summary>
+        private async Task UploadZipAsync(IFormFile uploadedFile, ContentFileType fileType)
+        {
+            ZipArchive archive = new ZipArchive(uploadedFile.OpenReadStream(), ZipArchiveMode.Read);
+            Dictionary<string, Stream> contents = new Dictionary<string, Stream>();
+            foreach(ZipArchiveEntry entry in archive.Entries)
+            {
+                string fileName = WebUtility.UrlEncode(Path.GetFileName(entry.Name));
+                contents[fileName] = entry.Open();
+            }
+
+            Dictionary<string, Uri> fileUrls = await FileManager.UploadBlobsAsync(contents, Event.ID);
+            foreach(KeyValuePair<string, Uri> fileUrl in fileUrls)
+            {
+                ContentFile file = new ContentFile()
+                {
+                    ShortName = fileUrl.Key,
+                    Puzzle = Puzzle,
+                    Event = Event,
+                    FileType = fileType,
+                    Url = fileUrl.Value,
+                };
+                _context.ContentFiles.Add(file);
+            }
         }
     }
 }

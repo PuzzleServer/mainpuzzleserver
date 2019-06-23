@@ -37,6 +37,16 @@
     </a>
 </div>
 <br/>
+    <a asp-page="/Events/FastestSolves"
+       asp-route-sort="CountDescending"
+       asp-route-stateFilter="Unsolved">
+
+        Feeling stuck?
+    </a>
+<br/>
+    The link above will take you to a page where you can view puzzles, sorted by how many teams have solved them.
+<br/>
+<br/>
 <table class="table">
     <thead>
         <tr>
@@ -61,9 +71,12 @@
                     Solve
                 </a>
             </th>
-            <th>
-                Hints
-            </th>
+            @if (!Model.Event.HideHints)
+            {
+                <th>
+                    Hints
+                </th>
+            }
             @if (Model.AllowFeedback)
             {
                 <th>
@@ -97,6 +110,11 @@
                     {
                         @Html.DisplayFor(modelItem => item.Name)
                     }
+
+                    @if (item.PieceMetaUsage != DataModel.PieceMetaUsage.None)
+                    {
+                        <text>(<a asp-page="/Pieces/SimpleMeta" asp-route-puzzleId="@item.ID">Meta Pieces</a>)</text>
+                    }
                 </td>
                 @if (Model.ShowAnswers)
                 {
@@ -123,9 +141,12 @@
                         }
                     </a>
                 </td>
-                <td>
-                    <a asp-page="./Hints" asp-route-puzzleid="@item.ID" asp-route-teamId="@Model.TeamID">Hints</a>
-                </td>
+                @if (!Model.Event.HideHints)
+                {
+                    <td>
+                        <a asp-page="./Hints" asp-route-puzzleid="@item.ID" asp-route-teamId="@Model.TeamID">Hints</a>
+                    </td>
+                }
                 @if (Model.AllowFeedback)
                 {
                     <td>

@@ -63,6 +63,7 @@ namespace ServerCore.Pages.Events
             {
                 _context.EventAdmins.Add(new EventAdmins() { Event = Event, Admin = loggedInUser });
                 _context.EventAuthors.Add(new EventAuthors() { Event = Event, Author = loggedInUser });
+                loggedInUser.MayBeAdminOrAuthor = true;
             }
 
             await _context.SaveChangesAsync();

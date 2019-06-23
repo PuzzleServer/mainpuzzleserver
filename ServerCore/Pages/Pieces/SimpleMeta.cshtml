@@ -1,0 +1,20 @@
+﻿@page "/{eventId}/{eventRole}/Teams/{teamId}/SimpleMeta/{puzzleId}"
+@model ServerCore.Pages.Pieces.SimpleMetaModel
+
+@{
+    ViewData["Title"] = $"{Model.Puzzle.Name} Meta";
+}
+
+<h2>@(Model.Puzzle.Name) Pieces Earned</h2>
+
+<table class="table">
+    <tbody>
+@foreach (var item in Model.EarnedPieces) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Contents)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

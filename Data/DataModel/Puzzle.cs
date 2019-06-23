@@ -7,6 +7,13 @@ using System.Linq;
 
 namespace ServerCore.DataModel
 {
+    public enum PieceMetaUsage
+    {
+        None,
+        GroupOnly,
+        EntireEvent
+    }
+
     /// <summary>
     /// A Puzzle is the record of a solvable puzzle in the database
     /// Sometimes a Puzzle is used as a workaround for things like time prerequisites
@@ -29,6 +36,7 @@ namespace ServerCore.DataModel
             SolveValue = source.SolveValue;
             HintCoinsForSolve = source.HintCoinsForSolve;
             HintsAreCumulative = source.HintsAreCumulative;
+            HasDataConfirmation = source.HasDataConfirmation;
             Token = source.Token;
             Group = source.Group;
             OrderInGroup = source.OrderInGroup;
@@ -41,6 +49,7 @@ namespace ServerCore.DataModel
             CustomURL = source.CustomURL;
             Description = source.Description;
             Errata = source.Errata;
+            PieceMetaUsage = source.PieceMetaUsage;
         }
 
         /// <summary>
@@ -48,6 +57,11 @@ namespace ServerCore.DataModel
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
+
+        /// <summary>
+        /// The event the puzzle is a part of
+        /// </summary>
+        public int EventID { get; set; }
 
         /// <summary>
         /// The event the puzzle is a part of
@@ -95,6 +109,11 @@ namespace ServerCore.DataModel
         /// whether to decrement future hint costs for this puzzle as hints are taken
         /// </summary>
         public bool HintsAreCumulative { get; set; }
+
+        /// <summary>
+        /// True if this puzzle has data confirmation
+        /// </summary>
+        public bool HasDataConfirmation { get; set; } = false;
 
         /// <summary>
         /// Reward if solved: Sometimes displayed publicly, sometimes used internally by meta engine
@@ -181,6 +200,11 @@ namespace ServerCore.DataModel
         /// Short description of the puzzle for authors or special pages
         /// </summary>
         public string Description { get; set; }
+
+        /// <summary>
+        /// Determines whether the puzzle can use the basic piece-driven meta.
+        /// </summary>
+        public PieceMetaUsage PieceMetaUsage { get; set; }
 
         //
         // WARNING: If you add new properties add them to the constructor as well so importing will work.

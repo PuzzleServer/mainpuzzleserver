@@ -23,10 +23,18 @@
         var ev = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Event;
         if (ev != null && ev.UrlString == "pd2019")
         {
-            <link rel="stylesheet" href="~/css/@(ev.UrlString)/styles.css" />
+            <link rel="stylesheet" href="~/css/@(ev.UrlString)/styles.min.css" />
         }
     }
     <link href="https://fonts.googleapis.com/css?family=Montserrat|Staatliches" rel="stylesheet">
+
+    @{
+        var refresh = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Refresh;
+        if (refresh.HasValue)
+        {
+            <meta http-equiv="refresh" content="@refresh.Value"/>
+        }
+    }
 
 </head>
 <body>

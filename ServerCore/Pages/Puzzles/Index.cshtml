@@ -37,8 +37,11 @@
     <a asp-page="Create">Create new</a> |
     <a asp-page="/Submissions/AuthorIndex">View all submissions</a> |
     <a asp-page="/Puzzles/Feedback">View all feedback</a> |
-    <a asp-page="/Hints/Responses">View all hint responses</a> |
-    <a asp-page="/Hints/AuthorIndex">View all hints taken</a> |
+    @if (!Model.Event.HideHints) 
+    {
+        <a asp-page="/Hints/Responses">View all hint responses</a> @(" |")
+        <a asp-page="/Hints/AuthorIndex">View all hints taken</a> @(" |")
+    }
     <a asp-page="/Puzzles/Checklist">View puzzle checklist</a>
 </p>
 <table class="table">
@@ -87,7 +90,7 @@
         {
             <tr>
                 <td>
-                    <a asp-Page="./Details" asp-route-puzzleid=@item.Puzzle.ID>@Html.DisplayFor(modelItem => item.Puzzle.Name)</a>
+                    <a asp-Page="./Edit" asp-route-puzzleid=@item.Puzzle.ID>@Html.DisplayFor(modelItem => item.Puzzle.Name)</a>
                 </td>
                 <td>
                     @if (item.Puzzle.CustomURL != null)
@@ -142,16 +145,20 @@
                     <div class="shortcut-menu-dropdown">
                         <span><a>Jump to...</a></span>
                         <div class="shortcut-menu-dropdown-content">
-                            <a asp-Page="./Details" asp-route-puzzleid=@item.Puzzle.ID>Details</a><br />
-                            <a asp-Page="./Edit" asp-route-puzzleid=@item.Puzzle.ID>Edit</a><br />
+                            <a asp-Page="./Edit" asp-route-puzzleid=@item.Puzzle.ID>Details/Edit</a><br />
                             <a asp-Page="./FileManagement" asp-route-puzzleid=@item.Puzzle.ID>Files</a><br />
                             <a asp-page="/Responses/Index" asp-route-puzzleid=@item.Puzzle.ID>Responses</a><br />
-                            <a asp-page="/Hints/Index" asp-route-puzzleid=@item.Puzzle.ID>Hints</a><br />
+                            @if (!Model.Event.HideHints) {
+                                <a asp-page="/Hints/Index" asp-route-puzzleid=@item.Puzzle.ID>Hints</a><br />
+                            }
                             <a asp-page="/Pieces/Index" asp-route-puzzleid=@item.Puzzle.ID>Pieces</a><br />
                             ------<br />
                             <a asp-page="./Status" asp-route-puzzleid=@item.Puzzle.ID>Status</a><br />
                             <a asp-page="/Submissions/AuthorIndex" asp-route-puzzleid=@item.Puzzle.ID>Submissions</a><br />
-                            <a asp-page="/Hints/AuthorIndex" asp-route-puzzleid=@item.Puzzle.ID>Hints Taken</a><br />
+                            @if (!Model.Event.HideHints)
+                            {
+                                <a asp-page="/Hints/AuthorIndex" asp-route-puzzleid=@item.Puzzle.ID>Hints Taken</a><br />
+                            }
                             <a asp-Page="./Feedback" asp-route-puzzleid=@item.Puzzle.ID>Feedback</a><br />
                             ------<br />
                             <a asp-Page="./Delete" asp-route-puzzleid="@item.Puzzle.ID">Delete</a>
