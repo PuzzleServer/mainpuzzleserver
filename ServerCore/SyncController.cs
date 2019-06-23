@@ -203,7 +203,7 @@ namespace ServerCore.Pages
         ///   has solved.
         /// </summary>
         private async Task HandleSyncAspectsRequiringListOfSolvedPuzzles(DecodedSyncRequest request, SyncResponse response,
-                                                                         string puzzleGroup, int teamId, int eventId, int puzzleId)
+                                                                         string puzzleGroup, int teamId, int eventId)
         {
             // If the requester isn't asking for pieces (by setting MinSolveCount to null), and isn't asking about
             // whether any puzzle IDs are solved, we can save time by not querying the list of solved puzzles.
@@ -276,7 +276,6 @@ namespace ServerCore.Pages
             if (request.MinSolveCount != null && maxSolveCount >= request.MinSolveCount) {
                 List<Piece> pieces = await (from piece in context.Pieces
                                             where piece.ProgressLevel >= request.MinSolveCount && piece.ProgressLevel <= maxSolveCount
-                                                  && piece.PuzzleID = puzzleId
                                             select piece).ToListAsync();
                 response.SetMinAndMaxSolveCountAndPieces(request.MinSolveCount.Value, maxSolveCount, pieces);
             }
@@ -477,7 +476,7 @@ namespace ServerCore.Pages
             // Do any processing that requires fetching the list of all puzzles this team has
             // solved.
 
-            await HandleSyncAspectsRequiringListOfSolvedPuzzles(request, response, thisPuzzle.Group, teamId, eventId, puzzleId);
+            await HandleSyncAspectsRequiringListOfSolvedPuzzles(request, response, thisPuzzle.Group, teamId, eventId);
 
             // Store any annotations the requester provided
 
