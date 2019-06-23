@@ -577,6 +577,8 @@ namespace Data.Migrations
 
                     b.HasIndex("TeamID");
 
+                    b.HasIndex("TeamID", "SolvedTime");
+
                     b.ToTable("PuzzleStatePerTeam");
                 });
 
