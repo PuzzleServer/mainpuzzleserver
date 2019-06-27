@@ -71,6 +71,12 @@ namespace ServerCore.Pages.Submissions
                 return Page();
             }
 
+            // Don't allow submissions if team is in email only mode.
+            if (PuzzleState.IsEmailOnlyMode)
+            {
+                return Page();
+            }
+
             // Don't allow submissions after the answer has been found.
             if (PuzzleState.SolvedTime != null)
             {
