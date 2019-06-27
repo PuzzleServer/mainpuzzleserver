@@ -10,26 +10,30 @@
 }
 
 @{
-    var mailtoUrlBase = "mailto:";
-    var mailtoUrlForEmailMode = "";
-    var mailtoUrlForHelp = "";
-
+    var mailtoUrl = "mailto:";
+    
     // to: Add the proper support agent as recipient
-    mailtoUrlBase += Model.PuzzleState?.Puzzle.SupportEmailAlias ?? (Model.Event?.ContactEmail ?? "puzzhunt@microsoft.com");
+    mailtoUrl += Model.PuzzleState?.Puzzle.SupportEmailAlias ?? (Model.Event?.ContactEmail ?? "puzzhunt@microsoft.com");
 
     // subject: Make this be about this puzzle
-    mailtoUrlBase += "?subject=[" + Uri.EscapeDataString(Model.Puzzle.Name) + "]";
+    mailtoUrl += "?subject=" + Uri.EscapeDataString("[" + Model.Puzzle.Name + "]");
     // subject: Make this be from this team
-    mailtoUrlBase += " [" + Uri.EscapeDataString(Model.Team.Name) + "]";
+    mailtoUrl += Uri.EscapeDataString(" [" + Model.Team.Name + "]");
 
-    // request out of email mode
-    // subject: Add the Email Mode signifier
-    mailtoUrlForEmailMode = mailtoUrlBase + Uri.EscapeDataString(" [⚠EmailMode✉]");
-    mailtoUrlForEmailMode += "&body=" + Uri.EscapeDataString("Use this email to fully explain your thought process so we know you're not randomly spamming attempts! 😇" + Environment.NewLine + Environment.NewLine);
-
-    // request for help
-    // body: Invite solver to give details
-    mailtoUrlForHelp = mailtoUrlBase + "&body=" + Uri.EscapeDataString("The more details you add here, the more helpful the responses you'll get will be! 😇" + Environment.NewLine + Environment.NewLine);
+    if (Model.PuzzleState.IsEmailOnlyMode)
+    {
+        // request out of email mode
+        // subject: Add the Email Mode signifier
+        mailtoUrl += Uri.EscapeDataString(" [⚠EmailMode✉]");
+        // body: Invite solver to give details
+        mailtoUrl += "&body=" + Uri.EscapeDataString("Use this email to fully explain your thought process so we know you're not randomly spamming attempts! 😇" + Environment.NewLine + Environment.NewLine);
+    }
+    else
+    {
+        // request for help
+        // body: Invite solver to give details
+        mailtoUrl += "&body=" + Uri.EscapeDataString("The more details you add here, the more helpful the responses you'll get will be! 😇" + Environment.NewLine + Environment.NewLine);
+    }
 }
 
 
@@ -59,40 +63,46 @@
         @if (!string.IsNullOrEmpty(Model.AnswerToken))
         {
             <div class="alert alert-success" role="alert">
-                You got it! Correct answer: @Model.AnswerToken
+                <h4>Correct</h4>
+                <span>Answer: @Model.AnswerToken</span>
             </div>
         }
         else if (!@Model.Event.IsAnswerSubmissionActive)
         {
             <div class="col-md-12" style="padding-bottom: 15px;">
-                <h3>This event is not in session. No submissions will be accepted at this time.</h3>
+                <h4>Answer Submissions Closed</h4>
+                <span>No submissions will be accepted at this time.</span>
             </div>
         }
         else if (Model.PuzzleState.IsEmailOnlyMode)
         {
             <div class="alert alert-danger" role="alert">
-                You have submitted too many wrong responses. Please <a href="@mailtoUrlForEmailMode">use this link to submit your answer for @Model.Puzzle.Name or ask for help</a>.
+                <h4>Answer Submission Locked Indefinitely</h4>
+                <span>You have submitted too many wrong responses. Please <a href="@mailtoUrl">use this link to submit your answer for @Model.Puzzle.Name or ask for help</a>.</span>
             </div>
         }
         else if (Model.PuzzleState.IsTeamLockedOut)
         {
             <div class="alert alert-danger" role="alert">
-                You are locked out. Please wait <span id="LockoutTimer">@Model.PuzzleState.LockoutTimeRemaining.ToString(@"mm\:ss")</span> before attempting another submission.
+                <h4>Answer Submission Locked</h4>
+                <span>You are locked out. Please wait <span id="LockoutTimer">@Model.PuzzleState.LockoutTimeRemaining.ToString(@"mm\:ss")</span> before attempting another submission.</span>
             </div>
         }
         else if (Model.PuzzlesCausingGlobalLockout.Count != 0 && !Model.PuzzlesCausingGlobalLockout.Contains(Model.Puzzle))
         {
             <div class="alert alert-danger" role="alert">
-                You are in global lockout until time expires on '@Model.PuzzlesCausingGlobalLockout[0].Name', or it is solved. Go help your teammates with that puzzle!
+                <h4>Answer Submission Locked</h4>
+                <span>You are in global lockout until time expires on '@Model.PuzzlesCausingGlobalLockout[0].Name', or it is solved. Go help your teammates with that puzzle!</span>
             </div>
         }
         else
         {
             if (Model.DuplicateSubmission)
             {
-                <div class="alert alert-danger" role="alert">
-                    You already submitted @Model.SubmissionText!
-                </div>
+            <div class="alert alert-danger" role="alert">
+                <h4>Oops</h4>
+                <span>You already submitted @Model.SubmissionText!</span>
+            </div>
             }
 
             <form method="post">
@@ -112,54 +122,55 @@
     </div>
 </div>
 
-<h3>Submission history</h3>
-<div>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    Time Submitted
-                </th>
-                <th>
-                    Name
-                </th>
-                <th>
-                    Submission Text
-                </th>
-                <th>
-                    Response
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @for (int i = Model.SubmissionViews.Count - 1; i >= 0; --i)
-            {
+@if (Model.SubmissionViews.Count > 0)
+{
+    <h3>Submission history</h3>
+    <div>
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>
-                        @Html.Raw(Model.LocalTime(Model.SubmissionViews[i].Submission.TimeSubmitted))
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => Model.SubmissionViews[i].SubmitterName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => Model.SubmissionViews[i].Submission.SubmissionText)
-                    </td>
-                    <td>
-                        @(Model.SubmissionViews[i].Response != null ? Model.SubmissionViews[i].Response.ResponseText : "Incorrect")
-                    </td>
+                    <th>
+                        Time Submitted
+                    </th>
+                    <th>
+                        Name
+                    </th>
+                    <th>
+                        Submission Text
+                    </th>
+                    <th>
+                        Response
+                    </th>
+                    <th></th>
                 </tr>
-            }
-        </tbody>
-    </table>
-</div>
+            </thead>
+            <tbody>
+                @for (int i = Model.SubmissionViews.Count - 1; i >= 0; --i)
+                {
+                    <tr>
+                        <td>
+                            @Html.Raw(Model.LocalTime(Model.SubmissionViews[i].Submission.TimeSubmitted))
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => Model.SubmissionViews[i].SubmitterName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => Model.SubmissionViews[i].Submission.SubmissionText)
+                        </td>
+                        <td>
+                            @(Model.SubmissionViews[i].Response != null ? Model.SubmissionViews[i].Response.ResponseText : "Incorrect")
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
 
 @if (!Model.PuzzleState.IsEmailOnlyMode)
-{
-    // if we are in EmailMode, we shouldn't show this section because there's that other
-    // call-to-action with a mailto link that solvers should use instead
+{ 
     <h3>Need some help?</h3>
-    <p>While solving this puzzle, if you've run into a bug, think there's an error, or are not having fun anymore, <a href="@mailtoUrlForHelp">use this link to contact the author for @Model.Puzzle.Name</a>!</p>
+    <p>While solving this puzzle, if you've run into a bug, think there's an error, or are not having fun anymore, <a href="@mailtoUrl">use this link to contact the author for @Model.Puzzle.Name</a>!</p>
     <p>A pre-populated email form will appear and you should add details to the message body. Remember: the author may only know specifics about this puzzle and not others in the event.</p>
 }
 
@@ -185,9 +196,10 @@
                 if (timeDeltaSeconds <= 0) {
                     window.location.reload(false);
                 }
-                var minutesLeft = Math.floor(timeDeltaSeconds / 60);
-                var secondsLeft = timeDeltaSeconds % 60;
-                timer.innerText = minutesLeft + ":" + (secondsLeft < 10 ? "0" + secondsLeft : secondsLeft);
+                // Prevent negative time, also pad with zero
+                var minutesLeft = "0" + Math.max(0, Math.floor(timeDeltaSeconds / 60));
+                var secondsLeft = "0" + Math.max(0, timeDeltaSeconds % 60);
+                timer.innerText = minutesLeft.substr(-2) + ":" + secondsLeft.substr(-2);
             }, 1000);
         </script>
     }
