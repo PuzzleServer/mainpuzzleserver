@@ -19,7 +19,9 @@
 }
 
 <h2>@if (Model.Puzzle != null) { <text>@Model.Puzzle.Name:</text> } Hints @if (Model.Team != null) { <text>by @Model.Team.Name</text> }</h2>
+<a asp-page="/Puzzles/Index">Back to puzzle list</a>
 
+<br />
 <div>
     @if(Model.Puzzle != null) { <a asp-page="./AuthorIndex" asp-route-puzzleId="" asp-route-teamId="@Model.Team?.ID">Clear Puzzle Filter</a> }
     @if(Model.Puzzle != null && Model.Team != null) { <text>|</text> }  

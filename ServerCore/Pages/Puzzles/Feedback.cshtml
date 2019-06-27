@@ -7,17 +7,20 @@
     ViewData["AuthorRoute"] = "../Puzzles/Feedback";
     ViewData["PlayRoute"] = "../Puzzles/SubmitFeedback";
     ViewData["RoutingPuzzleId"] = ViewContext.RouteData.Values["puzzleId"];
-    Layout = "_puzzleManagementLayout.cshtml";
 }
 
 @if (Model.PuzzleName != null)
 {
-
+    @(Layout = "_puzzleManagementLayout.cshtml");
     <h2>@Html.DisplayFor(model => model.PuzzleName): Feedback</h2>
 }
 else
 {
     <h2>All Feedback</h2>
+    <div>
+        <a asp-page="/Puzzles/Index">Back to puzzle list</a>
+    </div>
+    <br />
 }
 
 <div>

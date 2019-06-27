@@ -1,0 +1,67 @@
+﻿@page "/{eventId}/{eventRole}/Submissions/SubmissionsWithoutResponses/{puzzleId?}"
+@model ServerCore.Pages.Submissions.SubmissionsWithoutResponsesModel
+@{
+    ViewData["Title"] = "AuthorIndex";
+    ViewData["AdminRoute"] = "../Submissions/AuthorIndex";
+    ViewData["AuthorRoute"] = "../Submissions/AuthorIndex";
+    // TODO: Needs to handle implicit teams - ViewData["PlayRoute"] = "../Submissions/Index";
+    ViewData["RoutingPuzzleId"] = ViewContext.RouteData.Values["puzzleId"];
+
+    if (Model.Puzzle != null)
+    {
+        Layout = "../Puzzles/_puzzleManagementLayout.cshtml";
+    }
+    // TODO: Do we need a combined layout, or is that rare enough as to be unnecessary? Maybe those bar layouts should be sections/components?
+}
+
+@if (Model.Puzzle == null)
+{
+    <h2>All submissions without responses</h2>
+    <div>
+        <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID">Back to submissions</a>
+    </div>
+}
+else
+{
+    <h2>Incorrect Submissions for "@Model.Puzzle.Name"</h2>
+    <div>
+        <a asp-page="./SubmissionsWithoutResponses" asp-route-puzzleId="">Clear Puzzle Filter</a>
+    </div>
+}
+<br />
+<div>
+    Remember that teams are not allowed to submit duplicate submissions
+</div>
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Puzzle
+                </th>
+                <th>
+                    SubmissionText
+                </th>
+                <th>
+                    NumberOfTimesSubmitted
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.SubmissionCounts)
+            {
+                <tr>
+                    <td>
+                        <a asp-page="./SubmissionsWithoutResponses" asp-route-puzzleId="@item.PuzzleID">@item.PuzzleName</a>
+                    </td>
+                    <td>
+                        @item.SubmissionText
+                    </td>
+                    <td>
+                        @item.NumberOfTimesSubmitted
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
