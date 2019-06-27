@@ -56,6 +56,13 @@ namespace ServerCore.Pages.Teams
                 return NotFound();
             }
 
+            // Enforce the name change cutoff
+            if (Team.Name != existingTeam.Name && EventRole != EventRole.admin && !Event.CanChangeTeamName)
+            {
+                ModelState.AddModelError("Team.Name", "Team names for this event can no longer be changed by players.");
+                return Page();
+            }
+
             // Avoid letting the team tamper with their hint coin count
             Team.HintCoinCount = existingTeam.HintCoinCount;
             _context.Entry(existingTeam).State = EntityState.Detached;
