@@ -82,7 +82,7 @@ Registered Teams: <b>@Model.Teams.Count/@Model.Event.MaxNumberOfTeams</b>, Regis
         <tbody>
             @foreach (var item in Model.Teams)
             {
-                if (!item.IsLookingForTeammates)
+                if (!item.IsLookingForTeammates || Model.PlayerCountByTeamID[item.ID] >= Model.Event.MaxTeamSize)
                 {
                     continue;
                 }

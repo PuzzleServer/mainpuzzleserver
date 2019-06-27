@@ -64,6 +64,20 @@ namespace ServerCore.DataModel
         }
 
         public DateTime TeamNameChangeEnd { get; set; }
+
+        /// <summary>
+        /// Returns whether or not team names can be changed.
+        /// </summary>
+        /// <returns>True if the current date is before the name change cutoff.</returns>
+        [NotMapped]
+        public bool CanChangeTeamName
+        {
+            get
+            {
+                return DateTime.UtcNow.CompareTo(TeamNameChangeEnd) < 0;
+            }
+        }
+
         public DateTime TeamMembershipChangeEnd { get; set; }
         public DateTime TeamMiscDataChangeEnd { get; set; }
         public DateTime TeamDeleteEnd { get; set; }
