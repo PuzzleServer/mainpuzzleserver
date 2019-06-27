@@ -58,10 +58,10 @@
     <div>
         Summaries:
         <a asp-page="/Teams/TeamCompositionSummary">Team Composition</a> @("|")
-        @if (Model.Event.IsInternEvent)
-        {
+        @if (Model.Event.IsInternEvent) {
             <a asp-page="/Swag/Report">Intern T-shirts and Lunch</a> @("|")
         }
+        <a asp-page="Csv">Download CSV File</a> @("|")
     </div>
     <br />
     <a asp-page="/Events/Mailer" asp-route-group="PrimaryContacts">Email all team primary contacts from the bulk mailer</a>
