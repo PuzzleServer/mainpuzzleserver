@@ -1,5 +1,5 @@
-﻿@page "/{eventId}/{eventRole}/Submissions/IncorrectSubmissions/{puzzleId?}"
-@model ServerCore.Pages.Submissions.IncorrectSubmissionsModel
+﻿@page "/{eventId}/{eventRole}/Submissions/SubmissionsWithoutResponses/{puzzleId?}"
+@model ServerCore.Pages.Submissions.SubmissionsWithoutResponsesModel
 @{
     ViewData["Title"] = "AuthorIndex";
     ViewData["AdminRoute"] = "../Submissions/AuthorIndex";
@@ -16,7 +16,7 @@
 
 @if (Model.Puzzle == null)
 {
-    <h2>All Incorrect Submissions</h2>
+    <h2>All submissions without responses</h2>
     <div>
         <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID">Back to submissions</a>
     </div>
@@ -25,7 +25,7 @@ else
 {
     <h2>Incorrect Submissions for "@Model.Puzzle.Name"</h2>
     <div>
-        <a asp-page="./IncorrectSubmissions" asp-route-puzzleId="">Clear Puzzle Filter</a>
+        <a asp-page="./SubmissionsWithoutResponses" asp-route-puzzleId="">Clear Puzzle Filter</a>
     </div>
 }
 <br />
@@ -48,14 +48,14 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model.IncorrectCounts)
+            @foreach (var item in Model.SubmissionCounts)
             {
                 <tr>
                     <td>
-                        <a asp-page="./IncorrectSubmissions" asp-route-puzzleId="@item.PuzzleID">@item.PuzzleName</a>
+                        <a asp-page="./SubmissionsWithoutResponses" asp-route-puzzleId="@item.PuzzleID">@item.PuzzleName</a>
                     </td>
                     <td>
-                        @item.IncorrectSubmissionText
+                        @item.SubmissionText
                     </td>
                     <td>
                         @item.NumberOfTimesSubmitted

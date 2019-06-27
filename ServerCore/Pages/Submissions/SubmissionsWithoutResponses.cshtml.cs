@@ -13,22 +13,22 @@ using ServerCore.ModelBases;
 namespace ServerCore.Pages.Submissions
 {
     [Authorize(Policy = "IsEventAdminOrEventAuthor")]
-    public class IncorrectSubmissionsModel : EventSpecificPageModel
+    public class SubmissionsWithoutResponsesModel : EventSpecificPageModel
     {
-        public IncorrectSubmissionsModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager)
+        public SubmissionsWithoutResponsesModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager)
             : base(serverContext, userManager)
         {
         }
 
-        public IEnumerable<IncorrectCountsView> IncorrectCounts { get; set; }
+        public IEnumerable<SubmissionCountsView> SubmissionCounts { get; set; }
 
         public Puzzle Puzzle { get; set; }
 
-        public class IncorrectCountsView
+        public class SubmissionCountsView
         {
             public int PuzzleID { get; set; }
             public string PuzzleName { get; set; }
-            public string IncorrectSubmissionText { get; set; }
+            public string SubmissionText { get; set; }
             public int NumberOfTimesSubmitted { get; set; }
         }
 
@@ -61,23 +61,23 @@ namespace ServerCore.Pages.Submissions
                 submissionsQ = _context.Submissions.Where((s) => s.Puzzle != null && s.Puzzle.ID == puzzleId);
             }
 
-            IQueryable<IncorrectCountsView> incorrectCounts = submissionsQ
+            IQueryable<SubmissionCountsView> incorrectCounts = submissionsQ
                 .Where(submission => submission.Response == null)
                 .GroupBy(submission => Tuple.Create<string,int>
                 (
                     submission.SubmissionText,
                     submission.PuzzleID
                 ))
-                .Select((submissions) => new IncorrectCountsView()
+                .Select((submissions) => new SubmissionCountsView()
                 {
                     PuzzleID = submissions.First().PuzzleID,
                     PuzzleName = submissions.First().Puzzle.Name,
-                    IncorrectSubmissionText = submissions.Key.Item1,
+                    SubmissionText = submissions.Key.Item1,
                     NumberOfTimesSubmitted = submissions.Count()
                 })
                 .OrderByDescending(incorrectCountView => incorrectCountView.NumberOfTimesSubmitted);
 
-            IncorrectCounts = incorrectCounts.ToAsyncEnumerable().ToEnumerable();
+            SubmissionCounts = incorrectCounts.ToAsyncEnumerable().ToEnumerable();
             return Page();
         }
 
