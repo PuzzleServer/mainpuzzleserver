@@ -14,9 +14,11 @@
     
     // to: Add the proper support agent as recipient
     mailtoUrl += Model.PuzzleState?.Puzzle.SupportEmailAlias ?? (Model.Event?.ContactEmail ?? "puzzhunt@microsoft.com");
+    // cc: Cc the team's email address because what if this email account is a random personal one?
+    mailtoUrl += "?cc=" + Uri.EscapeDataString(Model.Team.PrimaryContactEmail);
 
     // subject: Make this be about this puzzle
-    mailtoUrl += "?subject=" + Uri.EscapeDataString("[" + Model.Puzzle.Name + "]");
+    mailtoUrl += "&subject=" + Uri.EscapeDataString("[" + Model.Puzzle.Name + "]");
     // subject: Make this be from this team
     mailtoUrl += Uri.EscapeDataString(" [" + Model.Team.Name + "]");
 
@@ -70,7 +72,7 @@
         else if (!@Model.Event.IsAnswerSubmissionActive)
         {
             <div class="col-md-12" style="padding-bottom: 15px;">
-                <h4>Answer Submissions Closed</h4>
+                <h4>Answer Submission Closed</h4>
                 <span>No submissions will be accepted at this time.</span>
             </div>
         }
@@ -78,21 +80,21 @@
         {
             <div class="alert alert-danger" role="alert">
                 <h4>Answer Submission Locked Indefinitely</h4>
-                <span>You have submitted too many wrong responses. Please <a href="@mailtoUrl">use this link to submit your answer for @Model.Puzzle.Name or ask for help</a>.</span>
+                <span>You've submitted too many wrong responses. Please <a href="@mailtoUrl">use this link to email us your answer for @Model.Puzzle.Name or ask for help</a>.</span>
             </div>
         }
         else if (Model.PuzzleState.IsTeamLockedOut)
         {
             <div class="alert alert-danger" role="alert">
                 <h4>Answer Submission Locked</h4>
-                <span>You are locked out. Please wait <span id="LockoutTimer">@Model.PuzzleState.LockoutTimeRemaining.ToString(@"mm\:ss")</span> before attempting another submission.</span>
+                <span>You're locked out. Please wait <span id="LockoutTimer">@Model.PuzzleState.LockoutTimeRemaining.ToString(@"mm\:ss")</span> before attempting another submission.</span>
             </div>
         }
         else if (Model.PuzzlesCausingGlobalLockout.Count != 0 && !Model.PuzzlesCausingGlobalLockout.Contains(Model.Puzzle))
         {
             <div class="alert alert-danger" role="alert">
                 <h4>Answer Submission Locked</h4>
-                <span>You are in global lockout until time expires on '@Model.PuzzlesCausingGlobalLockout[0].Name', or it is solved. Go help your teammates with that puzzle!</span>
+                <span>You're in global lockout until time expires on <a href="./@Model.PuzzlesCausingGlobalLockout[0].ID" target="_blank">@Model.PuzzlesCausingGlobalLockout[0].Name</a>, or it is solved. Go help your teammates with that puzzle!</span>
             </div>
         }
         else
@@ -101,7 +103,7 @@
             {
             <div class="alert alert-danger" role="alert">
                 <h4>Oops</h4>
-                <span>You already submitted @Model.SubmissionText!</span>
+                <span>You've already submitted @Model.SubmissionText!</span>
             </div>
             }
 
@@ -194,7 +196,7 @@
                 }
                 var timeDeltaSeconds = Math.floor((unlockTime - Date.now()) / 1000);
                 if (timeDeltaSeconds <= 0) {
-                    window.location.reload(false);
+                    window.location.href = window.location.href;
                 }
                 // Prevent negative time, also pad with zero
                 var minutesLeft = "0" + Math.max(0, Math.floor(timeDeltaSeconds / 60));

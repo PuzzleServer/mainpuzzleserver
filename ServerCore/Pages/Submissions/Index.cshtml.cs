@@ -55,32 +55,32 @@ namespace ServerCore.Pages.Submissions
             SubmissionText = submissionText;
             if (!this.Event.IsAnswerSubmissionActive)
             {
-                return Page();
+                return RedirectToPage();
             }
 
             await SetupContext(puzzleId);
 
             if (!ModelState.IsValid)
             {
-                return Page();
+                return RedirectToPage();
             }
             
             // Don't allow submissions if the team is locked out.
             if (PuzzleState.IsTeamLockedOut)
             {
-                return Page();
+                return RedirectToPage();
             }
 
             // Don't allow submissions after the answer has been found.
             if (PuzzleState.SolvedTime != null)
             {
-                return Page();
+                return RedirectToPage();
             }
 
             // Don't accept posted submissions when a puzzle is causing lockout
             if (PuzzlesCausingGlobalLockout.Count != 0 && !PuzzlesCausingGlobalLockout.Contains(Puzzle))
             {
-                return Page();
+                return RedirectToPage();
             }
 
             // Soft enforcement of duplicates to give a friendly message in most cases
@@ -90,7 +90,7 @@ namespace ServerCore.Pages.Submissions
 
             if (DuplicateSubmission)
             {
-                return Page();
+                return RedirectToPage();
             }
 
             // Create submission and add it to list
@@ -170,7 +170,7 @@ namespace ServerCore.Pages.Submissions
                 SubmitterName = LoggedInUser.Name
             });
 
-            return Page();
+            return RedirectToPage();
         }
 
         public async Task<IActionResult> OnGetAsync(int puzzleId)
