@@ -45,11 +45,6 @@
                 <input asp-for="PuzzleUser.VisibleToOthers" class="form-control" />
                 <span asp-validation-for="PuzzleUser.VisibleToOthers" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="PuzzleUser.TShirtSize"></label>
-                <input asp-for="PuzzleUser.TShirtSize" class="form-control" />
-                <span asp-validation-for="PuzzleUser.TShirtSize" class="text-danger"></span>
-            </div>
             @* NOTE: If you add more properties here, please add them to ExternalLogin.cshtml as well! *@
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-default" />

@@ -475,6 +475,7 @@ namespace ServerCore
                 var submissionsThatMatchResponse = await (from PuzzleStatePerTeam pspt in context.PuzzleStatePerTeam
                                                           join Submission sub in context.Submissions on pspt.Team equals sub.Team
                                                           where pspt.PuzzleID == response.PuzzleID &&
+                                                          sub.PuzzleID == response.PuzzleID &&
                                                           sub.SubmissionText == response.SubmittedText
                                                           select new { State = pspt, Submission = sub }).ToListAsync();
 
