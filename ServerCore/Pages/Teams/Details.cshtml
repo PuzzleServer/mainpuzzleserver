@@ -10,6 +10,30 @@
 }
 @using Microsoft.AspNetCore.Http.Extensions @* for GetEncodedUrl *@
 
+@{
+    var mailtoUrl = "mailto:";
+
+    // to: Add the proper support agent as recipient
+    mailtoUrl += Model.Event?.ContactEmail ?? "puzzhunt@microsoft.com";
+    // cc: Cc the team's email address because what if this email account is a random personal one?
+    if (Model.Team.PrimaryContactEmail != null)
+    {
+        mailtoUrl += "?cc=" + Uri.EscapeDataString(Model.Team.PrimaryContactEmail);
+    }
+
+    // subject: Make this be about this puzzle
+    mailtoUrl += "&subject=" + Uri.EscapeDataString("[" + Model.Event.Name + "]");
+    // subject: Make this be from this team
+    mailtoUrl += Uri.EscapeDataString(" [" + Model.Team.Name + "]");
+
+    // request out of email mode
+    // subject: Add the Email Mode signifier
+    mailtoUrl += Uri.EscapeDataString(" [⚠ Team Disqualified ⚠]");
+    // body: Invite solver to give details
+    mailtoUrl += "&body=" + Uri.EscapeDataString(
+        "Use this email to fully explain your thought process so we know why you would like your team disqualification to be undone! 😇" + Environment.NewLine + Environment.NewLine);
+}
+
 <!--TODO: Consider moving if other pages use this format-->
 <style>
     .column {
@@ -30,7 +54,11 @@
 @if (Model.Team.IsDisqualified)
 {
     <div class="alert alert-danger" role="alert">
-        Team is disqualified
+        Your team has been disqualified from the event. You are welcome to
+        continue solving puzzles for fun, but your team will no longer appear
+        in the final standings and is not eligible for any awards or prizes
+        that the event may offer. If you have any questions, please contact 
+        <a href="@mailtoUrl">.
     </div>
 }
 
