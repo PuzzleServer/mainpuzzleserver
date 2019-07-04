@@ -19,13 +19,19 @@ namespace ServerCore.Pages.Events
         public enum MailGroup
         {
             Players,
-            PrimaryContacts
+            PrimaryContacts,
+            NonSolvers
         }
 
         [BindProperty]
         public int? TeamID { get; set; }
 
+        [BindProperty]
+        public int? PuzzleID { get; set; }
+
         public Team Team { get; set; }
+
+        public Puzzle Puzzle { get; set; }
 
         [BindProperty]
         public MailGroup Group { get; set; }
@@ -42,11 +48,16 @@ namespace ServerCore.Pages.Events
         {
         }
 
-        public async Task<IActionResult> OnGetAsync(MailGroup group, int? teamId)
+        public async Task<IActionResult> OnGetAsync(MailGroup group, int? puzzleId, int? teamId)
         {
             Group = group;
+            PuzzleID = puzzleId;
             TeamID = teamId;
 
+            if (puzzleId != null)
+            {
+                Puzzle = await _context.Puzzles.FindAsync(puzzleId);
+            }
             if (teamId != null)
             {
                 Team = await _context.Teams.FindAsync(teamId);
@@ -73,6 +84,15 @@ namespace ServerCore.Pages.Events
                     else
                     {
                         addresses = await _context.TeamMembers.Where(tm => tm.Team.ID == TeamID).Select(tm => tm.Member.Email).ToListAsync();
+                    }
+                    break;
+                case MailGroup.NonSolvers:
+                    if (PuzzleID != null)
+                    {
+                        addresses = await (from pspt in _context.PuzzleStatePerTeam
+                                           join m in _context.TeamMembers on pspt.TeamID equals m.Team.ID
+                                           where pspt.PuzzleID == PuzzleID && pspt.SolvedTime == null
+                                           select m.Member.Email).ToListAsync();
                     }
                     break;
                 case MailGroup.PrimaryContacts:
