@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
-using ServerCore.Helpers;
 using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Teams
@@ -83,13 +82,6 @@ namespace ServerCore.Pages.Teams
 
             // redirect without the solve info to keep the URL clean
             return RedirectToPage(new { teamId, sort });
-        }
-
-        public async Task<IActionResult> OnGetDisqualifyAsync(Team team, bool value, string sort)
-        {
-            await TeamHelper.SetTeamQualificationAsync(_context, team, value);
-            
-            return RedirectToPage(new { team.ID, sort });
         }
     }
 }
