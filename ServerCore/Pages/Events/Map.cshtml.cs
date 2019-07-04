@@ -104,8 +104,11 @@ namespace ServerCore.Pages.Events
                 }
             }
 
-            // sort puzzles by solve count, add the sort index to the lookup
-            puzzles = puzzles.OrderBy(p => p.SolveCount)
+            // sort puzzles by group, then solve count, add the sort index to the lookup
+            // but put non-puzzles to the end
+            puzzles = puzzles.OrderByDescending(p => p.Puzzle.IsPuzzle)
+                .ThenByDescending(p => p.Puzzle.Group)
+                .ThenBy(p => p.SolveCount)
                 .ThenBy(p => p.Puzzle.Name)
                 .ToList();
 
