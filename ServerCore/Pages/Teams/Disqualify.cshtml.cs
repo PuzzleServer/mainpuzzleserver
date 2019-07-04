@@ -57,7 +57,7 @@ namespace ServerCore.Pages.Teams
 
             IEnumerable<string> addresses = Enumerable.Empty<string>();
             addresses = await _context.TeamMembers
-                .Where(tm => tm.Team.Event == Event)
+                .Where(tm => (tm.Team.Event == Event && tm.Team.ID == Team.ID))
                 .Select(tm => tm.Member.Email)
                 .ToListAsync();
 
@@ -67,36 +67,13 @@ namespace ServerCore.Pages.Teams
             }
             else
             {
-                var mailtoUrl = "mailto:";
-                // to: Add the proper support agent as recipient
-                mailtoUrl += Event?.ContactEmail ?? "puzzhunt@microsoft.com";
-                // cc: Cc the team's email address because what if this email account is a random personal one?
-                if (Team.PrimaryContactEmail != null)
-                {
-                    mailtoUrl += "?cc=" + Uri.EscapeDataString(Team.PrimaryContactEmail);
-                }
-
-                // subject: Make this be about this puzzle
-                mailtoUrl += "&subject=" + Uri.EscapeDataString("[" + Event.Name + "]");
-                // subject: Make this be from this team
-                mailtoUrl += Uri.EscapeDataString(" [" + Team.Name + "]");
-
-                // request out of email mode
-                // subject: Add the Email Mode signifier
-                mailtoUrl += Uri.EscapeDataString(" [⚠ Team Disqualified ⚠]");
-                // body: Invite solver to give details
-                mailtoUrl += "&body=" + Uri.EscapeDataString(
-                    "Use this email to fully explain your thought process so " +
-                    "we know why you would like your team disqualification to " +
-                    "be undone! 😇" + Environment.NewLine + Environment.NewLine);
-
                 var DefaultMailBody =
                     "Your team has been disqualified from the event. You are " +
                     "welcome to continue solving puzzles for fun, but your " +
                     "team will no longer appear in the final standings and is " +
                     "not eligible for any awards or prizes that the event may " +
                     "offer. If you have any questions, please contact " +
-                    "<a href=" + mailtoUrl + ">.";
+                    (Event?.ContactEmail ?? "puzzhunt@microsoft.com");
 
                 var DefaultMailSubject = "[" + Event.Name + "]" +
                     "[" + Team.Name + "] Disqualified from event";
@@ -108,14 +85,7 @@ namespace ServerCore.Pages.Teams
 
             }
 
-            if (EventRole == EventRole.admin)
-            {
-                return RedirectToPage("./Index");
-            }
-            else
-            {
-                return RedirectToPage("./List");
-            }
+            return RedirectToPage("./Index");
         }
 
         public async Task<IActionResult> OnPostRequalifyAsync(int teamId)
@@ -127,14 +97,7 @@ namespace ServerCore.Pages.Teams
                 await TeamHelper.SetTeamQualificationAsync(_context, Team, false);
             }
 
-            if (EventRole == EventRole.admin)
-            {
-                return RedirectToPage("./Index");
-            }
-            else
-            {
-                return RedirectToPage("./List");
-            }
+            return RedirectToPage("./Index");
         }
     }
 }

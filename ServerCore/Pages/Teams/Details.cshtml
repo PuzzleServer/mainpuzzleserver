@@ -13,25 +13,30 @@
 @{
     var mailtoUrl = "mailto:";
 
-    // to: Add the proper support agent as recipient
-    mailtoUrl += Model.Event?.ContactEmail ?? "puzzhunt@microsoft.com";
-    // cc: Cc the team's email address because what if this email account is a random personal one?
-    if (Model.Team.PrimaryContactEmail != null)
+    if (Model.Team.IsDisqualified)
     {
-        mailtoUrl += "?cc=" + Uri.EscapeDataString(Model.Team.PrimaryContactEmail);
+        // to: Add the proper support agent as recipient
+        mailtoUrl += Model.Event?.ContactEmail ?? "puzzhunt@microsoft.com";
+        // cc: Cc the team's email address because what if this email account is a random personal one?
+        if (Model.Team.PrimaryContactEmail != null)
+        {
+            mailtoUrl += "?cc=" + Uri.EscapeDataString(Model.Team.PrimaryContactEmail);
+        }
+
+        // subject: Make this be about this event
+        mailtoUrl += "&subject=" + Uri.EscapeDataString("[" + Model.Event.Name + "]");
+        // subject: Make this be from this team
+        mailtoUrl += Uri.EscapeDataString(" [" + Model.Team.Name + "]");
+
+        // request requalification
+        // subject: Add the disqualified signifier
+        mailtoUrl += Uri.EscapeDataString(" [⚠ Team Disqualified ⚠]");
+        // body: Invite team member to give details
+        mailtoUrl += "&body=" + Uri.EscapeDataString(
+            "Use this mail to explain anything you think we need to know." +
+            Environment.NewLine +
+            Environment.NewLine);
     }
-
-    // subject: Make this be about this puzzle
-    mailtoUrl += "&subject=" + Uri.EscapeDataString("[" + Model.Event.Name + "]");
-    // subject: Make this be from this team
-    mailtoUrl += Uri.EscapeDataString(" [" + Model.Team.Name + "]");
-
-    // request out of email mode
-    // subject: Add the Email Mode signifier
-    mailtoUrl += Uri.EscapeDataString(" [⚠ Team Disqualified ⚠]");
-    // body: Invite solver to give details
-    mailtoUrl += "&body=" + Uri.EscapeDataString(
-        "Use this email to fully explain your thought process so we know why you would like your team disqualification to be undone! 😇" + Environment.NewLine + Environment.NewLine);
 }
 
 <!--TODO: Consider moving if other pages use this format-->
@@ -65,33 +70,20 @@
 @if (Model.EventRole != ModelBases.EventRole.author)
 {
     <div>
-        <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID">Edit team details</a>
-        |
+        <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID">Edit team details</a> |
         @if (Model.EventRole == ModelBases.EventRole.admin)
         {
             <text>
-            <a asp-page="/Events/Mailer" asp-route-group="Players" asp-route-teamId="@Model.Team.ID">Mail Players</a>
-            |
+                <a asp-page="/Events/Mailer" asp-route-group="Players" asp-route-teamId="@Model.Team.ID">Mail Players</a> |
             </text>
         }
-        <a asp-page="./Delete" asp-route-teamId="@Model.Team.ID">Delete team</a>
-        |
+        <a asp-page="./Delete" asp-route-teamId="@Model.Team.ID">Delete team</a> |
         @if (Model.EventRole == ModelBases.EventRole.admin)
         {
-            @if (@Model.Team.IsDisqualified)
-            {
-                <a asp-page="./Disqualify" 
-                   asp-route-teamId="@Model.Team.ID">
-                    Requalify Team
-                </a>
-            }
-            else
-            {
-                <a asp-page="./Disqualify" 
-                   asp-route-teamId="@Model.Team.ID">
-                    Disqualify Team
-                </a>
-            }
+            <a asp-page="./Disqualify" 
+               asp-route-teamId="@Model.Team.ID">
+                @(Model.Team.IsDisqualified ? "Requalify Team" : "Disqualify Team")
+            </a>
         }
     <br />
     </div>
