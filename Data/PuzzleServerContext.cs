@@ -63,6 +63,8 @@ namespace ServerCore.DataModel
             modelBuilder.Entity<Annotation>().HasKey(state => new { state.PuzzleID, state.TeamID, state.Key });
             modelBuilder.Entity<Piece>().HasIndex(piece => new { piece.ProgressLevel });
             modelBuilder.Entity<Submission>().HasIndex(submission => new { submission.TeamID, submission.PuzzleID, submission.SubmissionText }).IsUnique();
+            modelBuilder.Entity<PuzzleStatePerTeam>().HasIndex(pspt => new { pspt.TeamID });
+            modelBuilder.Entity<PuzzleStatePerTeam>().HasIndex(pspt => new { pspt.TeamID, pspt.SolvedTime });
 
             // SQL doesn't allow multiple cacasding delete paths from one entity to another, so cut links that cause those
             modelBuilder.Entity<ContentFile>().HasOne(contentFile => contentFile.Event).WithMany().OnDelete(DeleteBehavior.Restrict);
