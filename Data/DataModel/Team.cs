@@ -66,8 +66,8 @@ namespace ServerCore.DataModel
 
         /// <summary>
         /// Indicates whether or not the team is disqualified. Disqualified teams
-        /// can still view and solve puzzles; however, they are ineligible hidden
-        /// from the standings and fastest solves pages.
+        /// can still view and solve puzzles; however, they are hidden from the
+        /// standings and fastest solves pages.
         /// </summary>
         public bool IsDisqualified { get; set; }
     }
