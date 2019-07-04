@@ -37,7 +37,7 @@ namespace ServerCore.Pages.Events
 
             if (EventRole == EventRole.admin)
             {
-                puzzles = await _context.Puzzles.Where(p => p.Event == Event && p.IsPuzzle)
+                puzzles = await _context.Puzzles.Where(p => p.Event == Event)
                     .Select(p => new PuzzleStats() { Puzzle = p })
                     .ToListAsync();
             }
@@ -105,7 +105,9 @@ namespace ServerCore.Pages.Events
             }
 
             // sort puzzles by group, then solve count, add the sort index to the lookup
-            puzzles = puzzles.OrderByDescending(p => p.Puzzle.Group)
+            // but put non-puzzles to the end
+            puzzles = puzzles.OrderByDescending(p => p.Puzzle.IsPuzzle)
+                .ThenByDescending(p => p.Puzzle.Group)
                 .ThenBy(p => p.SolveCount)
                 .ThenBy(p => p.Puzzle.Name)
                 .ToList();
