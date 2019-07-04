@@ -50,6 +50,9 @@
                         Team Name
                     </th>
                     <th>
+                        Primary Contact
+                    </th>
+                    <th>
                         Total
                     </th>
                     <th>
@@ -72,6 +75,9 @@
                     <tr>
                         <td>
                             <a asp-page="./Details" asp-route-teamId="@teamComp.TeamID">@teamComp.TeamName</a>
+                        </td>
+                        <td>
+                            @teamComp.TeamPrimaryContactEmail
                         </td>
                         <td>
                             @teamComp.Total
