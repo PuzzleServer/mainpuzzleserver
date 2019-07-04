@@ -1,0 +1,130 @@
+﻿@page "/{eventId}/{eventRole}/Teams/{teamId}/Disqualify"
+@model ServerCore.Pages.Teams.DisqualifyModel
+@{
+    ViewData["Title"] = "Disqualify Team";
+    Layout = "_teamLayout.cshtml";
+}
+
+<h2>@Html.DisplayFor(model => model.Team.Name): Disqualify</h2>
+<div>
+    <a asp-page="./Details" asp-route-teamId="@Model.Team.ID">Cancel</a>
+</div>
+
+@if (@Model.Team.IsDisqualified)
+{
+    <h3>Are you sure you want to undo disqualification of this team?</h3>
+}
+else
+{
+    <h3>Are you sure you want to disqualify this team?</h3>
+}
+
+<div>
+    <hr />
+    <dl>
+        <!-- class="dl-horizontal"> -->
+        <dt>
+            Team name
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Team.Name)
+        </dd>
+        <!-- TODO: Conditionally show/hide based on event property (not needed for PuzzleHunt)
+    <dt>
+        @Html.DisplayNameFor(model => model.Team.RoomID)
+    </dt>
+    <dd>
+        @Html.DisplayFor(model => model.Team.RoomID)
+    </dd>
+    -->
+        <dt>
+            Team room
+        </dt>
+        <dd>
+            @if (Model.Team.CustomRoom == null)
+            {
+                <div>(none)</div>
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.Team.CustomRoom)
+            }
+        </dd>
+        <dt>
+            Primary phone number
+        </dt>
+        <dd>
+            @if (Model.Team.PrimaryPhoneNumber == null)
+            {
+                <div>(none)</div>
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.Team.PrimaryPhoneNumber)
+            }
+        </dd>
+        <dt>
+            Secondary phone number
+        </dt>
+        <dd>
+            @if (Model.Team.SecondaryPhoneNumber == null)
+            {
+                <div>(none)</div>
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.Team.SecondaryPhoneNumber)
+            }
+        </dd>
+        <dt>
+            Primary contact e-mail 
+        </dt>
+        <dd>
+            @if (Model.Team.PrimaryContactEmail == null)
+            {
+                <div>(none)</div>
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.Team.PrimaryContactEmail)
+            }
+        </dd>
+        <dt>
+            Allow unsolicited applications
+        </dt>
+        <dd>
+            @if (Model.Team.IsLookingForTeammates)
+            {
+                <div>Yes (this team shows up on the list of teams that anyone can apply to)</div>
+            }
+            else
+            {
+                <div>No (only people who are sent an application link directly will be able to apply)</div>
+            }
+        </dd>
+    </dl>
+    
+    <form method="post">
+        <input type="hidden" asp-for="Team.ID" />
+        <div class="form-group">
+            Leave subject blank if you do not wish to email this team.<br />
+            <label asp-for="MailSubject" class="control-label"></label>
+            <input asp-for="MailSubject" class="form-control" />
+            <span asp-validation-for="MailSubject" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="MailBody" class="control-label"></label>
+            <textarea asp-for="MailBody" class="form-control"></textarea>
+            <span asp-validation-for="MailBody" class="text-danger"></span>
+        </div>
+        @if (@Model.Team.IsDisqualified)
+        {
+            <button type="submit" asp-page-handler="Requalify">Undo Disqualification</button>
+        }
+        else
+        {
+            <button type="submit" asp-page-handler="Disqualify">Disqualify</button>
+        }
+    </form>
+</div>
+

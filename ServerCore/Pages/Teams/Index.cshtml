@@ -91,6 +91,9 @@
                 @Html.DisplayNameFor(model => model.Teams.FirstOrDefault().SecondaryPhoneNumber)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.Teams.FirstOrDefault().IsDisqualified)
+            </th>
+            <th>
                 Shortcuts
             </th>
         </tr>
@@ -119,6 +122,12 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.SecondaryPhoneNumber)
+                </td>
+                <td>
+                    @if(item.IsDisqualified)
+                    {
+                        <text>Disqualified</text>
+                    }
                 </td>
                 <td>
                     @if (Model.EventRole == ModelBases.EventRole.admin)

@@ -63,5 +63,12 @@ namespace ServerCore.DataModel
         /// Machine generated password for the autoinvite link
         /// </summary>
         public string Password { get; set; }
+
+        /// <summary>
+        /// Indicates whether or not the team is disqualified. Disqualified teams
+        /// can still view and solve puzzles; however, they are ineligible hidden
+        /// from the standings and fastest solves pages.
+        /// </summary>
+        public bool IsDisqualified { get; set; }
     }
 }

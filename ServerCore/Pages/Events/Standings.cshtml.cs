@@ -36,8 +36,9 @@ namespace ServerCore.Pages.Events
                 .Select(pspt => new { pspt.PuzzleID, pspt.TeamID, pspt.SolvedTime })
                 .ToListAsync();
 
+            // Hide disqualified teams from the standings page.
             var teams = await _context.Teams
-                .Where(t => t.Event == Event)
+                .Where(t => t.Event == Event && t.IsDisqualified == false)
                 .ToListAsync();
 
             Dictionary<int, TeamStats> teamStats = new Dictionary<int, TeamStats>(teams.Count);

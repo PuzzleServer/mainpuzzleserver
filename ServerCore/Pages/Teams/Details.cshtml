@@ -27,15 +27,45 @@
 
 <h2>@Html.DisplayFor(model => model.Team.Name) Team</h2>
 
+@if (Model.Team.IsDisqualified)
+{
+    <div class="alert alert-danger" role="alert">
+        Team is disqualified
+    </div>
+}
+
 @if (Model.EventRole != ModelBases.EventRole.author)
 {
     <div>
-        <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID">Edit team details</a> |
+        <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID">Edit team details</a>
+        |
         @if (Model.EventRole == ModelBases.EventRole.admin)
         {
-            <text><a asp-page="/Events/Mailer" asp-route-group="Players" asp-route-teamId="@Model.Team.ID">Mail Players</a> |</text>
+            <text>
+            <a asp-page="/Events/Mailer" asp-route-group="Players" asp-route-teamId="@Model.Team.ID">Mail Players</a>
+            |
+            </text>
         }
         <a asp-page="./Delete" asp-route-teamId="@Model.Team.ID">Delete team</a>
+        |
+        @if (Model.EventRole == ModelBases.EventRole.admin)
+        {
+            @if (@Model.Team.IsDisqualified)
+            {
+                <a asp-page="./Disqualify" 
+                   asp-route-teamId="@Model.Team.ID">
+                    Requalify Team
+                </a>
+            }
+            else
+            {
+                <a asp-page="./Disqualify" 
+                   asp-route-teamId="@Model.Team.ID">
+                    Disqualify Team
+                </a>
+            }
+        }
+    <br />
     </div>
 }
 

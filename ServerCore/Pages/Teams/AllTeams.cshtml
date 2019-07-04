@@ -25,6 +25,13 @@ Registered Teams: <b>@Model.Teams.Count/@Model.Event.MaxNumberOfTeams</b>, Regis
             <th>
                 Team size
             </th>
+            @if (Model.EventRole == ModelBases.EventRole.admin ||
+               Model.EventRole == ModelBases.EventRole.author)
+            {
+            <th>
+                Qualification Status
+            </th>
+            }
         </tr>
     </thead>
     <tbody>
@@ -37,6 +44,20 @@ Registered Teams: <b>@Model.Teams.Count/@Model.Event.MaxNumberOfTeams</b>, Regis
                 <td>
                     @Html.DisplayFor(modelItem => @Model.PlayerCountByTeamID[item.ID])
                 </td>
+                @if (Model.EventRole == ModelBases.EventRole.admin ||
+                     Model.EventRole == ModelBases.EventRole.author)
+                {
+                    if (item.IsDisqualified)
+                    {
+                        <th>
+                            Disqualified
+                        </th>
+                    }
+                    else
+                    {
+                        <th></th>
+                    }
+                }
             </tr>
         }
     </tbody>
