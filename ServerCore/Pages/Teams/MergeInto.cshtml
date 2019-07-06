@@ -1,0 +1,53 @@
+﻿@page "/{eventId}/{eventRole}/Teams/{teamId}/MergeInto"
+@model ServerCore.Pages.Teams.MergeIntoModel
+
+@{
+    ViewData["Title"] = "Merge Team Into Another";
+    //Needs route data - ViewData["AdminRoute"] = "/Teams/Delete";
+    //Needs route data - ViewData["AuthorRoute"] = "/Teams/Status";
+    //Needs route data - ViewData["PlayRoute"] = "/Teams/Delete";
+    Layout = "_teamLayout.cshtml";
+}
+
+<h2>@Html.DisplayFor(model => model.Team.Name): Merge Into Another Team</h2>
+<div>
+    <a asp-page="./Details" asp-route-teamId="@Model.Team.ID">Cancel</a>
+</div>
+
+<h3>Are you sure you want to merge this team into another team?</h3>
+<div>
+    <hr />
+    <form method="post">
+        <dl>
+            <!-- class="dl-horizontal"> -->
+            <dt>
+                Team name
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Team.Name)
+            </dd>
+            <dt>
+                Primary contact e-mail
+            </dt>
+            <dd>
+                @if (Model.Team.PrimaryContactEmail == null)
+            {
+                <div>(none)</div>
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.Team.PrimaryContactEmail)
+            }
+            </dd>
+            <dt>
+                Merge Into
+            </dt>
+            <dd>
+                <select class="form-control" asp-for="MergeIntoID" asp-items="@(new SelectList(Model.OtherTeams, "ID", "Name"))"></select>
+            </dd>
+        </dl>
+
+        <input type="hidden" asp-for="Team.ID" />
+        <input type="submit" value="Merge" class="btn btn-default" onclick="return confirm('Are you sure you want to merge these teams? This operation cannot be undone.')" />
+    </form>
+</div>

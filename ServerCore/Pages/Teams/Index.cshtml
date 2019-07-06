@@ -137,6 +137,7 @@
                                     <a asp-page="/Hints/AuthorIndex" asp-route-teamId="@item.ID">Hints Taken</a><br />
                                 }
                                 ------<br />
+                                <a asp-page="./MergeInto" asp-route-teamId="@item.ID">Merge Into...</a><br/>
                                 <a asp-page="./Delete" asp-route-teamId="@item.ID">Delete</a>
                             </div>
                         </div>
