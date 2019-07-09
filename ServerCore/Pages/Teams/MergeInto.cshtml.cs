@@ -52,11 +52,14 @@ namespace ServerCore.Pages.Teams
                 return NotFound();
             }
 
+            List<string> memberEmails = null;
+            List<string> mergeIntoMemberEmails = null;
+
             using (var transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable))
             {
                 var members = await _context.TeamMembers.Where(tm => tm.Team.ID == teamId).ToListAsync();
-                var memberEmails = await _context.TeamMembers.Where(tm => tm.Team.ID == teamId).Select(tm => tm.Member.Email).ToListAsync();
-                var mergeIntoMemberEmails = await _context.TeamMembers.Where(tm => tm.Team.ID == MergeIntoID).Select(m => m.Member.Email).ToListAsync();
+                memberEmails = await _context.TeamMembers.Where(tm => tm.Team.ID == teamId).Select(tm => tm.Member.Email).ToListAsync();
+                mergeIntoMemberEmails = await _context.TeamMembers.Where(tm => tm.Team.ID == MergeIntoID).Select(m => m.Member.Email).ToListAsync();
 
                 var states = await PuzzleStateHelper.GetSparseQuery(_context, Team.Event, null, Team).ToListAsync();
                 var mergeIntoStates = await PuzzleStateHelper.GetSparseQuery(_context, Team.Event, null, mergeIntoTeam).ToDictionaryAsync(s => s.PuzzleID);
