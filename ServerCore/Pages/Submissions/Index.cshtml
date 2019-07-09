@@ -11,11 +11,15 @@
 
 @{
     var mailtoUrl = "mailto:";
-    
+
     // to: Add the proper support agent as recipient
     mailtoUrl += Model.PuzzleState?.Puzzle.SupportEmailAlias ?? (Model.Event?.ContactEmail ?? "puzzhunt@microsoft.com");
-    // cc: Cc the team's email address because what if this email account is a random personal one?
-    mailtoUrl += "?cc=" + Uri.EscapeDataString(Model.Team.PrimaryContactEmail);
+
+    if (Model.Team.PrimaryContactEmail != null)
+    {
+        // cc: Cc the team's email address because what if this email account is a random personal one?
+        mailtoUrl += "?cc=" + Uri.EscapeDataString(Model.Team.PrimaryContactEmail);
+    }
 
     // subject: Make this be about this puzzle
     mailtoUrl += "&subject=" + Uri.EscapeDataString("[" + Model.Puzzle.Name + "]");

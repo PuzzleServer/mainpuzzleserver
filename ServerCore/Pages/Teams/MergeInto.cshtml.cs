@@ -52,15 +52,15 @@ namespace ServerCore.Pages.Teams
                 return NotFound();
             }
 
-            var members = await _context.TeamMembers.Where(tm => tm.Team.ID == teamId).ToListAsync();
-            var memberEmails = await _context.TeamMembers.Where(tm => tm.Team.ID == teamId).Select(tm => tm.Member.Email).ToListAsync();
-            var mergeIntoMemberEmails = await _context.TeamMembers.Where(tm => tm.Team.ID == MergeIntoID).Select(m => m.Member.Email).ToListAsync();
-
-            var states = await PuzzleStateHelper.GetSparseQuery(_context, Team.Event, null, Team).ToListAsync();
-            var mergeIntoStates = await PuzzleStateHelper.GetSparseQuery(_context, Team.Event, null, mergeIntoTeam).ToDictionaryAsync(s => s.PuzzleID);
-
             using (var transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable))
             {
+                var members = await _context.TeamMembers.Where(tm => tm.Team.ID == teamId).ToListAsync();
+                var memberEmails = await _context.TeamMembers.Where(tm => tm.Team.ID == teamId).Select(tm => tm.Member.Email).ToListAsync();
+                var mergeIntoMemberEmails = await _context.TeamMembers.Where(tm => tm.Team.ID == MergeIntoID).Select(m => m.Member.Email).ToListAsync();
+
+                var states = await PuzzleStateHelper.GetSparseQuery(_context, Team.Event, null, Team).ToListAsync();
+                var mergeIntoStates = await PuzzleStateHelper.GetSparseQuery(_context, Team.Event, null, mergeIntoTeam).ToDictionaryAsync(s => s.PuzzleID);
+
                 // copy all the team members over
                 foreach (var member in members)
                 {
