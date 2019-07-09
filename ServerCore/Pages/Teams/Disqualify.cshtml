@@ -35,7 +35,7 @@ else
         <input type="hidden" asp-for="Team.ID" />
         @if (@Model.Team.IsDisqualified)
         {
-            Tean requalification will not send any automatic emails.<br />
+            <text>Team requalification will not send any automatic emails.<br /></text>
             <button type="submit" asp-page-handler="Requalify">Undo Disqualification</button>
         }
         else

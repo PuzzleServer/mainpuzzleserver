@@ -9,33 +9,36 @@
     Layout = "_teamLayout.cshtml";
 }
 @using Microsoft.AspNetCore.Http.Extensions @* for GetEncodedUrl *@
+@using System.Text @* for StringBuilder *@
 
 @{
-    var mailtoUrl = "mailto:";
+    var mailtoUrl = new StringBuilder("mailto:");
 
     if (Model.Team.IsDisqualified)
     {
         // to: Add the proper support agent as recipient
-        mailtoUrl += Model.Event?.ContactEmail ?? "puzzhunt@microsoft.com";
+        mailtoUrl.Append(Model.Event?.ContactEmail ?? "puzzhunt@microsoft.com");
         // cc: Cc the team's email address because what if this email account is a random personal one?
         if (Model.Team.PrimaryContactEmail != null)
         {
-            mailtoUrl += "?cc=" + Uri.EscapeDataString(Model.Team.PrimaryContactEmail);
+            mailtoUrl.Append("?cc=");
+            mailtoUrl.Append(Uri.EscapeDataString(Model.Team.PrimaryContactEmail));
         }
 
         // subject: Make this be about this event
-        mailtoUrl += "&subject=" + Uri.EscapeDataString("[" + Model.Event.Name + "]");
+        mailtoUrl.Append("&subject=");
+        mailtoUrl.Append(Uri.EscapeDataString("[" + Model.Event.Name + "]"));
         // subject: Make this be from this team
-        mailtoUrl += Uri.EscapeDataString(" [" + Model.Team.Name + "]");
+        mailtoUrl.Append(Uri.EscapeDataString(" [" + Model.Team.Name + "]"));
 
         // request requalification
         // subject: Add the disqualified signifier
-        mailtoUrl += Uri.EscapeDataString(" [⚠ Team Disqualified ⚠]");
+        mailtoUrl.Append(Uri.EscapeDataString(" [⚠ Team Disqualified ⚠]"));
         // body: Invite team member to give details
-        mailtoUrl += "&body=" + Uri.EscapeDataString(
-            "Use this mail to explain anything you think we need to know." +
-            Environment.NewLine +
-            Environment.NewLine);
+        mailtoUrl.Append("&body=");
+        mailtoUrl.Append(Uri.EscapeDataString("Use this mail to explain anything you think we need to know."));
+        mailtoUrl.Append(Environment.NewLine);
+        mailtoUrl.Append(Environment.NewLine);
     }
 }
 
