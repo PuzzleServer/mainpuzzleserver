@@ -15,11 +15,11 @@
 </div>
 
 <h3>Are you sure you want to merge this team into another team?</h3>
+<h3>Note: this will not merge 100% of team progress and is best used before the event, not during.</h3>
 <div>
     <hr />
     <form method="post">
         <dl>
-            <!-- class="dl-horizontal"> -->
             <dt>
                 Team name
             </dt>
@@ -31,13 +31,13 @@
             </dt>
             <dd>
                 @if (Model.Team.PrimaryContactEmail == null)
-            {
-                <div>(none)</div>
-            }
-            else
-            {
-                @Html.DisplayFor(model => model.Team.PrimaryContactEmail)
-            }
+                {
+                    <div>(none)</div>
+                }
+                else
+                {
+                    @Html.DisplayFor(model => model.Team.PrimaryContactEmail)
+                }
             </dd>
             <dt>
                 Merge Into
@@ -49,5 +49,6 @@
 
         <input type="hidden" asp-for="Team.ID" />
         <input type="submit" value="Merge" class="btn btn-default" onclick="return confirm('Are you sure you want to merge these teams? This operation cannot be undone.')" />
+        <p>Note: the merged players will get bulk email announcing the merge.</p>
     </form>
 </div>
