@@ -54,6 +54,7 @@ namespace ServerCore.Pages.Teams
 
             public int TeamID { get; }
             public string TeamName { get; set; }
+            public string TeamPrimaryContactEmail { get; set; }
             public int EmployeeCount { get; set; }
             public int InternCount { get; set; }
             public int NonMicrosoftCount { get; set; }
@@ -81,6 +82,7 @@ namespace ServerCore.Pages.Teams
                     {
                         TeamID = team.ID,
                         TeamName = team.Name,
+                        TeamPrimaryContactEmail = team.PrimaryContactEmail,
                         TeamMember = teamMember.Member
                     })
                 .GroupBy(intermediate => intermediate.TeamID)
@@ -137,6 +139,7 @@ namespace ServerCore.Pages.Teams
             foreach (IntermediateTeamMember groupMember in group)
             {
                 toReturn.TeamName = groupMember.TeamName;
+                toReturn.TeamPrimaryContactEmail = groupMember.TeamPrimaryContactEmail;
                 toReturn.Total += 1;
 
                 string email = groupMember.TeamMember.Email;
@@ -169,6 +172,7 @@ namespace ServerCore.Pages.Teams
         {
             public int TeamID { get; set; }
             public string TeamName { get; set; }
+            public string TeamPrimaryContactEmail { get; set; }
             public PuzzleUser TeamMember { get; set; }
         }
     }

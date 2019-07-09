@@ -22,11 +22,10 @@ else
     </div>
     <br />
 }
-
 <div>
-    <h3><b>Avg Fun Rating:</b> @Model.FunScore</h3>
-    <br>
-    <h3><b>Avg Difficulty Rating:</b> @Model.DiffScore</h3>
+    <br />
+    <h4><b>Avg Fun Rating:</b> @Html.DisplayFor(x => x.FunScore) / @FeedbackModel.FeedbackMax</h4>
+    <h4><b>Avg Difficulty Rating:</b> @Html.DisplayFor(x => x.DiffScore) / @FeedbackModel.FeedbackMax</h4>
 </div>
 
 <br>
@@ -36,6 +35,9 @@ else
         <tr>
             <th>
                 Puzzle
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Feedbacks[0].TeamName)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Feedbacks[0].Submitter.Name)
@@ -63,6 +65,9 @@ else
             <tr>
                 <td>
                     @Html.DisplayFor(modelItem => item.Puzzle.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TeamName)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Submitter.Name)
