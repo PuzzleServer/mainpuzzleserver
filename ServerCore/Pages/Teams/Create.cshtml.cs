@@ -94,7 +94,7 @@ namespace ServerCore.Pages.Teams
 
             using (IDbContextTransaction transaction = _context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable))
             {
-                if (await _context.Teams.Where((t) => t.Event == Event).CountAsync() >= Event.MaxNumberOfTeams)
+                if (EventRole != EventRole.admin && await _context.Teams.Where((t) => t.Event == Event).CountAsync() >= Event.MaxNumberOfTeams)
                 {
                     return NotFound("Registration is full. No further teams may be created at the present time.");
                 }
