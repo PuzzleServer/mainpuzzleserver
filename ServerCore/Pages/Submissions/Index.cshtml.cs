@@ -53,7 +53,7 @@ namespace ServerCore.Pages.Submissions
             }
 
             SubmissionText = submissionText;
-            if (!this.Event.IsAnswerSubmissionActive)
+            if (Event.EventBegin > DateTime.UtcNow)
             {
                 return Page();
             }
@@ -126,7 +126,7 @@ namespace ServerCore.Pages.Submissions
 
                 AnswerToken = submission.SubmissionText;
             }
-            else if (submission.Response == null)
+            else if (submission.Response == null && Event.IsAnswerSubmissionActive)
             {
                 // We also determine if the puzzle should be set to email-only mode.
                 if (IsPuzzleSubmissionLimitReached(

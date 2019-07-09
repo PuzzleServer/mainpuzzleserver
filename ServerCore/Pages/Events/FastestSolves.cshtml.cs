@@ -43,9 +43,10 @@ namespace ServerCore.Pages.Events
 
             names.ForEach(t => teamNameLookup[t.ID] = t.Name);
 
+            DateTime submissionEnd = Event.AnswerSubmissionEnd;
             // get the page data: puzzle, solve count, top three fastest
             var puzzlesData = await PuzzleStateHelper.GetSparseQuery(_context, this.Event, null, null)
-                .Where(s => s.SolvedTime != null && s.Puzzle.IsPuzzle)
+                .Where(s => s.SolvedTime != null && s.Puzzle.IsPuzzle && s.SolvedTime < submissionEnd)
                 .GroupBy(state => state.Puzzle)
                 .Select(g => new {
                     Puzzle = g.Key,

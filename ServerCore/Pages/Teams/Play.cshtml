@@ -7,7 +7,8 @@
     ViewData["AuthorRoute"] = "/Puzzles/Index";
     // Needs route data - ViewData["PlayRoute"] = "/Teams/Play";
 
-    Boolean unsolvedFilter = Model.StateFilter == PlayModel.PuzzleStateFilter.Unsolved;
+    bool unsolvedFilter = Model.StateFilter == PlayModel.PuzzleStateFilter.Unsolved;
+    bool canSubmit = Model.Event.EventBegin < DateTime.UtcNow;
 }
 <style>
     .radioButton {
@@ -131,13 +132,13 @@
                         {
                             <text>Solved on </text>@Html.Raw(Model.LocalTime(item.SolvedTime))
                         }
-                        else if (@Model.Event.IsAnswerSubmissionActive)
+                        else if (canSubmit)
                         {
                             <text>Submit Answer</text>
                         }
                         else
                         {
-                            <text>See past submissions</text>
+                            <text />
                         }
                     </a>
                 </td>
