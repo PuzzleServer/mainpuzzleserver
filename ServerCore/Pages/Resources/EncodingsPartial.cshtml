@@ -7,130 +7,489 @@
         to look out for as you try to determine how to extract a final answer.
     </p>
 
-    <h3>Number to Letter Conversion</h3>
+    <h2>Contents</h2>
+    <ul class="list-unstyled">
+        <li>
+            <a href="#secTheBasics">The Basics</a>
+            <ul>
+                <li><a href="#secNumberToLetterConversion">Number-to-Letter Conversion</a></li>
+                <li><a href="#secIndexing">Indexing</a></li>
+                <li><a href="#secBaseEncodings">Base Encodings</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#secCommonRepresentations">Common Representations of Letters and Numbers</a>
+            <ul>
+                <li><a href="#secMorseCode">Morse Code</a></li>
+                <li><a href="#secSemaphore">Semaphore</a></li>
+                <li><a href="#secBraille">Braille</a></li>
+                <li><a href="#secSignalFlags">International Maritime Signal Flags</a></li>
+                <li><a href="#secNATO">NATO Phonetic Alphabet</a></li>
+                <li><a href="#secPigpen">Pigpen Cipher</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#secColors">Colors</a>
+            <ul>
+                <li><a href="#secRainbowOrder">Rainbow Order</a></li>
+                <li><a href="#secMixingColors">Mixing Colors</a></li>
+                <li><a href="#secResistorColorCodes">Resistor Color Codes</a></li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2 id="secTheBasics">The Basics</h2>
+
+    <h3 id="secNumberToLetterConversion">Number-to-Letter Conversion</h3>
     <p>
-        Numbers between 1 and 26 often represent indices into the alphabet, where
-        1=A, 2=B, and so on through 26=Z.  If a puzzle solved to the following list
-        of values: 3, 15, 18, 18, 5, 3, 20, you would translate that into the final
-        answer CORRECT.  If numbers are outside this range, sometimes you need to
-        bring them into that range via a mod 26 operation: divide the number by 26
-        and use the remainder, treating 0 as 26.
+        Numbers between 1 and 26 often represent their corresponding letters of the alphabet, where 1=A, 2=B, and so on through 26=Z.  For instance, if a puzzle solved to the list of values <strong>3, 15, 18, 18, 5, 3, 20</strong>, you would translate that into the final answer <strong>CORRECT</strong>.
     </p>
     <img src="~/images/AlphaNumbers.png" />
 
-    <h3>ASCII to Letter Conversion</h3>
-    <p>
-        Numbers in the 65-90 range often represent the ASCII code values for the
-        alphabet, where 65=A and 90=Z.  97-122 can represent lower-case ASCII
-        codes. You can see it <a href="http://en.wikipedia.org/wiki/ASCII#ASCII_printable_characters">here</a>
-    </p>
-
-    <h3>Indexing</h3>
+    <h3 id="secIndexing">Indexing</h3>
     <p>
         Another extremely common use of numbers in puzzles is as an index into other
         text.  A clue with a number 5 next to it might mean that after solving the
         clue, the important thing is the fifth letter of the answer.  Typically, a
         puzzle using indexing will require you to index multiple times, often using
-        a different answer and number each tim  e, to extract a series of letters
+        a different answer and number each time, to extract a series of letters
         which can then be read as something meaningful.
     </p>
 
-    <h3>Implied Indexing</h3>
+    <h4>Implied Indexing</h4>
     <p>
         If the puzzle resolves to a list of answers and there is no numeric data
         to suggest indexing, the answer may be an acrostic, which is essentially an
-        implied index of 1 for each answer.  Try reading only the first letters of
-        the answers.  Another common implied index is the "diagonal read"-an index of
-        1 for the first answer, 2 for the second, 3 for the third, and so forth.
+        implied index of 1 for each answer.
+    </p>
+    <p>
+        Another slightly less implied index is the "diagonal read," that is, an index
+        of 1 for the first answer, 2 for the second, 3 for the third, and so forth.
     </p>
 
-    <h3>Binary</h3>
+    <h3 id="secBaseEncodings">Base Encodings</h3>
     <p>
-        A stream of data with only two different values-black and white, true and
-        false, dead or alive, 1 or 0-often represents binary values.  The most useful
-        binary values are 5-bits long, since that's the smallest number of bits
-        required to represent the numbers 1-26 (which can in turn be converted into
-        the letters A-Z).
+        Base 10 is used most often, but you'll frequently see other base encodings in puzzles.  Base 2 (binary) and base 3 (ternary) are used quite often in puzzles, especially for representing letters.  Base 16 (hexadecimal) is also common for ASCII representations.
+    </p>
+    <p>
+        A stream of data with only two different values (black or white, true or false, dead or alive, 1 or 0, etc.) often represents binary values.  The most useful binary values are five bits long, since that's the smallest number of bits needed to represent (a superset of) the numbers 1&ndash;26, which can in turn be converted into the letters A&ndash;Z.
+    </p>
+    <p>
+        Similarly, three ternary (base 3) digits will suffice to represent numbers from 1&ndash;26.
     </p>
 
-    <h3>Morse Code</h3>
+    <table class="table table-bordered">
+        <tbody>
+            <tr><th>Letter</th><th>Base 10</th><th>Base 2</th><th>Base 3</th><th>ASCII (uppercase)</th><th>ASCII (lowercase)</th></tr>
+            <tr><td>A</td><td> 1</td><td>00001</td><td>001</td><td>0x41</td><td>0x61</td></tr>
+            <tr><td>N</td><td>14</td><td>01110</td><td>112</td><td>0x4E</td><td>0x6E</td></tr>
+            <tr><td>S</td><td>19</td><td>10011</td><td>121</td><td>0x53</td><td>0x73</td></tr>
+            <tr><td>W</td><td>23</td><td>10111</td><td>212</td><td>0x57</td><td>0x77</td></tr>
+            <tr><td>E</td><td> 5</td><td>00101</td><td>012</td><td>0x45</td><td>0x65</td></tr>
+            <tr><td>R</td><td>18</td><td>10010</td><td>200</td><td>0x52</td><td>0x72</td></tr>
+        </tbody>
+    </table>
+
+    <h4>ASCII Conversions</h4>
     <p>
-        The other choice for a stream of binary data is Morse code.  Data with
-        three different values can also be Morse, with the third value used for
-        letter breaks.  A puzzle might be encode Morse more visually, by containing
-        dots and dashes in the puzzle (for example, as the stripes or emblems on
-        national flags).
+        Numbers in the following ranges can represent ASCII codes:
+        <ul>
+            <li>The range 48&ndash;57 (0x30&ndash;0x39) represents digits, where 48 is '0' and 57 is '9'.</li>
+            <li>The range 65&ndash;90 (0x41&ndash;0x5A) represents uppercase letters, where 65 is 'A' and 90 is 'Z'.</li>
+            <li>The range 97&ndash;122 (0x61&ndash;0x7A) represents lowercase letters, where 97 is 'a' and 122 is 'z'.</li>
+        </ul>
+        You can read more info about ASCII <a href="https://en.wikipedia.org/wiki/ASCII#ASCII_printable_characters">here</a>.
+    </p>
+
+    <h2 id="secCommonRepresentations">Common Representations of Letters and Numbers</h2>
+
+    <h3 id="secMorseCode">Morse Code</h3>
+    <p>
+        <a href="https://en.wikipedia.org/wiki/Morse_code">Morse code</a> is a system of communicating data using short and long pulses (also known as dots and dashes).  Morse code can be encoded using two different symbols representing dots and dashes, and optionally a third symbol to represent letter breaks.  A puzzle can also contain visual representations of Morse in the form of dots and dashes, for example, as stripes or emblems on national flags.
     </p>
     <img src="~/images/MorseCode.png" />
 
-    <h3>Semaphore</h3>
+    <h4>Morse Code Tree</h4>
     <p>
-        Semaphore is a flag signaling system in which the alphabet is represented
-        by holding two flags at various angles from the body.  In puzzles, if a data
-        stream consists of compass directions, angles, or lines emanating from a
-        common center, it might be semaphore.
+        The following diagram is a handy way to quickly decipher Morse code letters.  From the node labeled "start," travel downward across dotted or dashed lines accordingly.  For example, following the dotted line twice and the dashed line once will lead to the letter U, which is represented by "dot-dot-dash" in Morse code.  (Missing nodes indicate invalid Morse code letters.)
+    </p>
+
+    <svg xmlns="http://www.w3.org/2000/svg" class="center-block" width="49em" height="20em">
+        <!-- Lines -->
+        <g stroke="#000">
+            <!-- Dotted -->
+            <g stroke-width="2" stroke-dasharray="2">
+                <line x1="24.5em" y1="2em" x2="12.5em" y2="6em" />
+                <line x1="12.5em" y1="6em" x2="6.5em" y2="10em" />
+                <line x1="36.5em" y1="6em" x2="30.5em" y2="10em" />
+                <line x1="6.5em" y1="10em" x2="3.5em" y2="14em" />
+                <line x1="18.5em" y1="10em" x2="15.5em" y2="14em" />
+                <line x1="30.5em" y1="10em" x2="27.5em" y2="14em" />
+                <line x1="42.5em" y1="10em" x2="39.5em" y2="14em" />
+                <line x1="3.5em" y1="14em" x2="2em" y2="18em" />
+                <line x1="9.5em" y1="14em" x2="8em" y2="18em" />
+                <line x1="15.5em" y1="14em" x2="14em" y2="18em" />
+                <line x1="21.5em" y1="14em" x2="20em" y2="18em" />
+                <line x1="27.5em" y1="14em" x2="26em" y2="18em" />
+                <line x1="33.5em" y1="14em" x2="32em" y2="18em" />
+                <line x1="39.5em" y1="14em" x2="38em" y2="18em" />
+            </g>
+            <!-- Dashed -->
+            <g stroke-width="2" stroke-dasharray="6 3">
+                <line x1="24.5em" y1="2em" x2="36.5em" y2="6em" />
+                <line x1="12.5em" y1="6em" x2="18.5em" y2="10em" />
+                <line x1="36.5em" y1="6em" x2="42.5em" y2="10em" />
+                <line x1="6.5em" y1="10em" x2="9.5em" y2="14em" />
+                <line x1="18.5em" y1="10em" x2="21.5em" y2="14em" />
+                <line x1="30.5em" y1="10em" x2="33.5em" y2="14em" />
+                <line x1="42.5em" y1="10em" x2="45.5em" y2="14em" />
+                <line x1="3.5em" y1="14em" x2="5em" y2="18em" />
+                <line x1="21.5em" y1="14em" x2="23em" y2="18em" />
+                <line x1="27.5em" y1="14em" x2="29em" y2="18em" />
+                <line x1="33.5em" y1="14em" x2="35em" y2="18em" />
+                <line x1="39.5em" y1="14em" x2="41em" y2="18em" />
+            </g>
+        </g>
+        <!-- Nodes -->
+        <g fill="#ccc" stroke="#000">
+            <rect x="23em" y="1em" width="3em" height="2em" />
+            <circle cx="27.5em" cy="14em" r="1em" />
+            <circle cx="33.5em" cy="14em" r="1em" />
+            <circle cx="39.5em" cy="14em" r="1em" />
+            <circle cx="45.5em" cy="14em" r="1em" />
+            <circle cx="12.5em" cy="6em" r="1em" />
+            <circle cx="36.5em" cy="6em" r="1em" />
+            <circle cx="6.5em" cy="10em" r="1em" />
+            <circle cx="18.5em" cy="10em" r="1em" />
+            <circle cx="30.5em" cy="10em" r="1em" />
+            <circle cx="42.5em" cy="10em" r="1em" />
+            <circle cx="3.5em" cy="14em" r="1em" />
+            <circle cx="9.5em" cy="14em" r="1em" />
+            <circle cx="15.5em" cy="14em" r="1em" />
+            <circle cx="21.5em" cy="14em" r="1em" />
+            <circle cx="2em" cy="18em" r="1em" />
+            <circle cx="5em" cy="18em" r="1em" />
+            <circle cx="8em" cy="18em" r="1em" />
+            <circle cx="14em" cy="18em" r="1em" />
+            <circle cx="20em" cy="18em" r="1em" />
+            <circle cx="23em" cy="18em" r="1em" />
+            <circle cx="26em" cy="18em" r="1em" />
+            <circle cx="29em" cy="18em" r="1em" />
+            <circle cx="32em" cy="18em" r="1em" />
+            <circle cx="35em" cy="18em" r="1em" />
+            <circle cx="38em" cy="18em" r="1em" />
+            <circle cx="41em" cy="18em" r="1em" />
+        </g>
+        <!-- Text -->
+        <g text-anchor="middle" font-weight="bolder">
+            <text x="24.5em" y="2.35em">start</text>
+            <text x="12.5em" y="6.35em">E</text>
+            <text x="36.5em" y="6.35em">T</text>
+            <text x="6.5em" y="10.35em">I</text>
+            <text x="18.5em" y="10.35em">A</text>
+            <text x="30.5em" y="10.35em">N</text>
+            <text x="42.5em" y="10.35em">M</text>
+            <text x="3.5em" y="14.35em">S</text>
+            <text x="9.5em" y="14.35em">U</text>
+            <text x="15.5em" y="14.35em">R</text>
+            <text x="21.5em" y="14.35em">W</text>
+            <text x="27.5em" y="14.35em">D</text>
+            <text x="33.5em" y="14.35em">K</text>
+            <text x="39.5em" y="14.35em">G</text>
+            <text x="45.5em" y="14.35em">O</text>
+            <text x="2em" y="18.35em">H</text>
+            <text x="5em" y="18.35em">V</text>
+            <text x="8em" y="18.35em">F</text>
+            <text x="14em" y="18.35em">L</text>
+            <text x="20em" y="18.35em">P</text>
+            <text x="23em" y="18.35em">J</text>
+            <text x="26em" y="18.35em">B</text>
+            <text x="29em" y="18.35em">X</text>
+            <text x="32em" y="18.35em">C</text>
+            <text x="35em" y="18.35em">Y</text>
+            <text x="38em" y="18.35em">Z</text>
+            <text x="41em" y="18.35em">Q</text>
+        </g>
+    </svg>
+
+    <h3 id="secSemaphore">Semaphore</h3>
+    <p>
+        <a href="https://en.wikipedia.org/wiki/Flag_semaphore">Flag semaphore</a>, often called "semaphore" for short, is a flag signaling system in which the alphabet is represented by holding two flags at various angles from the body.  In puzzles, if a data stream consists of compass directions, angles, or lines emanating from a common center, it might be semaphore.
     </p>
     <img src="~/images/Semaphore.png" />
 
-    <h3>Braille</h3>
+    <h4>Semaphore Chart</h4>
     <p>
-        Braille is a system of raised dots used to allow non-sighted people to
-        read by touch.  Each letter in the Braille alphabet is composed of a 2x3 grid
-        of dots, some of which are "on" and some "off".  Any time your data can be
-        subdivided evenly into a 2x3 grid, consider trying to treat it as
-        Braille.
+        The following chart can be used to help decode semaphore quickly.  If the two flags are in opposite directions, use the smaller circle on the left to determine the correct letter.  Otherwise, find the appropriate pie slice among the other six circles corresponding to the two directions.
+    </p>
+    <svg xmlns="http://www.w3.org/2000/svg" class="center-block" width="24.5em" height="13em">
+        <!-- 1/8 slice : 2.00em from center -->
+        <!-- 1/4 slice : 1.75em from center -->
+        <!-- 3/8 slice : 1.50em from center -->
+        <symbol id="semaphoreCircleB1" width="6.5em" height="6.5em">
+            <circle cx="3.25em" cy="3.25em" r="3em" fill="none" stroke="#000" />
+            <line x1="3.25em" y1="3.25em" x2="0.25em" y2="3.25em" stroke-linecap="round" stroke="#000" />
+            <line x1="3.25em" y1="3.25em" x2="5.3713203436em" y2="1.1286796564em" stroke-linecap="round" stroke="#000" />
+            <line x1="3.25em" y1="3.25em" x2="5.3713203436em" y2="5.3713203436em" stroke-linecap="round" stroke="#000" />
+            <g text-anchor="middle" font-weight="bolder">
+                <text x="5em" y="3.6em">X</text>
+                <text x="2.6759748515em" y="2.2141807012em">Q</text>
+                <text x="2.6759748515em" y="4.9858192988em">S</text>
+            </g>
+        </symbol>
+        <symbol id="semaphoreCircleB2" width="6.5em" height="6.5em">
+            <circle cx="3.25em" cy="3.25em" r="3em" fill="none" stroke="#000" />
+            <line x1="3.25em" y1="3.25em" x2="6.25em" y2="3.25em" stroke-linecap="round" stroke="#000" />
+            <line x1="3.25em" y1="3.25em" x2="1.1286796564em" y2="1.1286796564em" stroke-linecap="round" stroke="#000" />
+            <line x1="3.25em" y1="3.25em" x2="1.1286796564em" y2="5.3713203436em" stroke-linecap="round" stroke="#000" />
+            <g text-anchor="middle" font-weight="bolder">
+                <text x="1.5em" y="3.6em">I</text>
+                <text x="3.8240251485em" y="2.2141807012em">Y</text>
+                <text x="3.8240251485em" y="4.9858192988em">M</text>
+            </g>
+        </symbol>
+        <symbol id="semaphoreCircleB3" width="6.5em" height="6.5em">
+            <circle cx="3.25em" cy="3.25em" r="3em" fill="none" stroke="#000" />
+            <line x1="0.25em" y1="3.25em" x2="6.25em" y2="3.25em" stroke-linecap="round" stroke="#000" />
+            <line x1="3.25em" y1="0.25em" x2="3.25em" y2="6.25em" stroke-linecap="round" stroke="#000" />
+            <line x1="1.1286796564em" y1="1.1286796564em" x2="5.3713203436em" y2="5.3713203436em" stroke-linecap="round" stroke="#000" />
+            <line x1="1.1286796564em" y1="5.3713203436em" x2="5.3713203436em" y2="1.1286796564em" stroke-linecap="round" stroke="#000" />
+            <g text-anchor="middle" font-weight="bolder">
+                <text x="5.0977590650em" y="2.8346331353em">W</text>
+                <text x="4.0153668647em" y="1.7522409350em">#</text>
+                <text x="2.4846331353em" y="1.7522409350em">T</text>
+                <text x="1.4022409350em" y="2.8346331353em">O</text>
+                <text x="1.4022409350em" y="4.3653668647em">H</text>
+                <text x="2.4846331353em" y="5.4477590650em">A</text>
+                <text x="4.0153668647em" y="5.4477590650em">G</text>
+                <text x="5.0977590650em" y="4.3653668647em">Z</text>
+            </g>
+        </symbol>
+        <symbol id="semaphoreCircleB4" width="6.5em" height="6.5em">
+            <circle cx="3.25em" cy="3.25em" r="3em" fill="none" stroke="#000" />
+            <line x1="3.25em" y1="3.25em" x2="3.25em" y2="6.25em" stroke-linecap="round" stroke="#000" />
+            <line x1="3.25em" y1="3.25em" x2="5.3713203436em" y2="1.1286796564em" stroke-linecap="round" stroke="#000" />
+            <line x1="3.25em" y1="3.25em" x2="1.1286796564em" y2="1.1286796564em" stroke-linecap="round" stroke="#000" />
+            <g text-anchor="middle" font-weight="bolder">
+                <text x="3.25em" y="1.85em">U</text>
+                <text x="1.8641807012em" y="4.1740251845em">C</text>
+                <text x="4.6358192988em" y="4.1740251845em">E</text>
+            </g>
+        </symbol>
+        <symbol id="semaphoreCircleB5" width="6.5em" height="6.5em">
+            <circle cx="3.25em" cy="3.25em" r="3em" fill="none" stroke="#000" />
+            <line x1="3.25em" y1="3.25em" x2="3.25em" y2="0.25em" stroke-linecap="round" stroke="#000" />
+            <line x1="3.25em" y1="3.25em" x2="5.3713203436em" y2="5.3713203436em" stroke-linecap="round" stroke="#000" />
+            <line x1="3.25em" y1="3.25em" x2="1.1286796564em" y2="5.3713203436em" stroke-linecap="round" stroke="#000" />
+            <g text-anchor="middle" font-weight="bolder">
+                <text x="3.25em" y="5.35em">N</text>
+                <text x="1.8641807012em" y="3.0259748515em">K</text>
+                <text x="4.6358192988em" y="3.0259748515em">V</text>
+            </g>
+        </symbol>
+        <symbol id="semaphoreCircleB6" width="6.5em" height="6.5em">
+            <circle cx="3.25em" cy="3.25em" r="3em" fill="none" stroke="#000" />
+            <line x1="3.25em" y1="0.25em" x2="3.25em" y2="6.25em" stroke-linecap="round" stroke="#000" />
+            <line x1="0.25em" y1="3.25em" x2="6.25em" y2="3.25em" stroke-linecap="round" stroke="#000" />
+            <g text-anchor="middle" font-weight="bolder">
+                <text x="2.0125631329em" y="2.3625631329em">P</text>
+                <text x="4.4874368671em" y="2.3625631329em">J</text>
+                <text x="2.0125631329em" y="4.8374368671em">B</text>
+                <text x="4.4874368671em" y="4.8374368671em">F</text>
+            </g>
+        </symbol>
+        <symbol id="semaphoreCircleB7" width="6.5em" height="6.5em">
+            <circle cx="3.25em" cy="3.25em" r="1.25em" fill="none" stroke="#000" />
+            <line x1="2em" y1="3.25em" x2="4.5em" y2="3.25em" stroke-linecap="round" stroke="#000" />
+            <line x1="3.25em" y1="2em" x2="3.25em" y2="4.5em" stroke-linecap="round" stroke="#000" />
+            <line x1="2.3661165235em" y1="4.1338834765em" x2="4.1338834765em" y2="2.3661165235em" stroke-linecap="round" stroke="#000" />
+            <g text-anchor="middle" font-weight="bolder">
+                <!-- 2em from the center -->
+                <text x="5.25em" y="3.6em">R</text>
+                <text x="3.25em" y="5.6em">D</text>
+                <text x="4.6642135624em" y="2.1857864376em">L</text>
+            </g>
+        </symbol>
+
+        <use xlink:href="#semaphoreCircleB1" x="5em" y="0em" />
+        <use xlink:href="#semaphoreCircleB2" x="11.5em" y="0em" />
+        <use xlink:href="#semaphoreCircleB3" x="18em" y="0em" />
+        <use xlink:href="#semaphoreCircleB4" x="5em" y="6.5em" />
+        <use xlink:href="#semaphoreCircleB5" x="11.5em" y="6.5em" />
+        <use xlink:href="#semaphoreCircleB6" x="18em" y="6.5em" />
+        <use xlink:href="#semaphoreCircleB7" x="-1em" y="3.25em" />
+    </svg>
+
+    <h3 id="secBraille">Braille</h3>
+    <p>
+        <a href="https://en.wikipedia.org/wiki/Braille">Braille</a> is a system of raised dots used to allow non-sighted people to read by touch.  Each letter in the Braille alphabet is composed of a 2&times;3 grid of dots, some of which are "on" and some "off."  Any time your data can be subdivided evenly into a 2&times;3 grid, consider trying to treat it as Braille, especially if the instructions or flavortext use words like "touch" or "feel."
     </p>
     <img src="~/images/Braille.gif" />
 
-    <h3>Nautical Signal Flags</h3>
+    <h3 id="secSignalFlags">International Maritime Signal Flags</h3>
     <p>
-        The system of international maritime signal flags is a way of representing
-        every number and every letter of the alphabet in signals to or from ships.
-        Each flag features a simple pattern in a palette of five colors: red, white,
-        blue, black, and yellow.
+        The system of <a href="https://en.wikipedia.org/wiki/International_maritime_signal_flags">international maritime signal flags</a> is a way of representing every letter and number of the alphabet in signals to or from ships.  They are defined by the International Code of Signals, or ICS.  Each flag features a simple pattern in a palette of five colors: red, white, blue, black, and yellow.
     </p>
     <img src="~/images/MaritimeSignalFlags.png" />
 
-    <h3>NATO Phonetic Alphabet</h3>
+    <h3 id="secNATO">NATO Phonetic Alphabet</h3>
     <p>
-        The NATO alphabet assigns code words to letters of the alphabet (ALPHA,
-        BRAVO, CHARLIE, etc) so that critical combinations of letters can be
-        pronounced and understood via radio or telephone.
+        The <a href="https://en.wikipedia.org/wiki/NATO_phonetic_alphabet">NATO phonetic alphabet</a> assigns code words to letters of the alphabet so that critical combinations of letters can be pronounced and understood via radio or telephone.
     </p>
+    <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+        <table class="table table-bordered table-condensed">
+            <tbody>
+                <tr><th>Letter</th><th>Code word</th></tr>
+                <tr><td>A</td><td>Alfa</td></tr>
+                <tr><td>B</td><td>Bravo</td></tr>
+                <tr><td>C</td><td>Charlie</td></tr>
+                <tr><td>D</td><td>Delta</td></tr>
+                <tr><td>E</td><td>Echo</td></tr>
+                <tr><td>F</td><td>Foxtrot</td></tr>
+                <tr><td>G</td><td>Golf</td></tr>
+                <tr><td>H</td><td>Hotel</td></tr>
+                <tr><td>I</td><td>India</td></tr>
+                <tr><td>J</td><td>Juliett</td></tr>
+                <tr><td>K</td><td>Kilo</td></tr>
+                <tr><td>L</td><td>Lima</td></tr>
+                <tr><td>M</td><td>Mike</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+        <table class="table table-bordered table-condensed">
+            <tbody>
+                <tr><th>Letter</th><th>Code word</th></tr>
+                <tr><td>N</td><td>November</td></tr>
+                <tr><td>O</td><td>Oscar</td></tr>
+                <tr><td>P</td><td>Papa</td></tr>
+                <tr><td>Q</td><td>Quebec</td></tr>
+                <tr><td>R</td><td>Romeo</td></tr>
+                <tr><td>S</td><td>Sierra</td></tr>
+                <tr><td>T</td><td>Tango</td></tr>
+                <tr><td>U</td><td>Uniform</td></tr>
+                <tr><td>V</td><td>Victor</td></tr>
+                <tr><td>W</td><td>Whiskey</td></tr>
+                <tr><td>X</td><td>X-ray</td></tr>
+                <tr><td>Y</td><td>Yankee</td></tr>
+                <tr><td>Z</td><td>Zulu</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="clearfix"></div>
 
-    <h3>Pigpen Cipher</h3>
-    <p>The Pigpen Cipher, developed by the Freemasons for secret communication, encodes each letter as a symbol. The encoding is described by the grids below: each letter is encoded by replacing it with the symbol corresponding to the part of the grid that contains the letter.</p>
+    <h3 id="secPigpen">Pigpen Cipher</h3>
+    <p>The <a href="https://en.wikipedia.org/wiki/Pigpen_cipher">Pigpen cipher</a>, developed by the Freemasons for secret communication, encodes each letter as a symbol. The encoding is described by the grids below: each letter is encoded by replacing it with the symbol corresponding to the part of the grid that contains the letter.</p>
     <img src="~/images/Pigpen.gif" />
     <p>For example:</p>
     <img src="~/images/PigpenExamples.gif" />
 
-    <h3>Rainbow Order</h3>
-    <p>Rainbow order is the order that colors appear in the color spectrum. A common mnemonic to remember the order is <a href="http://en.wikipedia.org/wiki/Roy_G._Biv">Roy G. Biv</a>: Red, Orange, Yellow, Green, Blue, Indigo, Violet. </p>
+    <h2 id="secColors">Colors</h2>
 
-    <h3>Color Wheel</h3>
-    <p>When color pigments are combined, new colors are created.</p>
+    <h3 id="secRainbowOrder">Rainbow Order</h3>
+    <p>
+        Rainbow order is the order that colors appear in the color spectrum.  If you see these colors in a puzzle, try reading partial answers in rainbow order.  A common mnemonic to remember the order is <a href="https://en.wikipedia.org/wiki/Roy_G._Biv">Roy G. Biv</a>.
+    </p>
+    <div class="col-lg-3 col-md-4 col-sm-6 col-xs-8">
+        <table class="table table-bordered table-condensed">
+            <tbody>
+                <tr>
+                    <th>Number</th>
+                    <th>Color</th>
+                </tr>
+                <tr style="background-color: #f00; color: #fff;">
+                    <td>1</td>
+                    <td>Red</td>
+                </tr>
+                <tr style="background-color: #f90;">
+                    <td>2</td>
+                    <td>Orange</td>
+                </tr>
+                <tr style="background-color: #ff0;">
+                    <td>3</td>
+                    <td>Yellow</td>
+                </tr>
+                <tr style="background-color: #0c0;">
+                    <td>4</td>
+                    <td>Green</td>
+                </tr>
+                <tr style="background-color: #04f; color: #fff;">
+                    <td>5</td>
+                    <td>Blue</td>
+                </tr>
+                <tr style="background-color: #609; color: #fff;">
+                    <td>6</td>
+                    <td>Indigo</td>
+                </tr>
+                <tr style="background-color: #d0d; color: #fff;">
+                    <td>7</td>
+                    <td>Violet</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="clearfix"></div>
+
+    <h3 id="secMixingColors">Mixing Colors</h3>
+    <p>
+        When color pigments are combined, new colors are created.
+    </p>
     <img src="~/images/ColorMix.png" />
 
-    <h3>Resistor Color Codes</h3>
-    <p>Electrical resistors use color bands on them to indicate their resistance values. <a href="http://en.wikipedia.org/wiki/Resistor_colors">Here</a> is a good reference.</p>
-
-    <h3>Base Encodings</h3>
+    <h3 id="secResistorColorCodes">Resistor Color Codes</h3>
     <p>
-        Base 10 encoding is used most often, but you'll frequently see other base encodings in puzzles. Base 2, 8, and 16 are common.
-        An example: suppose you have the number or a representation of the number "00010". This is 10 in decimal (Base 10), 16 in hexadecimal (Base 16), 8 in octal (Base 8), and 2 in binary (Base 2). Remember, the value of the number may map to another encoding, for example "01010" (Base 2) --> "10" (Base 10) --> 'J', the 10th letter of the alphabet.
-
-        <table class="table table-bordered">
-            <tr><th>Base 2</th><th>Base 8</th><th>Base 10</th><th>Letter</th></tr>
-            <tr><td>00001</td> <td>00001</td> <td>1</td> <td>A</td></tr>
-            <tr><td>00101</td> <td>00005</td> <td>5</td> <td>E</td></tr>
-            <tr><td>01001</td> <td>00011</td> <td>9</td> <td>I</td></tr>
-            <tr><td>01111</td> <td>00017</td> <td>15</td> <td>O</td></tr>
-            <tr><td>10101</td> <td>00025</td> <td>21</td> <td>U</td></tr>
-        </table>
-
+        Electrical resistors use <a href="https://en.wikipedia.org/wiki/Electronic_color_code#Resistor_color-coding">color bands</a> on them to indicate their resistance values.  This can serve as a good way to convert colors to digits.
     </p>
-
-
-
+    <div class="col-lg-3 col-md-4 col-sm-6 col-xs-8">
+        <table class="table table-bordered table-condensed">
+            <tbody>
+                <tr>
+                    <th>Number</th>
+                    <th>Color</th>
+                </tr>
+                <tr style="background-color: #000; color: #fff;">
+                    <td>0</td>
+                    <td>Black</td>
+                </tr>
+                <tr style="background-color: #840; color: #fff;">
+                    <td>1</td>
+                    <td>Brown</td>
+                </tr>
+                <tr style="background-color: #f00; color: #fff;">
+                    <td>2</td>
+                    <td>Red</td>
+                </tr>
+                <tr style="background-color: #f90;">
+                    <td>3</td>
+                    <td>Orange</td>
+                </tr>
+                <tr style="background-color: #ff0;">
+                    <td>4</td>
+                    <td>Yellow</td>
+                </tr>
+                <tr style="background-color: #0c0;">
+                    <td>5</td>
+                    <td>Green</td>
+                </tr>
+                <tr style="background-color: #04f; color: #fff;">
+                    <td>6</td>
+                    <td>Blue</td>
+                </tr>
+                <tr style="background-color: #909; color: #fff;">
+                    <td>7</td>
+                    <td>Violet</td>
+                </tr>
+                <tr style="background-color: #aaa;">
+                    <td>8</td>
+                    <td>Gray</td>
+                </tr>
+                <tr style="background-color: #fff;">
+                    <td>9</td>
+                    <td>White</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="clearfix"></div>
 </div>
 
