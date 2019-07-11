@@ -33,7 +33,7 @@ namespace ServerCore.Pages.Events
 
             DateTime submissionEnd = Event.AnswerSubmissionEnd;
             var stateData = await PuzzleStateHelper.GetSparseQuery(_context, this.Event, null, null)
-                .Where(pspt => pspt.SolvedTime != null && pspt.SolvedTime < submissionEnd)
+                .Where(pspt => pspt.SolvedTime != null && pspt.SolvedTime <= submissionEnd)
                 .Select(pspt => new { pspt.PuzzleID, pspt.TeamID, pspt.SolvedTime })
                 .ToListAsync();
 
