@@ -62,8 +62,6 @@
     </div>
     <br />
 }
-<div class="row">
-    <div class="col-md-4">
         @if (Model.Puzzle.HasDataConfirmation)
         {
             <div style="font-style:italic;">
@@ -77,12 +75,18 @@
                 <h4>Correct</h4>
                 <span>Answer: @Model.AnswerToken</span>
             </div>
+
+            @if (Model.PuzzleState.SolvedTime > Model.Event.AnswerSubmissionEnd)
+            { 
+                <div class="alert alert-warning" role="alert">
+                    <span>You solved this after the event ended and it did not count toward your ranking.</span>
+                </div>
+            }
         }
-        else if (!@Model.Event.IsAnswerSubmissionActive)
+        else if (DateTime.UtcNow < Model.Event.EventBegin)
         {
             <div class="col-md-12" style="padding-bottom: 15px;">
-                <h4>Answer Submission Closed</h4>
-                <span>No submissions will be accepted at this time.</span>
+                <h3>This event is not yet in session. No submissions will be accepted at this time.</h3>
             </div>
         }
         else if (Model.PuzzleState.IsEmailOnlyMode)
@@ -108,30 +112,39 @@
         }
         else
         {
-            if (Model.DuplicateSubmission)
+            if (DateTime.UtcNow > @Model.Event.AnswerSubmissionEnd)
+            {
+                <div class="alert alert-warning" role="alert">
+                    <h4>The event is over.</h4>
+                    <span>You may check answers, but they will not count toward your ranking.</span>
+                </div>
+            }
+
+            @if (Model.DuplicateSubmission)
             {
             <div class="alert alert-danger" role="alert">
                 <h4>Oops</h4>
                 <span>You've already submitted @Model.SubmissionText!</span>
             </div>
             }
-
-            <form method="post">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="form-group">
-                    <label class="control-label">Answer</label>
-                    <input autofocus name="submissionText" class="form-control" data-val="true" data-val-required="Your answer cannot be empty" />
-                    <span style="font-size:12px">Submitted answers will automatically be capitalized and stripped of non-alphanumeric characters</span><br />
-                    @Html.ValidationSummary(true)
-                    <span class="text-danger"><span class="field-validation-valid" data-valmsg-for="submissionText" data-valmsg-replace="true"></span></span>
+            <div class="row">
+                <div class="col-md-4">
+                    <form method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-group">
+                            <label class="control-label">Answer</label>
+                            <input name="submissionText" class="form-control" data-val="true" data-val-required="Your answer cannot be empty" />
+                            <span style="font-size:12px">Submitted answers will automatically be capitalized and stripped of non-alphanumeric characters</span><br />
+                            @Html.ValidationSummary(true)
+                            <span class="text-danger"><span class="field-validation-valid" data-valmsg-for="submissionText" data-valmsg-replace="true"></span></span>
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" value="Submit" class="btn btn-default" />
+                        </div>
+                    </form>
                 </div>
-                <div class="form-group">
-                    <input type="submit" value="Submit" class="btn btn-default" />
-                </div>
-            </form>
+            </div>
         }
-    </div>
-</div>
 
 @if (Model.SubmissionViews.Count > 0)
 {

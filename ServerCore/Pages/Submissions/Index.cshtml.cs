@@ -53,9 +53,9 @@ namespace ServerCore.Pages.Submissions
             }
 
             SubmissionText = submissionText;
-            if (!this.Event.IsAnswerSubmissionActive)
+            if (DateTime.UtcNow < Event.EventBegin)
             {
-                return Page();
+                return NotFound("The event hasn't started yet!");
             }
 
             await SetupContext(puzzleId);
@@ -126,7 +126,7 @@ namespace ServerCore.Pages.Submissions
 
                 AnswerToken = submission.SubmissionText;
             }
-            else if (submission.Response == null)
+            else if (submission.Response == null && Event.IsAnswerSubmissionActive)
             {
                 // We also determine if the puzzle should be set to email-only mode.
                 if (IsPuzzleSubmissionLimitReached(
