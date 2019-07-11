@@ -6,6 +6,7 @@
     var eventPage = Model as ServerCore.ModelBases.EventSpecificPageModel;
     var Event = eventPage?.Event;
     var shouldShowHints = Event != null && !Event.HideHints;
+    var isAdmin = eventPage?.EventRole == ModelBases.EventRole.admin;
 }
 
 <div>
@@ -22,6 +23,10 @@
     @if (shouldShowHints)
     {
         <a asp-page="/Hints/AuthorIndex" asp-route-puzzleId="@puzzleId">Hints Taken</a>@(" |")
+    }
+    @if (isAdmin)
+    {
+        <a asp-page="/Events/Mailer" asp-route-group="NonSolvers" asp-route-puzzleId="@puzzleId">Mail non-solvers</a>@(" |")
     }
     <a asp-page="/Puzzles/Feedback" asp-route-puzzleId="@puzzleId">Feedback</a>
 </div>
