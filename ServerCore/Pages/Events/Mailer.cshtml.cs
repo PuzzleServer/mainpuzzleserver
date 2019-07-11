@@ -54,6 +54,11 @@ namespace ServerCore.Pages.Events
             PuzzleID = puzzleId;
             TeamID = teamId;
 
+            if (!IsPageUsageValid(group, puzzleId, teamId))
+            {
+                return NotFound("Incorrect page usage");
+            }
+
             if (puzzleId != null)
             {
                 Puzzle = await _context.Puzzles.FindAsync(puzzleId);
@@ -70,6 +75,11 @@ namespace ServerCore.Pages.Events
             if (!ModelState.IsValid)
             {
                 return Page();
+            }
+
+            if (!IsPageUsageValid(Group, PuzzleID, TeamID))
+            {
+                return NotFound("Incorrect page usage");
             }
 
             IEnumerable<string> addresses = Enumerable.Empty<string>();
@@ -124,6 +134,27 @@ namespace ServerCore.Pages.Events
             MailHelper.Singleton.SendPlaintextBcc(addresses, MailSubject, MailBody);
 
             return RedirectToPage("./Players");
+        }
+
+        private bool IsPageUsageValid(MailGroup group, int? puzzleId, int? teamId)
+        {
+            if (group == MailGroup.NonSolvers)
+            {
+                if (puzzleId == null || teamId != null)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                // null teamId is valid for the other mail groups; mails everyone in the event
+                if (puzzleId != null)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }
