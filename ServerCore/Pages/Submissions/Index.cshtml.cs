@@ -53,9 +53,9 @@ namespace ServerCore.Pages.Submissions
             }
 
             SubmissionText = submissionText;
-            if (Event.EventBegin > DateTime.UtcNow)
+            if (DateTime.UtcNow < Event.EventBegin)
             {
-                return Page();
+                return NotFound("The event hasn't started yet!");
             }
 
             await SetupContext(puzzleId);

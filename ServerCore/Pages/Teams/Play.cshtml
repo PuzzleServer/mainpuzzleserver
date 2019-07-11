@@ -8,7 +8,7 @@
     // Needs route data - ViewData["PlayRoute"] = "/Teams/Play";
 
     bool unsolvedFilter = Model.StateFilter == PlayModel.PuzzleStateFilter.Unsolved;
-    bool canSubmit = Model.Event.EventBegin < DateTime.UtcNow;
+    bool canSubmit =  DateTime.UtcNow >= Model.Event.EventBegin;
 }
 <style>
     .radioButton {
@@ -25,6 +25,13 @@
 </style>
 
 <h2>Puzzles</h2>
+@if (DateTime.UtcNow > @Model.Event.AnswerSubmissionEnd)
+{
+    <div class="alert alert-warning" role="alert">
+        <h4>The event is over.</h4>
+        <span>You may check answers, but they will not count toward your ranking.</span>
+    </div>
+}
 <div>
     <a asp-page="/Teams/Answers" asp-route-teamId="@Model.TeamID">View All Correct Answers</a>
 </div>
@@ -138,7 +145,7 @@
                         }
                         else
                         {
-                            <text />
+                            <text>Not yet available</text>
                         }
                     </a>
                 </td>

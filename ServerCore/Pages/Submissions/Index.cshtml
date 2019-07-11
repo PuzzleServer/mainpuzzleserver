@@ -70,8 +70,15 @@
                 <h4>Correct</h4>
                 <span>Answer: @Model.AnswerToken</span>
             </div>
+
+            @if (Model.PuzzleState.SolvedTime > Model.Event.AnswerSubmissionEnd)
+            { 
+                <div class="alert alert-warning" role="alert">
+                    <span>You solved this after the event ended and it did not count toward your ranking.</span>
+                </div>
+            }
         }
-        else if (@Model.Event.EventBegin > DateTime.UtcNow)
+        else if (DateTime.UtcNow < Model.Event.EventBegin)
         {
             <div class="col-md-12" style="padding-bottom: 15px;">
                 <h3>This event is not yet in session. No submissions will be accepted at this time.</h3>
@@ -100,10 +107,11 @@
         }
         else
         {
-            if (@Model.Event.AnswerSubmissionEnd < DateTime.UtcNow)
+            if (DateTime.UtcNow > @Model.Event.AnswerSubmissionEnd)
             {
-                <div class="alert alert-danger" role="alert">
-                    <h3>The event is over. You may check answers, but they will not count toward your ranking.</h3>
+                <div class="alert alert-warning" role="alert">
+                    <h4>The event is over.</h4>
+                    <span>You may check answers, but they will not count toward your ranking.</span>
                 </div>
             }
 
