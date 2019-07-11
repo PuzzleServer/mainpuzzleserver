@@ -153,7 +153,6 @@ namespace ServerCore.Helpers
             PuzzleServerContext context,
             Team team,
             bool value)
-
         {
 
             team.IsDisqualified = value;

@@ -47,16 +47,12 @@ Registered Teams: <b>@Model.Teams.Count/@Model.Event.MaxNumberOfTeams</b>, Regis
                 @if (Model.EventRole == ModelBases.EventRole.admin ||
                      Model.EventRole == ModelBases.EventRole.author)
                 {
+                    <td>
                     if (item.IsDisqualified)
                     {
-                        <td>
-                            Disqualified
-                        </td>
+                        <text>Disqualified</text>
                     }
-                    else
-                    {
-                        <td></td>
-                    }
+                    </td>
                 }
             </tr>
         }

@@ -16,7 +16,7 @@
 
     // to: Add the proper support agent as recipient
     mailtoUrl.Append(Model.PuzzleState?.Puzzle.SupportEmailAlias ?? (Model.Event?.ContactEmail ?? "puzzhunt@microsoft.com"));
-    // cc: Cc the team's email address because what if this email account is a random personal one?
+    // CC the team's email address in case the account sending the e-mail is a personal one that's not associated with the event
     if (Model.Team.PrimaryContactEmail != null)
     {
         mailtoUrl.Append("?cc=");
