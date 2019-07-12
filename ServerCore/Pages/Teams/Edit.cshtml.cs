@@ -63,6 +63,12 @@ namespace ServerCore.Pages.Teams
                 return Page();
             }
 
+            // replace the room if an intern event
+            if (Event.IsInternEvent && EventRole != EventRole.admin)
+            {
+                Team.CustomRoom = existingTeam.CustomRoom;
+            }
+
             // Avoid letting the team tamper with their hint coin count
             Team.HintCoinCount = existingTeam.HintCoinCount;
             _context.Entry(existingTeam).State = EntityState.Detached;
