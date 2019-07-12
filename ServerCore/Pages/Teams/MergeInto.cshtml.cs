@@ -75,7 +75,7 @@ namespace ServerCore.Pages.Teams
                 {
                     if (state.SolvedTime != null && mergeIntoStates.TryGetValue(state.PuzzleID, out var mergeIntoState) && mergeIntoState.SolvedTime == null)
                     {
-                        await PuzzleStateHelper.SetSolveStateAsync(_context, Team.Event, mergeIntoState.Puzzle, mergeIntoTeam, state.UnlockedTime);
+                        await PuzzleStateHelper.SetSolveStateAsync(_context, Team.Event, mergeIntoState.Puzzle, mergeIntoTeam, state.SolvedTime);
                     }
                 }
 
