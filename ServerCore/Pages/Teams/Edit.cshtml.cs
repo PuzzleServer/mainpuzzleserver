@@ -63,7 +63,7 @@ namespace ServerCore.Pages.Teams
                 return Page();
             }
 
-            // replace the room if an intern event
+            // keep the room unchanged if an intern event, since interns can't edit their rooms
             if (Event.IsInternEvent && EventRole != EventRole.admin)
             {
                 Team.CustomRoom = existingTeam.CustomRoom;
