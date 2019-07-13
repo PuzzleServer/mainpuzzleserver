@@ -11,11 +11,14 @@
 
 @{
     var mailtoUrl = "mailto:";
-    
+
     // to: Add the proper support agent as recipient
     mailtoUrl += Model.PuzzleState?.Puzzle.SupportEmailAlias ?? (Model.Event?.ContactEmail ?? "puzzhunt@microsoft.com");
     // cc: Cc the team's email address because what if this email account is a random personal one?
-    mailtoUrl += "?cc=" + Uri.EscapeDataString(Model.Team.PrimaryContactEmail);
+    if (!string.IsNullOrEmpty(Model.Team.PrimaryContactEmail))
+    {
+        mailtoUrl += "?cc=" + Uri.EscapeDataString(Model.Team.PrimaryContactEmail);
+    }
 
     // subject: Make this be about this puzzle
     mailtoUrl += "&subject=" + Uri.EscapeDataString("[" + Model.Puzzle.Name + "]");
@@ -101,18 +104,25 @@
         {
             if (Model.DuplicateSubmission)
             {
-            <div class="alert alert-danger" role="alert">
-                <h4>Oops</h4>
-                <span>You've already submitted @Model.SubmissionText!</span>
-            </div>
+                <div class="alert alert-danger" role="alert">
+                    <h4>Oops</h4>
+                    <span>You've already submitted "@Model.SubmissionText!"</span>
+                </div>
+            }
+
+            if (!string.IsNullOrEmpty(Model.AnswerAlertMessage))
+            {
+                <div class="alert alert-danger" role="alert">
+                    <h4>Incorrect</h4>
+                </div>
             }
 
             <form method="post">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group">
                     <label class="control-label">Answer</label>
+                    <br /><span style="font-size:12px">(Submitted answers will automatically be capitalized and stripped of non-alphanumeric characters.)</span><br />
                     <input autofocus name="submissionText" class="form-control" data-val="true" data-val-required="Your answer cannot be empty" />
-                    <span style="font-size:12px">Submitted answers will automatically be capitalized and stripped of non-alphanumeric characters</span><br />
                     @Html.ValidationSummary(true)
                     <span class="text-danger"><span class="field-validation-valid" data-valmsg-for="submissionText" data-valmsg-replace="true"></span></span>
                 </div>

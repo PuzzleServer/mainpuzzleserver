@@ -37,14 +37,8 @@ namespace ServerCore.Pages.Submissions
 
         public Team  Team { get; set; }
 
-        public SortOrder? Sort { get; set; }
-
-        public const SortOrder DefaultSort = SortOrder.TimeDescending;
-
-        public async Task<IActionResult> OnGetAsync(int? puzzleId, int? teamId, SortOrder? sort)
+        public async Task<IActionResult> OnGetAsync(int? puzzleId, int? teamId)
         {
-            Sort = sort;
-
             IQueryable<Submission> submissionsQ = null;
 
             if (puzzleId == null)
@@ -94,6 +88,7 @@ namespace ServerCore.Pages.Submissions
             }
             
             IQueryable<SubmissionView> submissionViewQ = submissionsQ
+                .OrderByDescending(s => s.TimeSubmitted)
                 .Select((s) => new SubmissionView
                 {
                     SubmitterName = s.Submitter.Name,
@@ -111,81 +106,8 @@ namespace ServerCore.Pages.Submissions
                 Team = await _context.Teams.Where(m => m.ID == teamId).FirstOrDefaultAsync();
             }
 
-            switch (sort ?? DefaultSort)
-            {
-                case SortOrder.PlayerAscending:
-                    submissionViewQ.OrderBy(submission => submission.SubmitterName);
-                    break;
-                case SortOrder.PlayerDescending:
-                    submissionViewQ.OrderByDescending(submission => submission.SubmitterName);
-                    break;
-                case SortOrder.TeamAscending:
-                    submissionViewQ.OrderBy(submission => submission.TeamName);
-                    break;
-                case SortOrder.TeamDescending:
-                    submissionViewQ.OrderByDescending(submission => submission.TeamName);
-                    break;
-                case SortOrder.PuzzleAscending:
-                    submissionViewQ.OrderBy(submission => submission.PuzzleName);
-                    break;
-                case SortOrder.PuzzleDescending:
-                    submissionViewQ.OrderByDescending(submission => submission.PuzzleName);
-                    break;
-                case SortOrder.ResponseAscending:
-                    submissionViewQ.OrderBy(submission => submission.ResponseText);
-                    break;
-                case SortOrder.ResponseDescending:
-                    submissionViewQ.OrderByDescending(submission => submission.ResponseText);
-                    break;
-                case SortOrder.SubmissionAscending:
-                    submissionViewQ.OrderBy(submission => submission.SubmissionText);
-                    break;
-                case SortOrder.SubmissionDescending:
-                    submissionViewQ.OrderByDescending(submission => submission.SubmissionText);
-                    break;
-                case SortOrder.TimeAscending:
-                    submissionViewQ.OrderBy(submission => submission.TimeSubmitted);
-                    break;
-                case SortOrder.TimeDescending:
-                    submissionViewQ.OrderByDescending(submission => submission.TimeSubmitted);
-                    break;
-            }
-
             Submissions = await submissionViewQ.ToListAsync();
             return Page();
-        }
-
-        public SortOrder? SortForColumnLink(SortOrder ascendingSort, SortOrder descendingSort)
-        {
-            SortOrder result = ascendingSort;
-
-            if (result == (Sort ?? DefaultSort))
-            {
-                result = descendingSort;
-            }
-
-            if (result == DefaultSort)
-            {
-                return null;
-            }
-
-            return result;
-        }
-
-        public enum SortOrder
-        {
-            PlayerAscending,
-            PlayerDescending,
-            TeamAscending,
-            TeamDescending,
-            PuzzleAscending,
-            PuzzleDescending,
-            ResponseAscending,
-            ResponseDescending,
-            SubmissionAscending,
-            SubmissionDescending,
-            TimeAscending,
-            TimeDescending
         }
     }
 }

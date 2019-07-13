@@ -110,22 +110,22 @@ namespace ServerCore.Pages.Teams
                 });
         }
 
-        private Func<TeamComposition, string> GetSortSelector()
+        private Func<TeamComposition, object> GetSortSelector()
         {
             switch (SortBy)
             {
                 case SortEnum.EmployeeCount:
-                    return teamComp => teamComp.EmployeeCount.ToString();
+                    return teamComp => teamComp.EmployeeCount;
                 case SortEnum.InternCount:
-                    return teamComp => teamComp.InternCount.ToString();
+                    return teamComp => teamComp.InternCount;
                 case SortEnum.NonMicrosoftAndPossibleAliases:
-                    return teamComp => (teamComp.NonMicrosoftCount + teamComp.PossibleEmployeeAliases.Count).ToString();
+                    return teamComp => teamComp.NonMicrosoftCount + teamComp.PossibleEmployeeAliases.Count;
                 case SortEnum.NonMicrosoftCount:
-                    return teamComp => teamComp.NonMicrosoftCount.ToString();
+                    return teamComp => teamComp.NonMicrosoftCount;
                 case SortEnum.PossibleEmployeeAliasas:
-                    return teamComp => teamComp.PossibleEmployeeAliases.Count.ToString();
+                    return teamComp => teamComp.PossibleEmployeeAliases.Count;
                 case SortEnum.Total:
-                    return teamComp => teamComp.Total.ToString();
+                    return teamComp => teamComp.Total;
                 case SortEnum.Title:
                 default:
                     return teamComp => teamComp.TeamName;

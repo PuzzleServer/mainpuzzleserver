@@ -32,6 +32,7 @@ namespace ServerCore.Pages.Teams
 
         public async Task<IActionResult> OnPostAsync()
         {
+            bool canChangeTeamName = CanChangeTeamName();
             if (string.IsNullOrEmpty(Team.PrimaryContactEmail))
             {
                 ModelState.AddModelError("Team.PrimaryContactEmail", "An email is required.");
@@ -55,14 +56,12 @@ namespace ServerCore.Pages.Teams
             {
                 return NotFound();
             }
-
-            // Enforce the name change cutoff
-            if (Team.Name != existingTeam.Name && EventRole != EventRole.admin && !Event.CanChangeTeamName)
+            
+            if (!canChangeTeamName)
             {
-                ModelState.AddModelError("Team.Name", "Team names for this event can no longer be changed by players.");
-                return Page();
+                Team.Name = existingTeam.Name;
             }
-
+            
             // Avoid letting the team tamper with their hint coin count
             Team.HintCoinCount = existingTeam.HintCoinCount;
             _context.Entry(existingTeam).State = EntityState.Detached;
@@ -85,6 +84,10 @@ namespace ServerCore.Pages.Teams
             }
 
             return RedirectToPage("./Details", new { eventId = Event.ID, eventRole = EventRole, teamId = Team.ID });
+        }
+
+        public bool CanChangeTeamName() {
+            return EventRole == EventRole.admin || Event.CanChangeTeamName;
         }
 
         private bool TeamExists(int teamId)

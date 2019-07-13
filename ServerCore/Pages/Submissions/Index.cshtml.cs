@@ -38,6 +38,8 @@ namespace ServerCore.Pages.Submissions
 
         public bool DuplicateSubmission { get; set; }
 
+        public string AnswerAlertMessage { get; set; }
+
         public class SubmissionView
         {
             public Submission Submission { get; set; }
@@ -106,7 +108,7 @@ namespace ServerCore.Pages.Submissions
                 TimeSubmitted = DateTime.UtcNow,
                 Puzzle = PuzzleState.Puzzle,
                 Team = PuzzleState.Team,
-                Submitter = LoggedInUser,
+                Submitter = LoggedInUser
             };
             submission.Response = await _context.Responses.Where(
                 r => r.Puzzle.ID == puzzleId &&
@@ -115,6 +117,7 @@ namespace ServerCore.Pages.Submissions
 
             Submissions.Add(submission);
 
+            AnswerAlertMessage = null;
             // Update puzzle state if submission was correct
             if (submission.Response != null && submission.Response.IsSolution)
             {
@@ -128,6 +131,8 @@ namespace ServerCore.Pages.Submissions
             }
             else if (submission.Response == null)
             {
+                AnswerAlertMessage = "Incorrect";
+
                 // We also determine if the puzzle should be set to email-only mode.
                 if (IsPuzzleSubmissionLimitReached(
                         Event,

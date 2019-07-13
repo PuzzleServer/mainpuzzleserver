@@ -7,7 +7,14 @@
     //Needs route data - ViewData["AuthorRoute"] = "/Teams/Status";
     //Needs route data - ViewData["PlayRoute"] = "/Teams/Edit";
     Layout = "_teamLayout.cshtml";
+
+    bool canChangeTeamName = Model.CanChangeTeamName();
 }
+<style>
+    .disabled {
+        background-color: #EBEBE4;
+    }
+</style>
 
 <h2>@Html.DisplayFor(model => model.Team.Name): Edit</h2>
 <div>
@@ -23,7 +30,14 @@
             <input asp-for="Team.Password" class="hidden" />
             <div class="form-group">
                 <label asp-for="Team.Name" class="control-label">Team name</label>
-                <input asp-for="Team.Name" class="form-control" />
+                @if (canChangeTeamName)
+                {
+                    <input asp-for="Team.Name" class="form-control" />
+                }
+                else
+                {
+                    <input class="form-control" asp-for="Team.Name" value="@Model.Team.Name" readonly />
+                }
                 <span asp-validation-for="Team.Name" class="text-danger"></span>
             </div>
             <!-- TODO: Conditionally show/hide based on event property (not needed for PuzzleHunt)
