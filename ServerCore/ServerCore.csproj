@@ -73,6 +73,9 @@
     <Content Update="Pages\Puzzles\_puzzleManagementLayout.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Pages\Resources\nipd2019\HomePartial.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Pages\Resources\Samples.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
