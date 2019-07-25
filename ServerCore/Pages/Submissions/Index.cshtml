@@ -9,36 +9,41 @@
     ViewData["RoutingPuzzleId"] = ViewContext.RouteData.Values["puzzleId"];
 }
 
+@using System.Text @* for StringBuilder *@
+
 @{
-    var mailtoUrl = "mailto:";
+    var mailtoUrl = new StringBuilder("mailto:");
 
     // to: Add the proper support agent as recipient
-    mailtoUrl += Model.PuzzleState?.Puzzle.SupportEmailAlias ?? (Model.Event?.ContactEmail ?? "puzzhunt@microsoft.com");
-
+    mailtoUrl.Append(Model.PuzzleState?.Puzzle.SupportEmailAlias ?? (Model.Event?.ContactEmail ?? "puzzhunt@microsoft.com"));
+    // CC the team's email address in case the account sending the e-mail is a personal one that's not associated with the event
     if (Model.Team.PrimaryContactEmail != null)
     {
-        // cc: Cc the team's email address because what if this email account is a random personal one?
-        mailtoUrl += "?cc=" + Uri.EscapeDataString(Model.Team.PrimaryContactEmail);
+        mailtoUrl.Append("?cc=");
+        mailtoUrl.Append(Uri.EscapeDataString(Model.Team.PrimaryContactEmail));
     }
 
     // subject: Make this be about this puzzle
-    mailtoUrl += "&subject=" + Uri.EscapeDataString("[" + Model.Puzzle.Name + "]");
+    mailtoUrl.Append("&subject=");
+    mailtoUrl.Append(Uri.EscapeDataString("[" + Model.Puzzle.Name + "]"));
     // subject: Make this be from this team
-    mailtoUrl += Uri.EscapeDataString(" [" + Model.Team.Name + "]");
+    mailtoUrl.Append(Uri.EscapeDataString(" [" + Model.Team.Name + "]"));
 
     if (Model.PuzzleState.IsEmailOnlyMode)
     {
         // request out of email mode
         // subject: Add the Email Mode signifier
-        mailtoUrl += Uri.EscapeDataString(" [⚠EmailMode✉]");
+        mailtoUrl.Append(Uri.EscapeDataString(" [⚠EmailMode✉]"));
         // body: Invite solver to give details
-        mailtoUrl += "&body=" + Uri.EscapeDataString("Use this email to fully explain your thought process so we know you're not randomly spamming attempts! 😇" + Environment.NewLine + Environment.NewLine);
+        mailtoUrl.Append("&body=");
+        mailtoUrl.Append(Uri.EscapeDataString("Use this email to fully explain your thought process so we know you're not randomly spamming attempts! 😇" + Environment.NewLine + Environment.NewLine));
     }
     else
     {
         // request for help
         // body: Invite solver to give details
-        mailtoUrl += "&body=" + Uri.EscapeDataString("The more details you add here, the more helpful the responses you'll get will be! 😇" + Environment.NewLine + Environment.NewLine);
+        mailtoUrl.Append("&body=");
+        mailtoUrl.Append(Uri.EscapeDataString("The more details you add here, the more helpful the responses you'll get will be! 😇" + Environment.NewLine + Environment.NewLine));
     }
 }
 

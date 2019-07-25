@@ -148,5 +148,15 @@ namespace ServerCore.Helpers
         {
             return email.EndsWith("@microsoft.com") && !email.StartsWith("t-");
         }
+
+        public static async Task SetTeamQualificationAsync(
+            PuzzleServerContext context,
+            Team team,
+            bool value)
+        {
+
+            team.IsDisqualified = value;
+            await context.SaveChangesAsync();
+        }
     }
 }
