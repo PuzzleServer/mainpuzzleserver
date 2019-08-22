@@ -10,12 +10,6 @@
 
     bool canChangeTeamName = Model.CanChangeTeamName();
 }
-<style>
-    .disabled {
-        background-color: #EBEBE4;
-    }
-</style>
-
 <h2>@Html.DisplayFor(model => model.Team.Name): Edit</h2>
 <div>
     <a asp-page="./Details" asp-route-teamId="@Model.Team.ID">Cancel</a>
@@ -36,7 +30,7 @@
                 }
                 else
                 {
-                    <input class="form-control" asp-for="Team.Name" value="@Model.Team.Name" readonly />
+                    <input class="form-control disabled-form" asp-for="Team.Name" value="@Model.Team.Name" readonly />
                 }
                 <span asp-validation-for="Team.Name" class="text-danger"></span>
             </div>

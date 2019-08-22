@@ -19,6 +19,10 @@
     {
         mailtoUrl += "?cc=" + Uri.EscapeDataString(Model.Team.PrimaryContactEmail);
     }
+    else
+    {
+        mailtoUrl += "?";
+    }
 
     // subject: Make this be about this puzzle
     mailtoUrl += "&subject=" + Uri.EscapeDataString("[" + Model.Puzzle.Name + "]");
@@ -110,10 +114,17 @@
                 </div>
             }
 
-            if (!string.IsNullOrEmpty(Model.AnswerAlertMessage))
+            if (!string.IsNullOrEmpty(Model.AnswerRedAlertMessage))
             {
                 <div class="alert alert-danger" role="alert">
-                    <h4>Incorrect</h4>
+                    <h4>@Model.AnswerRedAlertMessage</h4>
+                </div>
+            }
+
+            if (!string.IsNullOrEmpty(Model.AnswerYellowAlertMessage))
+            {
+                <div class="alert alert-warning" role="alert">
+                    <h4>@Model.AnswerYellowAlertMessage</h4>
                 </div>
             }
 

@@ -43,6 +43,7 @@ namespace ServerCore.Pages.Teams
             }
 
             ModelState.Remove("Team.Event");
+
             if (!ModelState.IsValid)
             {
                 return Page();
