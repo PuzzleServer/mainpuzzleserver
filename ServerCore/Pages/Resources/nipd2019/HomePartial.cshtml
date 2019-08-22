@@ -1,0 +1,45 @@
+﻿@{
+    var eventPage = Model as ServerCore.ModelBases.EventSpecificPageModel;
+    bool IsRegistered = false;
+    if (eventPage != null)
+    {
+        IsRegistered = await eventPage.IsRegisteredUser();
+    }
+}
+
+<div class="container" id="pd2019-container">
+    <h2 class="pd2019-title">Non-Intern Puzzleday 2019</h2>
+
+    <div class="pd2019-container-root">
+        <div class="pd2019-container-logo">
+            <img class="pd2019-logo" src="~/images/pd2019/pd2019-logo-400px.png" />
+        </div>
+
+        <div class="pd2019-container-card">
+            <h3>WELCOME TO NON-INTERN PUZZLEDAY</h3>
+            <p>Thank you for joining us at the Puzzleday Preserve! We expect that you will have a great time with us on <span class="pd2019-emphasis">August 24 (Saturday)</span>.</p>
+
+            <p>As you know, interest in the Puzzleday Preserve has boomed since we announced the introduction of fantastical creatures. While nobody can honestly forget the ability of our resident penguin singing group to gather crowds, public interest has reached a different level of amazing now that they're joined by dragons and jackalopes. We've gotten so busy preparing for our grand reopening that it's been really difficult keeping everything running smoothly.</p>
+
+            <p>
+                Which is why we thank you for offering your assistance! You and your team of up to 6 puzz-zoologists will be on-site helping out and you have no idea how excited we are to host you.
+            </p>
+
+            <p>
+                The event starts at <b>11AM in the Building 99 lobby</b>. Answer submission will close at <b>5PM</b>. We will have answers posted in the Building 99 lobby immediately afterwards.
+            </p>
+        </div>
+
+        <div class="pd2019-container-card">
+            <h3>New to puzzles?</h3>
+            <p>You might have seen a jigsaw puzzle, a crossword puzzle, or a Sudoku at some point in your life. But wait, there's more! Puzzleday puzzles <span style="text-decoration: line-through">sometimes</span> always dial up the creativity, so you might see some brain-twisty, mind-bendy puzzles... Check out <a asp-page="/EventSpecific/Samples">our sample puzzles</a>!</p>
+        </div>
+
+        <div class="pd2019-container-card">
+            <h3>Looking for a team? Asking for a friend...</h3>
+            <p>Let's say a friend registered a team and set it up so that you can request to join it... well, there's such a feature on the website, so you can!</p>
+
+            <p>Otherwise, it might be a good idea to ask other people you work with, live with, or the "Seattle Puzzlers" group on Facebook.</p>
+        </div>
+    </div>
+</div>

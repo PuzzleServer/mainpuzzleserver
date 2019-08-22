@@ -9,6 +9,38 @@
     Layout = "_teamLayout.cshtml";
 }
 @using Microsoft.AspNetCore.Http.Extensions @* for GetEncodedUrl *@
+@using System.Text @* for StringBuilder *@
+
+@{
+    var mailtoUrl = new StringBuilder("mailto:");
+
+    if (Model.Team.IsDisqualified)
+    {
+        // to: Add the proper support agent as recipient
+        mailtoUrl.Append(Model.Event?.ContactEmail ?? "puzzhunt@microsoft.com");
+        // CC the team's email address in case the account sending the e-mail is a personal one that's not associated with the event
+        if (Model.Team.PrimaryContactEmail != null)
+        {
+            mailtoUrl.Append("?cc=");
+            mailtoUrl.Append(Uri.EscapeDataString(Model.Team.PrimaryContactEmail));
+        }
+
+        // subject: Make this be about this event
+        mailtoUrl.Append("&subject=");
+        mailtoUrl.Append(Uri.EscapeDataString("[" + Model.Event.Name + "]"));
+        // subject: Make this be from this team
+        mailtoUrl.Append(Uri.EscapeDataString(" [" + Model.Team.Name + "]"));
+
+        // request requalification
+        // subject: Add the disqualified signifier
+        mailtoUrl.Append(Uri.EscapeDataString(" [⚠ Team Disqualified ⚠]"));
+        // body: Invite team member to give details
+        mailtoUrl.Append("&body=");
+        mailtoUrl.Append(Uri.EscapeDataString("Use this mail to explain anything you think we need to know."));
+        mailtoUrl.Append(Environment.NewLine);
+        mailtoUrl.Append(Environment.NewLine);
+    }
+}
 
 <!--TODO: Consider moving if other pages use this format-->
 <style>
@@ -27,15 +59,36 @@
 
 <h2>@Html.DisplayFor(model => model.Team.Name) Team</h2>
 
+@if (Model.Team.IsDisqualified)
+{
+    <div class="alert alert-danger" role="alert">
+        Your team has been disqualified from the event. You are welcome to
+        continue solving puzzles for fun, but your team will no longer appear
+        in the final standings and is not eligible for any awards or prizes
+        that the event may offer. If you have any questions, please contact 
+        <a href="@mailtoUrl"> this email</a>.
+    </div>
+}
+
 @if (Model.EventRole != ModelBases.EventRole.author)
 {
     <div>
         <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID">Edit team details</a> |
         @if (Model.EventRole == ModelBases.EventRole.admin)
         {
-            <text><a asp-page="/Events/Mailer" asp-route-group="Players" asp-route-teamId="@Model.Team.ID">Mail Players</a> |</text>
+            <text>
+                <a asp-page="/Events/Mailer" asp-route-group="Players" asp-route-teamId="@Model.Team.ID">Mail Players</a> |
+            </text>
         }
-        <a asp-page="./Delete" asp-route-teamId="@Model.Team.ID">Delete team</a>
+        <a asp-page="./Delete" asp-route-teamId="@Model.Team.ID">Delete team</a> |
+        @if (Model.EventRole == ModelBases.EventRole.admin)
+        {
+            <a asp-page="./Disqualify" 
+               asp-route-teamId="@Model.Team.ID">
+                @(Model.Team.IsDisqualified ? "Requalify Team" : "Disqualify Team")
+            </a>
+        }
+    <br />
     </div>
 }
 

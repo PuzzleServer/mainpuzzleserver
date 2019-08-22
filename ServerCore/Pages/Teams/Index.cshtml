@@ -91,6 +91,9 @@
                 @Html.DisplayNameFor(model => model.Teams.FirstOrDefault().SecondaryPhoneNumber)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.Teams.FirstOrDefault().IsDisqualified)
+            </th>
+            <th>
                 Shortcuts
             </th>
         </tr>
@@ -121,6 +124,12 @@
                     @Html.DisplayFor(modelItem => item.SecondaryPhoneNumber)
                 </td>
                 <td>
+                    @if(item.IsDisqualified)
+                    {
+                        <text>Disqualified</text>
+                    }
+                </td>
+                <td>
                     @if (Model.EventRole == ModelBases.EventRole.admin)
                     {
                         <div class="shortcut-menu-dropdown">
@@ -137,6 +146,7 @@
                                     <a asp-page="/Hints/AuthorIndex" asp-route-teamId="@item.ID">Hints Taken</a><br />
                                 }
                                 ------<br />
+                                <a asp-page="./MergeInto" asp-route-teamId="@item.ID">Merge Into...</a><br/>
                                 <a asp-page="./Delete" asp-route-teamId="@item.ID">Delete</a>
                             </div>
                         </div>

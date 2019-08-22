@@ -57,9 +57,9 @@ namespace ServerCore.Pages.Submissions
             }
 
             SubmissionText = submissionText;
-            if (!this.Event.IsAnswerSubmissionActive)
+            if (DateTime.UtcNow < Event.EventBegin)
             {
-                return Page();
+                return NotFound("The event hasn't started yet!");
             }
 
             await SetupContext(puzzleId);
@@ -139,7 +139,7 @@ namespace ServerCore.Pages.Submissions
                     AnswerYellowAlertMessage = string.Format("Partial Answer: {0}", submission.Response.ResponseText);
                 }
             }
-            else if (submission.Response == null)
+            else if (submission.Response == null && Event.IsAnswerSubmissionActive)
             {
                 AnswerRedAlertMessage = "Incorrect";
 

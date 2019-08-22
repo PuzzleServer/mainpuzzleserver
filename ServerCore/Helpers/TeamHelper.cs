@@ -16,7 +16,7 @@ namespace ServerCore.Helpers
         /// Helper for deleting teams that correctly deletes dependent objects
         /// </summary>
         /// <param name="team">Team to delete</param>
-        public static async Task DeleteTeamAsync(PuzzleServerContext context, Team team)
+        public static async Task DeleteTeamAsync(PuzzleServerContext context, Team team, bool sendEmail = true)
         {
             var memberEmails = await (from teamMember in context.TeamMembers
                                       where teamMember.Team == team
@@ -49,9 +49,12 @@ namespace ServerCore.Helpers
 
             await context.SaveChangesAsync();
 
-            MailHelper.Singleton.SendPlaintextBcc(memberEmails.Union(applicationEmails),
-                $"{team.Event.Name}: Team '{team.Name}' has been deleted",
-                $"Sorry! You can apply to another team if you wish, or create your own.");
+            if (sendEmail)
+            {
+                MailHelper.Singleton.SendPlaintextBcc(memberEmails.Union(applicationEmails),
+                    $"{team.Event.Name}: Team '{team.Name}' has been deleted",
+                    $"Sorry! You can apply to another team if you wish, or create your own.");
+            }
         }
 
         /// <summary>
@@ -144,6 +147,16 @@ namespace ServerCore.Helpers
         public static bool IsMicrosoftNonIntern(string email)
         {
             return email.EndsWith("@microsoft.com") && !email.StartsWith("t-");
+        }
+
+        public static async Task SetTeamQualificationAsync(
+            PuzzleServerContext context,
+            Team team,
+            bool value)
+        {
+
+            team.IsDisqualified = value;
+            await context.SaveChangesAsync();
         }
     }
 }

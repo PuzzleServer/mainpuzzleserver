@@ -1,0 +1,58 @@
+﻿@page "/{eventId}/{eventRole}/Teams/{teamId}/Disqualify"
+@model ServerCore.Pages.Teams.DisqualifyModel
+@{
+    ViewData["Title"] = "Disqualify Team";
+    Layout = "_teamLayout.cshtml";
+}
+
+<h2>@Html.DisplayFor(model => model.Team.Name): Disqualify</h2>
+<div>
+    <a asp-page="./Details" asp-route-teamId="@Model.Team.ID">Cancel</a>
+</div>
+
+@if (@Model.Team.IsDisqualified)
+{
+    <h3>Are you sure you want to undo disqualification of this team?</h3>
+}
+else
+{
+    <h3>Are you sure you want to disqualify this team?</h3>
+}
+
+<div>
+    <hr />
+    <dl>
+        <!-- class="dl-horizontal"> -->
+        <dt>
+            Team name
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Team.Name)
+        </dd>
+    </dl>
+    
+    <form method="post">
+        <input type="hidden" asp-for="Team.ID" />
+        @if (@Model.Team.IsDisqualified)
+        {
+            <text>Team requalification will not send any automatic emails.<br /></text>
+            <button type="submit" asp-page-handler="Requalify">Undo Disqualification</button>
+        }
+        else
+        {
+            <div class="form-group">
+                If you leave the subject field blank, a default email will be sent to the team.<br />
+                <label asp-for="MailSubject" class="control-label"></label>
+                <input asp-for="MailSubject" class="form-control" />
+                <span asp-validation-for="MailSubject" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MailBody" class="control-label"></label>
+                <textarea asp-for="MailBody" class="form-control"></textarea>
+                <span asp-validation-for="MailBody" class="text-danger"></span>
+            </div>
+            <button type="submit" asp-page-handler="Disqualify">Disqualify</button>
+        }
+    </form>
+</div>
+

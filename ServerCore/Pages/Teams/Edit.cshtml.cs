@@ -62,7 +62,13 @@ namespace ServerCore.Pages.Teams
             {
                 Team.Name = existingTeam.Name;
             }
-            
+
+            // keep the room unchanged if an intern event, since interns can't edit their rooms
+            if (Event.IsInternEvent && EventRole != EventRole.admin)
+            {
+                Team.CustomRoom = existingTeam.CustomRoom;
+            }
+
             // Avoid letting the team tamper with their hint coin count
             Team.HintCoinCount = existingTeam.HintCoinCount;
             _context.Entry(existingTeam).State = EntityState.Detached;
