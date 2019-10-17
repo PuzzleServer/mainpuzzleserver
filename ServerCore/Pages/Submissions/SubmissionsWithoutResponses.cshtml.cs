@@ -77,7 +77,7 @@ namespace ServerCore.Pages.Submissions
                 })
                 .OrderByDescending(incorrectCountView => incorrectCountView.NumberOfTimesSubmitted);
 
-            SubmissionCounts = incorrectCounts.ToAsyncEnumerable().ToEnumerable();
+            SubmissionCounts = await incorrectCounts.ToListAsync();
             return Page();
         }
 

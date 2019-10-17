@@ -78,7 +78,7 @@ namespace ServerCore.Pages.Teams
                     throw new Exception("Sort order is not mapped");
             }
 
-            CorrectSubmissions = finalSubmissions.ToList();
+            CorrectSubmissions = await finalSubmissions.ToListAsync();
         }
 
         public SortOrder? SortForColumnLink(SortOrder ascending, SortOrder descending)

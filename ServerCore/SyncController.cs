@@ -360,7 +360,7 @@ namespace ServerCore.Pages
             if (existingAnnotation != null)
             {
                 context.Entry(existingAnnotation).State = EntityState.Detached;
-                UpdateOneAnnotation(response, puzzleId, teamId, key, contents);
+                await UpdateOneAnnotation(response, puzzleId, teamId, key, contents);
             }
             else
             {
@@ -382,7 +382,7 @@ namespace ServerCore.Pages
                     // doesn't think the annotation is in the database.
     
                     context.Entry(annotation).State = EntityState.Detached;
-                    UpdateOneAnnotation(response, puzzleId, teamId, key, contents);
+                    await UpdateOneAnnotation(response, puzzleId, teamId, key, contents);
                 }
             }
         }
