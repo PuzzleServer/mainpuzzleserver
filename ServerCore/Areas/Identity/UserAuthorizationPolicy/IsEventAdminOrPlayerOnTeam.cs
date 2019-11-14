@@ -14,35 +14,31 @@ namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
 
     public class IsEventAdminOrPlayerOnTeamHandler_Admin : AuthorizationHandler<IsEventAdminOrPlayerOnTeamRequirement>
     {
-        private readonly PuzzleServerContext dbContext;
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly AuthorizationHelper authHelper;
 
-        public IsEventAdminOrPlayerOnTeamHandler_Admin(PuzzleServerContext pContext, UserManager<IdentityUser> manager)
+        public IsEventAdminOrPlayerOnTeamHandler_Admin(AuthorizationHelper authHelper)
         {
-            dbContext = pContext;
-            userManager = manager;
+            this.authHelper = authHelper;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext authContext, IsEventAdminOrPlayerOnTeamRequirement requirement)
         {
-            await AuthorizationHelper.IsEventAdminCheck(authContext, dbContext, userManager, requirement);
+            await authHelper.IsEventAdminCheck(authContext, requirement);
         }
     }
 
     public class IsEventAdminOrPlayerOnTeamHandler_Play : AuthorizationHandler<IsEventAdminOrPlayerOnTeamRequirement>
     {
-        private readonly PuzzleServerContext dbContext;
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly AuthorizationHelper authHelper;
 
-        public IsEventAdminOrPlayerOnTeamHandler_Play(PuzzleServerContext pContext, UserManager<IdentityUser> manager)
+        public IsEventAdminOrPlayerOnTeamHandler_Play(AuthorizationHelper authHelper)
         {
-            dbContext = pContext;
-            userManager = manager;
+            this.authHelper = authHelper;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext authContext, IsEventAdminOrPlayerOnTeamRequirement requirement)
         {
-            await AuthorizationHelper.IsPlayerOnTeamCheck(authContext, dbContext, userManager, requirement);
+            await authHelper.IsPlayerOnTeamCheck(authContext, requirement);
         }
     }
 }

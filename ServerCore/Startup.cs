@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ServerCore.Areas.Deployment;
 using ServerCore.Areas.Identity.UserAuthorizationPolicy;
 using ServerCore.DataModel;
+using ServerCore.Areas.Identity;
 
 namespace ServerCore
 {
@@ -41,21 +42,6 @@ namespace ServerCore
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddMvc(config =>
-            //{
-            //    var policy = new AuthorizationPolicyBuilder()
-            //                     .RequireAuthenticatedUser()
-            //                     .Build();
-            //    config.Filters.Add(new AuthorizeFilter(policy));
-            //})
-            //    .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-
-            //services.AddMvc()
-            //    .AddRazorPagesOptions(options =>
-            //    {
-            //        options.Conventions.AuthorizeFolder("/Pages");
-            //        options.Conventions.AuthorizeFolder("/ModelBases");
-            //    });
             services.AddRazorPages()
             .AddRazorPagesOptions(options =>
             {
@@ -105,6 +91,7 @@ namespace ServerCore
             services.AddScoped<IAuthorizationHandler, IsRegisteredForEventHandler_Author>();
             services.AddScoped<IAuthorizationHandler, IsRegisteredForEventHandler_Player>();
             services.AddScoped<BackgroundFileUploader>();
+            services.AddScoped<AuthorizationHelper>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

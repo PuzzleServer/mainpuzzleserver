@@ -15,7 +15,7 @@ namespace ServerCore.Areas.Identity
             builder.ConfigureServices((context, services) =>
             {
                 // Set up to use Azure settings
-                IHostingEnvironment env = context.HostingEnvironment;
+                IWebHostEnvironment env = context.HostingEnvironment;
                 IConfigurationBuilder configBuilder = new ConfigurationBuilder()
                     .SetBasePath(env.ContentRootPath)
                     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
