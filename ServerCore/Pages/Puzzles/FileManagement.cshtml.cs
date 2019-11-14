@@ -236,7 +236,12 @@ namespace ServerCore.Pages.Puzzles
             Dictionary<string, Stream> contents = new Dictionary<string, Stream>();
             foreach(ZipArchiveEntry entry in archive.Entries)
             {
-                string fileName = WebUtility.UrlEncode(Path.GetFileName(entry.Name));
+                if (entry.FullName.EndsWith("/"))
+                {
+                    continue;
+                }
+
+                string fileName = entry.FullName;
                 contents[fileName] = entry.Open();
             }
 
