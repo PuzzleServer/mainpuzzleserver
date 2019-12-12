@@ -241,6 +241,11 @@ namespace ServerCore.Pages.Puzzles
                     continue;
                 }
 
+                if (entry.FullName.StartsWith("/") || entry.FullName.StartsWith("\\") || entry.FullName.Contains(".."))
+                {
+                    throw new ArgumentException();
+                }
+
                 string fileName = entry.FullName;
                 contents[fileName] = entry.Open();
             }
