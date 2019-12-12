@@ -86,7 +86,7 @@ namespace ServerCore.Areas.Identity
             PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
             Event thisEvent = await GetEventFromRoute();
 
-            if (thisEvent != null && await puzzleUser.IsAdminForEvent(dbContext, thisEvent))
+            if (thisEvent != null && puzzleUser != null && await puzzleUser.IsAdminForEvent(dbContext, thisEvent))
             {
                 authContext.Succeed(requirement);
             }

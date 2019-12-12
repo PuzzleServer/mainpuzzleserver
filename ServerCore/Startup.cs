@@ -42,6 +42,13 @@ namespace ServerCore
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Endpoint routing breaks most of our links because it doesn't include "ambient" route parameters
+            // like eventId and eventRole in links -- they'd have to be manually specified everywhere
+            services.AddMvc(options =>
+            {
+                options.EnableEndpointRouting = false;
+            });
+
             services.AddRazorPages()
             .AddRazorPagesOptions(options =>
             {
@@ -125,14 +132,9 @@ namespace ServerCore
             // According to the Identity Scaffolding readme the order of the following calls matters
             // Must be UseStaticFiles, UseAuthentication, UseMvc
             app.UseStaticFiles();
-            app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapRazorPages();
-            });
+            app.UseMvc();
         }
     }
 }
