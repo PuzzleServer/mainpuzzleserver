@@ -1,6 +1,11 @@
 ﻿<!DOCTYPE html>
 
-@{ Layout = "../Shared/_Layout.cshtml"; }
+@{ 
+    Layout = "../Shared/_Layout.cshtml";
+    var eventPage = Model as ServerCore.ModelBases.EventSpecificPageModel;
+    var Event = eventPage?.Event;
+    var shouldShowHints = Event != null && !Event.HideHints;
+}
 
 @if (Model.EventRole == ModelBases.EventRole.admin)
 {
@@ -8,18 +13,25 @@
     <a asp-page="/Teams/Index">Back to team list</a> ||
     <a asp-page="/Teams/Details" asp-route-teamId="@Model.Team.ID">Details</a> |
     <a asp-page="/Submissions/AuthorIndex" asp-route-teamId="@Model.Team.ID">Submissions</a> |
-    <a asp-page="/Hints/AuthorIndex" asp-route-teamId="@Model.Team.ID">Hints Taken</a> |
-    <a asp-page="/Teams/Status" asp-route-teamId="@Model.Team.ID">Status</a>
+    @if (shouldShowHints)
+    {
+        <a asp-page="/Hints/AuthorIndex" asp-route-teamId="@Model.Team.ID">Hints Taken</a>@(" |")
+    }
+    <a asp-page="/Teams/Status" asp-route-teamId="@Model.Team.ID">Status</a> |
+    <a asp-page="/Teams/MergeInto" asp-route-teamId="@Model.Team.ID">Merge Into...</a>
 </div>
 }
 @if (Model.EventRole == ModelBases.EventRole.author)
 {
-    <div>
-        <a asp-page="/Teams/Index">Back to team list</a> ||
-        <a asp-page="/Submissions/AuthorIndex" asp-route-teamId="@Model.Team.ID">Submissions</a> |
-        <a asp-page="/Hints/AuthorIndex" asp-route-teamId="@Model.Team.ID">Hints Taken</a> |
-        <a asp-page="/Teams/Status" asp-route-teamId="@Model.Team.ID">Status</a>
-    </div>
+<div>
+    <a asp-page="/Teams/Index">Back to team list</a> ||
+    <a asp-page="/Submissions/AuthorIndex" asp-route-teamId="@Model.Team.ID">Submissions</a> |
+    @if (shouldShowHints)
+    {
+        <a asp-page="/Hints/AuthorIndex" asp-route-teamId="@Model.Team.ID">Hints Taken</a>@(" |")
+    }
+    <a asp-page="/Teams/Status" asp-route-teamId="@Model.Team.ID">Status</a>
+</div>
 }
 <!--Players don't have other options so they don't need any links-->
 <body>

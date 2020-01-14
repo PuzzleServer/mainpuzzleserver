@@ -6,7 +6,14 @@
     // An array of relative input file paths. Globbing patterns supported
     "inputFiles": [
       "wwwroot/css/site.css"
-    ]
+    ],
+    // Optionally specify minification options
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "includeInProject": true,
+    "sourceMap": false
   },
   {
     "outputFileName": "wwwroot/js/site.min.js",
@@ -18,7 +25,23 @@
       "enabled": true,
       "renameLocals": true
     },
-    // Optionally generate .map file
+    "includeInProject": true,
+    "sourceMap": false
+  },
+  // TODO: Do this in a manner that probably crawls all event-specific CSS
+  // not just this one hard-coded one
+  {
+    "outputFileName": "wwwroot/css/pd2019/styles.min.css",
+    // An array of relative input file paths. Globbing patterns supported
+    "inputFiles": [
+      "wwwroot/css/pd2019/styles.css"
+    ],
+    // Optionally specify minification options
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "includeInProject": true,
     "sourceMap": false
   }
 ]

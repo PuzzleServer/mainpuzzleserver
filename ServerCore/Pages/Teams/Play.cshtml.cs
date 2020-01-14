@@ -25,6 +25,8 @@ namespace ServerCore.Pages.Teams
 
         public IList<PuzzleView> PuzzleViews { get; set; }
 
+        public PuzzleStateFilter? StateFilter { get; set; }
+
         public int TeamID { get; set; }
 
         public SortOrder? Sort { get; set; }
@@ -35,7 +37,7 @@ namespace ServerCore.Pages.Teams
 
         public bool AllowFeedback { get; set; }
 
-        public async Task OnGetAsync(SortOrder? sort, int teamId)
+        public async Task OnGetAsync(SortOrder? sort, int teamId, PuzzleStateFilter? stateFilter)
         {
             TeamID = teamId;
             Team myTeam = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
@@ -49,6 +51,7 @@ namespace ServerCore.Pages.Teams
                 throw new Exception("Not currently registered for a team");
             }
             this.Sort = sort;
+            this.StateFilter = stateFilter;
 
             ShowAnswers = Event.AnswersAvailableBegin <= DateTime.UtcNow;
             AllowFeedback = Event.AllowFeedback;
@@ -65,13 +68,14 @@ namespace ServerCore.Pages.Teams
 
             // all puzzle states for this team that are unlocked (note: IsUnlocked bool is going to harm perf, just null check the time here)
             // Note that it's OK if some puzzles do not yet have a state record; those puzzles are clearly still locked and hence invisible.
-            var stateForTeamQ = _context.PuzzleStatePerTeam.Where(state => state.TeamID == this.TeamID && state.UnlockedTime != null);
+            // All puzzles will show if all answers have been released)
+            var stateForTeamQ = _context.PuzzleStatePerTeam.Where(state => state.TeamID == this.TeamID && (ShowAnswers || state.UnlockedTime != null));
 
             // join 'em (note: just getting all properties for max flexibility, can pick and choose columns for perf later)
             // Note: EF gotcha is that you have to join into anonymous types in order to not lose valuable stuff
             var visiblePuzzlesQ = from Puzzle puzzle in puzzlesInEventQ
                                   join PuzzleStatePerTeam pspt in stateForTeamQ on puzzle.ID equals pspt.PuzzleID
-                                  select new PuzzleView { ID = puzzle.ID, Group = puzzle.Group, OrderInGroup = puzzle.OrderInGroup, Name = puzzle.Name, CustomUrl = puzzle.CustomURL, Errata = puzzle.Errata, SolvedTime = pspt.SolvedTime };
+                                  select new PuzzleView { ID = puzzle.ID, Group = puzzle.Group, OrderInGroup = puzzle.OrderInGroup, Name = puzzle.Name, CustomUrl = puzzle.CustomURL, Errata = puzzle.Errata, SolvedTime = pspt.SolvedTime, PieceMetaUsage = puzzle.PieceMetaUsage };
 
             switch (sort ?? DefaultSort)
             {
@@ -82,10 +86,10 @@ namespace ServerCore.Pages.Teams
                     visiblePuzzlesQ = visiblePuzzlesQ.OrderByDescending(pv => pv.Name);
                     break;
                 case SortOrder.GroupAscending:
-                    visiblePuzzlesQ = visiblePuzzlesQ.OrderBy(pv => pv.Group).ThenBy(pv => pv.OrderInGroup);
+                    visiblePuzzlesQ = visiblePuzzlesQ.OrderBy(pv => pv.Group).ThenBy(pv => pv.OrderInGroup).ThenBy(pv => pv.Name);
                     break;
                 case SortOrder.GroupDescending:
-                    visiblePuzzlesQ = visiblePuzzlesQ.OrderByDescending(pv => pv.Group).ThenByDescending(pv => pv.OrderInGroup);
+                    visiblePuzzlesQ = visiblePuzzlesQ.OrderByDescending(pv => pv.Group).ThenByDescending(pv => pv.OrderInGroup).ThenByDescending(pv => pv.Name);
                     break;
                 case SortOrder.SolveAscending:
                     visiblePuzzlesQ = visiblePuzzlesQ.OrderBy(pv => pv.SolvedTime ?? DateTime.MaxValue);
@@ -97,13 +101,18 @@ namespace ServerCore.Pages.Teams
                     throw new ArgumentException($"unknown sort: {sort}");
             }
 
+            if (this.StateFilter == PuzzleStateFilter.Unsolved)
+            {
+                visiblePuzzlesQ = visiblePuzzlesQ.Where(puzzles => puzzles.SolvedTime == null);
+            }
+
             PuzzleViews = await visiblePuzzlesQ.ToListAsync();
 
             Dictionary<int, ContentFile> files = await (from file in _context.ContentFiles
                                                         where file.Event == Event && file.FileType == ContentFileType.Puzzle
                                                         select file).ToDictionaryAsync(file => file.PuzzleID);
 
-            foreach(var puzzleView in PuzzleViews)
+            foreach (var puzzleView in PuzzleViews)
             {
                 files.TryGetValue(puzzleView.ID, out ContentFile content);
                 puzzleView.Content = content;
@@ -112,8 +121,8 @@ namespace ServerCore.Pages.Teams
             if (ShowAnswers)
             {
                 Dictionary<int, ContentFile> answers = await (from file in _context.ContentFiles
-                                                            where file.Event == Event && file.FileType == ContentFileType.Answer
-                                                            select file).ToDictionaryAsync(file => file.PuzzleID);
+                                                              where file.Event == Event && file.FileType == ContentFileType.Answer
+                                                              select file).ToDictionaryAsync(file => file.PuzzleID);
 
                 foreach (var puzzleView in PuzzleViews)
                 {
@@ -151,6 +160,7 @@ namespace ServerCore.Pages.Teams
             public DateTime? SolvedTime { get; set; }
             public ContentFile Content { get; set; }
             public ContentFile Answer { get; set; }
+            public PieceMetaUsage PieceMetaUsage { get; set; }
         }
 
         public enum SortOrder
@@ -161,6 +171,12 @@ namespace ServerCore.Pages.Teams
             GroupDescending,
             SolveAscending,
             SolveDescending
+        }
+
+        public enum PuzzleStateFilter
+        {
+            All,
+            Unsolved
         }
     }
 }

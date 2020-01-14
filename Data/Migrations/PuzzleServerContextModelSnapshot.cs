@@ -15,7 +15,7 @@ namespace Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.8-servicing-32085")
+                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -250,6 +250,8 @@ namespace Data.Migrations
                     b.Property<string>("ContactEmail");
 
                     b.Property<DateTime>("EventBegin");
+
+                    b.Property<bool>("HideHints");
 
                     b.Property<string>("HomePartial");
 
@@ -486,6 +488,8 @@ namespace Data.Migrations
 
                     b.Property<string>("Group");
 
+                    b.Property<bool>("HasDataConfirmation");
+
                     b.Property<int>("HintCoinsForSolve");
 
                     b.Property<bool>("HintsAreCumulative");
@@ -512,6 +516,8 @@ namespace Data.Migrations
                         .IsRequired();
 
                     b.Property<int>("OrderInGroup");
+
+                    b.Property<int>("PieceMetaUsage");
 
                     b.Property<int>("PuzzleVersion");
 
@@ -571,6 +577,8 @@ namespace Data.Migrations
 
                     b.HasIndex("TeamID");
 
+                    b.HasIndex("TeamID", "SolvedTime");
+
                     b.ToTable("PuzzleStatePerTeam");
                 });
 
@@ -588,6 +596,8 @@ namespace Data.Migrations
                         .IsRequired();
 
                     b.Property<bool>("IsGlobalAdmin");
+
+                    b.Property<bool>("MayBeAdminOrAuthor");
 
                     b.Property<string>("Name");
 
@@ -656,9 +666,10 @@ namespace Data.Migrations
 
                     b.HasIndex("SubmitterID");
 
-                    b.HasIndex("TeamID");
-
                     b.HasIndex("TeamID1");
+
+                    b.HasIndex("TeamID", "PuzzleID", "SubmissionText")
+                        .IsUnique();
 
                     b.ToTable("Submissions");
                 });
@@ -703,6 +714,8 @@ namespace Data.Migrations
                     b.Property<int>("HintCoinCount");
 
                     b.Property<int>("HintCoinsUsed");
+
+                    b.Property<bool>("IsDisqualified");
 
                     b.Property<bool>("IsLookingForTeammates");
 

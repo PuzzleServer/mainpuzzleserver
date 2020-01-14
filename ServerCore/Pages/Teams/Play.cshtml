@@ -6,22 +6,65 @@
     ViewData["AdminRoute"] = "/Puzzles/Index";
     ViewData["AuthorRoute"] = "/Puzzles/Index";
     // Needs route data - ViewData["PlayRoute"] = "/Teams/Play";
+
+    bool unsolvedFilter = Model.StateFilter == PlayModel.PuzzleStateFilter.Unsolved;
+    bool canSubmit =  DateTime.UtcNow >= Model.Event.EventBegin;
 }
+<style>
+    .radioButton {
+        padding: 0px 5px;
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .radioButton:hover {
+        color: inherit;
+        text-decoration: none;
+        cursor: pointer;
+    }
+</style>
 
 <h2>Puzzles</h2>
+@if (DateTime.UtcNow > @Model.Event.AnswerSubmissionEnd)
+{
+    <div class="alert alert-warning" role="alert">
+        <h4>The event is over.</h4>
+        <span>You may check answers, but they will not count toward your ranking.</span>
+    </div>
+}
 <div>
     <a asp-page="/Teams/Answers" asp-route-teamId="@Model.TeamID">View All Correct Answers</a>
 </div>
+<br/>
+<div>
+    <a class="radioButton" asp-page="./Play" asp-route-teamId="@Model.TeamID" asp-route-sort="@Model.Sort" asp-route-stateFilter="@PlayModel.PuzzleStateFilter.All">
+        <input id="StateFilter" name="StateFilter" value="All" type="radio" @(unsolvedFilter ? "" : "checked")> All
+    </a>
+    <a class="radioButton" asp-page="./Play" asp-route-teamId="@Model.TeamID" asp-route-sort="@Model.Sort" asp-route-stateFilter="@PlayModel.PuzzleStateFilter.Unsolved">
+        <input id="StateFilter" name="StateFilter" value="Unsolved" type="radio" @(unsolvedFilter ? "checked" : "")> Unsolved
+    </a>
+</div>
+<br/>
+    <a asp-page="/Events/FastestSolves"
+       asp-route-sort="CountDescending"
+       asp-route-stateFilter="Unsolved">
+
+        Feeling stuck?
+    </a>
+<br/>
+    The link above will take you to a page where you can view puzzles, sorted by how many teams have solved them.
+<br/>
+<br/>
 <table class="table">
     <thead>
         <tr>
             <th>
-                <a asp-page="./Play" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(PlayModel.SortOrder.GroupAscending, PlayModel.SortOrder.GroupDescending))">
+                <a asp-page="./Play" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(PlayModel.SortOrder.GroupAscending, PlayModel.SortOrder.GroupDescending))" asp-route-stateFilter="@Model.StateFilter">
                     @Html.DisplayNameFor(model => model.PuzzleViews[0].Group)
                 </a>
             </th>
             <th>
-                <a asp-page="./Play" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(PlayModel.SortOrder.PuzzleAscending, PlayModel.SortOrder.PuzzleDescending))">
+                <a asp-page="./Play" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(PlayModel.SortOrder.PuzzleAscending, PlayModel.SortOrder.PuzzleDescending))" asp-route-stateFilter="@Model.StateFilter">
                     Puzzle
                 </a>
             </th>
@@ -32,82 +75,94 @@
                 </th>
             }
             <th>
-                <a asp-page="./Play" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(PlayModel.SortOrder.SolveAscending, PlayModel.SortOrder.SolveDescending))">
+                <a asp-page="./Play" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(PlayModel.SortOrder.SolveAscending, PlayModel.SortOrder.SolveDescending))" asp-route-stateFilter="@Model.StateFilter">
                     Solve
                 </a>
             </th>
-            <th>
-                Hints
-            </th>
+            @if (!Model.Event.HideHints)
+            {
+                <th>
+                    Hints
+                </th>
+            }
             @if (Model.AllowFeedback)
             {
-            <th>
-                Feedback
-            </th>
+                <th>
+                    Feedback
+                </th>
             }
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.PuzzleViews) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Group)
-            </td>
-            <td>
-                @if (!string.IsNullOrWhiteSpace(item.Errata))
-                {
-                <text>&#x26A0; </text>
-                }
-                
-                @if (item.CustomUrl != null)
-                {
-                <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.CustomUrl, item.ID, Model.Event.ID)" target="_blank">@item.Name</a>
-                }
-                else if (item.Content != null)
-                {
-                @Html.ActionLink(item.Name, "Index", "Files", new { eventId = Model.Event.ID, filename = item.Content.ShortName }, new { target = "_blank" })
-                }
-                else
-                {
-                @Html.DisplayFor(modelItem => item.Name)
-                }
-            </td>
-            @if (Model.ShowAnswers)
-            {
+        @foreach (var item in Model.PuzzleViews)
+        {
+            <tr>
                 <td>
-                    @if (item.Answer != null)
-                    {
-                        @Html.ActionLink("View answer", "Index", "Files", new { eventId = Model.Event.ID, filename = item.Answer.ShortName }, new { target = "_blank" })
-                    }
+                    @Html.DisplayFor(modelItem => item.Group)
                 </td>
-            }
-            <td>
-                <a asp-page="/Submissions/Index" asp-route-puzzleId="@item.ID">
-                    @if (item.SolvedTime != null)
+                <td>
+                    @if (!string.IsNullOrWhiteSpace(item.Errata))
                     {
-                        <text>Solved on </text>@Html.Raw(Model.LocalTime(item.SolvedTime))
+                        <text>&#x26A0; </text>
                     }
-                    else if (@Model.Event.IsAnswerSubmissionActive)
+
+                    @if (item.CustomUrl != null)
                     {
-                        <text>Submit Answer</text>
+                        <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.CustomUrl, item.ID, Model.Event.ID)" target="_blank">@item.Name</a>
+                    }
+                    else if (item.Content != null)
+                    {
+                        @Html.ActionLink(item.Name, "Index", "Files", new { eventId = Model.Event.ID, filename = item.Content.ShortName }, new { target = "_blank" })
                     }
                     else
                     {
-                        <text>See past submissions</text>
+                        @Html.DisplayFor(modelItem => item.Name)
                     }
-                </a>
-            </td>
-            <td>
-                <a asp-page="./Hints" asp-route-puzzleid="@item.ID" asp-route-teamId="@Model.TeamID">Hints</a>
-            </td>
-            @if (Model.AllowFeedback)
-            {
-            <td>
-                <a asp-Page="/Puzzles/SubmitFeedback" asp-route-puzzleid="@item.ID">Submit feedback</a>
-            </td>
-            }
-        </tr>
-    }
+
+                    @if (item.PieceMetaUsage != DataModel.PieceMetaUsage.None)
+                    {
+                        <text>(<a asp-page="/Pieces/SimpleMeta" asp-route-puzzleId="@item.ID">Meta Pieces</a>)</text>
+                    }
+                </td>
+                @if (Model.ShowAnswers)
+                {
+                    <td>
+                        @if (item.Answer != null)
+                        {
+                            @Html.ActionLink("View answer", "Index", "Files", new { eventId = Model.Event.ID, filename = item.Answer.ShortName }, new { target = "_blank" })
+                        }
+                    </td>
+                }
+                <td>
+                    <a asp-page="/Submissions/Index" asp-route-puzzleId="@item.ID">
+                        @if (item.SolvedTime != null)
+                        {
+                            <text>Solved on </text>@Html.Raw(Model.LocalTime(item.SolvedTime))
+                        }
+                        else if (canSubmit)
+                        {
+                            <text>Submit Answer</text>
+                        }
+                        else
+                        {
+                            <text>Not yet available</text>
+                        }
+                    </a>
+                </td>
+                @if (!Model.Event.HideHints)
+                {
+                    <td>
+                        <a asp-page="./Hints" asp-route-puzzleid="@item.ID" asp-route-teamId="@Model.TeamID">Hints</a>
+                    </td>
+                }
+                @if (Model.AllowFeedback)
+                {
+                    <td>
+                        <a asp-Page="/Puzzles/SubmitFeedback" asp-route-puzzleid="@item.ID">Submit feedback</a>
+                    </td>
+                }
+            </tr>
+        }
     </tbody>
 </table>
 

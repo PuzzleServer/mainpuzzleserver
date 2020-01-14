@@ -32,7 +32,7 @@ namespace ServerCore.Pages.Teams
                 return Challenge();
             }
 
-            if (EventRole != EventRole.play)
+            if (EventRole != EventRole.play || IsNotAllowedInInternEvent())
             {
                 return Forbid();
             }

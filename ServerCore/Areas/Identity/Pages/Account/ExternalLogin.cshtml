@@ -44,11 +44,6 @@
                 <input asp-for="Input.VisibleToOthers" class="form-control" />
                 <span asp-validation-for="Input.VisibleToOthers" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Input.TShirtSize"></label>
-                <input asp-for="Input.TShirtSize" class="form-control" />
-                <span asp-validation-for="Input.TShirtSize" class="text-danger"></span>
-            </div>
             @* NOTE: If you add more properties here, please add them to Edit.cshtml as well! *@
             <input type="hidden" asp-for="Input.IdentityUserId" />
             <button type="submit" class="btn btn-default">Register</button>

@@ -7,12 +7,13 @@
     ViewData["PlayRoute"] = "/EventSpecific/Index";
 }
 
-<h2>Mail to: @(Model.Team?.Name ?? "All") @Model.Group</h2>
+<h2>Mail to: @(Model.Team?.Name ?? "All") @Model.Group @(Model.Puzzle == null ? null : $"of {Model.Puzzle.Name}")</h2>
 
 <form method="post">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <input type="hidden" asp-for="Group" />
     <input type="hidden" asp-for="TeamID" />
+    <input type="hidden" asp-for="PuzzleID" />
     <div class="form-group">
         <label asp-for="MailSubject" class="control-label"></label>
         <input asp-for="MailSubject" class="form-control" />

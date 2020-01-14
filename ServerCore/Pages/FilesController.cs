@@ -25,7 +25,7 @@ namespace ServerCore.Pages
             this.userManager = userManager;
         }
 
-        [Route("{eventId}/Files/{filename}")]
+        [Route("{eventId}/Files/{*filename}")]
         public async Task<IActionResult> Index(string eventId, string filename)
         {
             Event eventObj = await EventHelper.GetEventFromEventId(context, eventId);

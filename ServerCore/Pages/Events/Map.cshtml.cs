@@ -25,8 +25,13 @@ namespace ServerCore.Pages.Events
                         UserManager<IdentityUser> userManager)
             : base(serverContext, userManager) { }
 
-        public async Task<IActionResult> OnGetAsync()
+        public async Task<IActionResult> OnGetAsync(int? refresh)
         {
+            if (refresh != null)
+            {
+                Refresh = refresh;
+            }
+
             // get the puzzles and teams
             List<PuzzleStats> puzzles;
 
@@ -99,8 +104,11 @@ namespace ServerCore.Pages.Events
                 }
             }
 
-            // sort puzzles by solve count, add the sort index to the lookup
-            puzzles = puzzles.OrderByDescending(p => p.SolveCount)
+            // sort puzzles by group, then solve count, add the sort index to the lookup
+            // but put non-puzzles to the end
+            puzzles = puzzles.OrderByDescending(p => p.Puzzle.IsPuzzle)
+                .ThenByDescending(p => p.Puzzle.Group)
+                .ThenBy(p => p.SolveCount)
                 .ThenBy(p => p.Puzzle.Name)
                 .ToList();
 

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -23,19 +24,20 @@ namespace ServerCore.ModelBases
         [ModelBinder(typeof(RoleBinder))]
         public EventRole EventRole { get; set; }
 
-        private PuzzleUser loggedInUser;
+        public int? Refresh { get; set; }
 
-        public PuzzleUser LoggedInUser
+        /// <summary>
+        /// Runs before page actions
+        /// </summary>
+        public override async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
         {
-            get
-            {
-                if (loggedInUser == null)
-                {
-                    loggedInUser = PuzzleUser.GetPuzzleUserForCurrentUser(_context, User, userManager).Result;
-                }
-                return loggedInUser;
-            }
+            LoggedInUser = await PuzzleUser.GetPuzzleUserForCurrentUser(_context, User, userManager);
+
+            // Required to have the rest of page execution occur
+            await next.Invoke();
         }
+
+        public PuzzleUser LoggedInUser { get; private set; }
 
         protected readonly PuzzleServerContext _context;
         private readonly UserManager<IdentityUser> userManager;
@@ -62,6 +64,16 @@ namespace ServerCore.ModelBases
             return isRegisteredUser.Value;
         }
 
+        /// <summary>
+        /// Checks whether or not it is an intern event and that the logged in user is allowed in it
+        /// </summary>
+        /// <returns>True if it is an intern event and the logged in user is allowed in</returns>
+        public bool IsNotAllowedInInternEvent()
+        {
+            return Event.IsInternEvent
+                && TeamHelper.IsMicrosoftNonIntern(LoggedInUser.Email)
+                && EventRole != EventRole.admin;
+        }
 
         private bool? isEventAuthor;
         public async Task<bool> IsEventAuthor()

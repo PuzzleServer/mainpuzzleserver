@@ -31,13 +31,15 @@ namespace ServerCore.Pages.Events
                 .Where(p => p.Event == Event && p.IsPuzzle)
                 .ToDictionaryAsync(p => p.ID, p => new { p.SolveValue, p.IsCheatCode, p.IsFinalPuzzle });
 
+            DateTime submissionEnd = Event.AnswerSubmissionEnd;
             var stateData = await PuzzleStateHelper.GetSparseQuery(_context, this.Event, null, null)
-                .Where(pspt => pspt.SolvedTime != null)
+                .Where(pspt => pspt.SolvedTime != null && pspt.SolvedTime <= submissionEnd)
                 .Select(pspt => new { pspt.PuzzleID, pspt.TeamID, pspt.SolvedTime })
                 .ToListAsync();
 
+            // Hide disqualified teams from the standings page.
             var teams = await _context.Teams
-                .Where(t => t.Event == Event)
+                .Where(t => t.Event == Event && t.IsDisqualified == false)
                 .ToListAsync();
 
             Dictionary<int, TeamStats> teamStats = new Dictionary<int, TeamStats>(teams.Count);

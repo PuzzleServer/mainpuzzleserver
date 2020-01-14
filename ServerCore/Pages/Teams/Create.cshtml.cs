@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using ServerCore.Areas.Identity;
 using ServerCore.DataModel;
+using ServerCore.Helpers;
 using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Teams
@@ -26,7 +27,9 @@ namespace ServerCore.Pages.Teams
                 return Challenge();
             }
 
-            if (EventRole != EventRole.play && EventRole != EventRole.admin)
+            if ((EventRole != EventRole.play && EventRole != EventRole.admin)
+                || IsNotAllowedInInternEvent()
+                || (EventRole == EventRole.admin && !await LoggedInUser.IsAdminForEvent(_context, Event)))
             {
                 return Forbid();
             }
@@ -34,11 +37,6 @@ namespace ServerCore.Pages.Teams
             if (EventRole == EventRole.play && GetTeamId().Result != -1)
             {
                 return NotFound("You are already on a team and cannot create a new one.");
-            }
-
-            if (EventRole == EventRole.admin && !await LoggedInUser.IsAdminForEvent(_context, Event))
-            {
-                return Forbid();
             }
 
             if (!Event.IsTeamRegistrationActive && EventRole != EventRole.admin)
@@ -64,7 +62,8 @@ namespace ServerCore.Pages.Teams
                 return NotFound();
             }
 
-            if (EventRole == EventRole.admin && !await LoggedInUser.IsAdminForEvent(_context, Event))
+            if ((EventRole == EventRole.admin && !await LoggedInUser.IsAdminForEvent(_context, Event))
+                || IsNotAllowedInInternEvent())
             {
                 return Forbid();
             }
@@ -95,7 +94,7 @@ namespace ServerCore.Pages.Teams
 
             using (IDbContextTransaction transaction = _context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable))
             {
-                if (await _context.Teams.Where((t) => t.Event == Event).CountAsync() >= Event.MaxNumberOfTeams)
+                if (EventRole != EventRole.admin && await _context.Teams.Where((t) => t.Event == Event).CountAsync() >= Event.MaxNumberOfTeams)
                 {
                     return NotFound("Registration is full. No further teams may be created at the present time.");
                 }

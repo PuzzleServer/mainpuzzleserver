@@ -19,6 +19,8 @@ namespace ServerCore.Pages.Puzzles
     [Authorize(Policy = "IsEventAdminOrEventAuthor")]
     public class FeedbackModel : EventSpecificPageModel
     {
+        public const int FeedbackMax = Feedback.MaxRating;
+
         public FeedbackModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
         }
@@ -28,14 +30,15 @@ namespace ServerCore.Pages.Puzzles
             public Puzzle Puzzle { get; set; }
             public Feedback Feedback { get; set; }
             public PuzzleUser Submitter { get; set; }
+            public string TeamName { get; set; }
         }
 
         public IList<FeedbackView> Feedbacks { get; set; }
         public string PuzzleName { get; set; }
-        [DisplayFormat(DataFormatString = "{0:n2}", ApplyFormatInEditMode = true)]
-        public double FunScore;
-        [DisplayFormat(DataFormatString = "{0:n2}", ApplyFormatInEditMode = true)]
-        public double DiffScore;
+        [DisplayFormat(DataFormatString = "{0:n2}")]
+        public double FunScore { get; set; }
+        [DisplayFormat(DataFormatString = "{0:n2}")]
+        public double DiffScore { get; set; }
 
         /// <summary>
         /// Gets the feedback and puzzle associated with the given ID
@@ -59,7 +62,14 @@ namespace ServerCore.Pages.Puzzles
                 feedbackRows = from feedback in _context.Feedback
                                join Puzzle puzzle in puzzles on feedback.Puzzle equals puzzle
                                join PuzzleUser submitter in _context.PuzzleUsers on feedback.Submitter equals submitter
-                               select new FeedbackView() { Puzzle = puzzle, Feedback = feedback, Submitter = submitter };
+                               join TeamMembers teamMember in _context.TeamMembers on submitter.ID equals teamMember.Member.ID
+                               select new FeedbackView()
+                               {
+                                   Puzzle = puzzle,
+                                   Feedback = feedback,
+                                   Submitter = submitter,
+                                   TeamName = teamMember.Team.Name
+                               };
             }
             else
             {
@@ -81,7 +91,14 @@ namespace ServerCore.Pages.Puzzles
                 feedbackRows = from feedback in _context.Feedback
                                join PuzzleUser submitter in _context.PuzzleUsers on feedback.Submitter equals submitter
                                where feedback.Puzzle == puzzle
-                               select new FeedbackView() { Puzzle = puzzle, Feedback = feedback, Submitter = submitter };
+                               join TeamMembers teamMember in _context.TeamMembers on submitter.ID equals teamMember.Member.ID
+                               select new FeedbackView()
+                               {
+                                   Puzzle = puzzle,
+                                   Feedback = feedback,
+                                   Submitter = submitter,
+                                   TeamName = teamMember.Team.Name
+                               };
             }
 
             Feedbacks = await feedbackRows.ToListAsync();

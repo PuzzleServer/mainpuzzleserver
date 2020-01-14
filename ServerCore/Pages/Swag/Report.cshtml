@@ -8,6 +8,8 @@
     ViewData["PlayRoute"] = "../Swag/Report";
 }
 
+<a asp-page="/Teams/Index">Back to team list</a>
+<br/>
 <h2>Lunch and T-Shirt Report</h2>
 
 <table class="table">
@@ -18,6 +20,9 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.SwagViews[0].PlayerName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SwagViews[0].PlayerEmail)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.SwagViews[0].Lunch)
@@ -39,6 +44,9 @@
             </td>
             <td>
                 @Html.DisplayFor(model => item.PlayerName)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.PlayerEmail)
             </td>
             <td>
                 @Html.DisplayFor(model => item.Lunch)

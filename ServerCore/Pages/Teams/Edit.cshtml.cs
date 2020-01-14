@@ -46,6 +46,7 @@ namespace ServerCore.Pages.Teams
             {
                 return Page();
             }
+            Team.EventID = Event.ID;
 
             Team existingTeam = await (from team in _context.Teams
                                 where team.ID == Team.ID
@@ -53,6 +54,19 @@ namespace ServerCore.Pages.Teams
             if (existingTeam == null)
             {
                 return NotFound();
+            }
+
+            // Enforce the name change cutoff
+            if (Team.Name != existingTeam.Name && EventRole != EventRole.admin && !Event.CanChangeTeamName)
+            {
+                ModelState.AddModelError("Team.Name", "Team names for this event can no longer be changed by players.");
+                return Page();
+            }
+
+            // keep the room unchanged if an intern event, since interns can't edit their rooms
+            if (Event.IsInternEvent && EventRole != EventRole.admin)
+            {
+                Team.CustomRoom = existingTeam.CustomRoom;
             }
 
             // Avoid letting the team tamper with their hint coin count

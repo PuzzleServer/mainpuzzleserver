@@ -22,11 +22,11 @@ namespace ServerCore.Pages.Submissions
 
         public PuzzleStatePerTeam PuzzleState { get; set; }
 
-        [BindProperty]
-        [Required]
         public string SubmissionText { get; set; }
 
-        public IList<Submission> Submissions { get; set; }
+        private IList<Submission> Submissions { get; set; }
+
+        public List<SubmissionView> SubmissionViews { get; set; }
 
         public Puzzle Puzzle { get; set; }
 
@@ -36,16 +36,43 @@ namespace ServerCore.Pages.Submissions
 
         public IList<Puzzle> PuzzlesCausingGlobalLockout { get; set; }
 
-        public async Task<IActionResult> OnPostAsync(int puzzleId)
+        public bool DuplicateSubmission { get; set; }
+
+        public class SubmissionView
         {
-            if (!this.Event.IsAnswerSubmissionActive)
+            public Submission Submission { get; set; }
+            public Response Response { get; set; }
+            public string SubmitterName { get; set; }
+        }
+
+        public async Task<IActionResult> OnPostAsync(int puzzleId, string submissionText)
+        {
+            if (String.IsNullOrWhiteSpace(submissionText))
             {
-                return RedirectToPage("/Submissions/Index", new { puzzleid = puzzleId });
+                ModelState.AddModelError("submissionText", "Your answer cannot be empty");
+            }
+
+            SubmissionText = submissionText;
+            if (DateTime.UtcNow < Event.EventBegin)
+            {
+                return NotFound("The event hasn't started yet!");
             }
 
             await SetupContext(puzzleId);
 
             if (!ModelState.IsValid)
+            {
+                return Page();
+            }
+            
+            // Don't allow submissions if the team is locked out.
+            if (PuzzleState.IsTeamLockedOut)
+            {
+                return Page();
+            }
+
+            // Don't allow submissions if team is in email only mode.
+            if (PuzzleState.IsEmailOnlyMode)
             {
                 return Page();
             }
@@ -56,10 +83,26 @@ namespace ServerCore.Pages.Submissions
                 return Page();
             }
 
+            // Don't accept posted submissions when a puzzle is causing lockout
+            if (PuzzlesCausingGlobalLockout.Count != 0 && !PuzzlesCausingGlobalLockout.Contains(Puzzle))
+            {
+                return Page();
+            }
+
+            // Soft enforcement of duplicates to give a friendly message in most cases
+            DuplicateSubmission = (from sub in Submissions
+                                   where sub.SubmissionText == ServerCore.DataModel.Response.FormatSubmission(submissionText)
+                                   select sub).Any();
+
+            if (DuplicateSubmission)
+            {
+                return Page();
+            }
+
             // Create submission and add it to list
             Submission submission = new Submission
             {
-                SubmissionText = SubmissionText,
+                SubmissionText = submissionText,
                 TimeSubmitted = DateTime.UtcNow,
                 Puzzle = PuzzleState.Puzzle,
                 Team = PuzzleState.Team,
@@ -81,8 +124,9 @@ namespace ServerCore.Pages.Submissions
                     submission.Team,
                     submission.TimeSubmitted);
 
+                AnswerToken = submission.SubmissionText;
             }
-            else if (submission.Response == null)
+            else if (submission.Response == null && Event.IsAnswerSubmissionActive)
             {
                 // We also determine if the puzzle should be set to email-only mode.
                 if (IsPuzzleSubmissionLimitReached(
@@ -118,7 +162,6 @@ namespace ServerCore.Pages.Submissions
                             submission.Puzzle,
                             submission.Team,
                             lockoutExpiryTime);
-
                     }
                 }
             }
@@ -126,26 +169,19 @@ namespace ServerCore.Pages.Submissions
             _context.Submissions.Add(submission);
             await _context.SaveChangesAsync();
 
-            return RedirectToPage(
-                "/Submissions/Index",
-                new { puzzleid = puzzleId });
+            SubmissionViews.Add(new SubmissionView()
+            {
+                Submission = submission,
+                Response = submission.Response,
+                SubmitterName = LoggedInUser.Name
+            });
+
+            return Page();
         }
 
         public async Task<IActionResult> OnGetAsync(int puzzleId)
         {
             await SetupContext(puzzleId);
-
-            if (PuzzleState.SolvedTime != null)
-            {
-                if (this.Submissions?.Count > 0)
-                {
-                    AnswerToken = this.Submissions.Last().SubmissionText;
-                }
-                else
-                {
-                    AnswerToken = "(marked as solved by admin or author)";
-                }
-            }
 
             return Page();
         }
@@ -163,15 +199,41 @@ namespace ServerCore.Pages.Submissions
                     Event,
                     Puzzle,
                     Team))
-                .FirstOrDefaultAsync();
+                .FirstAsync();
 
-            Submissions = await _context.Submissions.Where(
-                (s) => s.Team == Team &&
-                       s.Puzzle == Puzzle)
-                .OrderBy(submission => submission.TimeSubmitted)
-                .ToListAsync();
+            SubmissionViews = await (from submission in _context.Submissions
+                                     join user in _context.PuzzleUsers on submission.Submitter equals user
+                                     join r in _context.Responses on submission.Response equals r into responses
+                                     from response in responses.DefaultIfEmpty()
+                                     where submission.Team == Team &&
+                                     submission.Puzzle == Puzzle
+                                     orderby submission.TimeSubmitted
+                                     select new SubmissionView()
+                                     {
+                                         Submission = submission,
+                                         Response = response,
+                                         SubmitterName = user.Name,
+                                     }).ToListAsync();
+
+            Submissions = new List<Submission>(SubmissionViews.Count);
+            foreach (SubmissionView submissionView in SubmissionViews)
+            {
+                Submissions.Add(submissionView.Submission);
+            }
 
             PuzzlesCausingGlobalLockout = await PuzzleStateHelper.PuzzlesCausingGlobalLockout(_context, Event, Team).ToListAsync();
+
+            if (PuzzleState.SolvedTime != null)
+            {
+                if (Submissions?.Count > 0)
+                {
+                    AnswerToken = Submissions.Last().SubmissionText;
+                }
+                else
+                {
+                    AnswerToken = "(marked as solved by admin or author)";
+                }
+            }
         }
 
         /// <summary>
@@ -202,22 +264,26 @@ namespace ServerCore.Pages.Submissions
              * exceeds the LockoutIncorrectGuessLimit set for the event, then
              * the team should be locked out of that puzzle.
              */
+            DateTime incorrectGuessStartTime = DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(ev.LockoutIncorrectGuessPeriod));
 
-            foreach (Submission s in submissions.Reverse())
+            foreach (Submission s in submissions)
             {
-                // Do not increment on partials
-                if (s.Response != null)
+                // if the guess is before the incorrect window, ignore it
+                if (s.TimeSubmitted < incorrectGuessStartTime)
                 {
                     continue;
                 }
 
-                if (s.TimeSubmitted.AddMinutes(ev.LockoutIncorrectGuessPeriod)
-                        .CompareTo(DateTime.UtcNow) < 0)
+                if (s.Response == null)
                 {
-                    break;
+                    ++consecutiveWrongSubmissions;
                 }
-
-                ++consecutiveWrongSubmissions;
+                else
+                {
+                    // Do not increment on partials, decrement instead! This is a tweak to improve the lockout story for DC puzzles.
+                    // But don't overdecrement, lest we let people build a gigantic bank of free guesses.
+                    consecutiveWrongSubmissions = Math.Max(0, consecutiveWrongSubmissions - 1);
+                }
             }
 
             if (consecutiveWrongSubmissions <= ev.LockoutIncorrectGuessLimit) {

@@ -9,6 +9,46 @@
     ViewData["RoutingPuzzleId"] = ViewContext.RouteData.Values["puzzleId"];
 }
 
+@using System.Text @* for StringBuilder *@
+
+@{
+    var mailtoUrl = new StringBuilder("mailto:");
+
+    // to: Add the proper support agent as recipient
+    mailtoUrl.Append(Model.PuzzleState?.Puzzle.SupportEmailAlias ?? (Model.Event?.ContactEmail ?? "puzzhunt@microsoft.com"));
+    // CC the team's email address in case the account sending the e-mail is a personal one that's not associated with the event
+    if (Model.Team.PrimaryContactEmail != null)
+    {
+        mailtoUrl.Append("?cc=");
+        mailtoUrl.Append(Uri.EscapeDataString(Model.Team.PrimaryContactEmail));
+    }
+
+    // subject: Make this be about this puzzle
+    mailtoUrl.Append("&subject=");
+    mailtoUrl.Append(Uri.EscapeDataString("[" + Model.Puzzle.Name + "]"));
+    // subject: Make this be from this team
+    mailtoUrl.Append(Uri.EscapeDataString(" [" + Model.Team.Name + "]"));
+
+    if (Model.PuzzleState.IsEmailOnlyMode)
+    {
+        // request out of email mode
+        // subject: Add the Email Mode signifier
+        mailtoUrl.Append(Uri.EscapeDataString(" [⚠EmailMode✉]"));
+        // body: Invite solver to give details
+        mailtoUrl.Append("&body=");
+        mailtoUrl.Append(Uri.EscapeDataString("Use this email to fully explain your thought process so we know you're not randomly spamming attempts! 😇" + Environment.NewLine + Environment.NewLine));
+    }
+    else
+    {
+        // request for help
+        // body: Invite solver to give details
+        mailtoUrl.Append("&body=");
+        mailtoUrl.Append(Uri.EscapeDataString("The more details you add here, the more helpful the responses you'll get will be! 😇" + Environment.NewLine + Environment.NewLine));
+    }
+}
+
+
+
 <h2>Submissions for @Model.Puzzle.Name</h2>
 <hr />
 <div>
@@ -22,96 +62,141 @@
     </div>
     <br />
 }
-<div class="row">
-    <div class="col-md-4">
+        @if (Model.Puzzle.HasDataConfirmation)
+        {
+            <div style="font-style:italic;">
+                <img src="~/images/DataConfirmationIcon.png" width="20" height="20" style="margin-bottom:3px" /> Reminder: This puzzle supports data confirmation
+            </div>
+            <br />
+        }
         @if (!string.IsNullOrEmpty(Model.AnswerToken))
         {
             <div class="alert alert-success" role="alert">
-                You got it! Correct answer: @Model.AnswerToken
+                <h4>Correct</h4>
+                <span>Answer: @Model.AnswerToken</span>
             </div>
+
+            @if (Model.PuzzleState.SolvedTime > Model.Event.AnswerSubmissionEnd)
+            { 
+                <div class="alert alert-warning" role="alert">
+                    <span>You solved this after the event ended and it did not count toward your ranking.</span>
+                </div>
+            }
         }
-        else if (!@Model.Event.IsAnswerSubmissionActive)
+        else if (DateTime.UtcNow < Model.Event.EventBegin)
         {
             <div class="col-md-12" style="padding-bottom: 15px;">
-                <h3>This event is not in session. No submissions will be accepted at this time.</h3>
+                <h3>This event is not yet in session. No submissions will be accepted at this time.</h3>
             </div>
         }
         else if (Model.PuzzleState.IsEmailOnlyMode)
         {
             <div class="alert alert-danger" role="alert">
-                You have submitted too many wrong responses. Please email your solutions to <a href="mailto:@(Model.PuzzleState?.Puzzle.SupportEmailAlias ?? (Model.Event?.ContactEmail ?? "puzzhunt@microsoft.com"))">@(Model.PuzzleState?.Puzzle.SupportEmailAlias ?? (Model.Event?.ContactEmail ?? "puzzhunt@microsoft.com"))</a>.
+                <h4>Answer Submission Locked Indefinitely</h4>
+                <span>You've submitted too many wrong responses. Please <a href="@mailtoUrl">use this link to email us your answer for @Model.Puzzle.Name or ask for help</a>.</span>
             </div>
         }
         else if (Model.PuzzleState.IsTeamLockedOut)
         {
             <div class="alert alert-danger" role="alert">
-                You are locked out. Please wait <span id="LockoutTimer">@Model.PuzzleState.LockoutTimeRemaining.ToString(@"mm\:ss")</span> before attempting another submission.
+                <h4>Answer Submission Locked</h4>
+                <span>You're locked out. Please wait <span id="LockoutTimer">@Model.PuzzleState.LockoutTimeRemaining.ToString(@"mm\:ss")</span> before attempting another submission.</span>
             </div>
         }
         else if (Model.PuzzlesCausingGlobalLockout.Count != 0 && !Model.PuzzlesCausingGlobalLockout.Contains(Model.Puzzle))
         {
             <div class="alert alert-danger" role="alert">
-                You are in global lockout until time expires on '@Model.PuzzlesCausingGlobalLockout[0].Name', or it is solved. Go help your teammates with that puzzle!
+                <h4>Answer Submission Locked</h4>
+                <span>You're in global lockout until time expires on <a href="./@Model.PuzzlesCausingGlobalLockout[0].ID" target="_blank">@Model.PuzzlesCausingGlobalLockout[0].Name</a>, or it is solved. Go help your teammates with that puzzle!</span>
             </div>
         }
         else
         {
-            <form method="post">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="form-group">
-                    <label asp-for="SubmissionText" class="control-label">Answer</label>
-                    <input asp-for="SubmissionText" class="form-control" />
-                    <span style="font-size:12px">Submitted answers will automatically be capitalized and stripped of non-alphanumeric characters</span>
-                    <span asp-validation-for="SubmissionText" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <input type="submit" value="Submit" class="btn btn-default" />
-                </div>
-            </form>
-        }
-    </div>
-</div>
-
-<div>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Submissions[0].TimeSubmitted)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Submissions[0].Submitter.Name)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Submissions[0].SubmissionText)
-                </th>
-                <th>
-                    Response
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.Submissions)
+            if (DateTime.UtcNow > @Model.Event.AnswerSubmissionEnd)
             {
-                <tr>
-                    <td>
-                        @Html.Raw(Model.LocalTime(item.TimeSubmitted))
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Submitter.Name)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.SubmissionText)
-                    </td>
-                    <td>
-                        @(item.Response != null ? item.Response.ResponseText : "Incorrect")
-                    </td>
-                </tr>
+                <div class="alert alert-warning" role="alert">
+                    <h4>The event is over.</h4>
+                    <span>You may check answers, but they will not count toward your ranking.</span>
+                </div>
             }
-        </tbody>
-    </table>
-</div>
+
+            @if (Model.DuplicateSubmission)
+            {
+            <div class="alert alert-danger" role="alert">
+                <h4>Oops</h4>
+                <span>You've already submitted @Model.SubmissionText!</span>
+            </div>
+            }
+            <div class="row">
+                <div class="col-md-4">
+                    <form method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-group">
+                            <label class="control-label">Answer</label>
+                            <input name="submissionText" class="form-control" data-val="true" data-val-required="Your answer cannot be empty" />
+                            <span style="font-size:12px">Submitted answers will automatically be capitalized and stripped of non-alphanumeric characters</span><br />
+                            @Html.ValidationSummary(true)
+                            <span class="text-danger"><span class="field-validation-valid" data-valmsg-for="submissionText" data-valmsg-replace="true"></span></span>
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" value="Submit" class="btn btn-default" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        }
+
+@if (Model.SubmissionViews.Count > 0)
+{
+    <h3>Submission history</h3>
+    <div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Time Submitted
+                    </th>
+                    <th>
+                        Name
+                    </th>
+                    <th>
+                        Submission Text
+                    </th>
+                    <th>
+                        Response
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = Model.SubmissionViews.Count - 1; i >= 0; --i)
+                {
+                    <tr>
+                        <td>
+                            @Html.Raw(Model.LocalTime(Model.SubmissionViews[i].Submission.TimeSubmitted))
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => Model.SubmissionViews[i].SubmitterName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => Model.SubmissionViews[i].Submission.SubmissionText)
+                        </td>
+                        <td>
+                            @(Model.SubmissionViews[i].Response != null ? Model.SubmissionViews[i].Response.ResponseText : "Incorrect")
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@if (!Model.PuzzleState.IsEmailOnlyMode)
+{ 
+    <h3>Need some help?</h3>
+    <p>While solving this puzzle, if you've run into a bug, think there's an error, or are not having fun anymore, <a href="@mailtoUrl">use this link to contact the author for @Model.Puzzle.Name</a>!</p>
+    <p>A pre-populated email form will appear and you should add details to the message body. Remember: the author may only know specifics about this puzzle and not others in the event.</p>
+}
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
@@ -133,11 +218,12 @@
                 }
                 var timeDeltaSeconds = Math.floor((unlockTime - Date.now()) / 1000);
                 if (timeDeltaSeconds <= 0) {
-                    window.location.reload(false);
+                    window.location.href = window.location.href;
                 }
-                var minutesLeft = Math.floor(timeDeltaSeconds / 60);
-                var secondsLeft = timeDeltaSeconds % 60;
-                timer.innerText = minutesLeft + ":" + (secondsLeft < 10 ? "0" + secondsLeft : secondsLeft);
+                // Prevent negative time, also pad with zero
+                var minutesLeft = "0" + Math.max(0, Math.floor(timeDeltaSeconds / 60));
+                var secondsLeft = "0" + Math.max(0, timeDeltaSeconds % 60);
+                timer.innerText = minutesLeft.substr(-2) + ":" + secondsLeft.substr(-2);
             }, 1000);
         </script>
     }

@@ -11,10 +11,11 @@
     <Compile Remove="Migrations\20190111053724_EventId.cs" />
     <Compile Remove="Migrations\20190111053724_EventId.Designer.cs" />
     <Compile Remove="Migrations\20190214050904_CheatsAndWhistles.cs" />
+    <Compile Remove="Migrations\20190606021837_PieceMetaUsage.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="2.1.0" />
   </ItemGroup>
 

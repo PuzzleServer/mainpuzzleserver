@@ -18,6 +18,7 @@ namespace ServerCore
         /// <param name="eventObj">The event we are querying from</param>
         /// <param name="puzzle">The puzzle; if null, get all puzzles in the event.</param>
         /// <param name="team">The team; if null, get all the teams in the event.</param>
+        /// <param name="author">The author; if null get puzzles matching other criteria by all authors</param>
         /// <returns>A query of PuzzleStatePerTeam objects that can be sorted and instantiated, but you can't edit the results.</returns>
         public static IQueryable<PuzzleStatePerTeam> GetFullReadOnlyQuery(PuzzleServerContext context, Event eventObj, Puzzle puzzle, Team team, PuzzleUser author = null)
         {
@@ -34,62 +35,29 @@ namespace ServerCore
             if (puzzle != null && team != null)
             {
                 return context.PuzzleStatePerTeam
-                    .Where(state => state.Puzzle == puzzle && state.Team == team)
-                    .DefaultIfEmpty(new DataModel.PuzzleStatePerTeam()
-                    {
-                        Puzzle = puzzle,
-                        PuzzleID = puzzle.ID,
-                        Team = team,
-                        TeamID = team.ID
-                    });
+                    .Where(state => state.Puzzle == puzzle && state.Team == team);
             }
-
-#pragma warning disable IDE0031 // despite the compiler message, "teamstate?.UnlockedTime", etc does not compile here
 
             if (puzzle != null)
             {
-                IQueryable<Team> teams = context.Teams.Where(t => t.Event == eventObj);
-                IQueryable<PuzzleStatePerTeam> states = context.PuzzleStatePerTeam.Where(state => state.Puzzle == puzzle);
-
-                return from t in teams
-                       join state in states on t.ID equals state.TeamID into tmp
-                       from teamstate in tmp.DefaultIfEmpty()
-                       select new PuzzleStatePerTeam
-                       {
-                           Puzzle = puzzle,
-                           PuzzleID = puzzle.ID,
-                           Team = t,
-                           TeamID = t.ID,
-                           UnlockedTime = teamstate == null ? null : teamstate.UnlockedTime,
-                           SolvedTime = teamstate == null ? null : teamstate.SolvedTime,
-                           Printed = teamstate == null ? false : teamstate.Printed,
-                           Notes = teamstate == null ? null : teamstate.Notes,
-                           IsEmailOnlyMode = teamstate == null ? false : teamstate.IsEmailOnlyMode
-                       };
+                return context.PuzzleStatePerTeam.Where(state => state.Puzzle == puzzle);
             }
 
             if (team != null)
             {
-                IQueryable<Puzzle> puzzles = author == null ? context.Puzzles.Where(p => p.Event == eventObj) : UserEventHelper.GetPuzzlesForAuthorAndEvent(context, eventObj, author);
-                IQueryable<PuzzleStatePerTeam> states = context.PuzzleStatePerTeam.Where(state => state.Team == team);
-
-                return from p in puzzles
-                       join state in states on p.ID equals state.PuzzleID into tmp
-                       from teamstate in tmp.DefaultIfEmpty()
-                       select new PuzzleStatePerTeam
-                       {
-                           Puzzle = p,
-                           PuzzleID = p.ID,
-                           Team = team,
-                           TeamID = team.ID,
-                           UnlockedTime = teamstate == null ? null : teamstate.UnlockedTime,
-                           SolvedTime = teamstate == null ? null : teamstate.SolvedTime,
-                           Printed = teamstate == null ? false : teamstate.Printed,
-                           Notes = teamstate == null ? null : teamstate.Notes,
-                           IsEmailOnlyMode = teamstate == null ? false : teamstate.IsEmailOnlyMode
-                       };
+                if (author != null)
+                {
+                    return from state in context.PuzzleStatePerTeam
+                           join auth in context.PuzzleAuthors on state.PuzzleID equals auth.PuzzleID
+                           where state.Team == team &&
+                           auth.Author == author
+                           select state;
+                }
+                else
+                {
+                    return context.PuzzleStatePerTeam.Where(state => state.Team == team);
+                }
             }
-#pragma warning restore IDE0031
 
             throw new NotImplementedException("Full event query is NYI and may never be needed; use the sparse one");
         }
@@ -126,7 +94,18 @@ namespace ServerCore
 
             if (team != null)
             {
-                return context.PuzzleStatePerTeam.Where(state => state.Team == team);
+                if (author != null)
+                {
+                    return from state in context.PuzzleStatePerTeam
+                           join auth in context.PuzzleAuthors on state.PuzzleID equals auth.PuzzleID
+                           where state.Team == team &&
+                           auth.Author == author
+                           select state;
+                }
+                else
+                {
+                    return context.PuzzleStatePerTeam.Where(state => state.Team == team);
+                }
             }
 
             return context.PuzzleStatePerTeam.Where(state => state.Puzzle.Event == eventObj);
@@ -143,7 +122,7 @@ namespace ServerCore
         /// <returns>A task that can be awaited for the unlock/lock operation</returns>
         public static async Task SetUnlockStateAsync(PuzzleServerContext context, Event eventObj, Puzzle puzzle, Team team, DateTime? value, PuzzleUser author = null)
         {
-            IQueryable<PuzzleStatePerTeam> statesQ = await PuzzleStateHelper.GetFullReadWriteQueryAsync(context, eventObj, puzzle, team, author);
+            IQueryable<PuzzleStatePerTeam> statesQ = PuzzleStateHelper.GetFullReadWriteQuery(context, eventObj, puzzle, team, author);
             List<PuzzleStatePerTeam> states = await statesQ.ToListAsync();
 
             for (int i = 0; i < states.Count; i++)
@@ -181,8 +160,8 @@ namespace ServerCore
             DateTime? value,
             PuzzleUser author = null)
         {
-            IQueryable<PuzzleStatePerTeam> statesQ = await PuzzleStateHelper
-                .GetFullReadWriteQueryAsync(context, eventObj, puzzle, team, author);
+            IQueryable<PuzzleStatePerTeam> statesQ = PuzzleStateHelper
+                .GetFullReadWriteQuery(context, eventObj, puzzle, team, author);
 
             List<PuzzleStatePerTeam> states = await statesQ.ToListAsync();
 
@@ -253,8 +232,8 @@ namespace ServerCore
             bool value,
             PuzzleUser author = null)
         {
-            IQueryable<PuzzleStatePerTeam> statesQ = await PuzzleStateHelper
-                .GetFullReadWriteQueryAsync(context, eventObj, puzzle, team, author);
+            IQueryable<PuzzleStatePerTeam> statesQ = PuzzleStateHelper
+                .GetFullReadWriteQuery(context, eventObj, puzzle, team, author);
 
             List<PuzzleStatePerTeam> states = await statesQ.ToListAsync();
 
@@ -296,8 +275,8 @@ namespace ServerCore
             DateTime? value,
             PuzzleUser author = null)
         {
-            IQueryable<PuzzleStatePerTeam> statesQ = await PuzzleStateHelper
-                .GetFullReadWriteQueryAsync(context, eventObj, puzzle, team, author);
+            IQueryable<PuzzleStatePerTeam> statesQ = PuzzleStateHelper
+                .GetFullReadWriteQuery(context, eventObj, puzzle, team, author);
 
             List<PuzzleStatePerTeam> states = await statesQ.ToListAsync();
 
@@ -400,62 +379,8 @@ namespace ServerCore
         /// <param name="puzzle">The puzzle; if null, get all puzzles in the event.</param>
         /// <param name="team">The team; if null, get all the teams in the event.</param>
         /// <returns>A query of PuzzleStatePerTeam objects that can be sorted and instantiated, but you can't edit the results.</returns>
-        private static async Task<IQueryable<PuzzleStatePerTeam>> GetFullReadWriteQueryAsync(PuzzleServerContext context, Event eventObj, Puzzle puzzle, Team team, PuzzleUser author)
+        private static IQueryable<PuzzleStatePerTeam> GetFullReadWriteQuery(PuzzleServerContext context, Event eventObj, Puzzle puzzle, Team team, PuzzleUser author)
         {
-            if (context == null)
-            {
-                throw new ArgumentNullException("Context required.");
-            }
-
-            if (eventObj == null)
-            {
-                throw new ArgumentNullException("Event required.");
-            }
-
-            if (puzzle != null && team != null)
-            {
-                PuzzleStatePerTeam state = await context.PuzzleStatePerTeam.Where(s => s.Puzzle == puzzle && s.Team == team).FirstOrDefaultAsync();
-                if (state == null)
-                {
-                    context.PuzzleStatePerTeam.Add(new DataModel.PuzzleStatePerTeam() { Puzzle = puzzle, Team = team });
-                }
-            }
-            else if (puzzle != null)
-            {
-                IQueryable<int> teamIdsQ = context.Teams.Where(p => p.Event == eventObj).Select(p => p.ID);
-                IQueryable<int> puzzleStateTeamIdsQ = context.PuzzleStatePerTeam.Where(s => s.Puzzle == puzzle).Select(s => s.TeamID);
-                List<int> teamIdsWithoutState = await teamIdsQ.Except(puzzleStateTeamIdsQ).ToListAsync();
-
-                if (teamIdsWithoutState.Count > 0)
-                {
-                    for (int i = 0; i < teamIdsWithoutState.Count; i++)
-                    {
-                        context.PuzzleStatePerTeam.Add(new DataModel.PuzzleStatePerTeam() { Puzzle = puzzle, TeamID = teamIdsWithoutState[i] });
-                    }
-                }
-            }
-            else if (team != null)
-            {
-                IQueryable<int> puzzleIdsQ = author == null ? context.Puzzles.Where(p => p.Event == eventObj).Select(p => p.ID) : UserEventHelper.GetPuzzlesForAuthorAndEvent(context, eventObj, author).Select(p => p.ID);
-                IQueryable<int> puzzleStatePuzzleIdsQ = context.PuzzleStatePerTeam.Where(s => s.Team == team).Select(s => s.PuzzleID);
-                List<int> puzzleIdsWithoutState = await puzzleIdsQ.Except(puzzleStatePuzzleIdsQ).ToListAsync();
-
-                if (puzzleIdsWithoutState.Count > 0)
-                {
-                    for (int i = 0; i < puzzleIdsWithoutState.Count; i++)
-                    {
-                        context.PuzzleStatePerTeam.Add(new DataModel.PuzzleStatePerTeam() { Team = team, PuzzleID = puzzleIdsWithoutState[i] });
-                    }
-                }
-            }
-            else if (puzzle == null && team == null)
-            {
-                throw new NotImplementedException("Full event query is NYI and may never be needed");
-            }
-
-            await context.SaveChangesAsync(); // query below will not return these unless we save
-
-            // now this query is no longer sparse because we just filled it all out!
             return GetSparseQuery(context, eventObj, puzzle, team, author);
         }
 
@@ -533,15 +458,8 @@ namespace ServerCore
                     // Enough puzzles unlocked by count? Let's unlock it
                     if (puzzleToUpdate.PrerequisiteIDs.Where(id => solvedPuzzleIDsForTeamT.Contains(id)).Count() >= puzzleToUpdate.MinPrerequisiteCount)
                     {
-                        PuzzleStatePerTeam state = await context.PuzzleStatePerTeam.Where(s => s.PuzzleID == puzzleToUpdate.PuzzleID && s.Team == t).FirstOrDefaultAsync();
-                        if (state == null)
-                        {
-                            context.PuzzleStatePerTeam.Add(new DataModel.PuzzleStatePerTeam() { PuzzleID = puzzleToUpdate.PuzzleID, Team = t, UnlockedTime = unlockTime });
-                        }
-                        else
-                        {
-                            state.UnlockedTime = unlockTime;
-                        }
+                        PuzzleStatePerTeam state = await context.PuzzleStatePerTeam.Where(s => s.PuzzleID == puzzleToUpdate.PuzzleID && s.Team == t).FirstAsync();
+                        state.UnlockedTime = unlockTime;
                     }
                 }
             }
@@ -557,6 +475,7 @@ namespace ServerCore
                 var submissionsThatMatchResponse = await (from PuzzleStatePerTeam pspt in context.PuzzleStatePerTeam
                                                           join Submission sub in context.Submissions on pspt.Team equals sub.Team
                                                           where pspt.PuzzleID == response.PuzzleID &&
+                                                          sub.PuzzleID == response.PuzzleID &&
                                                           sub.SubmissionText == response.SubmittedText
                                                           select new { State = pspt, Submission = sub }).ToListAsync();
 

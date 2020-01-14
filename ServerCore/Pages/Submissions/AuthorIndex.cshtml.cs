@@ -31,7 +31,7 @@ namespace ServerCore.Pages.Submissions
         {
         }
 
-        public List<SubmissionView> Submissions { get; set; }
+        public IEnumerable<SubmissionView> Submissions { get; set; }
 
         public Puzzle Puzzle { get; set; }
 
@@ -45,12 +45,12 @@ namespace ServerCore.Pages.Submissions
         {
             Sort = sort;
 
+            IQueryable<Submission> submissionsQ = null;
+
             if (puzzleId == null)
             {
                 if (EventRole == EventRole.admin)
                 {
-                    IQueryable<Submission> submissionsQ;
-
                     if (teamId == null)
                     {
                         submissionsQ = _context.Submissions.Where((s) => s.Puzzle.Event == Event);
@@ -59,39 +59,19 @@ namespace ServerCore.Pages.Submissions
                     {
                         submissionsQ = _context.Submissions.Where((s) => s.Team.ID == teamId);
                     }
-
-                    Submissions = await submissionsQ
-                        .Select((s) => new SubmissionView { SubmitterName = s.Submitter.Name, PuzzleID = s.Puzzle.ID, PuzzleName = s.Puzzle.Name, TeamID = s.Team.ID, TeamName = s.Team.Name, SubmissionText = s.SubmissionText, ResponseText = s.Response == null ? null : s.Response.ResponseText, TimeSubmitted = s.TimeSubmitted })
-                        .ToListAsync();
                 }
                 else
                 {
-                    var submissions = new List<SubmissionView>();
-
                     if (teamId == null)
                     {
-                        List<IEnumerable<SubmissionView>> submissionsList = await UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser)
-                            .Select((p) => p.Submissions.Select((s) => new SubmissionView { SubmitterName = s.Submitter.Name, PuzzleID = s.Puzzle.ID, PuzzleName = s.Puzzle.Name, TeamID = s.Team.ID, TeamName = s.Team.Name, SubmissionText = s.SubmissionText, ResponseText = s.Response == null ? null : s.Response.ResponseText, TimeSubmitted = s.TimeSubmitted }))
-                            .ToListAsync();
-
-                        foreach (var list in submissionsList)
-                        {
-                            submissions.AddRange(list);
-                        }
+                        submissionsQ = UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser)
+                            .SelectMany((p) => p.Submissions);
                     }
                     else
                     {
-                        List<IEnumerable<SubmissionView>> submissionsList = await UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser)
-                            .Select((p) => p.Submissions.Where((s) => s.Team.ID == teamId).Select((s) => new SubmissionView { SubmitterName = s.Submitter.Name, PuzzleID = s.Puzzle.ID, PuzzleName = s.Puzzle.Name, TeamID = s.Team.ID, TeamName = s.Team.Name, SubmissionText = s.SubmissionText, ResponseText = s.Response == null ? null : s.Response.ResponseText, TimeSubmitted = s.TimeSubmitted }))
-                            .ToListAsync();
-
-                        foreach (var list in submissionsList)
-                        {
-                            submissions.AddRange(list);
-                        }
+                        submissionsQ = UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser)
+                            .SelectMany((p) => p.Submissions.Where((s) => s.Team.ID == teamId));
                     }
-
-                    Submissions = submissions;
                 }
             }
             else
@@ -103,8 +83,6 @@ namespace ServerCore.Pages.Submissions
                     return Forbid();
                 }
 
-                IQueryable<Submission> submissionsQ;
-
                 if (teamId == null)
                 {
                     submissionsQ = _context.Submissions.Where((s) => s.Puzzle != null && s.Puzzle.ID == puzzleId);
@@ -113,11 +91,20 @@ namespace ServerCore.Pages.Submissions
                 {
                     submissionsQ = _context.Submissions.Where((s) => s.Puzzle != null && s.Puzzle.ID == puzzleId && s.Team.ID == teamId);
                 }
-
-                Submissions = await submissionsQ
-                    .Select((s) => new SubmissionView { SubmitterName = s.Submitter.Name, PuzzleID = s.Puzzle.ID, PuzzleName = s.Puzzle.Name, TeamID = s.Team.ID, TeamName = s.Team.Name, SubmissionText = s.SubmissionText, ResponseText = s.Response == null ? null : s.Response.ResponseText, TimeSubmitted = s.TimeSubmitted })
-                    .ToListAsync();
             }
+            
+            IQueryable<SubmissionView> submissionViewQ = submissionsQ
+                .Select((s) => new SubmissionView
+                {
+                    SubmitterName = s.Submitter.Name,
+                    PuzzleID = s.Puzzle.ID,
+                    PuzzleName = s.Puzzle.Name,
+                    TeamID = s.Team.ID,
+                    TeamName = s.Team.Name,
+                    SubmissionText = s.SubmissionText,
+                    ResponseText = s.Response == null ? null : s.Response.ResponseText,
+                    TimeSubmitted = s.TimeSubmitted
+                });
 
             if (teamId != null)
             {
@@ -127,43 +114,44 @@ namespace ServerCore.Pages.Submissions
             switch (sort ?? DefaultSort)
             {
                 case SortOrder.PlayerAscending:
-                    Submissions.Sort((a, b) => a.SubmitterName.CompareTo(b.SubmitterName));
+                    submissionViewQ.OrderBy(submission => submission.SubmitterName);
                     break;
                 case SortOrder.PlayerDescending:
-                    Submissions.Sort((a, b) => -a.SubmitterName.CompareTo(b.SubmitterName));
+                    submissionViewQ.OrderByDescending(submission => submission.SubmitterName);
                     break;
                 case SortOrder.TeamAscending:
-                    Submissions.Sort((a, b) => a.TeamName.CompareTo(b.TeamName));
+                    submissionViewQ.OrderBy(submission => submission.TeamName);
                     break;
                 case SortOrder.TeamDescending:
-                    Submissions.Sort((a, b) => -a.TeamName.CompareTo(b.TeamName));
+                    submissionViewQ.OrderByDescending(submission => submission.TeamName);
                     break;
                 case SortOrder.PuzzleAscending:
-                    Submissions.Sort((a, b) => a.PuzzleName.CompareTo(b.PuzzleName));
+                    submissionViewQ.OrderBy(submission => submission.PuzzleName);
                     break;
                 case SortOrder.PuzzleDescending:
-                    Submissions.Sort((a, b) => -a.PuzzleName.CompareTo(b.PuzzleName));
+                    submissionViewQ.OrderByDescending(submission => submission.PuzzleName);
                     break;
                 case SortOrder.ResponseAscending:
-                    Submissions.Sort((a, b) => a.ResponseText.CompareTo(b.ResponseText));
+                    submissionViewQ.OrderBy(submission => submission.ResponseText);
                     break;
                 case SortOrder.ResponseDescending:
-                    Submissions.Sort((a, b) => -a.ResponseText.CompareTo(b.ResponseText));
+                    submissionViewQ.OrderByDescending(submission => submission.ResponseText);
                     break;
                 case SortOrder.SubmissionAscending:
-                    Submissions.Sort((a, b) => a.SubmissionText.CompareTo(b.SubmissionText));
+                    submissionViewQ.OrderBy(submission => submission.SubmissionText);
                     break;
                 case SortOrder.SubmissionDescending:
-                    Submissions.Sort((a, b) => -a.SubmissionText.CompareTo(b.SubmissionText));
+                    submissionViewQ.OrderByDescending(submission => submission.SubmissionText);
                     break;
                 case SortOrder.TimeAscending:
-                    Submissions.Sort((a, b) => a.TimeSubmitted.CompareTo(b.TimeSubmitted));
+                    submissionViewQ.OrderBy(submission => submission.TimeSubmitted);
                     break;
                 case SortOrder.TimeDescending:
-                    Submissions.Sort((a, b) => -a.TimeSubmitted.CompareTo(b.TimeSubmitted));
+                    submissionViewQ.OrderByDescending(submission => submission.TimeSubmitted);
                     break;
             }
 
+            Submissions = await submissionViewQ.ToListAsync();
             return Page();
         }
 

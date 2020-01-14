@@ -13,7 +13,7 @@
 <div class="row">
     <div class="col-md-10">
         <form method="post" enctype="multipart/form-data">
-            <h3>@Model.Puzzle.Name: Properties <input type="submit" value="Save properties" class="btn btn-default btn-primary" /></h3>
+            <h3>@Model.Puzzle.Name: Properties <input type="submit" value="Save properties" class="btn btn-default btn-primary" /><a class="btn btn-default btn-link" asp-page="./Delete" asp-route-puzzleId="@Model.Puzzle.ID">Delete this puzzle</a></h3>
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Puzzle.ID" />
 
@@ -75,6 +75,13 @@
                                 </div>
                             </div>
                             <div class="form-group">
+                                <div class="checkbox">
+                                    <label>
+                                        <input asp-for="Puzzle.HasDataConfirmation" /> @Html.DisplayNameFor(model => model.Puzzle.HasDataConfirmation)
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
                                 <label asp-for="Puzzle.SolveValue" class="control-label"></label>
                                 <input asp-for="Puzzle.SolveValue" class="form-control" />
                                 <span asp-validation-for="Puzzle.SolveValue" class="text-danger"></span>
@@ -98,11 +105,14 @@
                                     </label>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label asp-for="Puzzle.HintCoinsForSolve" class="control-label"></label>
-                                <input asp-for="Puzzle.HintCoinsForSolve" class="form-control" />
-                                <span asp-validation-for="Puzzle.HintCoinsForSolve" class="text-danger"></span>
-                            </div>
+                            @if (!Model.Event.HideHints)
+                            {
+                                <div class="form-group">
+                                    <label asp-for="Puzzle.HintCoinsForSolve" class="control-label"></label>
+                                    <input asp-for="Puzzle.HintCoinsForSolve" class="form-control" />
+                                    <span asp-validation-for="Puzzle.HintCoinsForSolve" class="text-danger"></span>
+                                </div>
+                            }
                             <div class="form-group">
                                 <label asp-for="Puzzle.Token" class="control-label"></label>
                                 <input asp-for="Puzzle.Token" class="form-control" />
@@ -137,6 +147,10 @@
                                 <label asp-for="Puzzle.Description" class="control-label"></label>
                                 <input asp-for="Puzzle.Description" class="form-control" />
                                 <span asp-validation-for="Puzzle.Description" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Puzzle.PieceMetaUsage" class="control-label"></label>
+                                <select class="form-control" asp-for="Puzzle.PieceMetaUsage" asp-items="Html.GetEnumSelectList<ServerCore.DataModel.PieceMetaUsage>()"></select>
                             </div>
                             <div class="form-group">
                                 <label asp-for="Puzzle.Errata" class="control-label"></label>

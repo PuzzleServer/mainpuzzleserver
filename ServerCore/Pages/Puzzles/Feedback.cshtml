@@ -7,23 +7,25 @@
     ViewData["AuthorRoute"] = "../Puzzles/Feedback";
     ViewData["PlayRoute"] = "../Puzzles/SubmitFeedback";
     ViewData["RoutingPuzzleId"] = ViewContext.RouteData.Values["puzzleId"];
-    Layout = "_puzzleManagementLayout.cshtml";
 }
 
 @if (Model.PuzzleName != null)
 {
-
+    @(Layout = "_puzzleManagementLayout.cshtml");
     <h2>@Html.DisplayFor(model => model.PuzzleName): Feedback</h2>
 }
 else
 {
     <h2>All Feedback</h2>
+    <div>
+        <a asp-page="/Puzzles/Index">Back to puzzle list</a>
+    </div>
+    <br />
 }
-
 <div>
-    <h3><b>Avg Fun Rating:</b> @Model.FunScore</h3>
-    <br>
-    <h3><b>Avg Difficulty Rating:</b> @Model.DiffScore</h3>
+    <br />
+    <h4><b>Avg Fun Rating:</b> @Html.DisplayFor(x => x.FunScore) / @FeedbackModel.FeedbackMax</h4>
+    <h4><b>Avg Difficulty Rating:</b> @Html.DisplayFor(x => x.DiffScore) / @FeedbackModel.FeedbackMax</h4>
 </div>
 
 <br>
@@ -33,6 +35,9 @@ else
         <tr>
             <th>
                 Puzzle
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Feedbacks[0].TeamName)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Feedbacks[0].Submitter.Name)
@@ -60,6 +65,9 @@ else
             <tr>
                 <td>
                     @Html.DisplayFor(modelItem => item.Puzzle.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TeamName)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Submitter.Name)

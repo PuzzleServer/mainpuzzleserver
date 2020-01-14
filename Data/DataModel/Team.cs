@@ -9,6 +9,15 @@ namespace ServerCore.DataModel
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
+
+        /// <summary>
+        /// The event the team is a part of
+        /// </summary>
+        public int EventID { get; set; }
+
+        /// <summary>
+        /// The event the team is a part of
+        /// </summary>
         [Required]
         public virtual Event Event { get; set; }
 
@@ -54,5 +63,12 @@ namespace ServerCore.DataModel
         /// Machine generated password for the autoinvite link
         /// </summary>
         public string Password { get; set; }
+
+        /// <summary>
+        /// Indicates whether or not the team is disqualified. Disqualified teams
+        /// can still view and solve puzzles; however, they are hidden from the
+        /// standings and fastest solves pages.
+        /// </summary>
+        public bool IsDisqualified { get; set; }
     }
 }
