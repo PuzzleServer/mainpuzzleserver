@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2018
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.202
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerCore", "ServerCore\ServerCore.csproj", "{67B91CCE-4E3D-4F0F-8A76-EAFD37C5F949}"
 EndProject
@@ -9,10 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerCore.Test", "ServerCo
 	ProjectSection(ProjectDependencies) = postProject
 		{67B91CCE-4E3D-4F0F-8A76-EAFD37C5F949} = {67B91CCE-4E3D-4F0F-8A76-EAFD37C5F949}
 	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Puzzleday", "Puzzleday\Puzzleday.csproj", "{EE66B8FE-FF6B-4D82-B682-E04BADC51511}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Puzzlehunt", "Puzzlehunt\Puzzlehunt.csproj", "{EB0ECD97-00DF-4E41-B675-D244F92648A7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data", "Data\Data.csproj", "{3DE98AFE-8F47-4ED8-8461-3F07EF69F4C1}"
 EndProject
@@ -35,14 +31,6 @@ Global
 		{31CC1299-08DF-4C42-8FBA-827C11732C6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{31CC1299-08DF-4C42-8FBA-827C11732C6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{31CC1299-08DF-4C42-8FBA-827C11732C6D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EE66B8FE-FF6B-4D82-B682-E04BADC51511}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EE66B8FE-FF6B-4D82-B682-E04BADC51511}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EE66B8FE-FF6B-4D82-B682-E04BADC51511}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EE66B8FE-FF6B-4D82-B682-E04BADC51511}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EB0ECD97-00DF-4E41-B675-D244F92648A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EB0ECD97-00DF-4E41-B675-D244F92648A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EB0ECD97-00DF-4E41-B675-D244F92648A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EB0ECD97-00DF-4E41-B675-D244F92648A7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3DE98AFE-8F47-4ED8-8461-3F07EF69F4C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3DE98AFE-8F47-4ED8-8461-3F07EF69F4C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3DE98AFE-8F47-4ED8-8461-3F07EF69F4C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
