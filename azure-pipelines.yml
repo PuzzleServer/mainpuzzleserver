@@ -18,15 +18,15 @@ steps:
     publishWebProjects: True
     arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
     zipAfterPublish: True
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'custom'
-    custom: 'tool' 
-    arguments: 'install --global dotnet-ef'
+#- task: DotNetCoreCLI@2
+#  inputs:
+ #   command: 'custom'
+  #  custom: 'tool' 
+  #  arguments: 'install --global dotnet-ef'
 - task: DotNetCoreCLI@2
   inputs:
     command: 'custom'
     projects: '$(Build.SourcesDirectory)\Data\Data.csproj'
-    custom: 'ef migrations script'
-    arguments: '-o $(Build.ArtifactStagingDirectory)\migrations\scripts.sql –i'
+    custom: 'ef'
+    arguments: 'migrations script -o $(Build.ArtifactStagingDirectory)\migrations\scripts.sql –i'
 - task: PublishBuildArtifacts@1
