@@ -21,7 +21,7 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: 'custom'
-    projects: '$(Build.SourcesDirectory)\Data.csproj'
+    projects: '$(Build.SourcesDirectory)\Data\Data.csproj'
     custom: 'ef migrations script'
     arguments: '-o $(Build.ArtifactStagingDirectory)\migrations\scripts.sql –i'
 - task: PublishBuildArtifacts@1
