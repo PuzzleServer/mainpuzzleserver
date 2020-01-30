@@ -23,5 +23,5 @@ steps:
     command: 'custom'
     projects: '$(Build.SourcesDirectory)\Data.csproj'
     custom: 'ef migrations script'
-    arguments: '–p $(Build.SourcesDirectory)\Data.csproj -o $(build.artifactstagingdirectory)\migrations\scripts.sql –i'
+    arguments: '-o $(Build.ArtifactStagingDirectory)\migrations\scripts.sql –i'
 - task: PublishBuildArtifacts@1
