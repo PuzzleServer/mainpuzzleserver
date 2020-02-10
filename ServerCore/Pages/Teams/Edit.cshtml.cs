@@ -32,6 +32,7 @@ namespace ServerCore.Pages.Teams
 
         public async Task<IActionResult> OnPostAsync()
         {
+            bool canChangeTeamName = CanChangeTeamName();
             if (string.IsNullOrEmpty(Team.PrimaryContactEmail))
             {
                 ModelState.AddModelError("Team.PrimaryContactEmail", "An email is required.");
@@ -42,6 +43,7 @@ namespace ServerCore.Pages.Teams
             }
 
             ModelState.Remove("Team.Event");
+
             if (!ModelState.IsValid)
             {
                 return Page();
@@ -55,12 +57,10 @@ namespace ServerCore.Pages.Teams
             {
                 return NotFound();
             }
-
-            // Enforce the name change cutoff
-            if (Team.Name != existingTeam.Name && EventRole != EventRole.admin && !Event.CanChangeTeamName)
+            
+            if (!canChangeTeamName)
             {
-                ModelState.AddModelError("Team.Name", "Team names for this event can no longer be changed by players.");
-                return Page();
+                Team.Name = existingTeam.Name;
             }
 
             // keep the room unchanged if an intern event, since interns can't edit their rooms
@@ -91,6 +91,10 @@ namespace ServerCore.Pages.Teams
             }
 
             return RedirectToPage("./Details", new { eventId = Event.ID, eventRole = EventRole, teamId = Team.ID });
+        }
+
+        public bool CanChangeTeamName() {
+            return EventRole == EventRole.admin || Event.CanChangeTeamName;
         }
 
         private bool TeamExists(int teamId)

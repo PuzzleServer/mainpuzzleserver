@@ -38,6 +38,10 @@ namespace ServerCore.Pages.Submissions
 
         public bool DuplicateSubmission { get; set; }
 
+        public string AnswerRedAlertMessage { get; set; }
+
+        public string AnswerYellowAlertMessage { get; set; }
+
         public class SubmissionView
         {
             public Submission Submission { get; set; }
@@ -106,7 +110,7 @@ namespace ServerCore.Pages.Submissions
                 TimeSubmitted = DateTime.UtcNow,
                 Puzzle = PuzzleState.Puzzle,
                 Team = PuzzleState.Team,
-                Submitter = LoggedInUser,
+                Submitter = LoggedInUser
             };
             submission.Response = await _context.Responses.Where(
                 r => r.Puzzle.ID == puzzleId &&
@@ -115,19 +119,30 @@ namespace ServerCore.Pages.Submissions
 
             Submissions.Add(submission);
 
+            AnswerRedAlertMessage = null;
             // Update puzzle state if submission was correct
-            if (submission.Response != null && submission.Response.IsSolution)
+            if (submission.Response != null)
             {
-                await PuzzleStateHelper.SetSolveStateAsync(_context,
-                    Event,
-                    submission.Puzzle,
-                    submission.Team,
-                    submission.TimeSubmitted);
+                if (submission.Response.IsSolution)
+                {
+                    await PuzzleStateHelper.SetSolveStateAsync(_context,
+                        Event,
+                        submission.Puzzle,
+                        submission.Team,
+                        submission.TimeSubmitted);
 
-                AnswerToken = submission.SubmissionText;
+                    AnswerToken = submission.SubmissionText;
+                }
+                else
+                {
+                    // If partial, put it as a warning text
+                    AnswerYellowAlertMessage = string.Format("Partial Answer: {0}", submission.Response.ResponseText);
+                }
             }
             else if (submission.Response == null && Event.IsAnswerSubmissionActive)
             {
+                AnswerRedAlertMessage = "Incorrect";
+
                 // We also determine if the puzzle should be set to email-only mode.
                 if (IsPuzzleSubmissionLimitReached(
                         Event,
