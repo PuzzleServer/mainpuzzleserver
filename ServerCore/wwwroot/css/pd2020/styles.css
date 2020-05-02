@@ -24,8 +24,8 @@
     }
     to {
         color: #01A4EF;
-        text-shadow: 0em -1em #F44E24;
-        transform: translate(0, 0.5em)
+        text-shadow: 0em -0.9em #F44E24;
+        transform: translate(0, 0.45em)
     }
 }
 
@@ -36,8 +36,8 @@
     }
     to {
         color: #FFB902;
-        text-shadow: 0em -1em #81B900;
-        transform: translate(0, 0.5em)
+        text-shadow: 0em -.9em #81B900;
+        transform: translate(0, 0.45em)
     }
 }
 
