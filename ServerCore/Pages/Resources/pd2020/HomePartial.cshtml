@@ -1,0 +1,61 @@
+﻿@{
+    var eventPage = Model as ServerCore.ModelBases.EventSpecificPageModel;
+    bool IsRegistered = false;
+    if (eventPage != null)
+    {
+        IsRegistered = await eventPage.IsRegisteredUser();
+    }
+}
+
+<div class="container" id="pd2020-container">
+    <h2 class="pd2020-title">
+        <span>Intern Puzzleday </span><span style="white-space:nowrap;"><span class="redblue">2</span><span class="greenyellow">0</span></span>
+    </h2>
+    <br class="pd2020-emphasis"/>
+
+    <div class="pd2020-container-root">
+        <div class="pd2020-container-card">
+            <h3>WELCOME TO PUZZLEDAY</h3>
+            <p>Thank you for joining us for Intern Puzzleday 20 20. Whether you’re in New York, New York or Walla Walla, Washington, we expect that you will have a great great time with us.</p>
+
+            <p>
+                Past Intern Puzzledays have each been held on a single single day. But this year, Intern Puzzleday will take place over the two-day weekend weekend of 
+                <span class="pd2020-emphasis">July 11-12</span>. The time on both days will be 10am-1:30pm PDT.
+            </p>
+
+            <p>
+                This will be <span class="pd2020-emphasis">one single event</span> that takes place over two days. There will be new puzzles each day. Any sense of déjà vu déjà vu 
+                in 20 20 will be due to your own perception of the event. 
+            </p>
+        </div>
+
+        <div class="pd2020-container-card">
+            <h3>Registration and teams</h3>
+            <p>
+                Please <a asp-page="/Teams/List" class="pd2020-emphasis">sign your team up</a> to join in the fun. 
+                We encourage teams to stay together for both days of the event, but players who are not available on both days may be swapped in and out 
+                so long as no more than 6 players are on your team on either day. 
+            </p>
+
+            <p>
+                You can register a full team and invite others you already know. If you’re looking for teammates, you can keep your team open and allow others to request to join.
+                You can also look for a team seeking new members. 
+            </p>
+
+            <p>
+                If you need ideas finding teammates, it might be a good idea to ask other interns you work with, 
+                know from your cohort or university, or met in cyberspace.
+            </p>
+        </div>
+
+        <div class="pd2020-container-card">
+            <h3>New to puzzles?</h3>
+            <p>
+                You might have seen a jigsaw puzzle, a crossword puzzle, or a Sudoku at some point in your life. 
+                But wait, there's more! Puzzleday puzzles sometimes always dial up the creativity, so you might see some brain-twisty, mind-bendy puzzles... 
+                Check out a few <a asp-page="/EventSpecific/Samples">sample puzzles</a> or our <a asp-page="/Main">archive of puzzles</a> 
+                from past events.
+            </p>
+        </div>
+    </div>
+</div>
