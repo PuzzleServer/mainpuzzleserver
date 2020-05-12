@@ -48,6 +48,7 @@ namespace ServerCore.Pages.Puzzles
         {
             List<Puzzle> puzzles = await PuzzleHelper.GetPuzzles(_context, Event, LoggedInUser, EventRole);
 
+            // todo: this query doesn't work because it's trying to get the contents of the group back, which involves client evaluation
             Dictionary<int, List<string>> puzzleAuthors = await (from author in _context.PuzzleAuthors
                                                                         where author.Puzzle.Event == Event
                                                                         group author by author.PuzzleID into authorList

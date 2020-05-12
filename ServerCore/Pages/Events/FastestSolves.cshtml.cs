@@ -45,21 +45,22 @@ namespace ServerCore.Pages.Events
 
             DateTime submissionEnd = Event.AnswerSubmissionEnd;
             // get the page data: puzzle, solve count, top three fastest
-            var puzzlesData = await PuzzleStateHelper.GetSparseQuery(_context, this.Event, null, null)
+            // todo: This pulls all solved puzzles for the event. Is that performance acceptable?
+            var puzzlesData = (await PuzzleStateHelper.GetSparseQuery(_context, this.Event, null, null)
                 .Where(s => (s.SolvedTime != null &&
                              s.Puzzle.IsPuzzle &&
                              s.UnlockedTime != null &&
                              s.SolvedTime <= submissionEnd &&
-                             s.Team.IsDisqualified == false))
+                             s.Team.IsDisqualified == false)).ToListAsync())
                 .GroupBy(state => state.Puzzle)
-                .Select(g => new {
+                .Select(g => new
+                {
                     Puzzle = g.Key,
                     SolveCount = g.Count(),
                     Fastest = g.OrderBy(s => s.SolvedTime - s.UnlockedTime).Take(3).Select(s => new { s.Team.ID, Time = s.SolvedTime - s.UnlockedTime }),
                     IsSolvedByUserTeam = g.Where(s => s.Team == this.CurrentTeam).Any()
                 })
-                .OrderByDescending(p => p.SolveCount).ThenBy(p => p.Puzzle.Name)
-                .ToListAsync();
+                .OrderByDescending(p => p.SolveCount).ThenBy(p => p.Puzzle.Name).ToList();
 
             var unlockedData = this.CurrentTeam == null ? null : (new HashSet<int>(
                 await PuzzleStateHelper.GetSparseQuery(_context, this.Event, null, null)
