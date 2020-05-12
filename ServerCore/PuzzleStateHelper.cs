@@ -404,24 +404,20 @@ namespace ServerCore
             // a simple query for all puzzle IDs in the event - will be used at least once below
             IQueryable<int> allPuzzleIDsQ = context.Puzzles.Where(p => p.Event == eventObj).Select(p => p.ID);
 
-            // if we solved a group of puzzles, every puzzle needs an update.
-            // if we solved a single puzzle, only update the puzzles that have that one as a prerequisite.
-            IQueryable<int> needsUpdatePuzzleIDsQ =
-                puzzleJustSolved == null ?
-                allPuzzleIDsQ :
-                context.Prerequisites.Where(pre => pre.Prerequisite == puzzleJustSolved).Select(pre => pre.PuzzleID).Distinct();
 
             // get the prerequisites for all puzzles that need an update
             // information we get per puzzle: { id, min count, prerequisite IDs }
-            var prerequisiteDataForNeedsUpdatePuzzles = await context.Prerequisites
-                .Where(pre => needsUpdatePuzzleIDsQ.Contains(pre.PuzzleID))
-                .GroupBy(pre => pre.Puzzle)
-                .Select(g => new {
-                    PuzzleID = g.Key.ID,
-                    g.Key.MinPrerequisiteCount,
-                    PrerequisiteIDs = g.Select(pre => pre.PrerequisiteID)
-                })
-                .ToListAsync();
+            var prereqs = await (from prereq in context.Prerequisites
+                           where prereq.Prerequisite == puzzleJustSolved
+                           select prereq).ToListAsync();
+            var prerequisiteDataForNeedsUpdatePuzzles = from prereq in prereqs
+                                                        group prereq by prereq.Puzzle into g
+                                                        select new
+                                                        {
+                                                            PuzzleID = g.Key.ID,
+                                                            g.Key.MinPrerequisiteCount,
+                                                            PrerequisiteIDs = g.Select(pre => pre.PrerequisiteID)
+                                                        };
 
             // Are we updating one team or all teams?
             List<Team> teamsToUpdate = team == null ? await context.Teams.Where(t => t.Event == eventObj).ToListAsync() : new List<Team>() { team };
