@@ -406,18 +406,19 @@ namespace ServerCore
 
 
             // get the prerequisites for all puzzles that need an update
-            // information we get per puzzle: { id, min count, prerequisite IDs }
-            var prereqs = await (from prereq in context.Prerequisites
-                           where prereq.Prerequisite == puzzleJustSolved
-                           select prereq).ToListAsync();
-            var prerequisiteDataForNeedsUpdatePuzzles = from prereq in prereqs
-                                                        group prereq by prereq.Puzzle into g
+            // information we get per puzzle: { id, min count, number of solved prereqs including this one }
+            var prerequisiteDataForNeedsUpdatePuzzles = (from possibleUnlock in context.Prerequisites
+                                                        join unlockedBy in context.Prerequisites on possibleUnlock.PuzzleID equals unlockedBy.PuzzleID
+                                                        join pspt in context.PuzzleStatePerTeam on unlockedBy.PrerequisiteID equals pspt.PuzzleID
+                                                        where possibleUnlock.Prerequisite == puzzleJustSolved && (team == null || pspt.TeamID == team.ID) && pspt.SolvedTime != null
+                                                        group unlockedBy by new { unlockedBy.PuzzleID, unlockedBy.Puzzle.MinPrerequisiteCount, pspt.TeamID } into g
                                                         select new
                                                         {
-                                                            PuzzleID = g.Key.ID,
+                                                            PuzzleID = g.Key.PuzzleID,
+                                                            TeamID = g.Key.TeamID,
                                                             g.Key.MinPrerequisiteCount,
-                                                            PrerequisiteIDs = g.Select(pre => pre.PrerequisiteID)
-                                                        };
+                                                            TotalPrerequisiteCount = g.Count()
+                                                        }).ToList();
 
             // Are we updating one team or all teams?
             List<Team> teamsToUpdate = team == null ? await context.Teams.Where(t => t.Event == eventObj).ToListAsync() : new List<Team>() { team };
@@ -458,7 +459,7 @@ namespace ServerCore
                     }
 
                     // Enough puzzles unlocked by count? Let's unlock it
-                    if (puzzleToUpdate.PrerequisiteIDs.Where(id => solvedPuzzleIDsForTeamT.Contains(id)).Count() >= puzzleToUpdate.MinPrerequisiteCount)
+                    if (puzzleToUpdate.TeamID == t.ID && puzzleToUpdate.TotalPrerequisiteCount >= puzzleToUpdate.MinPrerequisiteCount)
                     {
                         PuzzleStatePerTeam state = await context.PuzzleStatePerTeam.Where(s => s.PuzzleID == puzzleToUpdate.PuzzleID && s.Team == t).FirstAsync();
                         state.UnlockedTime = unlockTime;
