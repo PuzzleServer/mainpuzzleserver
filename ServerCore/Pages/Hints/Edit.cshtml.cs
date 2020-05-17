@@ -56,8 +56,8 @@ namespace ServerCore.Pages.Hints
 
                 var puzzleName = await _context.Hints.Where(m => m.Id == Hint.Id).Select(m => m.Puzzle.Name).FirstOrDefaultAsync();
 
-                var teamMembers = await (from TeamMembers tm in _context.TeamMembers
-                                         join HintStatePerTeam hspt in _context.HintStatePerTeam on tm.Team equals hspt.Team
+                var teamMembers = await (from tm in _context.TeamMembers
+                                         join hspt in _context.HintStatePerTeam on tm.Team equals hspt.Team
                                          where hspt.Hint.Id == Hint.Id && hspt.UnlockTime != null
                                          select tm.Member.Email).ToListAsync();
                 MailHelper.Singleton.SendPlaintextBcc(teamMembers,

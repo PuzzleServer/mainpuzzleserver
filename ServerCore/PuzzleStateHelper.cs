@@ -474,8 +474,8 @@ namespace ServerCore
         {
             using (IDbContextTransaction transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable))
             {
-                var submissionsThatMatchResponse = await (from PuzzleStatePerTeam pspt in context.PuzzleStatePerTeam
-                                                          join Submission sub in context.Submissions on pspt.Team equals sub.Team
+                var submissionsThatMatchResponse = await (from pspt in context.PuzzleStatePerTeam
+                                                          join sub in context.Submissions on pspt.Team equals sub.Team
                                                           where pspt.PuzzleID == response.PuzzleID &&
                                                           sub.PuzzleID == response.PuzzleID &&
                                                           sub.SubmissionText == response.SubmittedText
@@ -499,8 +499,8 @@ namespace ServerCore
                     await context.SaveChangesAsync();
                     transaction.Commit();
 
-                    var teamMembers = await (from TeamMembers tm in context.TeamMembers
-                                             join Submission sub in context.Submissions on tm.Team equals sub.Team
+                    var teamMembers = await (from tm in context.TeamMembers
+                                             join sub in context.Submissions on tm.Team equals sub.Team
                                              where sub.PuzzleID == response.PuzzleID && sub.SubmissionText == response.SubmittedText
                                              select tm.Member.Email).ToListAsync();
                     MailHelper.Singleton.SendPlaintextBcc(teamMembers,
