@@ -202,7 +202,7 @@ namespace ServerCore
             await context.SaveChangesAsync();
 
             // if this puzzle got solved, look for others to unlock
-            if (value != null)
+            if (puzzle != null && value != null)
             {
                 await UnlockAnyPuzzlesThatThisSolveUnlockedAsync(context,
                     eventObj,
@@ -395,7 +395,7 @@ namespace ServerCore
         /// </summary>
         /// <param name="context">The puzzle DB context</param>
         /// <param name="eventObj">The event we are working in</param>
-        /// <param name="puzzleJustSolved">The puzzle just solved; if null, all the puzzles in the event (which will make more sense once we add per author filtering)</param>
+        /// <param name="puzzleJustSolved">The puzzle just solved</param>
         /// <param name="team">The team that just solved; if null, all the teams in the event.</param>
         /// <param name="unlockTime">The time that the puzzle should be marked as unlocked.</param>
         /// <returns></returns>
