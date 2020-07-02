@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -146,13 +147,23 @@ namespace ServerCore.Pages.Events
                     }
 
                     // ContentFiles
+                    Dictionary<ContentFile, Task<Uri>> allNewFiles = new Dictionary<ContentFile, Task<Uri>>();
+
                     foreach (ContentFile contentFile in _context.ContentFiles.Where((c) => c.Puzzle == sourcePuzzle))
                     {
                         ContentFile newFile = new ContentFile(contentFile);
                         newFile.Event = Event;
                         newFile.Puzzle = puzzleCloneMap[contentFile.Puzzle.ID];
-                        newFile.Url = await FileManager.CloneBlobAsync(contentFile.ShortName, Event.ID, contentFile.Url);
-                        _context.ContentFiles.Add(newFile);
+                        allNewFiles[newFile] = FileManager.CloneBlobAsync(contentFile.ShortName, Event.ID, contentFile.Url);
+                    }
+
+                    // Copying files sequentially can time out, so run in parallel instead
+                    await Task.WhenAll(allNewFiles.Values);
+
+                    foreach (var newFileKvp in allNewFiles)
+                    {
+                        newFileKvp.Key.Url = newFileKvp.Value.Result;
+                        _context.ContentFiles.Add(newFileKvp.Key);
                     }
 
                     // Pieces
