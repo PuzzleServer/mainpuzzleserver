@@ -90,6 +90,8 @@ namespace ServerCore.Pages.Events
                 // Step 3: Save so that all our new objects have valid IDs
                 await _context.SaveChangesAsync();
 
+                Dictionary<ContentFile, Task<Uri>> allNewFiles = new Dictionary<ContentFile, Task<Uri>>();
+
                 // Step 4: Ancillary tables referring to puzzles
                 foreach (var sourcePuzzle in sourcePuzzles)
                 {
@@ -147,7 +149,6 @@ namespace ServerCore.Pages.Events
                     }
 
                     // ContentFiles
-                    Dictionary<ContentFile, Task<Uri>> allNewFiles = new Dictionary<ContentFile, Task<Uri>>();
 
                     foreach (ContentFile contentFile in _context.ContentFiles.Where((c) => c.Puzzle == sourcePuzzle))
                     {
@@ -155,15 +156,6 @@ namespace ServerCore.Pages.Events
                         newFile.Event = Event;
                         newFile.Puzzle = puzzleCloneMap[contentFile.Puzzle.ID];
                         allNewFiles[newFile] = FileManager.CloneBlobAsync(contentFile.ShortName, Event.ID, contentFile.Url);
-                    }
-
-                    // Copying files sequentially can time out, so run in parallel instead
-                    await Task.WhenAll(allNewFiles.Values);
-
-                    foreach (var newFileKvp in allNewFiles)
-                    {
-                        newFileKvp.Key.Url = newFileKvp.Value.Result;
-                        _context.ContentFiles.Add(newFileKvp.Key);
                     }
 
                     // Pieces
@@ -174,6 +166,15 @@ namespace ServerCore.Pages.Events
                         newPiece.PuzzleID = puzzleCloneMap[piece.PuzzleID].ID; // unsure why I need this line for pieces but not others <shrug/>
                         _context.Pieces.Add(newPiece);
                     }
+                }
+
+                // Copying files sequentially can time out, so run in parallel instead
+                await Task.WhenAll(allNewFiles.Values);
+
+                foreach (var newFileKvp in allNewFiles)
+                {
+                    newFileKvp.Key.Url = newFileKvp.Value.Result;
+                    _context.ContentFiles.Add(newFileKvp.Key);
                 }
 
                 // Step 5: Final save and commit
