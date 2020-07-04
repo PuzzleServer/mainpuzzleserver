@@ -182,7 +182,7 @@
                             @Html.DisplayFor(modelItem => Model.SubmissionViews[i].Submission.SubmissionText)
                         </td>
                         <td>
-                            @(Model.SubmissionViews[i].Response != null ? Model.SubmissionViews[i].Response.ResponseText : "Incorrect")
+                            @Html.Raw(Model.SubmissionViews[i].Response != null ? Model.SubmissionViews[i].Response.ResponseText : "Incorrect")
                         </td>
                     </tr>
                 }
