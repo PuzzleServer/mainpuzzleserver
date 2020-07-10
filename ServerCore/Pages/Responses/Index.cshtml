@@ -17,7 +17,7 @@
     <a asp-page="CreateBulk" asp-route-puzzleId="@Model.PuzzleId">Bulk Create</a>
 </p>
 
-<h4>Note: ResponseText can either be plain text or Raw HTML.<br/>If you are using plain text, do not use the &quot;&lt;&quot; or &quot;&gt;&quot; characters.<br/>If you are using HTML, <b>CHECK IT VERY CAREFULLY!</b><br/>Failure to follow these rules may make responses uneditable, and you may have to delete your puzzle and start over.</h4>
+<h4>Note: ResponseText can either be plain text or Raw HTML.<br/>If you are using HTML, write it as Html.Raw(<i>&lt;your html&gt;</i>) and <b>CHECK IT VERY CAREFULLY!</b><br/>Failure to be careful may make responses uneditable, and you may have to delete your puzzle and start over.</h4>
 <table class="table">
     <thead>
         <tr>
@@ -52,7 +52,14 @@
                 @Html.DisplayFor(modelItem => item.SubmittedText)
             </td>
             <td>
-                @Html.Raw(item.ResponseText)
+                @if (item.ResponseText.StartsWith("Html.Raw(") && item.ResponseText.EndsWith(")"))
+                {
+                    @Html.Raw(item.ResponseText.Substring(9, item.ResponseText.Length - 10))
+                }
+                else
+                {
+                    @Html.DisplayFor(modelItem => item.ResponseText)
+                }
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Note)
