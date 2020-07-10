@@ -182,7 +182,22 @@
                             @Html.DisplayFor(modelItem => Model.SubmissionViews[i].Submission.SubmissionText)
                         </td>
                         <td>
-                            @(Model.SubmissionViews[i].Response != null ? Model.SubmissionViews[i].Response.ResponseText : "Incorrect")
+                            @{
+                                var response = Model.SubmissionViews[i].Response;
+
+                                if (response == null)
+                                {
+                                    <text>Incorrect</text>
+                                }
+                                else if (response.ResponseText.StartsWith("Html.Raw(") && response.ResponseText.EndsWith(")"))
+                                {
+                                    @Html.Raw(response.ResponseText.Substring(9, response.ResponseText.Length - 10))
+                                }
+                                else
+                                {
+                                    @Html.DisplayFor(modelItem => response.ResponseText)
+                                }
+                            }
                         </td>
                     </tr>
                 }
