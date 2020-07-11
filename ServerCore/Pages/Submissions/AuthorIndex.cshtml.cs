@@ -114,40 +114,40 @@ namespace ServerCore.Pages.Submissions
             switch (sort ?? DefaultSort)
             {
                 case SortOrder.PlayerAscending:
-                    submissionViewQ.OrderBy(submission => submission.SubmitterName);
+                    submissionViewQ = submissionViewQ.OrderBy(submission => submission.SubmitterName);
                     break;
                 case SortOrder.PlayerDescending:
-                    submissionViewQ.OrderByDescending(submission => submission.SubmitterName);
+                    submissionViewQ = submissionViewQ.OrderByDescending(submission => submission.SubmitterName);
                     break;
                 case SortOrder.TeamAscending:
-                    submissionViewQ.OrderBy(submission => submission.TeamName);
+                    submissionViewQ = submissionViewQ.OrderBy(submission => submission.TeamName);
                     break;
                 case SortOrder.TeamDescending:
-                    submissionViewQ.OrderByDescending(submission => submission.TeamName);
+                    submissionViewQ = submissionViewQ.OrderByDescending(submission => submission.TeamName);
                     break;
                 case SortOrder.PuzzleAscending:
-                    submissionViewQ.OrderBy(submission => submission.PuzzleName);
+                    submissionViewQ = submissionViewQ.OrderBy(submission => submission.PuzzleName);
                     break;
                 case SortOrder.PuzzleDescending:
-                    submissionViewQ.OrderByDescending(submission => submission.PuzzleName);
+                    submissionViewQ = submissionViewQ.OrderByDescending(submission => submission.PuzzleName);
                     break;
                 case SortOrder.ResponseAscending:
-                    submissionViewQ.OrderBy(submission => submission.ResponseText);
+                    submissionViewQ = submissionViewQ.OrderBy(submission => submission.ResponseText);
                     break;
                 case SortOrder.ResponseDescending:
-                    submissionViewQ.OrderByDescending(submission => submission.ResponseText);
+                    submissionViewQ = submissionViewQ.OrderByDescending(submission => submission.ResponseText);
                     break;
                 case SortOrder.SubmissionAscending:
-                    submissionViewQ.OrderBy(submission => submission.SubmissionText);
+                    submissionViewQ = submissionViewQ.OrderBy(submission => submission.SubmissionText);
                     break;
                 case SortOrder.SubmissionDescending:
-                    submissionViewQ.OrderByDescending(submission => submission.SubmissionText);
+                    submissionViewQ = submissionViewQ.OrderByDescending(submission => submission.SubmissionText);
                     break;
                 case SortOrder.TimeAscending:
-                    submissionViewQ.OrderBy(submission => submission.TimeSubmitted);
+                    submissionViewQ = submissionViewQ.OrderBy(submission => submission.TimeSubmitted);
                     break;
                 case SortOrder.TimeDescending:
-                    submissionViewQ.OrderByDescending(submission => submission.TimeSubmitted);
+                    submissionViewQ = submissionViewQ.OrderByDescending(submission => submission.TimeSubmitted);
                     break;
             }
 
