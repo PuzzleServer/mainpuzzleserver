@@ -76,6 +76,15 @@
     <Content Update="Pages\Resources\nipd2019\HomePartial.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Pages\Resources\nipd2020\FAQPartial.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Pages\Resources\nipd2020\HomePartial.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Pages\Resources\nipd2020\RulesPartial.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Pages\Resources\Samples.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
