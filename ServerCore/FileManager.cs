@@ -27,7 +27,7 @@ namespace ServerCore
         /// <returns>Url of the file in blob storage</returns>
         public static async Task<Uri> UploadBlobAsync(string fileName, int eventId, Stream contents)
         {
-            CloudBlockBlob blob = await CreateNewBlob(fileName, eventId);
+            CloudBlockBlob blob = await CreateNewBlob(fileName, eventId, true);
 
             await blob.UploadFromStreamAsync(contents);
             return blob.Uri;
@@ -43,16 +43,18 @@ namespace ServerCore
         public static async Task<Uri> CloneBlobAsync(string fileName, int eventId, Uri sourceUri)
         {
             CloudBlockBlob blobSource = new CloudBlockBlob(sourceUri, StorageAccount.Credentials);
-            
-            CloudBlockBlob blob = await CreateNewBlob(fileName, eventId);
+            Uri sourceContainerUri = new Uri(blobSource.Container.Uri.ToString() + "/");
+            Uri relativeUri = sourceContainerUri.MakeRelativeUri(sourceUri);
+            string newFileName = relativeUri.ToString();
+            CloudBlockBlob blob = await CreateNewBlob(newFileName, eventId, false);
             await blob.StartCopyAsync(blobSource);
 
             return blob.Uri;
         }
 
-        private static async Task<CloudBlockBlob> CreateNewBlob(string fileName, int eventId)
+        private static async Task<CloudBlockBlob> CreateNewBlob(string fileName, int eventId, bool randomize)
         {
-            CloudBlobDirectory puzzleDirectory = await GetRandomDirectoryAsync(eventId);
+            CloudBlobDirectory puzzleDirectory = await GetRandomDirectoryAsync(eventId, randomize);
 
             CloudBlockBlob blob = puzzleDirectory.GetBlockBlobReference(fileName);
             if (fileExtensionProvider.TryGetContentType(fileName, out string contentType))
@@ -72,7 +74,7 @@ namespace ServerCore
         /// <returns>A dictionary with key of the file names and value of the urls of the files in blob storage</returns>
         public static async Task<Dictionary<string, Uri>> UploadBlobsAsync(Dictionary<string, Stream> files, int eventId)
         {
-            CloudBlobDirectory puzzleDirectory = await GetRandomDirectoryAsync(eventId);
+            CloudBlobDirectory puzzleDirectory = await GetRandomDirectoryAsync(eventId, true);
             Dictionary<string, Uri> fileUrls = new Dictionary<string, Uri>(files.Count);
 
             foreach (KeyValuePair<string, Stream> file in files)
@@ -105,16 +107,24 @@ namespace ServerCore
         /// Gets a reference to a random directory
         /// </summary>
         /// <param name="eventId">Event the directory should be associated with</param>
-        private static async Task<CloudBlobDirectory> GetRandomDirectoryAsync(int eventId)
+        private static async Task<CloudBlobDirectory> GetRandomDirectoryAsync(int eventId, bool randomize)
         {
             CloudBlobContainer eventContainer = await GetOrCreateEventContainerAsync(eventId);
+            CloudBlobDirectory puzzleDirectory;
+            if (randomize)
+            {
+                // Obfuscate the file by putting it in a random directory
+                byte[] manglingBytes = new byte[16];
+                RandomNumberGenerator.Fill(manglingBytes);
+                // Turn the random bytes into legal URL characters
+                string mangledString = Convert.ToBase64String(manglingBytes).Replace('/', '_');
+                puzzleDirectory = eventContainer.GetDirectoryReference(mangledString);
+            }
+            else
+            {
+                puzzleDirectory = eventContainer.GetDirectoryReference("");
+            }
 
-            // Obfuscate the file by putting it in a random directory
-            byte[] manglingBytes = new byte[16];
-            RandomNumberGenerator.Fill(manglingBytes);
-            // Turn the random bytes into legal URL characters
-            string mangledString = Convert.ToBase64String(manglingBytes).Replace('/', '_');
-            CloudBlobDirectory puzzleDirectory = eventContainer.GetDirectoryReference(mangledString);
             return puzzleDirectory;
         }
 
