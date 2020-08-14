@@ -15,14 +15,17 @@ namespace ServerCore.Pages.Events
     [Authorize(Policy = "IsEventAdmin")]
     public class ImportModel : EventSpecificPageModel
     {
-        public ImportModel(PuzzleServerContext context, UserManager<IdentityUser> userManager) : base(context, userManager)
+        public ImportModel(PuzzleServerContext context, UserManager<IdentityUser> userManager, BackgroundFileUploader backgroundUploader) : base(context, userManager)
         {
+            _backgroundUploader = backgroundUploader;
         }
 
         public IList<Event> Events { get; set; }
 
         [BindProperty]
         public int ImportEventID { get; set; }
+
+        BackgroundFileUploader _backgroundUploader;
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
@@ -149,13 +152,12 @@ namespace ServerCore.Pages.Events
                     }
 
                     // ContentFiles
-
                     foreach (ContentFile contentFile in _context.ContentFiles.Where((c) => c.Puzzle == sourcePuzzle))
                     {
                         ContentFile newFile = new ContentFile(contentFile);
-                        newFile.Event = Event;
-                        newFile.Puzzle = puzzleCloneMap[contentFile.Puzzle.ID];
-                        allNewFiles[newFile] = FileManager.CloneBlobAsync(contentFile.ShortName, Event.ID, contentFile.Url);
+                        newFile.EventID = Event.ID;
+                        newFile.PuzzleID = puzzleCloneMap[contentFile.Puzzle.ID].ID;
+                        _backgroundUploader.CloneInBackground(newFile, contentFile.ShortName, Event.ID, contentFile.Url);
                     }
 
                     // Pieces
@@ -166,15 +168,6 @@ namespace ServerCore.Pages.Events
                         newPiece.PuzzleID = puzzleCloneMap[piece.PuzzleID].ID; // unsure why I need this line for pieces but not others <shrug/>
                         _context.Pieces.Add(newPiece);
                     }
-                }
-
-                // Copying files sequentially can time out, so run in parallel instead
-                await Task.WhenAll(allNewFiles.Values);
-
-                foreach (var newFileKvp in allNewFiles)
-                {
-                    newFileKvp.Key.Url = newFileKvp.Value.Result;
-                    _context.ContentFiles.Add(newFileKvp.Key);
                 }
 
                 // Step 5: Final save and commit

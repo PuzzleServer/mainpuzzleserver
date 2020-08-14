@@ -5,8 +5,10 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using ServerCore.DataModel;
 
 namespace ServerCore
 {
@@ -41,7 +43,7 @@ namespace ServerCore
         public static async Task<Uri> CloneBlobAsync(string fileName, int eventId, Uri sourceUri)
         {
             CloudBlockBlob blobSource = new CloudBlockBlob(sourceUri, StorageAccount.Credentials);
-
+            
             CloudBlockBlob blob = await CreateNewBlob(fileName, eventId);
             await blob.StartCopyAsync(blobSource);
 
@@ -134,6 +136,34 @@ namespace ServerCore
             { 
                 return CloudStorageAccount.Parse(ConnectionString);
             }
+        }
+    }
+
+    /// <summary>
+    /// Uploads files in the background and Saves them to the database when the upload is complete
+    /// </summary>
+    public class BackgroundFileUploader
+    {
+        PuzzleServerContext _context;
+
+        public BackgroundFileUploader(IServiceProvider serviceProvider)
+        {
+            IServiceScope newScope = serviceProvider.CreateScope();
+            _context = newScope.ServiceProvider.GetService<PuzzleServerContext>();            
+        }
+
+        public void CloneInBackground(ContentFile newFile, string fileName, int eventId, Uri sourceUri)
+        {
+            Task<Uri> t = FileManager.CloneBlobAsync(fileName, eventId, sourceUri);
+            t.ContinueWith((finishedTask) =>
+            {
+                newFile.Url = finishedTask.Result;
+                lock (_context)
+                {
+                    _context.ContentFiles.Add(newFile);
+                    _context.SaveChanges();
+                }
+            });
         }
     }
 }
