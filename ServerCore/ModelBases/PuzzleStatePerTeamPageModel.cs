@@ -68,7 +68,7 @@ namespace ServerCore.ModelBases
                     throw new ArgumentException($"unknown sort: {sort}");
             }
 
-            PuzzleStatePerTeam = await statesQ.ToListAsync();
+            PuzzleStatePerTeam = await statesQ.Include(pspt => pspt.Team).Include(pspt => pspt.Puzzle).ToListAsync();
 
             return Page();
         }

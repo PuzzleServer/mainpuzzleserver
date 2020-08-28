@@ -170,7 +170,13 @@ namespace ServerCore
                 // Only allow solved time to be modified if it is being marked as unsolved (set to null) or if it is being solved for the first time
                 if (value == null || states[i].SolvedTime == null)
                 {
-                    states[i].SolvedTime = value;
+                    // Unlock puzzles when solving them
+                    if (value != null && states[i].UnlockedTime == null)
+                    {
+                        states[i].UnlockedTime = value;
+                    }
+
+                    states[i].SolvedTime = value;                    
                 }
             }
 

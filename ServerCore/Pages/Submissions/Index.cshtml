@@ -49,7 +49,18 @@
 
 
 
-<h2>Submissions for @Model.Puzzle.Name</h2>
+    <h2>
+        Submissions for
+
+        @if (Model.PuzzleURL != null)
+        {
+            <a href="@Model.PuzzleURL" target="_blank">@Model.Puzzle.Name</a>
+        }
+        else
+        {
+            @Model.Puzzle.Name
+        }
+    </h2>
 <hr />
 <div>
     <a asp-page="/Teams/Play" asp-route-teamId="@Model.Team.ID">Back to puzzle list</a>
@@ -178,7 +189,7 @@
                         <td>
                             @Html.DisplayFor(modelItem => Model.SubmissionViews[i].SubmitterName)
                         </td>
-                        <td>
+                        <td style="max-width: 500px; word-wrap: break-word">
                             @Html.DisplayFor(modelItem => Model.SubmissionViews[i].Submission.SubmissionText)
                         </td>
                         <td>

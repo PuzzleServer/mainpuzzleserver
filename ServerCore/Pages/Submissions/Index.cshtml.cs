@@ -30,6 +30,8 @@ namespace ServerCore.Pages.Submissions
 
         public Puzzle Puzzle { get; set; }
 
+        public string PuzzleURL { get; set; }
+
         public Team Team { get; set; }
 
         public string AnswerToken { get; set; }
@@ -192,6 +194,22 @@ namespace ServerCore.Pages.Submissions
 
             Puzzle = await _context.Puzzles.Where(
                 (p) => p.ID == puzzleId).FirstOrDefaultAsync();
+
+            if(Puzzle.CustomURL != null)
+            {
+                PuzzleURL = PuzzleHelper.GetFormattedUrl(Puzzle.CustomURL, puzzleId, Event.ID);
+            }
+            else
+            {
+                ContentFile puzzleFile = await (from content in _context.ContentFiles
+                                                where content.PuzzleID == puzzleId &&
+                                                content.FileType == ContentFileType.Puzzle
+                                                select content).FirstOrDefaultAsync();
+                if(puzzleFile != null)
+                {
+                    PuzzleURL = Url.Action("Index", "Files", new { eventId = Event.ID, filename = puzzleFile.ShortName });
+                }
+            }
 
             PuzzleState = await (PuzzleStateHelper
                 .GetFullReadOnlyQuery(

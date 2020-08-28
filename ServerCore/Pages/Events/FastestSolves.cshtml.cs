@@ -48,6 +48,7 @@ namespace ServerCore.Pages.Events
             var puzzlesData = await PuzzleStateHelper.GetSparseQuery(_context, this.Event, null, null)
                 .Where(s => (s.SolvedTime != null &&
                              s.Puzzle.IsPuzzle &&
+                             s.UnlockedTime != null &&
                              s.SolvedTime <= submissionEnd &&
                              s.Team.IsDisqualified == false))
                 .GroupBy(state => state.Puzzle)
