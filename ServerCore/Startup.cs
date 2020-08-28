@@ -99,7 +99,7 @@ namespace ServerCore
             services.AddScoped<IAuthorizationHandler, IsRegisteredForEventHandler_Admin>();
             services.AddScoped<IAuthorizationHandler, IsRegisteredForEventHandler_Author>();
             services.AddScoped<IAuthorizationHandler, IsRegisteredForEventHandler_Player>();
-
+            services.AddScoped<BackgroundFileUploader>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -18,10 +18,10 @@ namespace ServerCore.DataModel
         public ContentFile(ContentFile source)
         {
             FileType = source.FileType;
-            Event = source.Event;
+            EventID = source.EventID;
             ShortName = source.ShortName;
             UrlString = source.UrlString;
-            Puzzle = source.Puzzle;
+            PuzzleID = source.PuzzleID;
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
