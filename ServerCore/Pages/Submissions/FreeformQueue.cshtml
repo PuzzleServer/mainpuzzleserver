@@ -1,0 +1,16 @@
+﻿@page "/{eventId}/{eventRole}/Submissions/FreeformQueue/{puzzleId?}"
+@model ServerCore.Pages.Submissions.FreeformQueueModel
+@{
+    ViewData["Title"] = "AuthorIndex";
+    ViewData["AdminRoute"] = "../Submissions/FreeformQueue";
+    ViewData["AuthorRoute"] = "../Submissions/FreeformQueue";
+    // TODO: Needs to handle implicit teams - ViewData["PlayRoute"] = "../Submissions/Index";
+    ViewData["RoutingPuzzleId"] = ViewContext.RouteData.Values["puzzleId"];
+
+    if (Model.Puzzle != null)
+    {
+        Layout = "../Puzzles/_puzzleManagementLayout.cshtml";
+    }
+
+}
+

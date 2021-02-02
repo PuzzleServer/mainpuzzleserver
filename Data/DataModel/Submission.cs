@@ -62,5 +62,9 @@ namespace ServerCore.DataModel
         /// The response to the submission
         /// </summary>
         public virtual Response Response { get; set; }
+
+        public string FreeformResponse { get; set; }
+
+        public bool? FreeformAccepted { get; set; }
     }
 }

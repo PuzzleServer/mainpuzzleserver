@@ -126,7 +126,7 @@ namespace ServerCore.Pages.Submissions
 
                 AnswerToken = submission.SubmissionText;
             }
-            else if (submission.Response == null && Event.IsAnswerSubmissionActive)
+            else if (!Puzzle.IsFreeform && submission.Response == null && Event.IsAnswerSubmissionActive)
             {
                 // We also determine if the puzzle should be set to email-only mode.
                 if (IsPuzzleSubmissionLimitReached(
