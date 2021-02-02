@@ -329,7 +329,7 @@ namespace ServerCore.Pages
           
           try {
               var sqlCommand = "UPDATE Annotations SET Version = Version + 1, Contents = @Contents, Timestamp = @Timestamp WHERE PuzzleID = @PuzzleID AND TeamID = @TeamID AND [Key] = @Key";
-              int result = await context.Database.ExecuteSqlCommandAsync(sqlCommand,
+              int result = await context.Database.ExecuteSqlRawAsync(sqlCommand,
                                                                          new SqlParameter("@Contents", contents),
                                                                          new SqlParameter("@Timestamp", DateTime.Now),
                                                                          new SqlParameter("@PuzzleID", puzzleId),
