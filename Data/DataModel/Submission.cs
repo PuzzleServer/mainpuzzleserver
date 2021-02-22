@@ -35,6 +35,8 @@ namespace ServerCore.DataModel
         [ForeignKey("Team")]
         public int TeamID { get; set; }
 
+        public int SubmitterID { get; set; }
+
         /// <summary>
         /// The exact user giving the submission
         /// </summary>
