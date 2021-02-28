@@ -334,7 +334,7 @@ namespace ServerCore
             while (true)
             {
                 var puzzlesToSolveByTime = await PuzzleStateHelper.GetSparseQuery(context, eventObj, null, team)
-                    .Where(state => state.SolvedTime == null && state.UnlockedTime != null && state.Puzzle.MinutesToAutomaticallySolve != null && EF.Functions.DateDiffMinute(state.UnlockedTime.Value, now) < state.Puzzle.MinutesToAutomaticallySolve.Value)
+                    .Where(state => state.SolvedTime == null && state.UnlockedTime != null && state.Puzzle.MinutesToAutomaticallySolve != null && EF.Functions.DateDiffMinute(state.UnlockedTime.Value, now) >= state.Puzzle.MinutesToAutomaticallySolve.Value)
                     .Select((state) => new { Puzzle = state.Puzzle, UnlockedTime = state.UnlockedTime.Value })
                     .ToListAsync();
 
@@ -373,7 +373,7 @@ namespace ServerCore
         {
             DateTime now = DateTime.UtcNow;
             return PuzzleStateHelper.GetSparseQuery(context, eventObj, null, team)
-                .Where(state => state.SolvedTime == null && state.UnlockedTime != null && state.Puzzle.MinutesOfEventLockout != 0 && EF.Functions.DateDiffMinute(state.UnlockedTime.Value, now) > state.Puzzle.MinutesOfEventLockout)
+                .Where(state => state.SolvedTime == null && state.UnlockedTime != null && state.Puzzle.MinutesOfEventLockout != 0 && EF.Functions.DateDiffMinute(state.UnlockedTime.Value, now) < state.Puzzle.MinutesOfEventLockout)
                 .Select((s) => s.Puzzle);
         }
 
