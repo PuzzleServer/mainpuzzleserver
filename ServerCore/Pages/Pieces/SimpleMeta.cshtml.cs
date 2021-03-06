@@ -51,7 +51,7 @@ namespace ServerCore.Pages.Pieces
                     return NotFound("Puzzle does not support the simple meta view.");
             }
 
-            EarnedPieces = await _context.Pieces.Where(p => p.PuzzleID == puzzleId && p.ProgressLevel <= solvedPuzzleCount).OrderBy(p => p.ProgressLevel).ToListAsync();
+            EarnedPieces = await _context.Pieces.Where(p => p.PuzzleID == puzzleId && p.ProgressLevel <= solvedPuzzleCount).OrderBy(p => p.ProgressLevel).ThenBy(p => p.Contents).ToListAsync();
 
             return Page();
         }
