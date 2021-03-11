@@ -69,12 +69,13 @@ namespace ServerCore.Pages.Events
             {
                 return NotFound("Could not find user with ID '" + userId + "'. Check to make sure the user hasn't been removed.");
             }
+            
+            user.MayBeAdminOrAuthor = true;
             Admin.Admin = user;
 
             Admin.Event = Event;
 
             _context.EventAdmins.Add(Admin);
-            user.MayBeAdminOrAuthor = true;
 
             await _context.SaveChangesAsync();
             return RedirectToPage("/Events/Players");
@@ -98,12 +99,13 @@ namespace ServerCore.Pages.Events
             {
                 return NotFound("Could not find user with ID '" + userId + "'. Check to make sure the user hasn't been removed.");
             }
+            
+            user.MayBeAdminOrAuthor = true;
             Author.Author = user;
 
             Author.Event = Event;
 
             _context.EventAuthors.Add(Author);
-            user.MayBeAdminOrAuthor = true;
 
             await _context.SaveChangesAsync();
             return RedirectToPage("/Events/Players");
