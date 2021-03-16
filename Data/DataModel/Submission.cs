@@ -63,8 +63,14 @@ namespace ServerCore.DataModel
         /// </summary>
         public virtual Response Response { get; set; }
 
+        /// <summary>
+        /// Feedback from freeform judging
+        /// </summary>
         public string FreeformResponse { get; set; }
 
+        /// <summary>
+        /// True if freeform accepted, false if rejected, null if not judged yet
+        /// </summary>
         public bool? FreeformAccepted { get; set; }
     }
 }

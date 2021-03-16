@@ -1,7 +1,7 @@
 ﻿@page "/{eventId}/{eventRole}/Submissions/FreeformQueue/{puzzleId?}"
 @model ServerCore.Pages.Submissions.FreeformQueueModel
 @{
-    ViewData["Title"] = "AuthorIndex";
+    ViewData["Title"] = "Freeform Queue";
     ViewData["AdminRoute"] = "../Submissions/FreeformQueue";
     ViewData["AuthorRoute"] = "../Submissions/FreeformQueue";
     // TODO: Needs to handle implicit teams - ViewData["PlayRoute"] = "../Submissions/Index";
@@ -12,5 +12,33 @@
         Layout = "../Puzzles/_puzzleManagementLayout.cshtml";
     }
 
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Puzzle</th>
+                <th>
+                    Submission
+                </th>
+                <th>
+                    Action
+                </th>
+            </tr>
+        </thead>
+        @foreach (var submission in Model.Submissions)
+        {
+            <tr>
+                <td>@submission.PuzzleName</td>
+                <td>@submission.SubmissionText</td>
+                <td>
+                    <form method="post">
+                        <input type="text" asp-for="FreeformResponse" />
+                        <input type="hidden" asp-for="SubmissionID" value="@submission.SubmissionId" />
+                        <input type="submit" asp-page-handler="Accept" value="Accept" />
+                        <input type="submit" asp-page-handler="Reject" value="Reject" />
+                    </form>
+                </td>
+            </tr>
+        }
+    </table>
 }
 

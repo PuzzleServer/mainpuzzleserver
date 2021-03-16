@@ -43,10 +43,13 @@ namespace ServerCore.Pages.Submissions
             public Submission Submission { get; set; }
             public Response Response { get; set; }
             public string SubmitterName { get; set; }
+            public bool IsFreeform { get; set; }
+            public string FreeformReponse { get; set; }
         }
 
         public async Task<IActionResult> OnPostAsync(int puzzleId, string submissionText)
         {
+            // todo: don't format submission text -- it might be a url or a sentence for the grader
             if (String.IsNullOrWhiteSpace(submissionText))
             {
                 ModelState.AddModelError("submissionText", "Your answer cannot be empty");
@@ -173,7 +176,8 @@ namespace ServerCore.Pages.Submissions
             {
                 Submission = submission,
                 Response = submission.Response,
-                SubmitterName = LoggedInUser.Name
+                SubmitterName = LoggedInUser.Name,
+                IsFreeform = Puzzle.IsFreeform
             });
 
             return Page();
@@ -213,6 +217,8 @@ namespace ServerCore.Pages.Submissions
                                          Submission = submission,
                                          Response = response,
                                          SubmitterName = user.Name,
+                                         FreeformReponse = submission.FreeformResponse,
+                                         IsFreeform = Puzzle.IsFreeform
                                      }).ToListAsync();
 
             Submissions = new List<Submission>(SubmissionViews.Count);
@@ -225,7 +231,7 @@ namespace ServerCore.Pages.Submissions
 
             if (PuzzleState.SolvedTime != null)
             {
-                if (Submissions?.Count > 0)
+                if (!Puzzle.IsFreeform && Submissions?.Count > 0)
                 {
                     AnswerToken = Submissions.Last().SubmissionText;
                 }
