@@ -44,50 +44,65 @@ namespace ServerCore.Pages.Events
             names.ForEach(t => teamNameLookup[t.ID] = t.Name);
 
             DateTime submissionEnd = Event.AnswerSubmissionEnd;
-            // get the page data: puzzle, solve count, top three fastest
-            // todo: This pulls all solved puzzles for the event. Is that performance acceptable?
-            var puzzlesData = (await PuzzleStateHelper.GetSparseQuery(_context, this.Event, null, null)
-                .Where(s => (s.SolvedTime != null &&
-                             s.Puzzle.IsPuzzle &&
-                             s.UnlockedTime != null &&
-                             s.SolvedTime <= submissionEnd &&
-                             s.Team.IsDisqualified == false)).ToListAsync())
-                .GroupBy(state => state.Puzzle)
-                .Select(g => new
-                {
-                    Puzzle = g.Key,
-                    SolveCount = g.Count(),
-                    Fastest = g.OrderBy(s => s.SolvedTime - s.UnlockedTime).Take(3).Select(s => new { s.Team.ID, Time = s.SolvedTime - s.UnlockedTime }),
-                    IsSolvedByUserTeam = g.Where(s => s.Team == this.CurrentTeam).Any()
-                })
-                .OrderByDescending(p => p.SolveCount).ThenBy(p => p.Puzzle.Name).ToList();
 
-            var unlockedData = this.CurrentTeam == null ? null : (new HashSet<int>(
+            // Get the page data: puzzle, solve count, top three fastest
+            // Puzzle solve counts
+            var solveCounts = await (from pspt in _context.PuzzleStatePerTeam
+                                     where pspt.SolvedTime != null &&
+                                     pspt.Puzzle.IsPuzzle &&
+                                     pspt.UnlockedTime != null &&
+                                     pspt.SolvedTime <= submissionEnd &&
+                                     !pspt.Team.IsDisqualified &&
+                                     pspt.Puzzle.Event == Event
+                                     let puzzleToGroup = new { PuzzleID = pspt.Puzzle.ID, PuzzleName = pspt.Puzzle.Name }
+                                     group puzzleToGroup by puzzleToGroup.PuzzleID into puzzleGroup
+                                     orderby puzzleGroup.Count() descending, puzzleGroup.Max(puzzleGroup => puzzleGroup.PuzzleName) // Using Max(PuzzleName) because only aggregate operators are allowed
+                                     select new { PuzzleID = puzzleGroup.Key, PuzzleName = puzzleGroup.Max(puzzleGroup => puzzleGroup.PuzzleName), SolveCount = puzzleGroup.Count() }).ToListAsync();
+
+            // Filter to solved puzzles
+            var psptToQuery = _context.PuzzleStatePerTeam.Where(pspt => pspt.Puzzle.EventID == Event.ID &&
+            pspt.Puzzle.IsPuzzle &&
+            pspt.UnlockedTime != null &&
+            pspt.SolvedTime != null &&
+            pspt.SolvedTime < submissionEnd &&
+            !pspt.Team.IsDisqualified
+            )/*.OrderByDescending(pspt => EF.Functions.DateDiffSecond(pspt.UnlockedTime, pspt.SolvedTime))*/;
+
+            // Sort by time and get the top 3
+            var fastestResults = _context.PuzzleStatePerTeam
+                .Select(pspt => pspt.PuzzleID).Distinct()
+                .SelectMany(puzzleId => psptToQuery
+                    .Where(pspt => pspt.PuzzleID == puzzleId)
+                    .OrderBy(pspt => EF.Functions.DateDiffMillisecond(pspt.UnlockedTime, pspt.SolvedTime))
+                    .Take(3), (puzzleId, pspt) => pspt)
+                .ToLookup(pspt => pspt.PuzzleID, pspt => new { pspt.TeamID, pspt.SolvedTime, pspt.UnlockedTime });
+
+            var unlockedData = this.CurrentTeam == null ? null : (
                 await PuzzleStateHelper.GetSparseQuery(_context, this.Event, null, null)
                     .Where(state => state.Team == this.CurrentTeam && state.UnlockedTime != null)
-                    .Select(s => s.PuzzleID)
-                    .ToListAsync()));
+                    .Select(s => new { s.PuzzleID, IsSolvedByUserTeam = (s.SolvedTime < submissionEnd) })
+                    .ToDictionaryAsync(s => s.PuzzleID));
 
-            var puzzles = new List<PuzzleStats>(puzzlesData.Count);
-            for (int i = 0; i < puzzlesData.Count; i++)
+            var puzzles = new List<PuzzleStats>(solveCounts.Count);
+            for (int i = 0; i < solveCounts.Count; i++)
             {
-                var data = puzzlesData[i];
+                var data = solveCounts[i];
 
                 // For players, we will hide puzzles they have not unlocked yet.
                 if (EventRole == EventRole.play &&
                     (unlockedData == null ||
-                     !unlockedData.Contains(data.Puzzle.ID)))
+                     !unlockedData.ContainsKey(data.PuzzleID)))
                 {
                     continue;
                 }
 
                 var stats = new PuzzleStats()
                 {
-                    Puzzle = data.Puzzle,
+                    PuzzleName = data.PuzzleName,
                     SolveCount = data.SolveCount,
                     SortOrder = i,
-                    Fastest = data.Fastest.Select(f => new FastRecord() { ID = f.ID, Name = teamNameLookup[f.ID], Time = f.Time }).ToArray(),
-                    IsSolved = data.IsSolvedByUserTeam
+                    Fastest = fastestResults[data.PuzzleID].Select(f => new FastRecord() { ID = f.TeamID, Name = teamNameLookup[f.TeamID], Time = f.SolvedTime - f.UnlockedTime }).ToArray(),
+                    IsSolved = unlockedData[data.PuzzleID].IsSolvedByUserTeam
                 };
 
                 puzzles.Add(stats);
@@ -113,14 +128,14 @@ namespace ServerCore.Pages.Events
                     puzzles.Sort((rhs, lhs) => (lhs.SolveCount - rhs.SolveCount));
                     break;
                 case SortOrder.PuzzleAscending:
-                    puzzles.Sort((rhs, lhs) => (String.Compare(rhs.Puzzle.Name,
-                                                               lhs.Puzzle.Name,
+                    puzzles.Sort((rhs, lhs) => (String.Compare(rhs.PuzzleName,
+                                                               lhs.PuzzleName,
                                                                StringComparison.OrdinalIgnoreCase)));
 
                     break;
                 case SortOrder.PuzzleDescending:
-                    puzzles.Sort((rhs, lhs) => (String.Compare(lhs.Puzzle.Name,
-                                                               rhs.Puzzle.Name,
+                    puzzles.Sort((rhs, lhs) => (String.Compare(lhs.PuzzleName,
+                                                               rhs.PuzzleName,
                                                                StringComparison.OrdinalIgnoreCase)));
 
                     break;
@@ -150,7 +165,7 @@ namespace ServerCore.Pages.Events
 
         public class PuzzleStats
         {
-            public Puzzle Puzzle;
+            public string PuzzleName;
             public int SolveCount;
             public int SortOrder;
             public FastRecord[] Fastest;

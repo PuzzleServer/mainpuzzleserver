@@ -39,7 +39,7 @@
                                                                       FastestSolvesModel.SortOrder.PuzzleDescending))"
                             asp-route-stateFilter="@Model.StateFilter">
 
-                            @Html.DisplayNameFor(model => model.Puzzles[0].Puzzle.Name)
+                            @Html.DisplayNameFor(model => model.Puzzles[0].PuzzleName)
                         </a>
                     </th>
                     <th>
@@ -75,7 +75,7 @@
 
                 <tr>
                     <td>
-                        @(puzzle.Puzzle.Name)
+                        @(puzzle.PuzzleName)
                     </td>
                     <td>
                         @(puzzle.SolveCount)
