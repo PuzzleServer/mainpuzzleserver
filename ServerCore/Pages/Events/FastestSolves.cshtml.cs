@@ -54,10 +54,12 @@ namespace ServerCore.Pages.Events
                                      pspt.SolvedTime <= submissionEnd &&
                                      !pspt.Team.IsDisqualified &&
                                      pspt.Puzzle.Event == Event
-                                     let puzzleToGroup = new { PuzzleID = pspt.Puzzle.ID, PuzzleName = pspt.Puzzle.Name }
+                                     let puzzleToGroup = new { PuzzleID = pspt.Puzzle.ID, PuzzleName = pspt.Puzzle.Name } // Using 'let' to work around EF grouping limitations (https://www.codeproject.com/Questions/5266406/Invalidoperationexception-the-LINQ-expression-for)
                                      group puzzleToGroup by puzzleToGroup.PuzzleID into puzzleGroup
                                      orderby puzzleGroup.Count() descending, puzzleGroup.Max(puzzleGroup => puzzleGroup.PuzzleName) // Using Max(PuzzleName) because only aggregate operators are allowed
                                      select new { PuzzleID = puzzleGroup.Key, PuzzleName = puzzleGroup.Max(puzzleGroup => puzzleGroup.PuzzleName), SolveCount = puzzleGroup.Count() }).ToListAsync();
+
+            // Getting the top 3 requires working around EF limitations translating sorting results within a group to SQL. Workaround from https://github.com/dotnet/efcore/issues/13805
 
             // Filter to solved puzzles
             var psptToQuery = _context.PuzzleStatePerTeam.Where(pspt => pspt.Puzzle.EventID == Event.ID &&
