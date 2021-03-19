@@ -74,10 +74,9 @@ namespace ServerCore.Pages.Puzzles
             else
             {
                 IQueryable<Puzzle> authorPuzzles = UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser);
-                Puzzle[] thisPuzzle = new Puzzle[] { Puzzle };
 
-                allVisiblePuzzles = authorPuzzles.Except(thisPuzzle);
-                allVisiblePuzzlesAndGlobalPrerequisites = authorPuzzles.Union(_context.Puzzles.Where(m => m.Event == Event && m.IsGloballyVisiblePrerequisite)).Except(thisPuzzle);
+                allVisiblePuzzles = authorPuzzles.Where(puzzle => puzzle != Puzzle);
+                allVisiblePuzzlesAndGlobalPrerequisites = authorPuzzles.Union(_context.Puzzles.Where(m => m.Event == Event && m.IsGloballyVisiblePrerequisite)).Where(m=> m != Puzzle);
             }
 
             IQueryable<Puzzle> currentPrerequisitesQ = _context.Prerequisites.Where(m => m.Puzzle == Puzzle).Select(m => m.Prerequisite);
