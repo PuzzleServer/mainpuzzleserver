@@ -27,6 +27,7 @@ namespace ServerCore.Pages.Submissions
         {
             public int PuzzleId { get; set; }
             public string PuzzleName { get; set; }
+            public string TeamName { get; set; }
             public string SubmissionText { get; set; }
             public int SubmissionId { get; set; }
         }
@@ -36,6 +37,15 @@ namespace ServerCore.Pages.Submissions
 
         [BindProperty]
         public int SubmissionID { get; set; }
+
+        public enum FreeformResult
+        {
+            Accepted,
+            Rejected
+        }
+
+        [BindProperty]
+        public FreeformResult Result { get; set; }
 
         public List<SubmissionView> Submissions { get; set; }
 
@@ -50,10 +60,8 @@ namespace ServerCore.Pages.Submissions
             {
                 Puzzle = await _context.Puzzles.Where(m => m.ID == puzzleId).FirstOrDefaultAsync();
             }
-            //todo add team names to view
-            // email teams with results
-            // change accept/reject to radio buttons
-            // think about a way to go back to old submissions and redo them (e.g. to fix a forgotten comment)
+
+            // todo: think about a way to go back to old submissions and redo them (e.g. to fix a forgotten comment)
             // todo: should admins be able to see anything they're not an author of?
             var submissionQuery = from Puzzle puzzle in _context.Puzzles
                                   join PuzzleAuthors author in _context.PuzzleAuthors on puzzle.ID equals author.PuzzleID
@@ -64,7 +72,7 @@ namespace ServerCore.Pages.Submissions
                                   puzzle.IsFreeform &&
                                   pspt.UnlockedTime != null && pspt.SolvedTime == null &&
                                   submission.FreeformAccepted == null
-                                  select new SubmissionView() { PuzzleId = puzzle.ID, PuzzleName = puzzle.Name, SubmissionText = submission.SubmissionText, SubmissionId = submission.ID };
+                                  select new SubmissionView() { PuzzleId = puzzle.ID, PuzzleName = puzzle.Name, TeamName = pspt.Team.Name, SubmissionText = submission.SubmissionText, SubmissionId = submission.ID };
             if (puzzleId != null)
             {
                 submissionQuery = submissionQuery.Where(submissionView => submissionView.PuzzleId == puzzleId);
@@ -73,12 +81,15 @@ namespace ServerCore.Pages.Submissions
             Submissions = await submissionQuery.ToListAsync();
         }
 
-        public async Task<IActionResult> OnPostAcceptAsync()
+        public async Task<IActionResult> OnPostAsync(int? puzzleId)
         {
+            bool accepted = (Result == FreeformResult.Accepted);
+
+            Submission submission;
             using (var transaction = _context.Database.BeginTransaction())
             {
                 // todo admin access?
-                Submission submission = await (from Submission sub in _context.Submissions
+                submission = await (from Submission sub in _context.Submissions
                                                join PuzzleAuthors author in _context.PuzzleAuthors on sub.PuzzleID equals author.PuzzleID
                                                where sub.ID == SubmissionID &&
                                                sub.FreeformAccepted == null &&
@@ -87,39 +98,22 @@ namespace ServerCore.Pages.Submissions
 
                 if (submission != null)
                 {
-                    submission.FreeformAccepted = true;
+                    submission.FreeformAccepted = accepted;
                     submission.FreeformResponse = FreeformResponse;
-                    await PuzzleStateHelper.SetSolveStateAsync(_context, Event, submission.Puzzle, submission.Team, DateTime.UtcNow);
+
+                    if (accepted)
+                    {
+                        await PuzzleStateHelper.SetSolveStateAsync(_context, Event, submission.Puzzle, submission.Team, DateTime.UtcNow);
+                    }
 
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
                 }
             }
-            await PopulateUI(null); //todo: puzzle id
-            return Page();
-        }
 
-        // todo: refactor to share with accept?
-        public async Task<IActionResult> OnPostRejectAsync()
-        {
-            // todo admin access?
-            Submission submission = await (from Submission sub in _context.Submissions
-                                           join PuzzleAuthors author in _context.PuzzleAuthors on sub.PuzzleID equals author.PuzzleID
-                                           where sub.ID == SubmissionID &&
-                                           sub.FreeformAccepted == null &&
-                                           author.Author == LoggedInUser
-                                           select sub).FirstOrDefaultAsync();
+            MailHelper.Singleton.SendPlaintextOneAddress(submission.Submitter.Email, $"{submission.Puzzle.Name} Submission {Result}", $"Your submission for {submission.Puzzle.Name} has been {Result} with the response: {FreeformResponse}");
 
-            if (submission != null)
-            {
-                submission.FreeformAccepted = false;
-                submission.FreeformResponse = FreeformResponse;
-
-                await _context.SaveChangesAsync();
-            }
-
-            await PopulateUI(null); //todo: puzzle id
-            return Page();
+            return RedirectToPage();
         }
     }
 }

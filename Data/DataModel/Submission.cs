@@ -72,5 +72,15 @@ namespace ServerCore.DataModel
         /// True if freeform accepted, false if rejected, null if not judged yet
         /// </summary>
         public bool? FreeformAccepted { get; set; }
+
+        /// <summary>
+        /// Submission text that should not be automatically formatted
+        /// </summary>
+        [NotMapped]
+        public string UnformattedSubmissionText
+        {
+            get { return submissionText; }
+            set { submissionText = value; }
+        }
     }
 }

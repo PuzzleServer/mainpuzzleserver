@@ -187,7 +187,11 @@
                                 {
                                     if (Model.SubmissionViews[i].Submission.FreeformAccepted != null)
                                     {
-                                    @Html.DisplayFor(modelItem => Model.SubmissionViews[i].FreeformReponse);
+                                        @Html.DisplayFor(modelItem => Model.SubmissionViews[i].FreeformReponse);
+                                    }
+                                    else
+                                    {
+                                        <span>Pending...</span>
                                     }
                                 }
                                 else

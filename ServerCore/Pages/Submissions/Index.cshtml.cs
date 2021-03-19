@@ -105,12 +105,20 @@ namespace ServerCore.Pages.Submissions
             // Create submission and add it to list
             Submission submission = new Submission
             {
-                SubmissionText = submissionText,
                 TimeSubmitted = DateTime.UtcNow,
                 Puzzle = PuzzleState.Puzzle,
                 Team = PuzzleState.Team,
                 Submitter = LoggedInUser,
             };
+            if (Puzzle.IsFreeform)
+            {
+                submission.UnformattedSubmissionText = submissionText;
+            }
+            else
+            {
+                submission.SubmissionText = submissionText;
+            }
+
             submission.Response = await _context.Responses.Where(
                 r => r.Puzzle.ID == puzzleId &&
                      submission.SubmissionText == r.SubmittedText)

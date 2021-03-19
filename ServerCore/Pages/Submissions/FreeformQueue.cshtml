@@ -16,6 +16,7 @@
         <thead>
             <tr>
                 <th>Puzzle</th>
+                <th>Team</th>
                 <th>
                     Submission
                 </th>
@@ -28,13 +29,15 @@
         {
             <tr>
                 <td>@submission.PuzzleName</td>
+                <td>@submission.TeamName</td>
                 <td>@submission.SubmissionText</td>
                 <td>
                     <form method="post">
                         <input type="text" asp-for="FreeformResponse" />
                         <input type="hidden" asp-for="SubmissionID" value="@submission.SubmissionId" />
-                        <input type="submit" asp-page-handler="Accept" value="Accept" />
-                        <input type="submit" asp-page-handler="Reject" value="Reject" />
+                        <input type="radio" asp-for="Result" value="Accepted" />Accept
+                        <input type="radio" asp-for="Result" value="Rejected" />Reject
+                        <input type="submit" />
                     </form>
                 </td>
             </tr>
