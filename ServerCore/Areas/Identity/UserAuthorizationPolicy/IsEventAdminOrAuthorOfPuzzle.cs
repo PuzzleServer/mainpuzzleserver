@@ -17,37 +17,33 @@ namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
 
     public class IsEventAdminOrAuthorOfPuzzleHandler_Admin : AuthorizationHandler<IsEventAdminOrAuthorOfPuzzleRequirement>
     {
-        private readonly PuzzleServerContext dbContext;
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly AuthorizationHelper authHelper;
 
-        public IsEventAdminOrAuthorOfPuzzleHandler_Admin(PuzzleServerContext pContext, UserManager<IdentityUser> manager)
+        public IsEventAdminOrAuthorOfPuzzleHandler_Admin(AuthorizationHelper authHelper)
         {
-            dbContext = pContext;
-            userManager = manager;
+            this.authHelper = authHelper;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
                                                        IsEventAdminOrAuthorOfPuzzleRequirement requirement)
         {
-            await AuthorizationHelper.IsEventAdminCheck(authContext, dbContext, userManager, requirement);
+            await authHelper.IsEventAdminCheck(authContext, requirement);
         }
     }
 
     public class IsEventAdminOrAuthorOfPuzzleHandler_Author : AuthorizationHandler<IsEventAdminOrAuthorOfPuzzleRequirement>
     {
-        private readonly PuzzleServerContext dbContext;
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly AuthorizationHelper authHelper;
 
-        public IsEventAdminOrAuthorOfPuzzleHandler_Author(PuzzleServerContext pContext, UserManager<IdentityUser> manager)
+        public IsEventAdminOrAuthorOfPuzzleHandler_Author(AuthorizationHelper authHelper)
         {
-            dbContext = pContext;
-            userManager = manager;
+            this.authHelper = authHelper;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
                                                        IsEventAdminOrAuthorOfPuzzleRequirement requirement)
         {
-            await AuthorizationHelper.IsPuzzleAuthorCheck(authContext, dbContext, userManager, requirement);
+            await authHelper.IsPuzzleAuthorCheck(authContext, requirement);
         }
     }
 }

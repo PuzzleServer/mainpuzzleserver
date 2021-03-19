@@ -149,6 +149,7 @@ namespace ServerCore.ModelBases
 
         public class RoleBinder : IModelBinder
         {
+#pragma warning disable 1998 // Async method that doesn't await anything forced by the IModelBinder interface
             // This doesn't actually run async but the compiler complains if I try to use BindModel :(
             public async Task BindModelAsync(ModelBindingContext bindingContext)
             {
@@ -169,6 +170,7 @@ namespace ServerCore.ModelBases
                     throw new Exception("Invalid route parameter '" + eventRoleAsString + "'. Please check your URL to make sure you are using the correct path. (code: InvalidRoleId)");
                 }
             }
+#pragma warning restore
         }
     }
 }

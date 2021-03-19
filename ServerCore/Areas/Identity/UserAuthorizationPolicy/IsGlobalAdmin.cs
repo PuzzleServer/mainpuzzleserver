@@ -31,7 +31,7 @@ namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
         {
             PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
 
-            if (puzzleUser.IsGlobalAdmin)
+            if (puzzleUser != null && puzzleUser.IsGlobalAdmin)
             {
                 authContext.Succeed(requirement);
             }

@@ -81,7 +81,7 @@ namespace ServerCore.Pages.Puzzles
                 _context.Puzzles.Add(p);
                 _context.PuzzleAuthors.Add(new PuzzleAuthors() { Puzzle = p, Author = LoggedInUser });
 
-                var teamIDs = await (from Team team in _context.Teams
+                var teamIDs = await (from team in _context.Teams
                                        where team.Event == Event
                                        select team.ID).ToListAsync();
                 foreach (int teamID in teamIDs)

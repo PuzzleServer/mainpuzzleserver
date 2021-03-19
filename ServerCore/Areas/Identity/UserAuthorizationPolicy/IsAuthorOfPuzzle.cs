@@ -17,19 +17,17 @@ namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
 
     public class IsAuthorOfPuzzleHandler : AuthorizationHandler<IsAuthorOfPuzzleRequirement>
     {
-        private readonly PuzzleServerContext dbContext;
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly AuthorizationHelper authHelper;
 
-        public IsAuthorOfPuzzleHandler(PuzzleServerContext pContext, UserManager<IdentityUser> manager)
+        public IsAuthorOfPuzzleHandler(AuthorizationHelper authHelper)
         {
-            dbContext = pContext;
-            userManager = manager;
+            this.authHelper = authHelper;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
                                                        IsAuthorOfPuzzleRequirement requirement)
         {
-            await AuthorizationHelper.IsPuzzleAuthorCheck(authContext, dbContext, userManager, requirement);
+            await authHelper.IsPuzzleAuthorCheck(authContext, requirement);
         }
     }
 }

@@ -41,7 +41,7 @@ namespace ServerCore.Pages.Teams
                 return RedirectToPage("./Details", new { teamId = playerTeam.Team.ID });
             }
 
-            var applications = from TeamApplication application in _context.TeamApplications
+            var applications = from application in _context.TeamApplications
                                where application.Player == LoggedInUser && application.Team.Event == Event
                                select application.Team;
             AppliedTeam = await applications.FirstOrDefaultAsync();

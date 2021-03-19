@@ -61,23 +61,18 @@ namespace ServerCore.Pages.Submissions
                 submissionsQ = _context.Submissions.Where((s) => s.Puzzle != null && s.Puzzle.ID == puzzleId);
             }
 
-            IQueryable<SubmissionCountsView> incorrectCounts = submissionsQ
-                .Where(submission => submission.Response == null)
-                .GroupBy(submission => Tuple.Create<string,int>
-                (
-                    submission.SubmissionText,
-                    submission.PuzzleID
-                ))
-                .Select((submissions) => new SubmissionCountsView()
-                {
-                    PuzzleID = submissions.First().PuzzleID,
-                    PuzzleName = submissions.First().Puzzle.Name,
-                    SubmissionText = submissions.Key.Item1,
-                    NumberOfTimesSubmitted = submissions.Count()
-                })
-                .OrderByDescending(incorrectCountView => incorrectCountView.NumberOfTimesSubmitted);
-
-            SubmissionCounts = incorrectCounts.ToAsyncEnumerable().ToEnumerable();
+            SubmissionCounts = await (from submission in submissionsQ
+                                         where submission.Response == null
+                                         group submission by new { submission.PuzzleID, submission.SubmissionText, submission.Puzzle.Name } into submissionCounts
+                                         orderby submissionCounts.Count() descending
+                                         select new SubmissionCountsView
+                                         {
+                                             PuzzleID = submissionCounts.Key.PuzzleID,
+                                             PuzzleName = submissionCounts.Key.Name,
+                                             SubmissionText = submissionCounts.Key.SubmissionText,
+                                             NumberOfTimesSubmitted = submissionCounts.Count()
+                                         }                                         
+                                         ).ToListAsync();
             return Page();
         }
 

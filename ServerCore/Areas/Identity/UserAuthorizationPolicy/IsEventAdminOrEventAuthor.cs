@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using ServerCore.DataModel;
 
@@ -14,35 +15,31 @@ namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
 
     public class IsEventAdminOrEventAuthorHandler_Admin : AuthorizationHandler<IsEventAdminOrEventAuthorRequirement>
     {
-        private readonly PuzzleServerContext dbContext;
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly AuthorizationHelper authHelper;
 
-        public IsEventAdminOrEventAuthorHandler_Admin(PuzzleServerContext pContext, UserManager<IdentityUser> manager)
+        public IsEventAdminOrEventAuthorHandler_Admin(AuthorizationHelper authHelper)
         {
-            dbContext = pContext;
-            userManager = manager;
+            this.authHelper = authHelper;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext authContext, IsEventAdminOrEventAuthorRequirement requirement)
         {
-            await AuthorizationHelper.IsEventAdminCheck(authContext, dbContext, userManager, requirement);
+            await authHelper.IsEventAdminCheck(authContext, requirement);
         }
     }
 
     public class IsEventAdminOrEventAuthorHandler_Author : AuthorizationHandler<IsEventAdminOrEventAuthorRequirement>
     {
-        private readonly PuzzleServerContext dbContext;
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly AuthorizationHelper authHelper;
 
-        public IsEventAdminOrEventAuthorHandler_Author(PuzzleServerContext pContext, UserManager<IdentityUser> manager)
+        public IsEventAdminOrEventAuthorHandler_Author(AuthorizationHelper authHelper)
         {
-            dbContext = pContext;
-            userManager = manager;
+            this.authHelper = authHelper;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext authContext, IsEventAdminOrEventAuthorRequirement requirement)
         {
-            await AuthorizationHelper.IsEventAuthorCheck(authContext, dbContext, userManager, requirement);
+            await authHelper.IsEventAuthorCheck(authContext, requirement);
         }
     }
 }
