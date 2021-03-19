@@ -17,11 +17,12 @@ namespace Data.Migrations
             modelBuilder
                 .UseIdentityColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.2");
+                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024");
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -73,6 +74,7 @@ namespace Data.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
                 {
                     b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("AccessFailedCount")
@@ -618,9 +620,6 @@ namespace Data.Migrations
                     b.Property<bool>("IsFinalPuzzle")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsFreeform")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsGloballyVisiblePrerequisite")
                         .HasColumnType("bit");
 
@@ -809,12 +808,6 @@ namespace Data.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<bool?>("FreeformAccepted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("FreeformResponse")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("PuzzleID")
                         .HasColumnType("int");
 
@@ -967,10 +960,12 @@ namespace Data.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<int>("Team.ID")
+                    b.Property<int?>("Team.ID")
+                        .IsRequired()
                         .HasColumnType("int");
 
-                    b.Property<int>("User.ID")
+                    b.Property<int?>("User.ID")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.HasKey("ID");
@@ -987,8 +982,7 @@ namespace Data.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -996,8 +990,7 @@ namespace Data.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -1005,8 +998,7 @@ namespace Data.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -1014,14 +1006,12 @@ namespace Data.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -1029,8 +1019,7 @@ namespace Data.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Annotation", b =>
@@ -1038,14 +1027,12 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
                         .WithMany()
                         .HasForeignKey("PuzzleID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("ServerCore.DataModel.Team", "Team")
                         .WithMany()
                         .HasForeignKey("TeamID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Puzzle");
 
@@ -1057,14 +1044,12 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Event", "Event")
                         .WithMany()
                         .HasForeignKey("EventID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
                         .WithMany("Contents")
                         .HasForeignKey("PuzzleID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Event");
 
@@ -1076,14 +1061,12 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.PuzzleUser", "Admin")
                         .WithMany()
                         .HasForeignKey("AdminID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("ServerCore.DataModel.Event", "Event")
                         .WithMany()
                         .HasForeignKey("EventID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Admin");
 
@@ -1095,14 +1078,12 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.PuzzleUser", "Author")
                         .WithMany()
                         .HasForeignKey("AuthorID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("ServerCore.DataModel.Event", "Event")
                         .WithMany()
                         .HasForeignKey("EventID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Author");
 
@@ -1114,14 +1095,12 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
                         .WithMany()
                         .HasForeignKey("PuzzleID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("ServerCore.DataModel.PuzzleUser", "Submitter")
                         .WithMany()
                         .HasForeignKey("SubmitterID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Puzzle");
 
@@ -1133,8 +1112,7 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
                         .WithMany()
                         .HasForeignKey("PuzzleID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Puzzle");
                 });
@@ -1144,14 +1122,12 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Hint", "Hint")
                         .WithMany()
                         .HasForeignKey("HintID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("ServerCore.DataModel.Team", "Team")
                         .WithMany()
                         .HasForeignKey("TeamID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Hint");
 
@@ -1170,8 +1146,7 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
                         .WithMany()
                         .HasForeignKey("PuzzleID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Puzzle");
                 });
@@ -1181,14 +1156,12 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Puzzle", "Prerequisite")
                         .WithMany()
                         .HasForeignKey("PrerequisiteID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
                         .WithMany()
                         .HasForeignKey("PuzzleID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Prerequisite");
 
@@ -1200,8 +1173,7 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Event", "Event")
                         .WithMany()
                         .HasForeignKey("EventID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Event");
                 });
@@ -1211,14 +1183,12 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.PuzzleUser", "Author")
                         .WithMany()
                         .HasForeignKey("AuthorID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
                         .WithMany()
                         .HasForeignKey("PuzzleID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Author");
 
@@ -1230,14 +1200,12 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
                         .WithMany()
                         .HasForeignKey("PuzzleID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("ServerCore.DataModel.Team", "Team")
                         .WithMany()
                         .HasForeignKey("TeamID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Puzzle");
 
@@ -1249,8 +1217,7 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
                         .WithMany()
                         .HasForeignKey("PuzzleID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Puzzle");
                 });
@@ -1260,8 +1227,7 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
                         .WithMany("Submissions")
                         .HasForeignKey("PuzzleID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("ServerCore.DataModel.Response", "Response")
                         .WithMany()
@@ -1270,14 +1236,12 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.PuzzleUser", "Submitter")
                         .WithMany()
                         .HasForeignKey("SubmitterID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("ServerCore.DataModel.Team", "Team")
                         .WithMany()
                         .HasForeignKey("TeamID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("ServerCore.DataModel.Team", null)
                         .WithMany("Submissions")
@@ -1297,14 +1261,12 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Event", "Event")
                         .WithMany()
                         .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("ServerCore.DataModel.PuzzleUser", "Player")
                         .WithMany()
                         .HasForeignKey("PlayerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Event");
 
@@ -1316,8 +1278,7 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Event", "Event")
                         .WithMany()
                         .HasForeignKey("EventID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Event");
                 });
@@ -1327,14 +1288,12 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.PuzzleUser", "Player")
                         .WithMany()
                         .HasForeignKey("PlayerID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("ServerCore.DataModel.Team", "Team")
                         .WithMany()
                         .HasForeignKey("TeamID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Player");
 
@@ -1346,14 +1305,12 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Team", "Team")
                         .WithMany()
                         .HasForeignKey("Team.ID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("ServerCore.DataModel.PuzzleUser", "Member")
                         .WithMany()
                         .HasForeignKey("User.ID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Member");
 
