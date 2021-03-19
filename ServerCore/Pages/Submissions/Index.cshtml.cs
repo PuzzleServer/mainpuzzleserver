@@ -49,7 +49,6 @@ namespace ServerCore.Pages.Submissions
 
         public async Task<IActionResult> OnPostAsync(int puzzleId, string submissionText)
         {
-            // todo: don't format submission text -- it might be a url or a sentence for the grader
             if (String.IsNullOrWhiteSpace(submissionText))
             {
                 ModelState.AddModelError("submissionText", "Your answer cannot be empty");
