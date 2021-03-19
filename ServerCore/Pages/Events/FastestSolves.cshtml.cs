@@ -98,13 +98,29 @@ namespace ServerCore.Pages.Events
                     continue;
                 }
 
+                FastRecord[] fastest;
+                if (fastestResults.Contains(data.PuzzleID))
+                {
+                    fastest = fastestResults[data.PuzzleID].Select(f => new FastRecord() { ID = f.TeamID, Name = teamNameLookup[f.TeamID], Time = f.SolvedTime - f.UnlockedTime }).ToArray();
+                }
+                else
+                {
+                    fastest = Array.Empty<FastRecord>();
+                }
+
+                bool isSolved = false;
+                if (unlockedData != null)
+                {
+                    isSolved = unlockedData[data.PuzzleID].IsSolvedByUserTeam;
+                }
+
                 var stats = new PuzzleStats()
                 {
                     PuzzleName = data.PuzzleName,
                     SolveCount = data.SolveCount,
                     SortOrder = i,
-                    Fastest = fastestResults[data.PuzzleID].Select(f => new FastRecord() { ID = f.TeamID, Name = teamNameLookup[f.TeamID], Time = f.SolvedTime - f.UnlockedTime }).ToArray(),
-                    IsSolved = unlockedData[data.PuzzleID].IsSolvedByUserTeam
+                    Fastest = fastest,
+                    IsSolved = isSolved
                 };
 
                 puzzles.Add(stats);
