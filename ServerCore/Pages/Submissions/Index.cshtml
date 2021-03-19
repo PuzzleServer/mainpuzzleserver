@@ -189,7 +189,7 @@
                                     {
                                         @Html.DisplayFor(modelItem => Model.SubmissionViews[i].FreeformReponse);
                                     }
-                                    else
+                                    else if (Model.PuzzleState.SolvedTime == null)
                                     {
                                         <span>Pending...</span>
                                     }

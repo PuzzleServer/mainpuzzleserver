@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -40,6 +41,7 @@ namespace ServerCore.Pages.Submissions
 
         public enum FreeformResult
         {
+            None,
             Accepted,
             Rejected
         }
@@ -72,6 +74,7 @@ namespace ServerCore.Pages.Submissions
                                   puzzle.IsFreeform &&
                                   pspt.UnlockedTime != null && pspt.SolvedTime == null &&
                                   submission.FreeformAccepted == null
+                                  orderby submission.TimeSubmitted
                                   select new SubmissionView() { PuzzleId = puzzle.ID, PuzzleName = puzzle.Name, TeamName = pspt.Team.Name, SubmissionText = submission.SubmissionText, SubmissionId = submission.ID };
             if (puzzleId != null)
             {
@@ -83,6 +86,11 @@ namespace ServerCore.Pages.Submissions
 
         public async Task<IActionResult> OnPostAsync(int? puzzleId)
         {
+            if (Result == FreeformResult.None)
+            {
+                return RedirectToPage();
+            }
+
             bool accepted = (Result == FreeformResult.Accepted);
 
             Submission submission;
@@ -111,7 +119,10 @@ namespace ServerCore.Pages.Submissions
                 }
             }
 
-            MailHelper.Singleton.SendPlaintextOneAddress(submission.Submitter.Email, $"{submission.Puzzle.Name} Submission {Result}", $"Your submission for {submission.Puzzle.Name} has been {Result} with the response: {FreeformResponse}");
+            if (submission != null)
+            {
+                MailHelper.Singleton.SendPlaintextOneAddress(submission.Submitter.Email, $"{submission.Puzzle.Name} Submission {Result}", $"Your submission for {submission.Puzzle.Name} has been {Result} with the response: {FreeformResponse}");
+            }
 
             return RedirectToPage();
         }
