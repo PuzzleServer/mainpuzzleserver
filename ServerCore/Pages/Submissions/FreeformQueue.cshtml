@@ -1,0 +1,54 @@
+﻿@page "/{eventId}/{eventRole}/Submissions/FreeformQueue/{puzzleId?}"
+@model ServerCore.Pages.Submissions.FreeformQueueModel
+@{
+    ViewData["Title"] = "Freeform Queue";
+    ViewData["AdminRoute"] = "../Submissions/FreeformQueue";
+    ViewData["AuthorRoute"] = "../Submissions/FreeformQueue";
+    // TODO: Needs to handle implicit teams - ViewData["PlayRoute"] = "../Submissions/Index";
+    ViewData["RoutingPuzzleId"] = ViewContext.RouteData.Values["puzzleId"];
+
+    if (Model.Puzzle != null)
+    {
+        Layout = "../Puzzles/_puzzleManagementLayout.cshtml";
+        <h2>@Model.Puzzle.Name: Freeform Queue</h2>
+    }
+    else
+    {
+        <h2>Freeform Queue</h2>
+    }
+
+    <h3>Queue length: @Model.Submissions.Count</h3>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Puzzle</th>
+                <th>Team</th>
+                <th>
+                    Submission
+                </th>
+                <th>
+                    Action
+                </th>
+            </tr>
+        </thead>
+        @foreach (var submission in Model.Submissions)
+        {
+            <tr>
+                <td>@submission.PuzzleName</td>
+                <td>@submission.TeamName</td>
+                <td>@submission.SubmissionText</td>
+                <td>
+                    <form method="post">
+                        <input type="text" asp-for="FreeformResponse" />
+                        <input type="hidden" asp-for="SubmissionID" value="@submission.SubmissionId" />
+                        <input type="radio" asp-for="Result" value="Accepted" />Accept
+                        <input type="radio" asp-for="Result" value="Rejected" />Reject
+                        <input type="submit" />
+                    </form>
+                </td>
+            </tr>
+        }
+    </table>
+}
+

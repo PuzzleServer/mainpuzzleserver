@@ -62,5 +62,25 @@ namespace ServerCore.DataModel
         /// The response to the submission
         /// </summary>
         public virtual Response Response { get; set; }
+
+        /// <summary>
+        /// Feedback from freeform judging
+        /// </summary>
+        public string FreeformResponse { get; set; }
+
+        /// <summary>
+        /// True if freeform accepted, false if rejected, null if not judged yet
+        /// </summary>
+        public bool? FreeformAccepted { get; set; }
+
+        /// <summary>
+        /// Submission text that should not be automatically formatted
+        /// </summary>
+        [NotMapped]
+        public string UnformattedSubmissionText
+        {
+            get { return submissionText; }
+            set { submissionText = value; }
+        }
     }
 }

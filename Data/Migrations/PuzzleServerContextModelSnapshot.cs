@@ -618,6 +618,9 @@ namespace Data.Migrations
                     b.Property<bool>("IsFinalPuzzle")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsFreeform")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsGloballyVisiblePrerequisite")
                         .HasColumnType("bit");
 
@@ -805,6 +808,12 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .UseIdentityColumn();
+
+                    b.Property<bool?>("FreeformAccepted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("FreeformResponse")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PuzzleID")
                         .HasColumnType("int");

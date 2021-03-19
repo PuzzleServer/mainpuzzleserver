@@ -206,6 +206,11 @@ namespace ServerCore.DataModel
         /// </summary>
         public PieceMetaUsage PieceMetaUsage { get; set; }
 
+        /// <summary>
+        /// Allows the puzzle to accept arbitrary answers without treating them as incorrect
+        /// </summary>
+        public bool IsFreeform { get; set; }
+
         //
         // WARNING: If you add new properties add them to the constructor as well so importing will work.
         //

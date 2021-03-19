@@ -187,7 +187,21 @@
 
                                 if (response == null)
                                 {
-                                    <text>Incorrect</text>
+                                    if (Model.SubmissionViews[i].IsFreeform)
+                                    {
+                                        if (Model.SubmissionViews[i].Submission.FreeformAccepted != null)
+                                        {
+                                            @Html.DisplayFor(modelItem => Model.SubmissionViews[i].FreeformReponse);
+                                        }
+                                        else if (Model.PuzzleState.SolvedTime == null)
+                                        {
+                                            <text>Pending...</text>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <text>Incorrect</text>
+                                    }
                                 }
                                 else if (response.ResponseText.StartsWith("Html.Raw(") && response.ResponseText.EndsWith(")"))
                                 {
@@ -198,6 +212,7 @@
                                     @Html.DisplayFor(modelItem => response.ResponseText)
                                 }
                             }
+
                         </td>
                     </tr>
                 }
