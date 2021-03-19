@@ -68,14 +68,14 @@ namespace ServerCore.Pages.Events
             pspt.SolvedTime != null &&
             pspt.SolvedTime < submissionEnd &&
             !pspt.Team.IsDisqualified
-            )/*.OrderByDescending(pspt => EF.Functions.DateDiffSecond(pspt.UnlockedTime, pspt.SolvedTime))*/;
+            );
 
             // Sort by time and get the top 3
             var fastestResults = _context.PuzzleStatePerTeam
                 .Select(pspt => pspt.PuzzleID).Distinct()
                 .SelectMany(puzzleId => psptToQuery
                     .Where(pspt => pspt.PuzzleID == puzzleId)
-                    .OrderBy(pspt => EF.Functions.DateDiffMillisecond(pspt.UnlockedTime, pspt.SolvedTime))
+                    .OrderBy(pspt => EF.Functions.DateDiffSecond(pspt.UnlockedTime, pspt.SolvedTime))
                     .Take(3), (puzzleId, pspt) => pspt)
                 .ToLookup(pspt => pspt.PuzzleID, pspt => new { pspt.TeamID, pspt.SolvedTime, pspt.UnlockedTime });
 
