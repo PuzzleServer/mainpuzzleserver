@@ -183,35 +183,36 @@
                         </td>
                         <td>
                             @{
-                                if (Model.SubmissionViews[i].IsFreeform)
-                                {
-                                    if (Model.SubmissionViews[i].Submission.FreeformAccepted != null)
-                                    {
-                                        @Html.DisplayFor(modelItem => Model.SubmissionViews[i].FreeformReponse);
-                                    }
-                                    else if (Model.PuzzleState.SolvedTime == null)
-                                    {
-                                        <span>Pending...</span>
-                                    }
-                                }
-                                else
-                                {
-                                    var response = Model.SubmissionViews[i].Response;
+                                var response = Model.SubmissionViews[i].Response;
 
-                                    if (response == null)
+                                if (response == null)
+                                {
+                                    if (Model.SubmissionViews[i].IsFreeform)
                                     {
-                                        <text>Incorrect</text>
-                                    }
-                                    else if (response.ResponseText.StartsWith("Html.Raw(") && response.ResponseText.EndsWith(")"))
-                                    {
-                                        @Html.Raw(response.ResponseText.Substring(9, response.ResponseText.Length - 10))
+                                        if (Model.SubmissionViews[i].Submission.FreeformAccepted != null)
+                                        {
+                                            @Html.DisplayFor(modelItem => Model.SubmissionViews[i].FreeformReponse);
+                                        }
+                                        else if (Model.PuzzleState.SolvedTime == null)
+                                        {
+                                            <text>Pending...</text>
+                                        }
                                     }
                                     else
                                     {
-                                        @Html.DisplayFor(modelItem => response.ResponseText)
-                                        }
+                                        <text>Incorrect</text>
                                     }
                                 }
+                                else if (response.ResponseText.StartsWith("Html.Raw(") && response.ResponseText.EndsWith(")"))
+                                {
+                                    @Html.Raw(response.ResponseText.Substring(9, response.ResponseText.Length - 10))
+                                }
+                                else
+                                {
+                                    @Html.DisplayFor(modelItem => response.ResponseText)
+                                }
+                            }
+
                         </td>
                     </tr>
                 }

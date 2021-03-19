@@ -109,6 +109,8 @@ namespace ServerCore.Pages.Submissions
                 Team = PuzzleState.Team,
                 Submitter = LoggedInUser,
             };
+
+            string submissionTextToCheck = ServerCore.DataModel.Response.FormatSubmission(submissionText);
             if (Puzzle.IsFreeform)
             {
                 submission.UnformattedSubmissionText = submissionText;
@@ -120,7 +122,7 @@ namespace ServerCore.Pages.Submissions
 
             submission.Response = await _context.Responses.Where(
                 r => r.Puzzle.ID == puzzleId &&
-                     submission.SubmissionText == r.SubmittedText)
+                     submissionTextToCheck == r.SubmittedText)
                 .FirstOrDefaultAsync();
 
             Submissions.Add(submission);

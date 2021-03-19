@@ -51,26 +51,36 @@ namespace ServerCore.Pages.Submissions
 
         public List<SubmissionView> Submissions { get; set; }
 
-        public async Task OnGetAsync(int? puzzleId)
+        public async Task<IActionResult> OnGetAsync(int? puzzleId)
         {
+            if (puzzleId != null)
+            {
+                Puzzle = await _context.Puzzles.Where(m => m.ID == puzzleId && m.EventID == Event.ID).FirstOrDefaultAsync();
+                if (Puzzle == null)
+                {
+                    return NotFound();
+                }
+
+                if (EventRole == EventRole.author && !await UserEventHelper.IsAuthorOfPuzzle(_context, Puzzle, LoggedInUser))
+                {
+                    return Forbid();
+                }
+            }
+
             await PopulateUI(puzzleId);
+            return Page();
         }
 
         private async Task PopulateUI(int? puzzleId)
         {
-            if (puzzleId != null)
-            {
-                Puzzle = await _context.Puzzles.Where(m => m.ID == puzzleId).FirstOrDefaultAsync();
-            }
-
             // todo: think about a way to go back to old submissions and redo them (e.g. to fix a forgotten comment)
-            // todo: should admins be able to see anything they're not an author of?
+            bool isAdmin = (EventRole == EventRole.admin);
             var submissionQuery = from Puzzle puzzle in _context.Puzzles
-                                  join PuzzleAuthors author in _context.PuzzleAuthors on puzzle.ID equals author.PuzzleID
                                   join Submission submission in _context.Submissions on puzzle.ID equals submission.PuzzleID
                                   join PuzzleStatePerTeam pspt in _context.PuzzleStatePerTeam on new { PuzzleID = puzzle.ID, TeamID = submission.TeamID } equals new { PuzzleID = pspt.PuzzleID, TeamID = pspt.TeamID }
+                                  join PuzzleAuthors author in _context.PuzzleAuthors on puzzle.ID equals author.PuzzleID
                                   where puzzle.EventID == Event.ID &&
-                                  author.Author == LoggedInUser &&
+                                  (isAdmin || author.Author == LoggedInUser) &&
                                   puzzle.IsFreeform &&
                                   pspt.UnlockedTime != null && pspt.SolvedTime == null &&
                                   submission.FreeformAccepted == null
@@ -86,6 +96,7 @@ namespace ServerCore.Pages.Submissions
 
         public async Task<IActionResult> OnPostAsync(int? puzzleId)
         {
+            // Handle no radio button selected
             if (Result == FreeformResult.None)
             {
                 return RedirectToPage();
@@ -93,16 +104,22 @@ namespace ServerCore.Pages.Submissions
 
             bool accepted = (Result == FreeformResult.Accepted);
 
+            if (String.IsNullOrWhiteSpace(FreeformResponse))
+            {
+                FreeformResponse = Result.ToString();
+            }
+
             Submission submission;
             using (var transaction = _context.Database.BeginTransaction())
             {
-                // todo admin access?
+                bool isAdmin = (EventRole == EventRole.admin);
                 submission = await (from Submission sub in _context.Submissions
-                                               join PuzzleAuthors author in _context.PuzzleAuthors on sub.PuzzleID equals author.PuzzleID
-                                               where sub.ID == SubmissionID &&
-                                               sub.FreeformAccepted == null &&
-                                               author.Author == LoggedInUser
-                                               select sub).FirstOrDefaultAsync();
+                                    join PuzzleAuthors author in _context.PuzzleAuthors on sub.PuzzleID equals author.PuzzleID
+                                    where sub.ID == SubmissionID &&
+                                    sub.FreeformAccepted == null &&
+                                    sub.Puzzle.EventID == Event.ID &&
+                                    (isAdmin || author.Author == LoggedInUser)
+                                    select sub).FirstOrDefaultAsync();
 
                 if (submission != null)
                 {

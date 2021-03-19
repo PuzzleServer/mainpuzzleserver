@@ -10,6 +10,11 @@
     if (Model.Puzzle != null)
     {
         Layout = "../Puzzles/_puzzleManagementLayout.cshtml";
+        <h2>@Model.Puzzle.Name: Freeform Queue</h2>
+    }
+    else
+    {
+        <h2>Freeform Queue</h2>
     }
 
     <h3>Queue length: @Model.Submissions.Count</h3>
