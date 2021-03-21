@@ -37,7 +37,7 @@ namespace ServerCore.Pages.Hints
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(int puzzleId)
         {
             // The Puzzle property doesn't get round-tripped by ASP.NET and would cause
             // the validation below to fail. By removing it from the ModelState,
@@ -48,6 +48,8 @@ namespace ServerCore.Pages.Hints
                 return Page();
             }
 
+            // Restore the missing puzzle property
+            Hint.PuzzleID = puzzleId;
             _context.Attach(Hint).State = EntityState.Modified;
 
             try
