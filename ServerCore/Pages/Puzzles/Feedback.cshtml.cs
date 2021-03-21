@@ -64,6 +64,7 @@ namespace ServerCore.Pages.Puzzles
                                join submitter in _context.PuzzleUsers on feedback.Submitter equals submitter
                                join teamMember in _context.TeamMembers on submitter.ID equals teamMember.Member.ID
                                where teamMember.Team.Event == Event
+                               orderby feedback.SubmissionTime descending
                                select new FeedbackView()
                                {
                                    Puzzle = puzzle,
