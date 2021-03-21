@@ -52,6 +52,8 @@ namespace ServerCore.Pages.Submissions
 
         public List<SubmissionView> Submissions { get; set; }
 
+        public int FullQueueSize { get; set; }
+
         public async Task<IActionResult> OnGetAsync(int? puzzleId)
         {
             if (puzzleId != null)
@@ -93,6 +95,8 @@ namespace ServerCore.Pages.Submissions
             }
 
             Submissions = await submissionQuery.Take(50).ToListAsync();
+
+            FullQueueSize = await submissionQuery.CountAsync();
             
             foreach(SubmissionView submission in Submissions)
             {
