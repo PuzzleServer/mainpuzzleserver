@@ -1,7 +1,7 @@
 ﻿@page "/{eventId}/{eventRole}/Submissions/AuthorIndex/{puzzleId?}"
 @model ServerCore.Pages.Submissions.AuthorIndexModel
 @{
-    ViewData["Title"] = "AuthorIndex";
+    ViewData["Title"] = "Submissions";
     ViewData["AdminRoute"] = "../Submissions/AuthorIndex";
     ViewData["AuthorRoute"] = "../Submissions/AuthorIndex";
     // TODO: Needs to handle implicit teams - ViewData["PlayRoute"] = "../Submissions/Index";
@@ -21,10 +21,19 @@
 <h2>@if (Model.Puzzle != null) { <text>@Model.Puzzle.Name:</text> } Submissions @if (Model.Team != null) { <text>by @Model.Team.Name</text> }</h2>
 <a asp-page="/Puzzles/Index">Back to puzzle list</a> | <a asp-page="/Submissions/SubmissionsWithoutResponses" asp-route-puzzleId="@Model.Puzzle?.ID">Submissions without responses</a>
 <div>
-    @if(Model.Puzzle != null) { <a asp-page="./AuthorIndex" asp-route-puzzleId="" asp-route-teamId="@Model.Team?.ID">Clear Puzzle Filter</a> }
+    @if(Model.Puzzle != null) { <a asp-page="./AuthorIndex" asp-route-puzzleId="" asp-route-teamId="@Model.Team?.ID" asp-route-hideFreeform="@Model.HideFreeform">Clear Puzzle Filter</a> }
     @if(Model.Puzzle != null && Model.Team != null) { <text>|</text> }  
-    @if(Model.Team != null) { <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="">Clear Team Filter</a> }  
-    @if(Model.Puzzle != null && Model.Team != null) { <text>|</text> <a asp-page="./AuthorIndex" asp-route-puzzleId="" asp-route-teamId="">Clear All Filters</a> }  
+    @if(Model.Team != null) { <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="" asp-route-hideFreeform="@Model.HideFreeform">Clear Team Filter</a> }  
+    @if(Model.Puzzle != null && Model.Team != null) { <text>|</text> <a asp-page="./AuthorIndex" asp-route-puzzleId="" asp-route-teamId="" asp-route-hideFreeform="@Model.HideFreeform">Clear All Filters</a> }  
+    <text>|</text>
+    @if (Model.HideFreeform)
+    {
+        <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-hideFreeform="false" asp-route-sort="@Model.Sort">Show Freeform</a>
+    }
+    else
+    {        
+        <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-hideFreeform="true" asp-route-sort="@Model.Sort">Hide Freeform</a>
+    }
 </div>
 <br/>
 <div>
@@ -36,32 +45,32 @@
         <thead>
             <tr>
                 <th>
-                    <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.PlayerAscending, AuthorIndexModel.SortOrder.PlayerDescending))">
+                    <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-hideFreeform="@Model.HideFreeform" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.PlayerAscending, AuthorIndexModel.SortOrder.PlayerDescending))">
                         Player
                     </a>
                 </th>
                 <th>
-                    <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.TeamAscending, AuthorIndexModel.SortOrder.TeamDescending))">
+                    <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-hideFreeform="@Model.HideFreeform" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.TeamAscending, AuthorIndexModel.SortOrder.TeamDescending))">
                         Team Name
                     </a>
                 </th>
                 <th>
-                    <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.PuzzleAscending, AuthorIndexModel.SortOrder.PuzzleDescending))">
+                    <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-hideFreeform="@Model.HideFreeform" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.PuzzleAscending, AuthorIndexModel.SortOrder.PuzzleDescending))">
                         Puzzle
                     </a>
                 </th>
                 <th>
-                    <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.ResponseAscending, AuthorIndexModel.SortOrder.ResponseDescending))">
+                    <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-hideFreeform="@Model.HideFreeform" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.ResponseAscending, AuthorIndexModel.SortOrder.ResponseDescending))">
                         ResponseText
                     </a>
                 </th>
                 <th>
-                    <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.SubmissionAscending, AuthorIndexModel.SortOrder.SubmissionDescending))">
+                    <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-hideFreeform="@Model.HideFreeform" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.SubmissionAscending, AuthorIndexModel.SortOrder.SubmissionDescending))">
                         SubmissionText
                     </a>
                 </th>
                 <th>
-                    <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.TimeAscending, AuthorIndexModel.SortOrder.TimeDescending))">
+                    <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-hideFreeform="@Model.HideFreeform" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.TimeAscending, AuthorIndexModel.SortOrder.TimeDescending))">
                         TimeSubmitted
                     </a>
                 </th>

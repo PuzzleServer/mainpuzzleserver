@@ -41,7 +41,9 @@ namespace ServerCore.Pages.Submissions
 
         public const SortOrder DefaultSort = SortOrder.TimeDescending;
 
-        public async Task<IActionResult> OnGetAsync(int? puzzleId, int? teamId, SortOrder? sort)
+        public bool HideFreeform { get; set; }
+
+        public async Task<IActionResult> OnGetAsync(int? puzzleId, int? teamId, SortOrder? sort, bool? hideFreeform)
         {
             Sort = sort;
 
@@ -92,7 +94,17 @@ namespace ServerCore.Pages.Submissions
                     submissionsQ = _context.Submissions.Where((s) => s.Puzzle != null && s.Puzzle.ID == puzzleId && s.Team.ID == teamId);
                 }
             }
-            
+
+            if (hideFreeform == null || hideFreeform.Value)
+            {
+                HideFreeform = true;
+                submissionsQ = submissionsQ.Where(s => !s.Puzzle.IsFreeform);
+            }
+            else
+            {
+                HideFreeform = false;
+            }
+
             IQueryable<SubmissionView> submissionViewQ = submissionsQ
                 .Select((s) => new SubmissionView
                 {
