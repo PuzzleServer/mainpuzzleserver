@@ -17,7 +17,7 @@
         <h2>Freeform Queue</h2>
     }
 
-    <h3>Queue length: @Model.Submissions.Count</h3>
+    <h3>Queue length: @Model.FullQueueSize</h3>
 
     <table class="table">
         <thead>
@@ -37,7 +37,16 @@
             <tr>
                 <td>@submission.PuzzleName</td>
                 <td>@submission.TeamName</td>
-                <td>@submission.SubmissionText</td>
+                <td>
+                    @if (submission.Linkify)
+                    {
+                        <a href="@submission.SubmissionText">@submission.SubmissionText</a>
+                    }
+                    else
+                    {
+                        @submission.SubmissionText
+                    }
+                </td>
                 <td>
                     <form method="post">
                         <input type="text" asp-for="FreeformResponse" />

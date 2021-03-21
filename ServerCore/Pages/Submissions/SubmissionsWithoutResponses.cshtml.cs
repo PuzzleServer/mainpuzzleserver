@@ -62,7 +62,8 @@ namespace ServerCore.Pages.Submissions
             }
 
             SubmissionCounts = await (from submission in submissionsQ
-                                         where submission.Response == null
+                                         where submission.Response == null &&
+                                         !submission.Puzzle.IsFreeform
                                          group submission by new { submission.PuzzleID, submission.SubmissionText, submission.Puzzle.Name } into submissionCounts
                                          orderby submissionCounts.Count() descending
                                          select new SubmissionCountsView

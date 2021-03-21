@@ -31,6 +31,7 @@ namespace ServerCore.Pages.Submissions
             public string TeamName { get; set; }
             public string SubmissionText { get; set; }
             public int SubmissionId { get; set; }
+            public bool Linkify { get; set; }
         }
 
         [BindProperty]
@@ -50,6 +51,8 @@ namespace ServerCore.Pages.Submissions
         public FreeformResult Result { get; set; }
 
         public List<SubmissionView> Submissions { get; set; }
+
+        public int FullQueueSize { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? puzzleId)
         {
@@ -91,7 +94,17 @@ namespace ServerCore.Pages.Submissions
                 submissionQuery = submissionQuery.Where(submissionView => submissionView.PuzzleId == puzzleId);
             }
 
-            Submissions = await submissionQuery.ToListAsync();
+            Submissions = await submissionQuery.Take(50).ToListAsync();
+
+            FullQueueSize = await submissionQuery.CountAsync();
+            
+            foreach(SubmissionView submission in Submissions)
+            {
+                if(submission.SubmissionText.StartsWith("http"))
+                {
+                    submission.Linkify = Uri.IsWellFormedUriString(submission.SubmissionText, UriKind.Absolute);
+                }
+            }
         }
 
         public async Task<IActionResult> OnPostAsync(int? puzzleId)
