@@ -562,11 +562,6 @@ namespace ServerCore.Pages
                 }
             }
 
-            // Start doing a sync asynchronously while we download the file contents.
-
-            var helper = new SyncHelper(context);
-            Task<Dictionary<string, object>> responseTask = helper.GetSyncResponse(currentEvent.ID, team.ID, puzzleId, null, 0, null, null, true);
-
             // Find the material file with the latest-alphabetically ShortName that contains the substring "client".
 
             var materialFile = await (from f in context.ContentFiles
@@ -578,12 +573,19 @@ namespace ServerCore.Pages
                 return Content("ERROR:  There's no sync client registered for this puzzle");
             }
 
+            var materialUrl = materialFile.Url;
+
+            // Start doing a sync asynchronously while we download the file contents.
+
+            var helper = new SyncHelper(context);
+            Task<Dictionary<string, object>> responseTask = helper.GetSyncResponse(currentEvent.ID, team.ID, puzzleId, null, 0, null, null, true);
+
             // Download that material file.
 
             string fileContents;
             using (var wc = new System.Net.WebClient())
             {
-                fileContents = await wc.DownloadStringTaskAsync(materialFile.Url);
+                fileContents = await wc.DownloadStringTaskAsync(materialUrl);
             }
 
             // Wait for the asynchronous sync we started earlier to complete, then serialize
