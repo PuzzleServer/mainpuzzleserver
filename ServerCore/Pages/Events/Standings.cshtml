@@ -36,8 +36,13 @@
                     @if (!Model.Event.HideHints)
                     {
                         <th>
+                            <a asp-page="./Standings" asp-route-sort="@(Model.SortForColumnLink(StandingsModel.SortOrder.HintsEarnedAscending, StandingsModel.SortOrder.HintsEarnedDescending))">
+                                Hint Tokens Earned
+                            </a>
+                        </th>
+                        <th>
                             <a asp-page="./Standings" asp-route-sort="@(Model.SortForColumnLink(StandingsModel.SortOrder.HintsUsedAscending, StandingsModel.SortOrder.HintsUsedDescending))">
-                                Hint Tickets Used
+                                Hint Tokens Used
                             </a>
                         </th>
                     }
@@ -62,6 +67,9 @@
                     </td>
                     @if (!Model.Event.HideHints)
                     {
+                        <td>
+                            @Html.DisplayFor(modelItem => team.Team.HintCoinsEarned)
+                        </td>
                         <td>
                             @Html.DisplayFor(modelItem => team.Team.HintCoinsUsed)
                         </td>

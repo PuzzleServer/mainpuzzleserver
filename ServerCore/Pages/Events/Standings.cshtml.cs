@@ -112,6 +112,12 @@ namespace ServerCore.Pages.Events
                 case SortOrder.ScoreDescending:
                     teamsFinal = teamsFinal.OrderByDescending(ts => ts.Score).ThenByDescending(ts => ts.Rank).ThenByDescending(ts => ts.Team.Name).ToList();
                     break;
+                case SortOrder.HintsEarnedAscending:
+                    teamsFinal = teamsFinal.OrderBy(ts => ts.Team.HintCoinsEarned).ThenBy(ts => ts.Rank).ThenBy(ts => ts.Team.Name).ToList();
+                    break;
+                case SortOrder.HintsEarnedDescending:
+                    teamsFinal = teamsFinal.OrderByDescending(ts => ts.Team.HintCoinsEarned).ThenByDescending(ts => ts.Rank).ThenByDescending(ts => ts.Team.Name).ToList();
+                    break;
                 case SortOrder.HintsUsedAscending:
                     teamsFinal = teamsFinal.OrderBy(ts => ts.Team.HintCoinsUsed).ThenBy(ts => ts.Rank).ThenBy(ts => ts.Team.Name).ToList();
                     break;
@@ -160,6 +166,8 @@ namespace ServerCore.Pages.Events
             PuzzlesDescending,
             ScoreAscending,
             ScoreDescending,
+            HintsEarnedAscending,
+            HintsEarnedDescending,
             HintsUsedAscending,
             HintsUsedDescending
         }
