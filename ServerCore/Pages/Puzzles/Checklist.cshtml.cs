@@ -93,16 +93,15 @@ namespace ServerCore.Pages.Puzzles
                     hintsCountThisPuzzle = hints.Count();
 
                     // positive hints cost what they say they cost.
-                    // negative hints apply discounts to each other, find the max negative hint.
+                    // negative hints apply discounts to each other, find the most negative hint.
                     foreach (int cost in hints)
                     {
                         totalDiscount = Math.Min(totalDiscount, cost);
                         totalHintCostThisPuzzle += Math.Max(0, cost);
                     }
 
-                    // totalDiscount is 0 or negative. Add that cost (flipped to positive)
-                    // as it must be paid in order to reduce the cost of the others.
-                    totalHintCostThisPuzzle += -totalDiscount;
+                    // add the total available discount to the cost.
+                    totalHintCostThisPuzzle += Math.Abs(totalDiscount);
                 }
 
                 PuzzleData.Add(new PuzzleView()
