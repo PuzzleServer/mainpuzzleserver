@@ -61,7 +61,7 @@ namespace ServerCore.Pages.Hints
                 var teamMembers = await (from tm in _context.TeamMembers
                                          join hspt in _context.HintStatePerTeam on tm.Team equals hspt.Team
                                          join pspt in _context.PuzzleStatePerTeam on tm.Team equals pspt.Team
-                                         where hspt.Hint.Id == Hint.Id && hspt.UnlockTime != null && pspt.SolvedTime == null
+                                         where hspt.Hint.Id == Hint.Id && hspt.UnlockTime != null && pspt.PuzzleID == puzzleId && pspt.SolvedTime == null
                                          select tm.Member.Email).ToListAsync();
                 MailHelper.Singleton.SendPlaintextBcc(teamMembers,
                     $"{Event.Name}: Hint updated for {puzzleName}",
