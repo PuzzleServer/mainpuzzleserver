@@ -101,41 +101,47 @@ namespace ServerCore.Pages.Events
                     teamsFinal = teamsFinal.OrderByDescending(ts => ts.Team.Name).ToList();
                     break;
                 case SortOrder.PuzzlesAscending:
-                    teamsFinal = teamsFinal.OrderBy(ts => ts.SolveCount).ThenBy(ts => ts.Rank).ThenBy(ts => ts.Team.Name).ToList();
+                    teamsFinal = teamsFinal.OrderBy(ts => ts.SolveCount).ThenByDescending(ts => ts.Rank).ThenByDescending(ts => ts.Team.Name).ToList();
                     break;
                 case SortOrder.PuzzlesDescending:
-                    teamsFinal = teamsFinal.OrderByDescending(ts => ts.SolveCount).ThenByDescending(ts => ts.Rank).ThenByDescending(ts => ts.Team.Name).ToList();
+                    teamsFinal = teamsFinal.OrderByDescending(ts => ts.SolveCount).ThenBy(ts => ts.Rank).ThenBy(ts => ts.Team.Name).ToList();
                     break;
                 case SortOrder.ScoreAscending:
-                    teamsFinal = teamsFinal.OrderBy(ts => ts.Score).ThenBy(ts => ts.Rank).ThenBy(ts => ts.Team.Name).ToList();
+                    teamsFinal = teamsFinal.OrderBy(ts => ts.Score).ThenByDescending(ts => ts.Rank).ThenByDescending(ts => ts.Team.Name).ToList();
                     break;
                 case SortOrder.ScoreDescending:
-                    teamsFinal = teamsFinal.OrderByDescending(ts => ts.Score).ThenByDescending(ts => ts.Rank).ThenByDescending(ts => ts.Team.Name).ToList();
+                    teamsFinal = teamsFinal.OrderByDescending(ts => ts.Score).ThenBy(ts => ts.Rank).ThenBy(ts => ts.Team.Name).ToList();
                     break;
                 case SortOrder.HintsEarnedAscending:
-                    teamsFinal = teamsFinal.OrderBy(ts => ts.Team.HintCoinsEarned).ThenBy(ts => ts.Rank).ThenBy(ts => ts.Team.Name).ToList();
+                    teamsFinal = teamsFinal.OrderBy(ts => ts.Team.HintCoinsEarned).ThenByDescending(ts => ts.Rank).ThenByDescending(ts => ts.Team.Name).ToList();
                     break;
                 case SortOrder.HintsEarnedDescending:
-                    teamsFinal = teamsFinal.OrderByDescending(ts => ts.Team.HintCoinsEarned).ThenByDescending(ts => ts.Rank).ThenByDescending(ts => ts.Team.Name).ToList();
+                    teamsFinal = teamsFinal.OrderByDescending(ts => ts.Team.HintCoinsEarned).ThenBy(ts => ts.Rank).ThenBy(ts => ts.Team.Name).ToList();
                     break;
                 case SortOrder.HintsUsedAscending:
-                    teamsFinal = teamsFinal.OrderBy(ts => ts.Team.HintCoinsUsed).ThenBy(ts => ts.Rank).ThenBy(ts => ts.Team.Name).ToList();
+                    teamsFinal = teamsFinal.OrderBy(ts => ts.Team.HintCoinsUsed).ThenByDescending(ts => ts.Rank).ThenByDescending(ts => ts.Team.Name).ToList();
                     break;
                 case SortOrder.HintsUsedDescending:
-                    teamsFinal = teamsFinal.OrderByDescending(ts => ts.Team.HintCoinsUsed).ThenByDescending(ts => ts.Rank).ThenByDescending(ts => ts.Team.Name).ToList();
+                    teamsFinal = teamsFinal.OrderByDescending(ts => ts.Team.HintCoinsUsed).ThenBy(ts => ts.Rank).ThenBy(ts => ts.Team.Name).ToList();
                     break;
             }
 
             this.Teams = teamsFinal;
         }
 
-        public SortOrder? SortForColumnLink(SortOrder ascendingSort, SortOrder descendingSort)
+        /// <summary>
+        /// Set up the proper sort for the link in a column header.
+        /// </summary>
+        /// <param name="standardSort">The sort you'll get for the first click on that column header</param>
+        /// <param name="reverseSort">The sort you'll get for the second click on that column header</param>
+        /// <returns></returns>
+        public SortOrder? SortForColumnLink(SortOrder standardSort, SortOrder reverseSort)
         {
-            SortOrder result = ascendingSort;
+            SortOrder result = standardSort;
 
             if (result == (this.Sort ?? DefaultSort))
             {
-                result = descendingSort;
+                result = reverseSort;
             }
 
             if (result == DefaultSort)
