@@ -63,17 +63,22 @@ namespace ServerCore.Pages.Teams
             if (Hints.Count > 0)
             {
                 int discount = Hints.Min(hws => (hws.IsUnlocked && hws.Hint.Cost < 0) ? hws.Hint.Cost : 0);
-                bool IsBeta = Event.Name.ToLower().Contains("beta");
-                if (solved && IsBeta)
-                {
-                    // During a beta, once a puzzle is solved, all other hints become free.
-                    // There's no IsBeta flag on an event, so check the name.
-                    // We can change this in the unlikely event there's a beta-themed hunt.
-                    discount = -999;
-                }
+
+                // During a beta, once a puzzle is solved, all other hints become free.
+                // There's no IsBeta flag on an event, so check the name.
+                // We can change this in the unlikely event there's a beta-themed hunt.
+                bool allHintsFree = solved && Event.Name.ToLower().Contains("beta");
+
                 foreach (HintWithState hint in Hints)
                 {
-                    hint.Discount = discount;
+                    if (allHintsFree)
+                    {
+                        hint.Discount = -hint.BaseCost;
+                    }
+                    else if (hint.Hint.Cost < 0)
+                    {
+                        hint.Discount = discount;
+                    }
                 }
 
                 // if the event is over, show all hints
