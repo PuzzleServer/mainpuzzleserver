@@ -68,7 +68,7 @@ namespace ServerCore.Pages.Events
                 }
             }
 
-            var teamsFinal = teamStats.Values.OrderBy(t => t.FinalMetaSolveTime).ThenByDescending(t => t.Score).ThenBy(t => t.Team.Name).ToList();
+            var teamsFinal = teamStats.Values.OrderBy(t => t.FinalMetaSolveTime).ThenByDescending(t => t.Score).ThenByDescending(t => t.SolveCount).ThenBy(t => t.Team.Name).ToList();
 
             TeamStats prevStats = null;
             for (int i = 0; i < teamsFinal.Count; i++)
