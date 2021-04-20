@@ -50,6 +50,7 @@ namespace ServerCore.Pages.Events
 
             var sourceEventAuthors = await _context.EventAuthors.Where((a) => a.Event.ID == ImportEventID).ToListAsync();
             var sourcePuzzles = await _context.Puzzles.Where((p) => p.Event.ID == ImportEventID).ToListAsync();
+            var destTeams = await _context.Teams.Where(t => t.Event == Event).ToListAsync();
 
             // TODO: replace this with a checkbox and sufficient danger warnings about duplicate titles
             bool deletePuzzleIfPresent = true;
@@ -130,25 +131,17 @@ namespace ServerCore.Pages.Events
                         destHint.Puzzle = puzzleCloneMap[sourceHint.Puzzle.ID];
                         _context.Hints.Add(destHint);
 
-                        foreach (Team team in _context.Teams.Where(t => t.Event == Event))
+                        foreach (Team team in destTeams)
                         {
                             _context.HintStatePerTeam.Add(new HintStatePerTeam() { Hint = destHint, TeamID = team.ID });
                         }
                     }
 
                     // PuzzleStatePerTeam
-                    foreach (Team team in _context.Teams.Where(t => t.Event == Event))
+                    foreach (Team team in destTeams)
                     {
                         int newPuzzleId = puzzleCloneMap[sourcePuzzle.ID].ID;
-                        bool hasPuzzleStatePerTeam = await (from pspt in _context.PuzzleStatePerTeam
-                                                            where pspt.PuzzleID == newPuzzleId &&
-                                                            pspt.TeamID == team.ID
-                                                            select pspt).AnyAsync();
-                        if (!hasPuzzleStatePerTeam)
-                        {
-                            PuzzleStatePerTeam newPspt = new PuzzleStatePerTeam() { TeamID = team.ID, PuzzleID = newPuzzleId };
-                            _context.PuzzleStatePerTeam.Add(newPspt);
-                        }
+                        _context.PuzzleStatePerTeam.Add(new PuzzleStatePerTeam() { TeamID = team.ID, PuzzleID = newPuzzleId });
                     }
 
                     // ContentFiles
