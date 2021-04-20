@@ -50,6 +50,7 @@ namespace ServerCore.DataModel
             Description = source.Description;
             Errata = source.Errata;
             PieceMetaUsage = source.PieceMetaUsage;
+            IsFreeform = source.IsFreeform;
         }
 
         /// <summary>
