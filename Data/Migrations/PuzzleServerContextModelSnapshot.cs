@@ -809,8 +809,17 @@ namespace Data.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
+                    b.Property<bool>("AllowFreeformSharing")
+                        .HasColumnType("bit");
+
                     b.Property<bool?>("FreeformAccepted")
                         .HasColumnType("bit");
+
+                    b.Property<bool>("FreeformFavorited")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("FreeformJudgeID")
+                        .HasColumnType("int");
 
                     b.Property<string>("FreeformResponse")
                         .HasColumnType("nvarchar(max)");
@@ -838,6 +847,8 @@ namespace Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("FreeformJudgeID");
 
                     b.HasIndex("PuzzleID");
 
@@ -1257,6 +1268,10 @@ namespace Data.Migrations
 
             modelBuilder.Entity("ServerCore.DataModel.Submission", b =>
                 {
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "FreeformJudge")
+                        .WithMany()
+                        .HasForeignKey("FreeformJudgeID");
+
                     b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
                         .WithMany("Submissions")
                         .HasForeignKey("PuzzleID")
@@ -1282,6 +1297,8 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Team", null)
                         .WithMany("Submissions")
                         .HasForeignKey("TeamID1");
+
+                    b.Navigation("FreeformJudge");
 
                     b.Navigation("Puzzle");
 

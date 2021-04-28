@@ -21,18 +21,26 @@
 <h2>@if (Model.Puzzle != null) { <text>@Model.Puzzle.Name:</text> } Submissions @if (Model.Team != null) { <text>by @Model.Team.Name</text> }</h2>
 <a asp-page="/Puzzles/Index">Back to puzzle list</a> | <a asp-page="/Submissions/SubmissionsWithoutResponses" asp-route-puzzleId="@Model.Puzzle?.ID">Submissions without responses</a>
 <div>
-    @if(Model.Puzzle != null) { <a asp-page="./AuthorIndex" asp-route-puzzleId="" asp-route-teamId="@Model.Team?.ID" asp-route-hideFreeform="@Model.HideFreeform">Clear Puzzle Filter</a> }
+    @if(Model.Puzzle != null) { <a asp-page="./AuthorIndex" asp-route-puzzleId="" asp-route-teamId="@Model.Team?.ID" asp-route-hideFreeform="@Model.HideFreeform" asp-route-favoritesOnly="@Model.FavoritesOnly">Clear Puzzle Filter</a> }
     @if(Model.Puzzle != null && Model.Team != null) { <text>|</text> }  
-    @if(Model.Team != null) { <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="" asp-route-hideFreeform="@Model.HideFreeform">Clear Team Filter</a> }  
-    @if(Model.Puzzle != null && Model.Team != null) { <text>|</text> <a asp-page="./AuthorIndex" asp-route-puzzleId="" asp-route-teamId="" asp-route-hideFreeform="@Model.HideFreeform">Clear All Filters</a> }  
+    @if(Model.Team != null) { <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="" asp-route-hideFreeform="@Model.HideFreeform" asp-route-favoritesOnly="@Model.FavoritesOnly">Clear Team Filter</a> }  
+    @if(Model.Puzzle != null && Model.Team != null) { <text>|</text> <a asp-page="./AuthorIndex" asp-route-puzzleId="" asp-route-teamId="" asp-route-hideFreeform="@Model.HideFreeform" asp-route-favoritesOnly="false">Clear All Filters</a> }  
     <text>|</text>
     @if (Model.HideFreeform)
     {
-        <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-hideFreeform="false" asp-route-sort="@Model.Sort">Show Freeform</a>
+        <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-hideFreeform="false" asp-route-sort="@Model.Sort">Show Freeform</a> 
     }
     else
     {        
-        <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-hideFreeform="true" asp-route-sort="@Model.Sort">Hide Freeform</a>
+        <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-hideFreeform="true" asp-route-sort="@Model.Sort">Hide Freeform</a> 
+    }
+    @if (!Model.FavoritesOnly || Model.HideFreeform)
+    {
+        <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-hideFreeform="false" asp-route-favoritesOnly="true" asp-route-sort="@Model.Sort">| Freeform Favorites</a>
+    }
+    else
+    { 
+        <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-hideFreeform="false" asp-route-favoritesOnly="false" asp-route-sort="@Model.Sort">| All Freeform</a>
     }
 </div>
 <br/>
@@ -94,7 +102,14 @@
                     @Html.DisplayFor(modelItem => item.ResponseText)
                 </td>
                 <td style="max-width: 500px; word-wrap: break-word">
-                    @Html.DisplayFor(modelItem => item.SubmissionText)
+                    @if (item.Linkify)
+                    {
+                        <a href="@item.SubmissionText" target="_blank">@item.SubmissionText</a>
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(modelItem => item.SubmissionText)
+                    }
                 </td>
                 <td>
                     @Html.Raw(Model.LocalTime(item.TimeSubmitted))

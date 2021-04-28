@@ -74,6 +74,21 @@ namespace ServerCore.DataModel
         public bool? FreeformAccepted { get; set; }
 
         /// <summary>
+        /// The user who evaluated a freeform response
+        /// </summary>
+        public virtual PuzzleUser FreeformJudge { get; set; }
+
+        /// <summary>
+        /// True if the user allowed their freeform submission to be shared with other users
+        /// </summary>
+        public bool AllowFreeformSharing { get; set; }
+
+        /// <summary>
+        /// True if this freeform submission was marked as a favorite
+        /// </summary>
+        public bool FreeformFavorited { get; set; }
+
+        /// <summary>
         /// Submission text that should not be automatically formatted
         /// </summary>
         [NotMapped]

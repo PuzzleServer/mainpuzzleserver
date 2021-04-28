@@ -25,6 +25,8 @@ namespace ServerCore.Pages.Submissions
             public string ResponseText;
             public string SubmissionText;
             public DateTime TimeSubmitted;
+            public bool IsFreeform;
+            public bool Linkify;
         }
 
         public AuthorIndexModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
@@ -43,7 +45,9 @@ namespace ServerCore.Pages.Submissions
 
         public bool HideFreeform { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int? puzzleId, int? teamId, SortOrder? sort, bool? hideFreeform)
+        public bool FavoritesOnly { get; set; }
+
+        public async Task<IActionResult> OnGetAsync(int? puzzleId, int? teamId, SortOrder? sort, bool? hideFreeform, bool? favoritesOnly)
         {
             Sort = sort;
 
@@ -105,6 +109,12 @@ namespace ServerCore.Pages.Submissions
                 HideFreeform = false;
             }
 
+            if (favoritesOnly.HasValue && favoritesOnly.Value)
+            {
+                FavoritesOnly = true;
+                submissionsQ = submissionsQ.Where(s => s.FreeformFavorited);
+            }
+
             IQueryable<SubmissionView> submissionViewQ = submissionsQ
                 .Select((s) => new SubmissionView
                 {
@@ -113,7 +123,8 @@ namespace ServerCore.Pages.Submissions
                     PuzzleName = s.Puzzle.Name,
                     TeamID = s.Team.ID,
                     TeamName = s.Team.Name,
-                    SubmissionText = s.SubmissionText,
+                    IsFreeform = s.Puzzle.IsFreeform,
+                    SubmissionText = s.Puzzle.IsFreeform ? s.UnformattedSubmissionText : s.SubmissionText,
                     ResponseText = s.Response == null ? null : s.Response.ResponseText,
                     TimeSubmitted = s.TimeSubmitted
                 });
@@ -164,6 +175,21 @@ namespace ServerCore.Pages.Submissions
             }
 
             Submissions = await submissionViewQ.ToListAsync();
+
+            if (!HideFreeform)
+            {
+                foreach (SubmissionView view in Submissions)
+                {
+                    if (view.IsFreeform)
+                    {
+                        if (Uri.IsWellFormedUriString(view.SubmissionText, UriKind.Absolute))
+                        {
+                            view.Linkify = true;
+                        }
+                    }
+                }
+            }
+
             return Page();
         }
 
