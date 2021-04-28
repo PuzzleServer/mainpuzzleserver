@@ -85,6 +85,7 @@ namespace ServerCore.Pages.Teams
                         TeamPrimaryContactEmail = team.PrimaryContactEmail,
                         TeamMember = teamMember.Member
                     })
+                .ToList()
                 .GroupBy(intermediate => intermediate.TeamID)
                 .Select(this.MapToTeamComposition);
 
