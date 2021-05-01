@@ -38,6 +38,9 @@ namespace ServerCore.Pages.Submissions
 
         public bool DuplicateSubmission { get; set; }
 
+        [BindProperty]
+        public bool AllowFreeformSharing { get; set; }
+
         public class SubmissionView
         {
             public Submission Submission { get; set; }
@@ -108,6 +111,7 @@ namespace ServerCore.Pages.Submissions
                 Puzzle = PuzzleState.Puzzle,
                 Team = PuzzleState.Team,
                 Submitter = LoggedInUser,
+                AllowFreeformSharing = AllowFreeformSharing
             };
 
             string submissionTextToCheck = ServerCore.DataModel.Response.FormatSubmission(submissionText);

@@ -32,6 +32,7 @@ namespace ServerCore.Pages.Submissions
             public string SubmissionText { get; set; }
             public int SubmissionId { get; set; }
             public bool Linkify { get; set; }
+            public bool Sharable { get; set; }
         }
 
         [BindProperty]
@@ -50,12 +51,20 @@ namespace ServerCore.Pages.Submissions
         [BindProperty]
         public FreeformResult Result { get; set; }
 
+        [BindProperty]
+        public bool Favorite { get; set; }
+
         public List<SubmissionView> Submissions { get; set; }
 
         public int FullQueueSize { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int? puzzleId)
+        public async Task<IActionResult> OnGetAsync(int? puzzleId, int? refresh)
         {
+            if (refresh != null)
+            {
+                Refresh = refresh;
+            }
+
             if (puzzleId != null)
             {
                 Puzzle = await _context.Puzzles.Where(m => m.ID == puzzleId && m.EventID == Event.ID).FirstOrDefaultAsync();
@@ -88,7 +97,15 @@ namespace ServerCore.Pages.Submissions
                                   pspt.UnlockedTime != null && pspt.SolvedTime == null &&
                                   submission.FreeformAccepted == null
                                   orderby submission.TimeSubmitted
-                                  select new SubmissionView() { PuzzleId = puzzle.ID, PuzzleName = puzzle.Name, TeamName = pspt.Team.Name, SubmissionText = submission.SubmissionText, SubmissionId = submission.ID };
+                                  select new SubmissionView()
+                                  {
+                                      PuzzleId = puzzle.ID,
+                                      PuzzleName = puzzle.Name,
+                                      TeamName = pspt.Team.Name,
+                                      SubmissionText = submission.UnformattedSubmissionText,
+                                      SubmissionId = submission.ID,
+                                      Sharable = submission.AllowFreeformSharing
+                                  };
             if (puzzleId != null)
             {
                 submissionQuery = submissionQuery.Where(submissionView => submissionView.PuzzleId == puzzleId);
@@ -138,6 +155,8 @@ namespace ServerCore.Pages.Submissions
                 {
                     submission.FreeformAccepted = accepted;
                     submission.FreeformResponse = FreeformResponse;
+                    submission.FreeformJudge = LoggedInUser;
+                    submission.FreeformFavorited = Favorite;
 
                     if (accepted)
                     {

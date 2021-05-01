@@ -19,6 +19,10 @@
 
     <h3>Queue length: @Model.FullQueueSize</h3>
 
+    <div>
+        Refresh every: <a asp-page="/Submissions/FreeformQueue" asp-route-refresh="60">1 min</a> | <a asp-page="/Submissions/FreeformQueue" asp-route-refresh="120">2 min</a> | <a asp-page="/Submissions/FreeformQueue" asp-route-refresh="300">5 min</a> | <a asp-page="/Submissions/FreeformQueue">off</a>
+    </div>
+
     <table class="table">
         <thead>
             <tr>
@@ -28,7 +32,7 @@
                     Submission
                 </th>
                 <th>
-                    Action
+                    Response
                 </th>
             </tr>
         </thead>
@@ -40,7 +44,7 @@
                 <td>
                     @if (submission.Linkify)
                     {
-                        <a href="@submission.SubmissionText">@submission.SubmissionText</a>
+                        <a href="@submission.SubmissionText" target="_blank">@submission.SubmissionText</a>
                     }
                     else
                     {
@@ -51,9 +55,19 @@
                     <form method="post">
                         <input type="text" asp-for="FreeformResponse" />
                         <input type="hidden" asp-for="SubmissionID" value="@submission.SubmissionId" />
-                        <input type="radio" asp-for="Result" value="Accepted" />Accept
-                        <input type="radio" asp-for="Result" value="Rejected" />Reject
-                        <input type="submit" />
+                        <label class="radio-inline">
+                            <input type="radio" asp-for="Result" value="Accepted" />Accept
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" asp-for="Result" value="Rejected" />Reject
+                        </label>
+                        @if (submission.Sharable)
+                        {
+                            <label for="favorite" class="checkbox-inline">
+                                <input name="favorite" type="checkbox" asp-for="Favorite" />Save for later
+                            </label>
+                        }
+                        <input type="submit" value="Submit" />
                     </form>
                 </td>
             </tr>
