@@ -84,7 +84,7 @@ namespace ServerCore.DataModel
         public bool AllowFreeformSharing { get; set; }
 
         /// <summary>
-        /// True if this freeform submission was marked as a favorite
+        /// True if this submission was marked as a favorite
         /// </summary>
         public bool FreeformFavorited { get; set; }
 
