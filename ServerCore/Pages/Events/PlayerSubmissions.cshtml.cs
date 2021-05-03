@@ -49,32 +49,39 @@ namespace ServerCore.Pages.Events
         public async Task<IActionResult> OnGetAsync(int? puzzleId)
         {
             // Hide submissions from players until the event is over
-            if (EventRole != EventRole.admin && DateTime.UtcNow <= Event.AnswersAvailableBegin)
+            if (EventRole != EventRole.admin && EventRole == EventRole.author && DateTime.UtcNow <= Event.AnswersAvailableBegin)
             {
                 NoContent = true;
                 return Page();
             }
 
+            var puzzleQuery = from puzzle in _context.Puzzles
+                              where puzzle.EventID == Event.ID &&
+                              puzzle.IsFreeform
+                              select puzzle;
 
-            FreeformPuzzles = await (from puzzle in _context.Puzzles
-                                     where puzzle.EventID == Event.ID &&
-                                     puzzle.IsFreeform
-                                     select new SelectListItem()
+            if (EventRole == EventRole.author)
+            {
+                puzzleQuery = from puzzle in puzzleQuery
+                              join puzzleAuthor in _context.PuzzleAuthors on puzzle.ID equals puzzleAuthor.PuzzleID
+                              where puzzleAuthor.AuthorID == LoggedInUser.ID
+                              select puzzle;                              
+            }
+
+            FreeformPuzzles = await (puzzleQuery.Select(puzzle => new SelectListItem()
                                      {
                                          Text = puzzle.Name,
                                          Value = puzzle.ID.ToString(),
                                          Selected = (puzzleId.HasValue && puzzle.ID == puzzleId)
-                                     }).ToListAsync();
+                                     })).ToListAsync();
 
             if (puzzleId == null)
             {
                 return Page();
             }
 
-            Puzzle selectedPuzzle = await (from puzzle in _context.Puzzles
-                                           where puzzle.ID == puzzleId &&
-                                           puzzle.EventID == Event.ID &&
-                                           puzzle.IsFreeform
+            Puzzle selectedPuzzle = await (from puzzle in puzzleQuery
+                                           where puzzle.ID == puzzleId
                                            select puzzle).FirstOrDefaultAsync();
 
             if (selectedPuzzle == null)
@@ -87,13 +94,14 @@ namespace ServerCore.Pages.Events
             Submissions = await (from submission in _context.Submissions
                                  join puzzle in _context.Puzzles on submission.PuzzleID equals puzzle.ID
                                  join team in _context.Teams on submission.TeamID equals team.ID
-                                 where
-                                 puzzle.ID == puzzleId &&
+                                 join puzzleAuthor in _context.PuzzleAuthors on puzzle.ID equals puzzleAuthor.PuzzleID
+                                 where puzzle.ID == puzzleId &&
                                  puzzle.EventID == Event.ID &&
                                  puzzle.IsFreeform &&
                                  submission.AllowFreeformSharing &&
                                  submission.FreeformAccepted.HasValue &&
-                                 submission.FreeformAccepted.Value
+                                 submission.FreeformAccepted.Value &&
+                                 (EventRole != EventRole.author || puzzleAuthor.AuthorID == LoggedInUser.ID)
                                  orderby team.Name
                                  select new SubmissionView()
                                  {
