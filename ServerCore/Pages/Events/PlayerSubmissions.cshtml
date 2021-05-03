@@ -1,0 +1,62 @@
+﻿@page "/{eventId}/{eventRole}/Events/PlayerSubmissions"
+@model ServerCore.Pages.Events.PlayerSubmissionsModel
+
+@{
+    ViewData["Title"] = "Player Submissions";
+    ViewData["AdminRoute"] = "/Events/PlayerSubmissions";
+    ViewData["AuthorRoute"] = "/Events/PlayerSubmissions";
+    ViewData["PlayRoute"] = "/Events/PlayerSubmissions";
+}
+
+<h2>Player Submissions</h2>
+
+@if (Model.NoContent)
+{
+    <p>Player submissions not available until answers unlock. Come back later!</p>
+}
+else
+{
+    <p>
+        Select a puzzle to see submissions that other teams shared
+    </p>
+    <form method="GET" name="puzzleForm">
+        <select name="puzzleId" asp-items="@Model.FreeformPuzzles" onchange="this.form.submit();">
+            <option value="">Select a puzzle</option>
+        </select>
+    </form>
+
+    <p>
+        @Model.Submissions.Count submissions shared for @Model.PuzzleName
+    </p>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Team
+                </th>
+                <th>
+                    Submission
+                </th>
+            </tr>
+        </thead>
+        @foreach(SubmissionView submission in Model.Submissions)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => submission.TeamName)
+                </td>
+                <td>
+                    @if (submission.Linkify)
+                    {
+                        <a href="@submission.SubmissionText" target="_blank">@submission.SubmissionText</a>
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(modelItem => submission.SubmissionText)
+                    }
+                </td>
+            </tr>
+        }
+    </table>
+}
