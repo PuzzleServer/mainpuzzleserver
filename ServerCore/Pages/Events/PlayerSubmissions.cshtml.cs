@@ -72,7 +72,7 @@ namespace ServerCore.Pages.Events
                                      {
                                          Text = puzzle.Name,
                                          Value = puzzle.ID.ToString(),
-                                         Selected = (puzzleId.HasValue && puzzle.ID == puzzleId)
+                                         Selected = (puzzleId != null && puzzle.ID == puzzleId.Value)
                                      })).ToListAsync();
 
             if (puzzleId == null)
@@ -94,14 +94,12 @@ namespace ServerCore.Pages.Events
             Submissions = await (from submission in _context.Submissions
                                  join puzzle in _context.Puzzles on submission.PuzzleID equals puzzle.ID
                                  join team in _context.Teams on submission.TeamID equals team.ID
-                                 join puzzleAuthor in _context.PuzzleAuthors on puzzle.ID equals puzzleAuthor.PuzzleID
                                  where puzzle.ID == puzzleId &&
                                  puzzle.EventID == Event.ID &&
                                  puzzle.IsFreeform &&
                                  submission.AllowFreeformSharing &&
                                  submission.FreeformAccepted.HasValue &&
-                                 submission.FreeformAccepted.Value &&
-                                 (EventRole != EventRole.author || puzzleAuthor.AuthorID == LoggedInUser.ID)
+                                 submission.FreeformAccepted.Value
                                  orderby team.Name
                                  select new SubmissionView()
                                  {
