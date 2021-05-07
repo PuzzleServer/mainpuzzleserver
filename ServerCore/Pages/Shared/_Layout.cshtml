@@ -21,7 +21,7 @@
         // Using ev here so that it isn't the same as Event that we bind in the <body>
         // Works fine if we use Event, but VS will yell at you with an error in the IDE
         var ev = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Event;
-        if (ev != null && (ev.UrlString == "pd2019" || ev.UrlString == "pd2020" || ev.UrlString == "nipd2020"))
+        if (ev != null && (ev.UrlString == "pd2019" || ev.UrlString == "pd2020" || ev.UrlString == "nipd2020" || ev.UrlString == "pd2021"))
         {
             <link rel="stylesheet" href="~/css/@(ev.UrlString)/styles.min.css" />
         }
