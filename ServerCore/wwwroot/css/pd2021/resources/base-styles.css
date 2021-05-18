@@ -1,0 +1,165 @@
+/* Globals and Constants */
+:root {
+  --ink-black: #333333;
+  --ruby-red: #ce0a0a;
+  --evening-blue: #0a0ace;
+  --min-width: 800px;
+}
+
+@font-face {
+  font-family: "pd2021-font-heading";
+  src: local("Book Antiqua"), url("book-antiqua.ttf");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "pd2021-font-heading";
+  src: local("Book Antiqua Bold"), url("book-antiqua-bold.ttf");
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "pd2021-font-heading";
+  src: local("Book Antiqua Italic"), url("book-antiqua-italic.ttf");
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "pd2021-font-heading";
+  src: local("Book Antiqua Bold Italic"), url("book-antiqua-bold-italic.ttf");
+  font-weight: bold;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "pd2021-font-body";
+  src: local("Garamond"), url("garamond.ttf");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "pd2021-font-body";
+  src: local("Garamond Bold"), url("garamond-bold.ttf");
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "pd2021-font-body";
+  src: local("Garamond Italic"), url("garamond-italic.ttf");
+  font-weight: normal;
+  font-style: italic;
+}
+
+/* Structural */
+.page-div {
+  background-image: url("light-paper-fibers.png");
+  min-width: var(--min-width);
+  border: 1px outset rgba(204, 204, 204, 0.2);
+  margin: 20px max(calc(100vw - var(--min-width))/2 - 200px, 40px);
+}
+
+.header-div {
+  /* Spacing */
+  margin-top: 40px;
+}
+
+.divider-div {
+  background-image: url("divider.png");
+  background-repeat: no-repeat;
+  background-size: 100%;
+  width: 107px;
+  height: 35px;
+  margin: 20px auto;
+}
+
+.has-dc {
+  background-image: url("wreath-dc.png");
+  background-repeat: no-repeat;
+  background-size: 100%;
+  position: absolute;
+  top: 50px;
+  right: max(calc(100vw - var(--min-width))/2 - 160px, 80px);
+  width: 75px;
+  height: 75px;
+}
+
+.center-img {
+  display: block;
+  margin: auto;
+}
+
+/* Text */
+h1 {
+  /* Text */
+  font-family: "pd2021-font-heading";
+  color: var(--ink-black);
+  font-size: 32px;
+  font-weight: bold;
+  letter-spacing: 1px;
+
+  /* Spacing */
+  text-align: center;
+  border-bottom: 1.8px solid var(--ink-black);
+  margin: 20px 200px;
+}
+
+.byline-div {
+  font-size: 18px;
+  margin: 10px;
+}
+
+.byline-div::before {
+  content: "by ";
+}
+
+.flavor-div {
+  /* Text */
+  font-family: "pd2021-font-body";
+  color: var(--ink-black);
+  font-size: 18px;
+  font-weight: normal;
+  font-style: italic;
+
+  /* Spacing */
+  text-align: center;
+}
+
+.content-div {
+  /* Text */
+  font-family: "pd2021-font-body";
+  color: var(--ink-black);
+  font-size: 18px;
+  font-weight: normal;
+
+  /* Spacing */
+  margin: 20px 40px;
+}
+
+p {
+  margin: 12px 24px;
+}
+
+ol,
+ul {
+  padding: 0;
+  margin: 12px 48px;
+}
+
+li {
+  margin-bottom: 4px;
+}
+
+table {
+  margin: auto;
+  border-collapse: collapse;
+  color: inherit;
+}
+
+td, th {
+  border: 1px solid var(--ink-black);
+}
