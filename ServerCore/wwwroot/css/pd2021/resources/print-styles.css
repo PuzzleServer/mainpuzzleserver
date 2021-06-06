@@ -56,4 +56,5 @@ h1 {
   -webkit-print-color-adjust: exact;
 
   margin: 0;
+  font-size: smaller;
 }
