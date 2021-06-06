@@ -138,7 +138,7 @@ h1 {
   font-weight: normal;
 
   /* Spacing */
-  margin: 20px 40px;
+  margin: 20px max(calc(100vw - var(--min-width))/2 - 200px, 40px);
 }
 
 .monospace {
