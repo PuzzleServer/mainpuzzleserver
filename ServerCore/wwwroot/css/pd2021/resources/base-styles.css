@@ -60,7 +60,7 @@
   background-image: url("light-paper-fibers.png");
   min-width: var(--min-width);
   border: 1px outset rgba(204, 204, 204, 0.2);
-  margin: 20px max(calc(100vw - var(--min-width))/2 - 200px, 40px);
+  margin: 20px;
 }
 
 .header-div {
@@ -127,6 +127,7 @@ h1 {
 
   /* Spacing */
   text-align: center;
+  margin: 0 100px;
 }
 
 .content-div {
@@ -138,6 +139,15 @@ h1 {
 
   /* Spacing */
   margin: 20px 40px;
+}
+
+.monospace {
+  font-family: monospace;
+}
+
+.answer {
+  color: var(--ruby-red);
+  text-transform: uppercase;
 }
 
 p {
