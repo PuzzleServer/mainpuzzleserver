@@ -4,6 +4,8 @@
   --ruby-red: #ce0a0a;
   --evening-blue: #0a0ace;
   --min-width: 800px;
+  --content-margin: max(calc(100vw - var(--min-width))/2 - 200px, 40px);
+  --content-width: calc(100vw - 2 * var(--content-margin));
 }
 
 @font-face {
@@ -83,7 +85,7 @@
   background-size: 100%;
   position: absolute;
   top: 50px;
-  right: max(calc(100vw - var(--min-width))/2 - 160px, 80px);
+  right: calc(var(--content-margin) + 40px);
   width: 75px;
   height: 75px;
 }
@@ -138,7 +140,7 @@ h1 {
   font-weight: normal;
 
   /* Spacing */
-  margin: 20px max(calc(100vw - var(--min-width))/2 - 200px, 40px);
+  margin: 20px var(--content-margin);
 }
 
 .monospace {
