@@ -193,7 +193,7 @@ h1.solution-h1::before {
 }
 
 .answer-blue {
-  color: var(--ruby-red);
+  color: var(--evening-blue);
   text-transform: uppercase;
   font-weight: bold;
 }
