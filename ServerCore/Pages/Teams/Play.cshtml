@@ -108,7 +108,7 @@
 
                     @if (item.CustomUrl != null)
                     {
-                        <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.CustomUrl, item.ID, Model.Event.ID)" target="_blank">@item.Name</a>
+                        <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.CustomUrl, item.ID, Model.Event.ID, Model.TeamPassword)" target="_blank">@item.Name</a>
                     }
                     else if (item.Content != null)
                     {

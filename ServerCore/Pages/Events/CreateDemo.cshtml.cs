@@ -355,19 +355,19 @@ namespace ServerCore.Pages.Events
                 //
                 // Create teams. Can we add players to these?
                 //
-                Team team1 = new Team { Name = "Team Bugs", Event = Event, IsLookingForTeammates = true, PrimaryContactEmail = "bugs@example.com" };
+                Team team1 = new Team { Name = "Team Bugs", Event = Event, IsLookingForTeammates = true, PrimaryContactEmail = "bugs@example.com", Password = Guid.NewGuid().ToString() };
                 _context.Teams.Add(team1);
 
-                Team team2 = new Team { Name = "Team Babs", Event = Event, IsLookingForTeammates = true, PrimaryContactEmail = "babs@example.com" };
+                Team team2 = new Team { Name = "Team Babs", Event = Event, IsLookingForTeammates = true, PrimaryContactEmail = "babs@example.com", Password = Guid.NewGuid().ToString() };
                 _context.Teams.Add(team2);
 
-                Team team3 = new Team { Name = "Team Buster", Event = Event, IsLookingForTeammates = false, PrimaryContactEmail = "buster@example.com" };
+                Team team3 = new Team { Name = "Team Buster", Event = Event, IsLookingForTeammates = false, PrimaryContactEmail = "buster@example.com", Password = Guid.NewGuid().ToString() };
                 _context.Teams.Add(team3);
 
                 Team teamLoneWolf = null;
                 if (AddCreatorToLoneWolfTeam)
                 {
-                    teamLoneWolf = new Team { Name = "Lone Wolf", Event = Event, IsLookingForTeammates = true, PrimaryContactEmail = "wolf@example.com" };
+                    teamLoneWolf = new Team { Name = "Lone Wolf", Event = Event, IsLookingForTeammates = true, PrimaryContactEmail = "wolf@example.com", Password = Guid.NewGuid().ToString() };
                     _context.Teams.Add(teamLoneWolf);
                 }
 

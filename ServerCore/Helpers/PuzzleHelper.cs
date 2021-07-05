@@ -33,16 +33,16 @@ namespace ServerCore.Helpers
 
         public static string GetFormattedUrl(Puzzle puzzle, int eventId)
         {
-            return GetFormattedUrl(puzzle.CustomURL, puzzle.ID, eventId);
+            return GetFormattedUrl(puzzle.CustomURL, puzzle.ID, eventId, null);
         }
 
-        public static string GetFormattedUrl(string customUrl, int puzzleId, int eventId)
+        public static string GetFormattedUrl(string customUrl, int puzzleId, int eventId, string teamPassword)
         {
             if (customUrl == null)
             {
                 return null;
             }
-            string formattedUrl = customUrl.Replace("{puzzleId}", $"{puzzleId}").Replace("{eventId}", $"{eventId}");
+            string formattedUrl = customUrl.Replace("{puzzleId}", $"{puzzleId}").Replace("{eventId}", $"{eventId}").Replace("{teamPass}", teamPassword);
             return formattedUrl;
         }
 
