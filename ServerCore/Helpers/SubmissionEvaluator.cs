@@ -27,6 +27,13 @@ namespace ServerCore.Helpers
         DuplicateSubmission
     }
 
+    public class SubmissionResponse
+    {
+        public SubmissionResponseCode ResponseCode { get; set; }
+        public Response CompleteResponse { get; set; }
+        public string FreeformResponse { get; set; }
+    }
+
     public class SubmissionEvaluator
     {
         private static PuzzleStatePerTeam puzzleState;
@@ -36,8 +43,6 @@ namespace ServerCore.Helpers
         private static Team team;
 
         private static Event thisEvent;
-
-        private static string answerToken;
 
         private static IList<Puzzle> puzzlesCausingGlobalLockout;
 
@@ -49,33 +54,33 @@ namespace ServerCore.Helpers
 
         private static PuzzleServerContext _context;
 
-        public static async Task<SubmissionResponseCode> EvaluateSubmission(PuzzleServerContext context, PuzzleUser loggedInUser, int puzzleId, string submissionText)
+        public static async Task<SubmissionResponse> EvaluateSubmission(PuzzleServerContext context, PuzzleUser loggedInUser, int puzzleId, string submissionText)
         {
             if (String.IsNullOrWhiteSpace(submissionText))
             {
-                return SubmissionResponseCode.EmptySubmission;
+                return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.EmptySubmission };
             }
 
             string SubmissionText = submissionText;
 
             team = await UserEventHelper.GetTeamForPlayer(_context, thisEvent, loggedInUser);
-            
-            if(loggedInUser == null || team == null)
+
+            if (loggedInUser == null || team == null)
             {
-                return SubmissionResponseCode.Unauthorized;
+                return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.Unauthorized };
             }
 
             puzzle = await _context.Puzzles.Where(
                 (p) => p.ID == puzzleId).FirstOrDefaultAsync();
 
-            if(puzzle == null || puzzleState.UnlockedTime == null)
+            if (puzzle == null || puzzleState.UnlockedTime == null)
             {
-                return SubmissionResponseCode.PuzzleLocked;
+                return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.PuzzleLocked };
             }
 
             if (DateTime.UtcNow < thisEvent.EventBegin)
             {
-                return SubmissionResponseCode.Unauthorized;
+                return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.Unauthorized };
             }
 
             puzzleState = await (PuzzleStateHelper
@@ -88,19 +93,19 @@ namespace ServerCore.Helpers
 
             if (puzzleState.IsTeamLockedOut || puzzleState.IsEmailOnlyMode)
             {
-                return SubmissionResponseCode.TeamLockedOut;
+                return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.TeamLockedOut };
             }
 
             if (puzzleState.SolvedTime != null)
             {
-                return SubmissionResponseCode.AlreadySolved;
+                return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.AlreadySolved };
             }
 
-            puzzlesCausingGlobalLockout = await PuzzleStateHelper.PuzzlesCausingGlobalLockout(_context, Event, Team).ToListAsync();
+            puzzlesCausingGlobalLockout = await PuzzleStateHelper.PuzzlesCausingGlobalLockout(_context, thisEvent, team).ToListAsync();
 
             if (puzzlesCausingGlobalLockout.Count != 0 && !puzzlesCausingGlobalLockout.Contains(puzzle))
             {
-                return SubmissionResponseCode.TeamLockedOut;
+                return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.TeamLockedOut };
             }
 
             duplicateSubmission = (from sub in submissions
@@ -109,7 +114,7 @@ namespace ServerCore.Helpers
 
             if (duplicateSubmission)
             {
-                return SubmissionResponseCode.DuplicateSubmission;
+                return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.DuplicateSubmission };
             }
 
             // Create submission and add it to list
@@ -148,8 +153,6 @@ namespace ServerCore.Helpers
                     submission.Puzzle,
                     submission.Team,
                     submission.TimeSubmitted);
-
-                answerToken = submission.SubmissionText;
             }
             else if (!puzzle.IsFreeform && submission.Response == null && thisEvent.IsAnswerSubmissionActive)
             {
@@ -196,20 +199,20 @@ namespace ServerCore.Helpers
 
             if (submission.Response != null && submission.Response.IsSolution)
             {
-                return SubmissionResponseCode.Correct;
+                return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.Correct };
             }
 
-            if(submission.Response != null && !submission.Response.IsSolution)
+            if (submission.Response != null && !submission.Response.IsSolution)
             {
-                return SubmissionResponseCode.Partial;
+                return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.Partial, CompleteResponse = submission.Response };
             }
 
             if (!puzzle.IsFreeform && submission.Response == null && thisEvent.IsAnswerSubmissionActive)
             {
-                return SubmissionResponseCode.Freeform;
+                return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.Freeform, FreeformResponse = submission.FreeformResponse };
             }
 
-            return SubmissionResponseCode.Unauthorized;
+            return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.Unauthorized };
         }
 
         /// <summary>
