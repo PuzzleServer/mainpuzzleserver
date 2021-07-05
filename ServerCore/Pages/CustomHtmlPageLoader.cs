@@ -98,7 +98,7 @@ namespace ServerCore.Pages
             Team team = await UserEventHelper.GetTeamForPlayer(context, currentEvent, user);
             if (team == null) { return Unauthorized(); }
 
-            var response = PuzzleStateHelper.SubmitAnswer(context, submissionText);
+            var response = SubmissionEvaluator.EvaluateSubmission(context, user, puzzleId, submissionText);
             return Json(response);
         }
     }
