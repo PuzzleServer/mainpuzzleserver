@@ -29,6 +29,8 @@ namespace ServerCore.Pages.Teams
 
         public int TeamID { get; set; }
 
+        public string TeamPassword { get; set; }
+
         public SortOrder? Sort { get; set; }
 
         private const SortOrder DefaultSort = SortOrder.GroupAscending;
@@ -43,7 +45,8 @@ namespace ServerCore.Pages.Teams
             Team myTeam = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
             if (myTeam != null)
             {
-                this.TeamID = myTeam.ID;
+                TeamID = myTeam.ID;
+                TeamPassword = myTeam.Password;
                 await PuzzleStateHelper.CheckForTimedUnlocksAsync(_context, Event, myTeam);
             }
             else
