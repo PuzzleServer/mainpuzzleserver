@@ -48,7 +48,6 @@ namespace ServerCore.Helpers
 
         private static IList<Submission> submissions;
 
-        private static PuzzleServerContext _context;
 
         public static async Task<SubmissionResponse> EvaluateSubmission(PuzzleServerContext context, PuzzleUser loggedInUser, int puzzleId, string submissionText)
         {
@@ -59,14 +58,14 @@ namespace ServerCore.Helpers
 
             string SubmissionText = submissionText;
 
-            team = await UserEventHelper.GetTeamForPlayer(_context, thisEvent, loggedInUser);
+            team = await UserEventHelper.GetTeamForPlayer(context, thisEvent, loggedInUser);
 
             if (loggedInUser == null || team == null)
             {
                 return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.Unauthorized };
             }
 
-            puzzle = await _context.Puzzles.Where(
+            puzzle = await context.Puzzles.Where(
                 (p) => p.ID == puzzleId).FirstOrDefaultAsync();
 
             if (puzzle == null || puzzleState.UnlockedTime == null)
@@ -81,7 +80,7 @@ namespace ServerCore.Helpers
 
             puzzleState = await (PuzzleStateHelper
                           .GetFullReadOnlyQuery(
-                              _context,
+                              context,
                               thisEvent,
                               puzzle,
                               team))
@@ -97,7 +96,7 @@ namespace ServerCore.Helpers
                 return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.AlreadySolved };
             }
 
-            puzzlesCausingGlobalLockout = await PuzzleStateHelper.PuzzlesCausingGlobalLockout(_context, thisEvent, team).ToListAsync();
+            puzzlesCausingGlobalLockout = await PuzzleStateHelper.PuzzlesCausingGlobalLockout(context, thisEvent, team).ToListAsync();
 
             if (puzzlesCausingGlobalLockout.Count != 0 && !puzzlesCausingGlobalLockout.Contains(puzzle))
             {
@@ -134,7 +133,7 @@ namespace ServerCore.Helpers
                 submission.SubmissionText = submissionText;
             }
 
-            submission.Response = await _context.Responses.Where(
+            submission.Response = await context.Responses.Where(
                 r => r.Puzzle.ID == puzzleId &&
                      submissionTextToCheck == r.SubmittedText)
                 .FirstOrDefaultAsync();
@@ -144,7 +143,7 @@ namespace ServerCore.Helpers
             // Update puzzle state if submission was correct
             if (submission.Response != null && submission.Response.IsSolution)
             {
-                await PuzzleStateHelper.SetSolveStateAsync(_context,
+                await PuzzleStateHelper.SetSolveStateAsync(context,
                     thisEvent,
                     submission.Puzzle,
                     submission.Team,
@@ -158,13 +157,13 @@ namespace ServerCore.Helpers
                         submissions,
                         puzzleState))
                 {
-                    await PuzzleStateHelper.SetEmailOnlyModeAsync(_context,
+                    await PuzzleStateHelper.SetEmailOnlyModeAsync(context,
                         thisEvent,
                         submission.Puzzle,
                         submission.Team,
                         true);
 
-                    var authors = await _context.PuzzleAuthors.Where((pa) => pa.Puzzle == submission.Puzzle).Select((pa) => pa.Author.Email).ToListAsync();
+                    var authors = await context.PuzzleAuthors.Where((pa) => pa.Puzzle == submission.Puzzle).Select((pa) => pa.Author.Email).ToListAsync();
 
                     MailHelper.Singleton.SendPlaintextBcc(authors,
                         $"{thisEvent.Name}: Team {submission.Team.Name} is in email mode for {submission.Puzzle.Name}",
@@ -181,7 +180,7 @@ namespace ServerCore.Helpers
 
                     if (lockoutExpiryTime != null)
                     {
-                        await PuzzleStateHelper.SetLockoutExpiryTimeAsync(_context,
+                        await PuzzleStateHelper.SetLockoutExpiryTimeAsync(context,
                             thisEvent,
                             submission.Puzzle,
                             submission.Team,
@@ -190,8 +189,8 @@ namespace ServerCore.Helpers
                 }
             }
 
-            _context.Submissions.Add(submission);
-            await _context.SaveChangesAsync();
+            context.Submissions.Add(submission);
+            await context.SaveChangesAsync();
 
             if (submission.Response != null && submission.Response.IsSolution)
             {
