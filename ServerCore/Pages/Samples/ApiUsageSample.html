@@ -1,0 +1,34 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <button onclick="SubmitAnswer()">Submit a test answer for the current user</button>
+    <textarea id="responseField"></textarea>
+</body>
+</html>
+
+<script>
+    // Javascript goes here
+    function SubmitAnswer() {
+        let submission =
+        {
+            PuzzleId: 1,
+            EventId: "1",
+            SubmissionText: "this is a test",
+            AllowFreeformSharing: true
+        };
+
+        document.getElementById("teamIdField").innerHTML = fetch('http://localhost:44319/api/puzzleapi/submitanswer', {
+            method: 'POST',
+            mode: 'cors',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(submission),
+            credentials: 'include',
+        })
+            .then(response => response.json())
+            .then(data => console.log(data));
+    }
+</script>

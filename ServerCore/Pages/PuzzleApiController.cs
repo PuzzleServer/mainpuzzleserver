@@ -47,9 +47,9 @@ namespace ServerCore.Pages
         [HttpPost]
         [Authorize]
         [Route("api/puzzleapi/submitanswer")]
-        public async Task<SubmissionResponse> SubmitAnswer(int puzzleId, string eventId, string submissionText, bool allowFreeformSharing)
+        public async Task<SubmissionResponse> PostSubmitAnswerAsync([FromBody]AnswerSubmission submission)
         {
-            Event currentEvent = await EventHelper.GetEventFromEventId(context, eventId);
+            Event currentEvent = await EventHelper.GetEventFromEventId(context, submission.EventId);
 
             PuzzleUser user = await PuzzleUser.GetPuzzleUserForCurrentUser(context, User, userManager);
             if (user == null)
@@ -57,7 +57,15 @@ namespace ServerCore.Pages
                 return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.Unauthorized };
             }
 
-            return await SubmissionEvaluator.EvaluateSubmission(context, user, currentEvent, puzzleId, submissionText, allowFreeformSharing);
+            return await SubmissionEvaluator.EvaluateSubmission(context, user, currentEvent, submission.PuzzleId, submission.SubmissionText, submission.AllowFreeformSharing);
         }
+    }
+
+    public class AnswerSubmission
+    {
+        public int PuzzleId { get; set; }
+        public string EventId { get; set; }
+        public string SubmissionText { get; set; }
+        public bool AllowFreeformSharing { get; set; }
     }
 }
