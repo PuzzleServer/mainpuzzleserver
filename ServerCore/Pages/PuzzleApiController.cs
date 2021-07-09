@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -44,16 +45,19 @@ namespace ServerCore.Pages
         }
 
         [HttpPost]
+        [Authorize]
         [Route("api/puzzleapi/submitanswer")]
-        public async Task<SubmissionResponse> SubmitAnswer(int puzzleId, string submissionText)
+        public async Task<SubmissionResponse> SubmitAnswer(int puzzleId, string eventId, string submissionText, bool allowFreeformSharing)
         {
+            Event currentEvent = await EventHelper.GetEventFromEventId(context, eventId);
+
             PuzzleUser user = await PuzzleUser.GetPuzzleUserForCurrentUser(context, User, userManager);
             if (user == null)
             {
                 return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.Unauthorized };
             }
 
-            return await SubmissionEvaluator.EvaluateSubmission(context, user, puzzleId, submissionText);
+            return await SubmissionEvaluator.EvaluateSubmission(context, user, currentEvent, puzzleId, submissionText, allowFreeformSharing);
         }
     }
 }

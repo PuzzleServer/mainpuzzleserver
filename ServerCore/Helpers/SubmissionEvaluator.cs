@@ -30,6 +30,15 @@ namespace ServerCore.Helpers
         public string FreeformResponse { get; set; }
     }
 
+    public class SubmissionView
+    {
+        public Submission Submission { get; set; }
+        public Response Response { get; set; }
+        public string SubmitterName { get; set; }
+        public bool IsFreeform { get; set; }
+        public string FreeformReponse { get; set; }
+    }
+
     public class SubmissionEvaluator
     {
         private static PuzzleStatePerTeam puzzleState;
@@ -44,19 +53,58 @@ namespace ServerCore.Helpers
 
         private static bool duplicateSubmission;
 
-        private static bool allowFreeformSharing;
-
         private static IList<Submission> submissions;
 
+        public static List<SubmissionView> submissionViews;
 
-        public static async Task<SubmissionResponse> EvaluateSubmission(PuzzleServerContext context, PuzzleUser loggedInUser, int puzzleId, string submissionText)
+        public static PuzzleUser loggedInUser;
+
+
+        public static async Task<SubmissionResponse> EvaluateSubmission(PuzzleServerContext context, PuzzleUser loggedInUser, Event anEvent, int puzzleId, string submissionText, bool allowFreeformSharing)
         {
+            thisEvent = anEvent;
+
+            team = await UserEventHelper.GetTeamForPlayer(context, thisEvent, loggedInUser);
+
+            puzzle = await context.Puzzles.Where(
+                (p) => p.ID == puzzleId).FirstOrDefaultAsync();
+
+            puzzleState = await (PuzzleStateHelper
+                .GetFullReadOnlyQuery(
+                    context,
+                    thisEvent,
+                    puzzle,
+                    team))
+                .FirstAsync();
+
+            submissionViews = await (from sub in context.Submissions
+                                     join user in context.PuzzleUsers on sub.Submitter equals user
+                                     join r in context.Responses on sub.Response equals r into responses
+                                     from response in responses.DefaultIfEmpty()
+                                     where sub.Team == team &&
+                                     sub.Puzzle == puzzle
+                                     orderby sub.TimeSubmitted
+                                     select new SubmissionView()
+                                     {
+                                         Submission = sub,
+                                         Response = response,
+                                         SubmitterName = user.Name,
+                                         FreeformReponse = sub.FreeformResponse,
+                                         IsFreeform = puzzle.IsFreeform
+                                     }).ToListAsync();
+
+            submissions = new List<Submission>(submissionViews.Count);
+            foreach (SubmissionView submissionView in submissionViews)
+            {
+                submissions.Add(submissionView.Submission);
+            }
+
+            puzzlesCausingGlobalLockout = await PuzzleStateHelper.PuzzlesCausingGlobalLockout(context, thisEvent, team).ToListAsync();
+
             if (String.IsNullOrWhiteSpace(submissionText))
             {
                 return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.EmptySubmission };
             }
-
-            string SubmissionText = submissionText;
 
             team = await UserEventHelper.GetTeamForPlayer(context, thisEvent, loggedInUser);
 

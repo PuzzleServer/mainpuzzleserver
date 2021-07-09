@@ -87,7 +87,7 @@ namespace ServerCore.Pages
         // POST api/custom/submit
         [HttpPost]
         [Route("{eventId}/{puzzleId}/api/custom/submit/")]
-        public async Task<IActionResult> Post(string eventId, int puzzleId, string submissionText)
+        public async Task<IActionResult> Post(string eventId, int puzzleId, string submissionText, bool allowFreeformSharing)
         {
             // Find what team this user is on, relative to the event.
 
@@ -98,7 +98,7 @@ namespace ServerCore.Pages
             Team team = await UserEventHelper.GetTeamForPlayer(context, currentEvent, user);
             if (team == null) { return Unauthorized(); }
 
-            var response = SubmissionEvaluator.EvaluateSubmission(context, user, puzzleId, submissionText);
+            var response = SubmissionEvaluator.EvaluateSubmission(context, user, currentEvent, puzzleId, submissionText, allowFreeformSharing);
             return Json(response);
         }
     }
