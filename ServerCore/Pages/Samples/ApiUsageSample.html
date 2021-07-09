@@ -21,7 +21,7 @@
             AllowFreeformSharing: true
         };
 
-        document.getElementById("teamIdField").innerHTML = fetch('http://localhost:44319/api/puzzleapi/submitanswer', {
+        document.getElementById("responseField").innerHTML = fetch('http://localhost:44319/api/puzzleapi/submitanswer', {
             method: 'POST',
             mode: 'cors',
             headers: { "Content-Type": "application/json" },
