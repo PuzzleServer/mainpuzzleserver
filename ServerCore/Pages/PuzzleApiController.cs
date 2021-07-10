@@ -1,8 +1,11 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
+using ServerCore.Helpers;
 
 namespace ServerCore.Pages
 {
@@ -14,10 +17,12 @@ namespace ServerCore.Pages
     public class PuzzleApiController : Controller
     {
         private readonly PuzzleServerContext context;
+        private readonly UserManager<IdentityUser> userManager;
 
-        public PuzzleApiController(PuzzleServerContext context)
+        public PuzzleApiController(PuzzleServerContext context, UserManager<IdentityUser> userManager)
         {
             this.context = context;
+            this.userManager = userManager;
         }
 
         /// <summary>
@@ -38,5 +43,23 @@ namespace ServerCore.Pages
                           where team.Password == teamPassword
                           select team).AnyAsync();
         }
+
+        [HttpPost]
+        [Authorize(Policy = "PlayerCanSeePuzzle")]
+        [Route("api/puzzleapi/submitanswer/{eventId}/{puzzleId}")]
+        public async Task<SubmissionResponse> PostSubmitAnswerAsync([FromBody] AnswerSubmission submission, [FromRoute] string eventId, [FromRoute] int puzzleId)
+        {
+            Event currentEvent = await EventHelper.GetEventFromEventId(context, eventId);
+
+            PuzzleUser user = await PuzzleUser.GetPuzzleUserForCurrentUser(context, User, userManager);
+
+            return await SubmissionEvaluator.EvaluateSubmission(context, user, currentEvent, puzzleId, submission.SubmissionText, submission.AllowFreeformSharing);
+        }
+    }
+
+    public class AnswerSubmission
+    {
+        public string SubmissionText { get; set; }
+        public bool AllowFreeformSharing { get; set; }
     }
 }
