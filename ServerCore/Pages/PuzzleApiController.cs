@@ -52,10 +52,6 @@ namespace ServerCore.Pages
             Event currentEvent = await EventHelper.GetEventFromEventId(context, eventId);
 
             PuzzleUser user = await PuzzleUser.GetPuzzleUserForCurrentUser(context, User, userManager);
-            if (user == null)
-            {
-                return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.Unauthorized };
-            }
 
             return await SubmissionEvaluator.EvaluateSubmission(context, user, currentEvent, puzzleId, submission.SubmissionText, submission.AllowFreeformSharing);
         }

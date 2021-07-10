@@ -71,28 +71,6 @@ namespace ServerCore.Helpers
                     team))
                 .FirstAsync();
 
-            List<SubmissionView> submissionViews = await (from sub in context.Submissions
-                                                          join user in context.PuzzleUsers on sub.Submitter equals user
-                                                          join r in context.Responses on sub.Response equals r into responses
-                                                          from response in responses.DefaultIfEmpty()
-                                                          where sub.Team == team &&
-                                                          sub.Puzzle == puzzle
-                                                          orderby sub.TimeSubmitted
-                                                          select new SubmissionView()
-                                                          {
-                                                              Submission = sub,
-                                                              Response = response,
-                                                              SubmitterName = user.Name,
-                                                              FreeformReponse = sub.FreeformResponse,
-                                                              IsFreeform = puzzle.IsFreeform
-                                                          }).ToListAsync();
-
-            List<Submission> submissions = new List<Submission>(submissionViews.Count);
-            foreach (SubmissionView submissionView in submissionViews)
-            {
-                submissions.Add(submissionView.Submission);
-            }
-
             List<Puzzle> puzzlesCausingGlobalLockout = await PuzzleStateHelper.PuzzlesCausingGlobalLockout(context, thisEvent, team).ToListAsync();
 
             // Return early for cases when there's obviously nothing we can do with the submission
@@ -136,6 +114,28 @@ namespace ServerCore.Helpers
             if (puzzlesCausingGlobalLockout.Count != 0 && !puzzlesCausingGlobalLockout.Contains(puzzle))
             {
                 return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.TeamLockedOut };
+            }
+
+            List<SubmissionView> submissionViews = await (from sub in context.Submissions
+                                                          join user in context.PuzzleUsers on sub.Submitter equals user
+                                                          join r in context.Responses on sub.Response equals r into responses
+                                                          from response in responses.DefaultIfEmpty()
+                                                          where sub.Team == team &&
+                                                          sub.Puzzle == puzzle
+                                                          orderby sub.TimeSubmitted
+                                                          select new SubmissionView()
+                                                          {
+                                                              Submission = sub,
+                                                              Response = response,
+                                                              SubmitterName = user.Name,
+                                                              FreeformReponse = sub.FreeformResponse,
+                                                              IsFreeform = puzzle.IsFreeform
+                                                          }).ToListAsync();
+
+            List<Submission> submissions = new List<Submission>(submissionViews.Count);
+            foreach (SubmissionView submissionView in submissionViews)
+            {
+                submissions.Add(submissionView.Submission);
             }
 
             // The submission is a duplicate

@@ -23,7 +23,7 @@ namespace ServerCore.Pages
             this.userManager = userManager;
         }
 
-        // GET api/custom
+        // GET {eventId}/{puzzleId}/custom
         [HttpGet]
         [Authorize(Policy = "PlayerCanSeePuzzle")]
         [Route("{eventId}/{puzzleId}/custom/")]
