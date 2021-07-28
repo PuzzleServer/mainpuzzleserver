@@ -1,0 +1,51 @@
+﻿@{
+    var eventPage = Model as ServerCore.ModelBases.EventSpecificPageModel;
+    bool IsRegistered = false;
+    if (eventPage != null)
+    {
+        IsRegistered = await eventPage.IsRegisteredUser();
+    }
+}
+
+<div class="container" id="pd2021-container">
+    <h2 class="pd2021-title">
+        <span>Non-Intern Puzzleday 2021</span>
+    </h2>
+    <div>
+        <img class="divider-img" src="~/images/divider.png">
+    </div>
+
+    <div class="pd2021-container-root">
+        <div class="pd2021-container-card">
+            <h3>WELCOME TO NIPD</h3>
+            <p>We&rsquo;re honored to have you join us in what we&rsquo;re sure will be an event for the history books: Non-Intern Puzzleday 2021! Our authors have written enough puzzles to keep your eyes glued to the pages for the whole day this August. And the best news: you don&rsquo;t need to worry about any late fees!</p>
+
+            <p>This year&rsquo;s event will take place on <b>Saturday, August 28<sup>th</sup></b> from <b>11am-5pm PDT</b>.</p>
+
+            <p>Take a look at our <b><a asp-page="/EventSpecific/FAQ">FAQ</a></b> and <b><a asp-page="/EventSpecific/Rules">Rules</a></b> if you have any questions.</p>
+
+            <p>We invite participation by FTEs, friends, and families of all abilities. If you require an accommodation,  please reach out to us at <a href="mailto:puzzhunt@microsoft.com">puzzhunt@microsoft.com</a>.</p>
+        </div>
+
+        <div class="pd2021-container-card">
+            <h3>SCHEDULE (all times PDT)</h3>
+
+            <p>On <b>August 28<sup>th</sup></b>, at <b>11am</b>, there will be a short opening session where we will go over rules and theme. After that, your team will have until <b>5pm</b> to solve as many puzzles as you can! <ul><li><b><a href="https://aka.ms/nipdopening" target="_blank">Click here to join the opening session!</a></b> (Will be live shortly before scheduled start time)</li></ul></p>
+            <p>On <b>August 28<sup>th</sup></b>, at <b>5pm</b>, there will be a short closing session where we will announce winners and wrap up the event. <ul><li><b><a href="https://aka.ms/nipdclosing" target="_blank">Click here to join the closing session!</a></b> (Will be live shortly before scheduled start time)</li></ul></p>
+        </div>
+
+        <div class="pd2021-container-card">
+            <h3>HOW TO SIGN UP</h3>
+            <p>If you don&rsquo;t have a team yet, you can <b><a asp-page="/Teams/List">create a team using the link here</a></b>. Teams will consist of 4-6 players with all levels of puzzle experience; each team must contain at least one FTE. Since this year&rsquo;s event is 100% virtual, your team doesn&rsquo;t even need to be in the same place geographically. Once you&rsquo;ve made a team, you can invite specific people to join you or leave your team open for anyone to join.</p>
+
+            <p>If you want to join a team and haven&rsquo;t been specifically invited by anyone, you can <b><a asp-page="/Teams/List">find the list of teams looking for team members here</a></b> and request to join.</p>
+
+            <p>If you&rsquo;re still looking for teammates, you should keep your team open by leaving &quot;Allow unsolicited applications&quot; checked on your team page. You can use the Bio to describe what your team philosophy is.</p>
+        </div>
+
+        <div class="pd2021-container-card">
+            <h3>NEW TO PUZZLES?</h3>
+            <p>You may have seen a jigsaw puzzle, a crossword puzzle, or a Sudoku at some point in your life, but those barely crack the cover on the whole anthology that is &quot;puzzling&quot;! Puzzleday puzzles also have a tendency to get... creative, so you might see something that looks especially strange! Check out a few <a asp-page="/EventSpecific/Samples">sample puzzles</a> or peruse our <a href="https://puzzlearchive.azurewebsites.net/puzzleday/main.html" target="_blank">collection of puzzles</a> from past events.</p>
+        </div>
+    </div>
+</div>
