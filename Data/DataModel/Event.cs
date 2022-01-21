@@ -21,6 +21,14 @@ namespace ServerCore.DataModel
         public string EventID => UrlString ?? ID.ToString();
 
         /// <summary>
+        /// I was unable to put this in a separate ImportEvent model in import.cshtml.cs;
+        /// for some reason SelectList did not like those type of items.
+        /// Kludging the info here although I really shouldn't have to...
+        /// </summary>
+        [NotMapped]
+        public string NameAndContainer => $"{Name} (evt{ID})";
+
+        /// <summary>
         /// The prefix of the partial files that provide the Home, FAQ, and Rules content.
         /// </summary>
         public string HomePartial { get; set; }
