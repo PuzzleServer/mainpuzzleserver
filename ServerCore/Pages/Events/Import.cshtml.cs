@@ -157,7 +157,14 @@ namespace ServerCore.Pages.Events
                         ContentFile newFile = new ContentFile(contentFile);
                         newFile.EventID = Event.ID;
                         newFile.PuzzleID = puzzleCloneMap[contentFile.Puzzle.ID].ID;
-                        _backgroundUploader.CloneInBackground(newFile, contentFile.ShortName, Event.ID, contentFile.Url);
+
+                        // new
+                        // does not copy the files; you have to use Azure Storage Explorer for that afterwards
+                        newFile.UrlString = contentFile.UrlString.Replace("evt" + ImportEventID, "evt" + Event.ID);
+                        _context.ContentFiles.Add(newFile);
+
+                        // old
+                        //_backgroundUploader.CloneInBackground(newFile, contentFile.ShortName, Event.ID, contentFile.Url);
                     }
 
                     // Pieces
