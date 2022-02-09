@@ -250,7 +250,7 @@ namespace ServerCore.Pages
 
                 if (puzzleGroup == null || solvedPuzzle.Group != puzzleGroup) {
                     if (solvedPuzzle.SolveValue >= 10 && solvedPuzzle.HintCoinsForSolve == 0) {
-                        maxSolveCount += 1;
+                        maxSolveCount += (solvedPuzzle.PieceWeight ?? 1);
                     }
                 }
 

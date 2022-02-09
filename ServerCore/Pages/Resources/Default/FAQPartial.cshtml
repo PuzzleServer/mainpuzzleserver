@@ -1,3 +1,19 @@
-﻿<div class="container">
-    <h2>Default FAQ!</h2>
+﻿@{
+    var eventPage = Model as ServerCore.ModelBases.EventSpecificPageModel;
+    var Event = eventPage?.Event;
+}
+
+<div class="container">
+    @if (!string.IsNullOrEmpty(Event.FAQContent))
+    {
+        Html.Raw(Event.FAQContent);
+    }
+    else
+    {
+        <h2>@Event?.Name FAQ TBD</h2>
+        if (eventPage?.EventRole == ModelBases.EventRole.admin)
+        {
+            <p><b>Since you're an admin:</b> Either set the HomePartial field of your event to match a folder in the Pages\Resources directory, or place raw HTML into the FAQContent field of your event.</p>
+        }
+    }
 </div>

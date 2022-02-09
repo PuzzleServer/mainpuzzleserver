@@ -51,6 +51,10 @@ namespace ServerCore.DataModel
             Errata = source.Errata;
             PieceMetaUsage = source.PieceMetaUsage;
             IsFreeform = source.IsFreeform;
+            PrerequisiteWeight = source.PrerequisiteWeight;
+            PieceMetaTagFilter = source.PieceMetaTagFilter;
+            PieceTag = source.PieceTag;
+            PieceWeight = source.PieceWeight;
         }
 
         /// <summary>
@@ -139,6 +143,11 @@ namespace ServerCore.DataModel
         public bool IsGloballyVisiblePrerequisite { get; set; } = false;
 
         /// <summary>
+        /// How many units does this count for (blank means 1)
+        /// </summary>
+        public int? PrerequisiteWeight { get; set; } = null;
+
+        /// <summary>
         /// Minimum number of <see cref="Prerequisites.cs"/> that must be satisfied
         /// TODO: When the system is mature, set the default to 1 so new puzzles are not accidentally displayed.
         /// </summary>
@@ -206,6 +215,21 @@ namespace ServerCore.DataModel
         /// Determines whether the puzzle can use the basic piece-driven meta.
         /// </summary>
         public PieceMetaUsage PieceMetaUsage { get; set; }
+
+        /// <summary>
+        /// Used for filtering piece queries.
+        /// </summary>
+        public string PieceMetaTagFilter { get; set; }
+
+        /// <summary>
+        /// Used for filtering piece queries.
+        /// </summary>
+        public string PieceTag { get; set; }
+
+        /// <summary>
+        /// How many units does this count for (blank means 1)
+        /// </summary>
+        public int? PieceWeight { get; set; } = null;
 
         /// <summary>
         /// Allows the puzzle to accept arbitrary answers without treating them as incorrect

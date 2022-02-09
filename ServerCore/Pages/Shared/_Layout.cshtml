@@ -81,6 +81,11 @@
     }
 
     <div class="container body-content">
+        @if (!string.IsNullOrEmpty(Event?.Announcement))
+            {
+            <p class="announcement">@Event.Announcement</p>
+            <hr />
+            }
         @RenderBody()
         <hr />
         <footer>

@@ -180,5 +180,25 @@ namespace ServerCore.DataModel
         /// True if the hint system will not be used
         /// </summary>
         public bool HideHints { get; set; }
+
+        /// <summary>
+        /// Announcement to be added to every page
+        /// </summary>
+        public string Announcement { get; set; }
+
+        /// <summary>
+        /// content for the home page
+        /// </summary>
+        public string HomeContent { get; set; }
+
+        /// <summary>
+        /// content for the home page
+        /// </summary>
+        public string FAQContent { get; set; }
+
+        /// <summary>
+        /// content for the home page
+        /// </summary>
+        public string RulesContent { get; set; }
     }
 }

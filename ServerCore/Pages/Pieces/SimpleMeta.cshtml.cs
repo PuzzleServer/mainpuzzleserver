@@ -32,26 +32,30 @@ namespace ServerCore.Pages.Pieces
             }
 
             Team team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
-            int solvedPuzzleCount = 0;
+            int totalWeight = 0;
 
-            switch(Puzzle.PieceMetaUsage)
+            // TODO: Metas are filtered out by looking at score.
+            // Ideally each puzzle would have a flag saying whether it counts or not, 
+            // but changing the database is more risk than we need right now.
+            IQueryable<PuzzleStatePerTeam> pieceQuery = _context.PuzzleStatePerTeam.Where(ps => ps.Team == team && ps.SolvedTime != null && ps.Puzzle.SolveValue >= 10 && ps.Puzzle.SolveValue < 50);
+
+            if (Puzzle.PieceMetaTagFilter != null)
             {
-                // TODO: Metas are filtered out by looking at score.
-                // Ideally each puzzle would have a flag saying whether it counts or not, 
-                // but changing the database is more risk than we need right now.
-                case PieceMetaUsage.EntireEvent:
-                    solvedPuzzleCount = await _context.PuzzleStatePerTeam.Where(ps => ps.Team == team && ps.SolvedTime != null && ps.Puzzle.SolveValue >= 10 && ps.Puzzle.SolveValue < 50).CountAsync();
-                    break;
-
-                case PieceMetaUsage.GroupOnly:
-                    solvedPuzzleCount = await _context.PuzzleStatePerTeam.Where(ps => ps.Team == team && ps.SolvedTime != null && ps.Puzzle.SolveValue >= 10 && ps.Puzzle.SolveValue < 50 && ps.Puzzle.Group == Puzzle.Group).CountAsync();
-                    break;
-
-                default:
-                    return NotFound("Puzzle does not support the simple meta view.");
+                pieceQuery = pieceQuery.Where(ps => ps.Puzzle.PieceTag == Puzzle.PieceMetaTagFilter);
             }
 
-            EarnedPieces = await _context.Pieces.Where(p => p.PuzzleID == puzzleId && p.ProgressLevel <= solvedPuzzleCount).OrderBy(p => p.ProgressLevel).ThenBy(p => p.Contents).ToListAsync();
+            if (Puzzle.PieceMetaUsage == PieceMetaUsage.GroupOnly)
+            {
+                pieceQuery = pieceQuery.Where(ps => ps.Puzzle.Group == Puzzle.Group);
+            }
+            else if (Puzzle.PieceMetaUsage != PieceMetaUsage.EntireEvent)
+            {
+                return NotFound("Puzzle does not support the simple meta view.");
+            }
+
+            totalWeight = await pieceQuery.SumAsync(ps => ps.Puzzle.PieceWeight ?? 1);
+
+            EarnedPieces = await _context.Pieces.Where(p => p.PuzzleID == puzzleId && p.ProgressLevel <= totalWeight).OrderBy(p => p.ProgressLevel).ThenBy(p => p.Contents).ToListAsync();
 
             return Page();
         }
