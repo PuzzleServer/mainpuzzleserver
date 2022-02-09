@@ -6,7 +6,7 @@
 <div class="container">
     @if (!string.IsNullOrEmpty(Event.FAQContent))
     {
-        Html.Raw(Event.FAQContent);
+        @Html.Raw(Event.FAQContent);
     }
     else
     {

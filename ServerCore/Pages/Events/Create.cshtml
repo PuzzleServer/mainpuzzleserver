@@ -155,6 +155,26 @@
                 <span asp-validation-for="Event.MaxSubmissionCount" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="Event.Announcement" class="control-label"></label>
+                <textarea asp-for="Event.Announcement" class="form-control"></textarea>
+                <span asp-validation-for="Event.Announcement" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Event.HomeContent" class="control-label"></label>
+                <textarea asp-for="Event.HomeContent" class="form-control"></textarea>
+                <span asp-validation-for="Event.HomeContent" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Event.FAQContent" class="control-label"></label>
+                <textarea asp-for="Event.FAQContent" class="form-control"></textarea>
+                <span asp-validation-for="Event.FAQContent" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Event.RulesContent" class="control-label"></label>
+                <textarea asp-for="Event.RulesContent" class="form-control"></textarea>
+                <span asp-validation-for="Event.RulesContent" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-default" />
             </div>
         </form>
