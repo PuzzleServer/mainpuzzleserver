@@ -165,7 +165,7 @@
                                 <select class="form-control" asp-for="Puzzle.PieceMetaUsage" asp-items="Html.GetEnumSelectList<ServerCore.DataModel.PieceMetaUsage>()"></select>
                             </div>
                             <div class="form-group">
-                                <label asp-for="Puzzle.PieceMetaTagFilter" class="control-label"></label>
+                                <label class="control-label">PieceMetaTagFilter (a Regex)</label>
                                 <input asp-for="Puzzle.PieceMetaTagFilter" class="form-control" />
                                 <span asp-validation-for="Puzzle.PieceMetaTagFilter" class="text-danger"></span>
                             </div>
