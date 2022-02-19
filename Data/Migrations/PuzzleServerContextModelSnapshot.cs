@@ -292,6 +292,9 @@ namespace Data.Migrations
                     b.Property<bool>("AllowFeedback")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Announcement")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("AnswerSubmissionEnd")
                         .HasColumnType("datetime2");
 
@@ -304,8 +307,14 @@ namespace Data.Migrations
                     b.Property<DateTime>("EventBegin")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("FAQContent")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("HideHints")
                         .HasColumnType("bit");
+
+                    b.Property<string>("HomeContent")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("HomePartial")
                         .HasColumnType("nvarchar(max)");
@@ -336,6 +345,9 @@ namespace Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RulesContent")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("ShowFastestSolves")
@@ -649,7 +661,19 @@ namespace Data.Migrations
                     b.Property<int>("OrderInGroup")
                         .HasColumnType("int");
 
+                    b.Property<string>("PieceMetaTagFilter")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("PieceMetaUsage")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PieceTag")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PieceWeight")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PrerequisiteWeight")
                         .HasColumnType("int");
 
                     b.Property<int>("PuzzleVersion")

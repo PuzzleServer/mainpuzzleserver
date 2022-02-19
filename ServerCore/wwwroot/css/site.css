@@ -125,3 +125,9 @@ table.ph-statemap tbody tr td.dark a {
     border-color: #080808;
     font-weight: bold;
 }
+
+.announcement {
+    color: #ff0000;
+    font-size: 20px;
+    font-weight: bold;
+}

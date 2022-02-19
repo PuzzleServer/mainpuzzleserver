@@ -410,14 +410,15 @@ namespace ServerCore
             var prerequisiteDataForNeedsUpdatePuzzles = (from possibleUnlock in context.Prerequisites
                                                         join unlockedBy in context.Prerequisites on possibleUnlock.PuzzleID equals unlockedBy.PuzzleID
                                                         join pspt in context.PuzzleStatePerTeam on unlockedBy.PrerequisiteID equals pspt.PuzzleID
+                                                        join puz in context.Puzzles on unlockedBy.PrerequisiteID equals puz.ID
                                                         where possibleUnlock.Prerequisite == puzzleJustSolved && (team == null || pspt.TeamID == team.ID) && pspt.SolvedTime != null
-                                                        group unlockedBy by new { unlockedBy.PuzzleID, unlockedBy.Puzzle.MinPrerequisiteCount, pspt.TeamID } into g
+                                                        group puz by new { unlockedBy.PuzzleID, unlockedBy.Puzzle.MinPrerequisiteCount, pspt.TeamID } into g
                                                         select new
                                                         {
                                                             PuzzleID = g.Key.PuzzleID,
                                                             TeamID = g.Key.TeamID,
                                                             g.Key.MinPrerequisiteCount,
-                                                            TotalPrerequisiteCount = g.Count()
+                                                            TotalPrerequisiteCount = g.Sum(p => (p.PrerequisiteWeight ?? 1))
                                                         }).ToList();
 
             // Are we updating one team or all teams?

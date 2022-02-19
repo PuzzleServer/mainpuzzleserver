@@ -105,6 +105,11 @@
                                     </label>
                                 </div>
                             </div>
+                            <div class="form-group">
+                                <label asp-for="Puzzle.PrerequisiteWeight" class="control-label"></label>
+                                <input asp-for="Puzzle.PrerequisiteWeight" class="form-control" />
+                                <span asp-validation-for="Puzzle.PrerequisiteWeight" class="text-danger"></span>
+                            </div>
                             @if (!Model.Event.HideHints)
                             {
                                 <div class="form-group">
@@ -158,6 +163,21 @@
                             <div class="form-group">
                                 <label asp-for="Puzzle.PieceMetaUsage" class="control-label"></label>
                                 <select class="form-control" asp-for="Puzzle.PieceMetaUsage" asp-items="Html.GetEnumSelectList<ServerCore.DataModel.PieceMetaUsage>()"></select>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">PieceMetaTagFilter (a Regex)</label>
+                                <input asp-for="Puzzle.PieceMetaTagFilter" class="form-control" />
+                                <span asp-validation-for="Puzzle.PieceMetaTagFilter" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Puzzle.PieceTag" class="control-label"></label>
+                                <input asp-for="Puzzle.PieceTag" class="form-control" />
+                                <span asp-validation-for="Puzzle.PieceTag" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Puzzle.PieceWeight" class="control-label"></label>
+                                <input asp-for="Puzzle.PieceWeight" class="form-control" />
+                                <span asp-validation-for="Puzzle.PieceWeight" class="text-danger"></span>
                             </div>
                             <div class="form-group">
                                 <label asp-for="Puzzle.Errata" class="control-label"></label>
