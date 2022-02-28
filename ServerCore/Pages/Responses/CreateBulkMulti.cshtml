@@ -1,17 +1,16 @@
-﻿@page "/{eventId}/{eventRole}/Responses/CreateBulk/{puzzleId}"
-@model ServerCore.Pages.Responses.CreateBulkModel
+﻿@page "/{eventId}/{eventRole}/Responses/CreateBulkMulti"
+@model ServerCore.Pages.Responses.CreateBulkMultiModel
 
 @{
-    ViewData["Title"] = "Create bulk response";
-    ViewData["AdminRoute"] = "../Responses/CreateBulk";
-    ViewData["AuthorRoute"] = "../Responses/CreateBulk";
+    ViewData["Title"] = "Create bulk response - multiple";
+    ViewData["AdminRoute"] = "../Responses/CreateBulkMulti";
+    ViewData["AuthorRoute"] = "../Responses/CreateBulkMulti";
     ViewData["PlayRoute"] = "../Submissions/Index";
-    ViewData["RoutingPuzzleId"] = ViewContext.RouteData.Values["puzzleId"];
 }
 
-<h2>@Model.Puzzle.Name: Create responses (bulk)</h2>
+<h2>Create responses (bulk, multiple puzzles)</h2>
 <div>
-    <a asp-page="./Index" asp-route-puzzleid="@Model.PuzzleId">Cancel</a>
+    <a asp-page="/Puzzles/Index">Cancel</a>
 </div>
 
 <hr />
@@ -27,6 +26,7 @@
             <table>
                 <thead>
                     <tr>
+                        <th>PuzzleName</th>
                         <th>IsSolution</th>
                         <th>SubmittedText</th>
                         <th>ResponseText</th>
@@ -35,6 +35,10 @@
                 </thead>
                 <tbody>
                     <tr>
+                        <td>
+                            <textarea asp-for="PuzzleName"></textarea>
+                            <span asp-validation-for="PuzzleName" class="text-danger"></span>
+                        </td>
                         <td>
                             <textarea asp-for="IsSolution"></textarea>
                             <span asp-validation-for="IsSolution" class="text-danger"></span>

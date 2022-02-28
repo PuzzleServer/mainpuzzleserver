@@ -8,19 +8,23 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
+using ServerCore.Helpers;
 using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Responses
 {
-    [Authorize(Policy = "IsEventAdminOrAuthorOfPuzzle")]
-    public class CreateBulkModel : EventSpecificPageModel
+    [Authorize(Policy = "IsEventAdminOrEventAuthor")]
+    public class CreateBulkMultiModel : EventSpecificPageModel
     {
-        public CreateBulkModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
+        public CreateBulkMultiModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
         }
 
         [BindProperty]
         public bool DeleteExisting { get; set; }
+
+        [BindProperty]
+        public string PuzzleName { get; set; }
 
         [BindProperty]
         public string IsSolution { get; set; }
@@ -34,64 +38,96 @@ namespace ServerCore.Pages.Responses
         [BindProperty]
         public string Note { get; set; }
 
-        public int PuzzleId { get; set; }
-
-        public Puzzle Puzzle { get; set; }
-
-        public async Task<IActionResult> OnGetAsync(int puzzleId)
+        public IActionResult OnGet()
         {
-            PuzzleId = puzzleId;
-            Puzzle = await _context.Puzzles.Where(m => m.ID == puzzleId).FirstOrDefaultAsync();
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(int puzzleId)
+        public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            if (DeleteExisting)
-            {
-                Response[] responsesToRemove = await (from Response r in _context.Responses
-                                                      where r.PuzzleID == puzzleId
-                                                      select r).ToArrayAsync();
-                _context.Responses.RemoveRange(responsesToRemove);
-            }
-
+            StringReader puzzleNameReader = new StringReader(PuzzleName);
             StringReader isSolutionReader = new StringReader(IsSolution ?? string.Empty);
             StringReader submittedTextReader = new StringReader(SubmittedText ?? string.Empty);
             StringReader responseTextReader = new StringReader(ResponseText ?? string.Empty);
             StringReader noteReader = new StringReader(Note ?? string.Empty);
 
-            List<Response> newResponses = new List<Response>();
-            HashSet<string> submissions = new HashSet<string>();
+            Dictionary<string, int> puzzleTitleLookup = new Dictionary<string, int>();
+            Dictionary<string, HashSet<string>> submissionsLookup = new Dictionary<string, HashSet<string>>();
 
             while (true)
             {
+                string puzzleName = puzzleNameReader.ReadLine();
                 string isSolution = isSolutionReader.ReadLine();
                 string submittedText = submittedTextReader.ReadLine();
                 string responseText = responseTextReader.ReadLine();
                 string note = noteReader.ReadLine();
 
-                // TODO probably clearer ways to validate but I honestly do not understand how validation works
-                if (submittedText == null)
+                int puzzleId = -1;
+
+                if (puzzleName != null && !puzzleTitleLookup.TryGetValue(puzzleName, out puzzleId))
                 {
+                    Puzzle puzzle = await (from Puzzle p in _context.Puzzles
+                                           where p.Name == puzzleName && p.EventID == this.Event.ID
+                                           select p).FirstOrDefaultAsync();
+
+                    if (puzzle == null)
+                    {
+                        ModelState.AddModelError("PuzzleName", $"Puzzle '{puzzleName}' not found");
+                        break;
+                    }
+
+                    if (EventRole == EventRole.author && !await UserEventHelper.IsAuthorOfPuzzle(_context, puzzle, LoggedInUser))
+                    {
+                        ModelState.AddModelError("PuzzleName", $"Not an author of puzzle '{puzzleName}'");
+                        break;
+                    }
+
+                    puzzleId = puzzle.ID;
+
+                    puzzleTitleLookup[puzzleName] = puzzleId;
+                    submissionsLookup[puzzleName] = new HashSet<string>();
+
+                    if (DeleteExisting)
+                    {
+                        Response[] responsesToRemove = await (from Response r in _context.Responses
+                                                              where r.PuzzleID == puzzleId
+                                                              select r).ToArrayAsync();
+                        _context.Responses.RemoveRange(responsesToRemove);
+                    }
+                }
+
+                // TODO probably clearer ways to validate but I honestly do not understand how validation works
+                if (puzzleName == null)
+                {
+                    if (submittedText != null)
+                    {
+                        ModelState.AddModelError("SubmittedText", "Unmatched Submission without Puzzle");
+                    }
                     if (responseText != null)
                     {
-                        ModelState.AddModelError("ResponseText", "Unmatched Response without Submission");
+                        ModelState.AddModelError("ResponseText", "Unmatched Response without Puzzle");
                     }
                     if (isSolution != null)
                     {
-                        ModelState.AddModelError("IsSolution", "Unmatched IsSolution without Submission");
+                        ModelState.AddModelError("IsSolution", "Unmatched IsSolution without Puzzle");
                     }
                     if (note != null)
                     {
-                        ModelState.AddModelError("Note", "Unmatched Note without Submission");
+                        ModelState.AddModelError("Note", "Unmatched Note without Puzzle");
                     }
 
                     // we're done
+                    break;
+                }
+
+                if (submittedText == null)
+                {
+                    ModelState.AddModelError("SubmittedText", "Unmatched Puzzle without Submission");
                     break;
                 }
 
@@ -118,7 +154,7 @@ namespace ServerCore.Pages.Responses
                     break;
                 }
 
-                if (!submissions.Add(submittedTextFormatted))
+                if (!submissionsLookup[puzzleName].Add(submittedTextFormatted))
                 {
                     ModelState.AddModelError("SubmittedText", "Submission text is not unique");
                     break;
@@ -126,11 +162,17 @@ namespace ServerCore.Pages.Responses
 
                 if (responseText == null)
                 {
-                    ModelState.AddModelError("SubmittedText", "Unmatched Submission without Response");
+                    ModelState.AddModelError("SubmittedText", "Unmatched Puzzle without Response");
                     break;
                 }
 
                 isSolution = isSolution == null ? string.Empty : isSolution.ToLower();
+
+                if (puzzleId == -1)
+                {
+                    ModelState.AddModelError("PuzzleName", "Bug in puzzleId lookup");
+                    break;
+                }
 
                 Response response = new Response()
                 {
@@ -142,22 +184,16 @@ namespace ServerCore.Pages.Responses
                 };
 
                 _context.Responses.Add(response);
-                newResponses.Add(response);
             }
 
             if (!ModelState.IsValid)
             {
-                return await OnGetAsync(puzzleId);
+                return OnGet();
             }
 
             await _context.SaveChangesAsync();
 
-            foreach(var response in newResponses)
-            {
-                await PuzzleStateHelper.UpdateTeamsWhoSentResponse(_context, response);
-            }
-
-            return RedirectToPage("./Index", new { puzzleid = puzzleId });
+            return RedirectToPage("/Puzzles/Index");
         }
     }
 }
