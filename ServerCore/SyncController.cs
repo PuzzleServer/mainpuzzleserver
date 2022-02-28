@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNetCore.Authorization;
@@ -203,7 +204,7 @@ namespace ServerCore.Pages
         ///   has solved.
         /// </summary>
         private async Task HandleSyncAspectsRequiringListOfSolvedPuzzles(DecodedSyncRequest request, SyncResponse response,
-                                                                         string puzzleGroup, int teamId, int eventId, int puzzleId)
+                                                                         string puzzleGroup, string puzzlePieceMetaTagFilter, int teamId, int eventId, int puzzleId)
         {
             // If the requester isn't asking for pieces (by setting MinSolveCount to null), and isn't asking about
             // whether any puzzle IDs are solved, we can save time by not querying the list of solved puzzles.
@@ -211,6 +212,8 @@ namespace ServerCore.Pages
             if (request.MinSolveCount == null && (request.QueryPuzzleIds == null || request.QueryPuzzleIds.Count == 0)) {
                 return;
             }
+
+            Regex filterRegex = puzzlePieceMetaTagFilter == null ? null : new Regex(puzzlePieceMetaTagFilter);
 
             // If the request is asking which of the puzzle IDs in request.QueryPuzzleIds has been
             // solved, create a HashSet so that we can quickly look up if an ID is in that list.
@@ -249,7 +252,22 @@ namespace ServerCore.Pages
                 // and exactly 0 hint coins.
 
                 if (puzzleGroup == null || solvedPuzzle.Group != puzzleGroup) {
-                    if (solvedPuzzle.SolveValue >= 10 && solvedPuzzle.HintCoinsForSolve == 0) {
+                    bool puzzleCounts = false;
+
+                    // If a filter is present, use it exclusively.
+                    // If not, use default logic that counts non-hint puzzles of standard value.
+                    if (filterRegex != null)
+                    {
+                        if (!string.IsNullOrEmpty(solvedPuzzle.PieceTag) && filterRegex.Match(solvedPuzzle.PieceTag)?.Success == true)
+                        {
+                            puzzleCounts = true;
+                        }
+                    }
+                    else if (solvedPuzzle.SolveValue >= 10 && solvedPuzzle.HintCoinsForSolve == 0) {
+                        puzzleCounts = true;
+                    }
+
+                    if (puzzleCounts) {
                         maxSolveCount += (solvedPuzzle.PieceWeight ?? 1);
                     }
                 }
@@ -477,7 +495,7 @@ namespace ServerCore.Pages
             // Do any processing that requires fetching the list of all puzzles this team has
             // solved.
 
-            await HandleSyncAspectsRequiringListOfSolvedPuzzles(request, response, thisPuzzle.Group, teamId, eventId, puzzleId);
+            await HandleSyncAspectsRequiringListOfSolvedPuzzles(request, response, thisPuzzle.Group, thisPuzzle.PieceMetaTagFilter, teamId, eventId, puzzleId);
 
             // Store any annotations the requester provided
 
