@@ -50,11 +50,11 @@ namespace ServerCore.Pages.Hints
                 return Page();
             }
 
-            StringReader puzzleNameReader = new StringReader(PuzzleName);
-            StringReader descriptionReader = new StringReader(Description ?? string.Empty);
-            StringReader contentReader = new StringReader(HintContent ?? string.Empty);
-            StringReader costReader = new StringReader(Cost ?? string.Empty);
-            StringReader displayOrderReader = new StringReader(DisplayOrder ?? string.Empty);
+            using StringReader puzzleNameReader = new StringReader(PuzzleName ?? string.Empty);
+            using StringReader descriptionReader = new StringReader(Description ?? string.Empty);
+            using StringReader contentReader = new StringReader(HintContent ?? string.Empty);
+            using StringReader costReader = new StringReader(Cost ?? string.Empty);
+            using StringReader displayOrderReader = new StringReader(DisplayOrder ?? string.Empty);
 
             Dictionary<string, int> puzzleTitleLookup = new Dictionary<string, int>();
 
@@ -147,6 +147,11 @@ namespace ServerCore.Pages.Hints
                 {
                     ModelState.AddModelError("DisplayOrder", $"DisplayOrder of '{displayOrder}' must be an integer");
                     break;
+                }
+
+                if (puzzleId == -1)
+                {
+                    throw new Exception($"Bug in puzzleId lookup for {puzzleName}");
                 }
 
                 Hint hint = new Hint()

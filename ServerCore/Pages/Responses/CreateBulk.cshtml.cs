@@ -52,6 +52,8 @@ namespace ServerCore.Pages.Responses
                 return Page();
             }
 
+            HashSet<string> submissions = new HashSet<string>();
+
             if (DeleteExisting)
             {
                 Response[] responsesToRemove = await (from Response r in _context.Responses
@@ -59,14 +61,23 @@ namespace ServerCore.Pages.Responses
                                                       select r).ToArrayAsync();
                 _context.Responses.RemoveRange(responsesToRemove);
             }
+            else
+            {
+                string[] responses = await (from Response r in _context.Responses
+                                            where r.PuzzleID == puzzleId
+                                            select r.SubmittedText).ToArrayAsync();
+                foreach (string r in responses)
+                {
+                    submissions.Add(r);
+                }
+            }
 
-            StringReader isSolutionReader = new StringReader(IsSolution ?? string.Empty);
-            StringReader submittedTextReader = new StringReader(SubmittedText ?? string.Empty);
-            StringReader responseTextReader = new StringReader(ResponseText ?? string.Empty);
-            StringReader noteReader = new StringReader(Note ?? string.Empty);
+            using StringReader isSolutionReader = new StringReader(IsSolution ?? string.Empty);
+            using StringReader submittedTextReader = new StringReader(SubmittedText ?? string.Empty);
+            using StringReader responseTextReader = new StringReader(ResponseText ?? string.Empty);
+            using StringReader noteReader = new StringReader(Note ?? string.Empty);
 
             List<Response> newResponses = new List<Response>();
-            HashSet<string> submissions = new HashSet<string>();
 
             while (true)
             {
@@ -98,26 +109,6 @@ namespace ServerCore.Pages.Responses
                 string submittedTextFormatted = ServerCore.DataModel.Response.FormatSubmission(submittedText);
 
                 // Ensure that the submission text is unique for this puzzle.
-                async Task<bool> isSubmittedTextUnique(string text)
-                {
-                    bool duplicateResponse = await(from Response r in _context.Responses
-                                                   where r.PuzzleID == puzzleId &&
-                                                   r.SubmittedText == text
-                                                   select r).AnyAsync();
-
-                    if (duplicateResponse)
-                    {
-                        ModelState.AddModelError("SubmittedText", "Submission text is not unique");
-                    }
-
-                    return !duplicateResponse;
-                };
-
-                if (!DeleteExisting && !await isSubmittedTextUnique(submittedTextFormatted))
-                {
-                    break;
-                }
-
                 if (!submissions.Add(submittedTextFormatted))
                 {
                     ModelState.AddModelError("SubmittedText", "Submission text is not unique");

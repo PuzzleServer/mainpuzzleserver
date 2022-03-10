@@ -50,11 +50,11 @@ namespace ServerCore.Pages.Responses
                 return Page();
             }
 
-            StringReader puzzleNameReader = new StringReader(PuzzleName);
-            StringReader isSolutionReader = new StringReader(IsSolution ?? string.Empty);
-            StringReader submittedTextReader = new StringReader(SubmittedText ?? string.Empty);
-            StringReader responseTextReader = new StringReader(ResponseText ?? string.Empty);
-            StringReader noteReader = new StringReader(Note ?? string.Empty);
+            using StringReader puzzleNameReader = new StringReader(PuzzleName ?? string.Empty);
+            using StringReader isSolutionReader = new StringReader(IsSolution ?? string.Empty);
+            using StringReader submittedTextReader = new StringReader(SubmittedText ?? string.Empty);
+            using StringReader responseTextReader = new StringReader(ResponseText ?? string.Empty);
+            using StringReader noteReader = new StringReader(Note ?? string.Empty);
 
             Dictionary<string, int> puzzleTitleLookup = new Dictionary<string, int>();
             Dictionary<string, HashSet<string>> submissionsLookup = new Dictionary<string, HashSet<string>>();
@@ -99,6 +99,16 @@ namespace ServerCore.Pages.Responses
                                                               select r).ToArrayAsync();
                         _context.Responses.RemoveRange(responsesToRemove);
                     }
+                    else
+                    {
+                        string[] responses = await (from Response r in _context.Responses
+                               where r.PuzzleID == puzzleId
+                               select r.SubmittedText).ToArrayAsync();
+                        foreach (string r in responses)
+                        {
+                            submissionsLookup[puzzleName].Add(r);
+                        }
+                    }
                 }
 
                 // TODO probably clearer ways to validate but I honestly do not understand how validation works
@@ -134,26 +144,6 @@ namespace ServerCore.Pages.Responses
                 string submittedTextFormatted = ServerCore.DataModel.Response.FormatSubmission(submittedText);
 
                 // Ensure that the submission text is unique for this puzzle.
-                async Task<bool> isSubmittedTextUnique(string text)
-                {
-                    bool duplicateResponse = await(from Response r in _context.Responses
-                                                   where r.PuzzleID == puzzleId &&
-                                                   r.SubmittedText == text
-                                                   select r).AnyAsync();
-
-                    if (duplicateResponse)
-                    {
-                        ModelState.AddModelError("SubmittedText", "Submission text is not unique");
-                    }
-
-                    return !duplicateResponse;
-                };
-
-                if (!DeleteExisting && !await isSubmittedTextUnique(submittedTextFormatted))
-                {
-                    break;
-                }
-
                 if (!submissionsLookup[puzzleName].Add(submittedTextFormatted))
                 {
                     ModelState.AddModelError("SubmittedText", "Submission text is not unique");
@@ -170,8 +160,7 @@ namespace ServerCore.Pages.Responses
 
                 if (puzzleId == -1)
                 {
-                    ModelState.AddModelError("PuzzleName", "Bug in puzzleId lookup");
-                    break;
+                    throw new Exception($"Bug in puzzleId lookup for {puzzleName}");
                 }
 
                 Response response = new Response()

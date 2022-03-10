@@ -60,10 +60,10 @@ namespace ServerCore.Pages.Hints
                 _context.Hints.RemoveRange(hintsToRemove);
             }
 
-            StringReader descriptionReader = new StringReader(Description ?? string.Empty);
-            StringReader contentReader = new StringReader(HintContent ?? string.Empty);
-            StringReader costReader = new StringReader(Cost ?? string.Empty);
-            StringReader displayOrderReader = new StringReader(DisplayOrder ?? string.Empty);
+            using StringReader descriptionReader = new StringReader(Description ?? string.Empty);
+            using StringReader contentReader = new StringReader(HintContent ?? string.Empty);
+            using StringReader costReader = new StringReader(Cost ?? string.Empty);
+            using StringReader displayOrderReader = new StringReader(DisplayOrder ?? string.Empty);
 
             while (true)
             {
