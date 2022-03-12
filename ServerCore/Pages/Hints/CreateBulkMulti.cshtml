@@ -1,0 +1,75 @@
+﻿@page "/{eventId}/{eventRole}/Hints/CreateBulkMulti"
+@model ServerCore.Pages.Hints.CreateBulkMultiModel
+
+@{
+    ViewData["Title"] = "Create bulk hints - multiple";
+    ViewData["AdminRoute"] = "../Hints/CreateBulkMulti";
+    ViewData["AuthorRoute"] = "../Hints/CreateBulkMulti";
+    ViewData["PlayRoute"] = "../Submissions/Index";
+}
+
+<h2>Create hints (bulk, multiple puzzles)</h2>
+<div>
+    <a asp-page="/Puzzles/Index">Cancel</a>
+</div>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <div>
+            <p>Intended usage: Enter data for each hint in Excel, one line per hint. Then copy each column into the correct box below and click Bulk Create.</p>
+            <br />
+        </div>
+        <form method="post">
+            <table>
+                <thead>
+                    <tr>
+                        <th>PuzzleName</th>
+                        <th>Description</th>
+                        <th>Content</th>
+                        <th>Cost</th>
+                        <th>DisplayOrder</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <textarea asp-for="PuzzleName"></textarea>
+                            <span asp-validation-for="PuzzleName" class="text-danger"></span>
+                        </td>
+                        <td>
+                            <textarea asp-for="Description"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </td>
+                        <td>
+                            <textarea asp-for="HintContent"></textarea>
+                            <span asp-validation-for="HintContent" class="text-danger"></span>
+                        </td>
+                        <td>
+                            <textarea asp-for="Cost"></textarea>
+                            <span asp-validation-for="Cost" class="text-danger"></span>
+                        </td>
+                        <td>
+                            <textarea asp-for="DisplayOrder"></textarea>
+                            <span asp-validation-for="DisplayOrder" class="text-danger"></span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="DeleteExisting" /> @Html.DisplayNameFor(model => model.DeleteExisting)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Bulk Create" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
