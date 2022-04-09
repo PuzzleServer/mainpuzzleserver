@@ -175,6 +175,16 @@
                 <span asp-validation-for="Event.RulesContent" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="Event.Copyright" class="control-label"></label>
+                <textarea asp-for="Event.Copyright" class="form-control"></textarea>
+                <span asp-validation-for="Event.Copyright" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Event.TermForGroup" class="control-label"></label>
+                <textarea asp-for="Event.TermForGroup" class="form-control"></textarea>
+                <span asp-validation-for="Event.TermForGroup" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-default" />
             </div>
         </form>

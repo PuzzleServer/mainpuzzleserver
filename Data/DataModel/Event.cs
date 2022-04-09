@@ -208,5 +208,15 @@ namespace ServerCore.DataModel
         /// content for the home page
         /// </summary>
         public string RulesContent { get; set; }
+
+        /// <summary>
+        /// Entity copyrighting this event
+        /// </summary>
+        public string Copyright { get; set; }
+
+        /// <summary>
+        /// Publicly-visible term for "group"
+        /// </summary>
+        public string TermForGroup { get; set; }
     }
 }
