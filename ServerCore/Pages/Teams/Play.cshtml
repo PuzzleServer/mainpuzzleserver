@@ -60,7 +60,7 @@
         <tr>
             <th>
                 <a asp-page="./Play" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(PlayModel.SortOrder.GroupAscending, PlayModel.SortOrder.GroupDescending))" asp-route-stateFilter="@Model.StateFilter">
-                    @Html.DisplayNameFor(model => model.PuzzleViews[0].Group)
+                    @(Model.Event.TermForGroup ?? "Group")
                 </a>
             </th>
             <th>
@@ -98,7 +98,14 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Group)
+                    @if (item.Group != null && item.Group.StartsWith("Html.Raw(") && item.Group.EndsWith(")"))
+                    {
+                        @Html.Raw(item.Group.Substring(9, item.Group.Length - 10))
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(modelItem => item.Group)
+                    }
                 </td>
                 <td>
                     @if (!string.IsNullOrWhiteSpace(item.Errata))

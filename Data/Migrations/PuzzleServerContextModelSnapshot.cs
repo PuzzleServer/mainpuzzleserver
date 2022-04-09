@@ -304,6 +304,9 @@ namespace Data.Migrations
                     b.Property<string>("ContactEmail")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Copyright")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("EventBegin")
                         .HasColumnType("datetime2");
 
@@ -376,6 +379,9 @@ namespace Data.Migrations
 
                     b.Property<DateTime>("TeamRegistrationEnd")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("TermForGroup")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UrlString")
                         .HasColumnType("nvarchar(450)");

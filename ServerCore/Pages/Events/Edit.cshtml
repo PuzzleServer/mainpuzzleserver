@@ -181,6 +181,16 @@
                 <span asp-validation-for="EditableEvent.RulesContent" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="EditableEvent.Copyright" class="control-label"></label>
+                <textarea asp-for="EditableEvent.Copyright" class="form-control"></textarea>
+                <span asp-validation-for="EditableEvent.Copyright" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EditableEvent.TermForGroup" class="control-label"></label>
+                <textarea asp-for="EditableEvent.TermForGroup" class="form-control"></textarea>
+                <span asp-validation-for="EditableEvent.TermForGroup" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-default" />
             </div>
         </form>

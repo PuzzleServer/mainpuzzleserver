@@ -19,7 +19,7 @@
                 Name
             </th>
             <th>
-                Module
+                @(Model.Event.TermForGroup ?? "Group")
             </th>
             <th>
                 Author(s)
@@ -61,7 +61,14 @@
                 <a asp-Page="./Edit" asp-route-puzzleid=@item.Puzzle.ID>@Html.DisplayFor(modelItem => item.Puzzle.Name)</a>
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Puzzle.Group)
+                @if (item.Puzzle.Group != null && item.Puzzle.Group.StartsWith("Html.Raw(") && item.Puzzle.Group.EndsWith(")"))
+                {
+                    @Html.Raw(item.Puzzle.Group.Substring(9, item.Puzzle.Group.Length - 10))
+                }
+                else
+                {
+                    @Html.DisplayFor(modelItem => item.Puzzle.Group)
+                }
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Authors)
