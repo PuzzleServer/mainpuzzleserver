@@ -215,8 +215,7 @@ namespace ServerCore.Pages.Puzzles
             }
 
             ContentFile file = new ContentFile();
-            string fileName = WebUtility.UrlEncode(Path.GetFileName(uploadedFile.FileName));
-
+            string fileName = uploadedFile.FileName;
             file.ShortName = fileName;
             file.Puzzle = Puzzle;
             file.Event = Event;
