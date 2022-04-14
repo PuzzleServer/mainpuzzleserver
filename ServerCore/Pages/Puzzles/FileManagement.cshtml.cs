@@ -42,6 +42,9 @@ namespace ServerCore.Pages.Puzzles
         [BindProperty]
         public bool ExpandZipFiles { get; set; }
 
+        [BindProperty]
+        public List<int> SelectedFiles { get; set; }
+
         /// <summary>
         /// Handler for listing files
         /// </summary>
@@ -171,13 +174,9 @@ namespace ServerCore.Pages.Puzzles
                 return NotFound();
             }
 
-            await FileManager.DeleteBlobAsync(fileToDelete.Url);
-            Puzzle.Contents.Remove(fileToDelete);
-            Puzzle.PuzzleVersion = Puzzle.PuzzleVersion + 1;
-
             try
             {
-                await _context.SaveChangesAsync();
+                await DeleteFileAsync(fileToDelete);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -188,6 +187,92 @@ namespace ServerCore.Pages.Puzzles
                 else
                 {
                     throw;
+                }
+            }
+
+            return RedirectToPage("FileManagement");
+        }
+
+        private async Task DeleteFileAsync(ContentFile fileToDelete)
+        {
+            await FileManager.DeleteBlobAsync(fileToDelete.Url);
+            Puzzle.Contents.Remove(fileToDelete);
+            Puzzle.PuzzleVersion = Puzzle.PuzzleVersion + 1;
+
+            await _context.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Deletes files selected by checkboxes
+        /// </summary>
+        public async Task<IActionResult> OnPostDeleteSelectedAsync(int puzzleId)
+        {
+            Puzzle = await _context.Puzzles.FirstOrDefaultAsync(m => m.ID == puzzleId);
+
+            if (Puzzle == null)
+            {
+                return NotFound();
+            }
+
+            var filesToDelete = await (from file in _context.ContentFiles
+                                       where file.PuzzleID == puzzleId &&
+                                       SelectedFiles.Contains(file.ID)
+                                       select file).ToListAsync();
+
+            foreach(ContentFile fileToDelete in filesToDelete)
+            {
+                try
+                {
+                    await DeleteFileAsync(fileToDelete);
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!PuzzleExists(Puzzle.ID))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            }
+
+            return RedirectToPage("FileManagement");
+        }
+
+        /// <summary>
+        /// Deletes all files from this puzzle
+        /// </summary>
+        public async Task<IActionResult> OnPostDeleteAllAsync(int puzzleId)
+        {
+            Puzzle = await _context.Puzzles.FirstOrDefaultAsync(m => m.ID == puzzleId);
+
+            if (Puzzle == null)
+            {
+                return NotFound();
+            }
+
+            var filesToDelete = await (from file in _context.ContentFiles
+                                       where file.PuzzleID == puzzleId
+                                       select file).ToListAsync();
+
+            foreach (ContentFile fileToDelete in filesToDelete)
+            {
+                try
+                {
+                    await DeleteFileAsync(fileToDelete);
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!PuzzleExists(Puzzle.ID))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
             }
 
