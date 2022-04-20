@@ -61,7 +61,7 @@
                 <a asp-Page="./Edit" asp-route-puzzleid=@item.Puzzle.ID>@Html.DisplayFor(modelItem => item.Puzzle.Name)</a>
             </td>
             <td>
-                @ServerCore.Helpers.RawHtmlHelper.GetRawHtmlIfPresent(item.Puzzle.Group, Html)
+                @ServerCore.Helpers.RawHtmlHelper.Display(item.Puzzle.Group, Html)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Authors)

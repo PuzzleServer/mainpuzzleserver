@@ -52,7 +52,7 @@
                 @Html.DisplayFor(modelItem => item.SubmittedText)
             </td>
             <td>
-                @ServerCore.Helpers.RawHtmlHelper.GetRawHtmlIfPresent(item.ResponseText, Html)
+                @ServerCore.Helpers.RawHtmlHelper.Display(item.ResponseText, Html)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Note)

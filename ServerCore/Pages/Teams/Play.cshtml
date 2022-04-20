@@ -98,7 +98,7 @@
         {
             <tr>
                 <td>
-                    @ServerCore.Helpers.RawHtmlHelper.GetRawHtmlIfPresent(item.Group, Html)
+                    @ServerCore.Helpers.RawHtmlHelper.Display(item.Group, Html)
                 </td>
                 <td>
                     @if (!string.IsNullOrWhiteSpace(item.Errata))
