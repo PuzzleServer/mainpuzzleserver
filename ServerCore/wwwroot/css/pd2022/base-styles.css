@@ -1,0 +1,159 @@
+/* Globals and Constants */
+:root {
+  --ink-black: rgb(51, 51, 51);
+  --ruby-red: rgb(206, 10, 10);
+  --evening-blue: rgb(10, 10, 206);
+  --sky-blue: rgb(135, 206, 250);
+  --crown-gold: rgb(218, 165, 32);
+  --tiara-silver: rgb(192, 192, 192);
+  --ruby-red-alpha: rgba(206, 10, 10, 0.5);
+  --evening-blue-alpha: rgba(10, 10, 206, 0.5);
+  --sky-blue-alpha: rgba(135, 206, 250, 0.5);
+  --crown-gold-alpha: rgba(218, 165, 32, 0.5);
+  --tiara-silver-alpha: rgba(192, 192, 192, 0.5);
+  --min-width: 800px;
+  --content-margin: max(calc(100vw - var(--min-width)) / 2 - 200px, 40px);
+  --content-width: calc(100vw - 2 * var(--content-margin));
+  --dc-width: 75px;
+}
+
+/* Structural */
+.page-div {
+  min-width: var(--min-width);
+  border: 1px outset rgba(204, 204, 204, 0.2);
+  margin: 20px;
+}
+
+.header-div {
+  /* Spacing */
+  margin-top: 40px;
+}
+
+.has-dc {
+  background-image: url("../../images/wreath-dc.png");
+  background-repeat: no-repeat;
+  background-size: 100%;
+  position: absolute;
+  top: 50px;
+  right: calc(var(--content-margin) + 40px);
+  width: var(--dc-width);
+  height: var(--dc-width);
+}
+
+.center-img {
+  display: block;
+  margin: auto;
+}
+
+/* Text */
+h1 {
+  /* Text */
+  color: var(--ink-black);
+  font-size: 32px;
+  font-weight: bold;
+  letter-spacing: 1px;
+
+  /* Spacing */
+  text-align: center;
+  border-bottom: 1.8px solid var(--ink-black);
+  padding: 0 calc(var(--content-margin) - 1.5 * var(--dc-width));
+  margin: 20px 200px;
+}
+
+h1.solution-h1::before {
+  content: "✔";
+  color: var(--ruby-red);
+}
+
+.byline-div {
+  font-size: 18px;
+  margin: 10px;
+}
+
+.byline-div::before {
+  content: "by ";
+}
+
+.flavor-div {
+  /* Text */
+  color: var(--ink-black);
+  font-size: 18px;
+  font-weight: normal;
+  font-style: italic;
+
+  /* Spacing */
+  text-align: center;
+  margin: 0 100px;
+}
+
+.answer-div {
+  /* Text */
+  color: var(--ruby-red);
+  font-size: 18px;
+  font-weight: bold;
+  text-transform: uppercase;
+
+  /* Spacing */
+  text-align: center;
+  margin: 0 100px;
+}
+
+.answer-div::before {
+  /* Text */
+  color: var(--ink-black);
+  font-size: 18px;
+  font-weight: bold;
+  text-transform: none;
+  content: "Answer: ";
+}
+
+.content-div {
+  /* Text */
+  color: var(--ink-black);
+  font-size: 18px;
+  font-weight: normal;
+
+  /* Spacing */
+  margin: 20px var(--content-margin);
+}
+
+.monospace {
+  font-family: monospace;
+}
+
+.answer-red {
+  color: var(--ruby-red);
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.answer-blue {
+  color: var(--evening-blue);
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+p {
+  margin: 12px 24px;
+}
+
+ol,
+ul {
+  padding: 0;
+  margin: 12px 48px;
+}
+
+li {
+  margin-bottom: 4px;
+}
+
+table {
+  margin: auto;
+  border-collapse: collapse;
+  color: inherit;
+}
+
+td,
+th {
+  border: 1px solid var(--ink-black);
+}
