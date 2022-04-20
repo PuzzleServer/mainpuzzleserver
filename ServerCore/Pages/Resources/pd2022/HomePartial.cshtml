@@ -1,0 +1,61 @@
+﻿@{
+    var eventPage = Model as ServerCore.ModelBases.EventSpecificPageModel;
+    var Event = eventPage?.Event;
+}
+
+@if (!string.IsNullOrEmpty(Event.HomeContent))
+{
+    @Html.Raw(Event.HomeContent)
+}
+else
+{
+
+    <div class="container" id="pd2022-container">
+        <h2 class="pd2022-title">
+            <span>Intern Puzzleday 2022</span>
+        </h2>
+
+        <div class="pd2022-container-root">
+            <div class="pd2022-container-card">
+                <h3>WELCOME TO PUZZLEDAY</h3>
+                <p>We've drawn up an event this year that will leave you satisfied down to the last frame: Intern Puzzleday 2022! Our artists have been hard at work inking up a cavalcade of puzzles for you to solve this July, so whether you're a Disney diehard or a Miyazaki maven, we guarantee you'll finish the day more animated than when you started!</p>
+
+                <p>Puzzleday this year will take place on <b>July 9<sup>th</sup></b>. Solving will begin at <b>10AM PDT</b> after a brief opening ceremony where we'll go over the rules and introduce the story.</p>
+
+                <!--<p>Puzzleday is beginner-friendly, so if you don't know what to expect, we'll be holding Q&amp;A sessions so you can get a feel for what's what and maybe even meet some potential teammates. These sessions will be July 1<sup>st</sup> and 7<sup>th</sup>, with two held each day on the Internz Teams team. The sessions start at 2pm and 5pm PDT, with a presentation scheduled to start at 2:15 and 5:15 and the Q&amp;A following.</p>-->
+
+                <p>We strive to make this event beginning friendly, so we've provided a <b><a asp-page="/EventSpecific/FAQ">FAQ</a></b> page and summarized our <b><a asp-page="/EventSpecific/Rules">Rules</a> </b> to hopefully answer any questions that would prevent you from signing up. <!--<a target="_blank" href="https://aka.ms/pdinfo">We also have a PowerPoint deck</a> that can clarify a few things.--></p>
+
+                <p>As part of our effort to be welcoming to everyone, we endeavor to make our puzzles accessible to all audiences, although some specific puzzles may use mechanics that are less accessible to people of certain abilities than others. If you require alternate versions of puzzles or any other accommodation, please reach out to Puzzleday staff at <a href="mailto:puzzhunt@microsoft.com">puzzhunt</a> as soon as you can before the event so we can prepare the materials. By default, the puzzles we provide digitally are compatible with Windows' built-in accessibility tools like <strong>Narrator</strong>. For more customized accommodations, we will engage in an interactive process with you to determine what will be most effective.</p>
+            </div>
+
+            <div class="pd2022-container-card">
+                <h3>FULL SCHEDULE (all times PDT)</h3>
+
+                <h4>PREGAME PUZZLES (optional)</h4>
+                <p>These are a great way to get familiar with different types of puzzles you may see during the event and learn how to use our website. The puzzles will be released in the days leading up to the event, and can be found by clicking &quot;Puzzles&quot; at the top of the page (if you don't see a link to the Puzzles up there once they're released, make sure you're registered to play!)  Since these are primarily for practice, we'll go over the solutions at the opening session.</p>
+
+                <h4>EVENT WEEKEND</h4>
+                <p>On <b>July 9<sup>th</sup></b> at <b>10AM</b>, we will have a short opening session that will be presented both live in person, as well as streamed for all remote attendees. After that, your team will solve puzzles until later in the afternoon.</p>
+                <!--<ul><li><b><a href="https://aka.ms/pdopening">Click here to join the opening session!</a></b> (Will be live shortly before scheduled start time)</li></ul>-->
+                <p>After solving has concluded, we will have a closing session where we will announce the winners and you'll have a chance to go over solutions and chat with the puzzle creators. Portions of this will also be streamed for remote attendees.</p>
+                <!--<ul><li><b><a href="https://aka.ms/pdclosing">Click here to join the closing session!</a></b> (Will be live shortly before scheduled start time)</li></ul>-->
+            </div>
+
+            <div class="pd2022-container-card">
+                <h3>HOW TO SIGN UP</h3>
+                <p>Registration will open soon! In the meantime, we recommend thinking about who you may want to team up with. <!--If you don't have a team yet, you can <b><a href="https://puzzlehunt.azurewebsites.net/pd2021/play/Teams/List">create a team using the link here</a></b>. -->Teams will consist of up to 12 players with all levels of puzzle experience. Each intern can also invite one non-Microsoft-employee guest to join them if they wish, keeping in mind that guest counts against the limit of 12.</p>
+                
+                <p>While we know that a large portion of interns will be able to participate in-person on the Redmond campus this year, we are still providing a remote experience that allows full participation in the event. It's truly hybrid!  And while that means your team doesn't need to be in the same place geographically, we think there are enough advantages to meeting up in-person that we want at least 1/3 of your team to be located on the Redmond campus during the event.</p>
+
+                <p>Once registration is open, if you want to join a team and haven't been specifically invited by anyone, you can <!--<b><a href="https://puzzlehunt.azurewebsites.net/pd2021/play/Teams/List">-->research the list of teams looking for team members<!--</a></b>--> and request to join one of them. We recommend for any team that still needs teammates to keep your team open. If you need help finding teammates, you can always ask other interns you work with, know from your cohort or university, or met in cyberspace.</p>
+            </div>
+
+            <div class="pd2022-container-card">
+                <h3>NEW TO PUZZLES?</h3>
+                <p>You may have seen a jigsaw puzzle, a crossword puzzle, or a Sudoku at some point in your life, but those barely crack the cover on the whole anthology that is &quot;puzzling&quot;! Puzzleday puzzles also have a tendency to get... creative, so you might see something that looks especially strange! Check out a few <a asp-page="/EventSpecific/Samples">sample puzzles</a> or peruse our <a href="https://puzzlearchive.azurewebsites.net/puzzleday/main.html">collection of puzzles</a> from past events.</p>
+            </div>
+        </div>
+    </div>
+
+}
