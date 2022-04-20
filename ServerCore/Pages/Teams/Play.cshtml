@@ -98,14 +98,7 @@
         {
             <tr>
                 <td>
-                    @if (item.Group != null && item.Group.StartsWith("Html.Raw(") && item.Group.EndsWith(")"))
-                    {
-                        @Html.Raw(item.Group.Substring(9, item.Group.Length - 10))
-                    }
-                    else
-                    {
-                        @Html.DisplayFor(modelItem => item.Group)
-                    }
+                    @ServerCore.Helpers.RawHtmlHelper.Display(item.Group, Html)
                 </td>
                 <td>
                     @if (!string.IsNullOrWhiteSpace(item.Errata))

@@ -212,16 +212,11 @@
                                         <text>Incorrect</text>
                                     }
                                 }
-                                else if (response.ResponseText.StartsWith("Html.Raw(") && response.ResponseText.EndsWith(")"))
-                                {
-                                    @Html.Raw(response.ResponseText.Substring(9, response.ResponseText.Length - 10))
-                                }
                                 else
                                 {
-                                    @Html.DisplayFor(modelItem => response.ResponseText)
+                                    @ServerCore.Helpers.RawHtmlHelper.Display(response.ResponseText, Html);
                                 }
                             }
-
                         </td>
                     </tr>
                 }

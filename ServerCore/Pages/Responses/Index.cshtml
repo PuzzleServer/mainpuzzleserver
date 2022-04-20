@@ -52,14 +52,7 @@
                 @Html.DisplayFor(modelItem => item.SubmittedText)
             </td>
             <td>
-                @if (item.ResponseText.StartsWith("Html.Raw(") && item.ResponseText.EndsWith(")"))
-                {
-                    @Html.Raw(item.ResponseText.Substring(9, item.ResponseText.Length - 10))
-                }
-                else
-                {
-                    @Html.DisplayFor(modelItem => item.ResponseText)
-                }
+                @ServerCore.Helpers.RawHtmlHelper.Display(item.ResponseText, Html)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Note)
