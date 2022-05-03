@@ -15,12 +15,23 @@
   --content-margin: max(calc(100vw - var(--min-width)) / 2 - 200px, 40px);
   --content-width: calc(100vw - 2 * var(--content-margin));
   --dc-width: 75px;
+  --microsoft-yellow: rgb(255,185,0);
+  --microsoft-red: rgb(242, 80, 34);
+  --microsoft-blue: rgb(0, 164, 239);
+  --microsoft-green: rgb(127, 186, 0);
+}
+
+@font-face {
+    font-family: "pd2022-font-title";
+    src: url("resources/LTtilt.ttf");
+    font-weight: normal;
+    font-style: normal;
 }
 
 /* Structural */
 .page-div {
   min-width: var(--min-width);
-  border: 1px outset rgba(204, 204, 204, 0.2);
+  border: 6px solid #000000;
   margin: 20px;
 }
 
@@ -46,8 +57,14 @@
 }
 
 /* Text */
+body {
+    font-size: 1.4rem;
+    font-family: Tahoma, Verdana, sans-serif;
+}
+
 h1 {
   /* Text */
+  font-family: pd2022-font-title;
   color: var(--ink-black);
   font-size: 32px;
   font-weight: bold;
