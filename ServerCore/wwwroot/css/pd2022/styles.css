@@ -1,3 +1,17 @@
+@font-face {
+    font-family: "pd2022-font-title";
+    src: url("resources/LTtilt.ttf");
+    font-weight: normal;
+    font-style: normal;
+}
+
+:root {
+    --microsoft-yellow: rgb(255,185,0);
+    --microsoft-red: rgb(242, 80, 34);
+    --microsoft-blue: rgb(0, 164, 239);
+    --microsoft-green: rgb(127, 186, 0);
+}
+
 .container {
     padding-right: 15px;
     padding-left: 15px;
@@ -11,10 +25,11 @@
 }
 
 .pd2022-title {
+    font-family: pd2022-font-title;
     text-transform: uppercase;
-    font-size: 6rem;
+    font-size: 7.5rem;
     text-align: center;
-    color: #000;
+    color: #000000;
     margin-bottom: 0px;
 }
 
@@ -34,7 +49,23 @@
     min-width: 50rem;
     margin: 1rem;
     padding: 2rem 1rem;
-    border: 1px outset rgba(204, 204, 204, 0.2);
+    border: 6px solid #000000;
+}
+
+.card-1 {
+    border-color: var(--microsoft-red);
+}
+
+.card-2 {
+    border-color: var(--microsoft-green);
+}
+
+.card-3 {
+    border-color: var(--microsoft-blue);
+}
+
+.card-4 {
+    border-color: var(--microsoft-yellow);
 }
 
 .pd2022-container-card > h3 {
@@ -43,7 +74,8 @@
 }
 
 body {
-    font-size: 1.2rem
+    font-size: 1.4rem;
+    font-family: Tahoma, Verdana, sans-serif;
 }
 
 .navbar-inverse .navbar-nav > .active > a,
@@ -67,4 +99,23 @@ body {
 
 .dropdown-menu .divider {
     margin: 0;
+}
+
+.column-container {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 10px;
+}
+
+.column-one-third {
+    grid-column: 1;
+}
+
+.column-one-third > h3 {
+    font-size: 2rem;
+    margin-top: 0px;
+}
+
+.column-two-third {
+    grid-column: 2;
 }
