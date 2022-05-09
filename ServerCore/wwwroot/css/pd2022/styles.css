@@ -102,13 +102,13 @@ body {
 }
 
 .column-container {
-    display: grid;
-    grid-template-columns: 200px 1fr;
-    gap: 10px;
+    display: table;
+    width: 100%;
 }
 
 .column-one-third {
-    grid-column: 1;
+    float: left;
+    width: calc(100% - 310px);
 }
 
 .column-one-third > h3 {
@@ -117,5 +117,7 @@ body {
 }
 
 .column-two-third {
-    grid-column: 2;
+    float: right;
+    width: 310px;
+    text-align: right;
 }
