@@ -22,16 +22,15 @@
 }
 
 @font-face {
-    font-family: "pd2022-font-title";
-    src: url("resources/LTtilt.ttf");
-    font-weight: normal;
-    font-style: normal;
+  font-family: "pd2022-font-title";
+  src: url("resources/LTtilt.ttf");
+  font-weight: normal;
+  font-style: normal;
 }
 
 /* Structural */
 .page-div {
   min-width: var(--min-width);
-  border: 6px solid #000000;
   margin: 20px;
 }
 
@@ -58,21 +57,20 @@
 
 /* Text */
 body {
-    font-size: 1.4rem;
-    font-family: Tahoma, Verdana, sans-serif;
+  font-size: 1.4rem;
+  font-family: Tahoma, Verdana, sans-serif;
 }
 
 h1 {
   /* Text */
   font-family: pd2022-font-title;
   color: var(--ink-black);
-  font-size: 32px;
+  font-size: 48px;
   font-weight: bold;
   letter-spacing: 1px;
 
   /* Spacing */
   text-align: center;
-  border-bottom: 1.8px solid var(--ink-black);
   padding: 0 calc(var(--content-margin) - 1.5 * var(--dc-width));
   margin: 20px 200px;
 }
@@ -83,6 +81,7 @@ h1.solution-h1::before {
 }
 
 .byline-div {
+  font-family: Tahoma, Verdana, sans-serif;
   font-size: 18px;
   margin: 10px;
 }
@@ -131,7 +130,9 @@ h1.solution-h1::before {
   font-weight: normal;
 
   /* Spacing */
-  margin: 20px var(--content-margin);
+  padding: 20px var(--content-margin);
+  margin-top: 1em;
+  border: 6px solid #000000;
 }
 
 .monospace {

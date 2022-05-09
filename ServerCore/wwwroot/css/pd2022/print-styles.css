@@ -12,12 +12,7 @@
 .page-div {
   background: none;
   min-width: initial;
-  border: none;
   margin: 0;
-}
-
-.divider-div {
-  display: none;
 }
 
 .has-dc {
@@ -35,14 +30,17 @@ h1 {
   color-adjust: exact;
   -webkit-print-color-adjust: exact;
   font-size: 18px;
+  font-family: Tahoma, Verdana, sans-serif;
   margin: 20px;
   text-align: left;
+  text-transform: uppercase;
 }
 
 .byline-div {
   font-size: inherit;
   margin: 0;
   float: right;
+  text-transform: none;
 }
 
 .flavor-div {
@@ -54,5 +52,5 @@ h1 {
   color-adjust: exact;
   -webkit-print-color-adjust: exact;
   margin: 0;
-  font-size: smaller;
+  border: none;
 }
