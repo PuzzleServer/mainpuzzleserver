@@ -23,7 +23,7 @@
 
 @font-face {
   font-family: "pd2022-font-title";
-  src: url("LTtilt.ttf");
+  src: url("resources/LTtilt.ttf");
   font-weight: normal;
   font-style: normal;
 }
@@ -40,7 +40,7 @@
 }
 
 .has-dc {
-  background-image: url("wreath-dc.png");
+  background-image: url("../../images/wreath-dc.png");
   background-repeat: no-repeat;
   background-size: 100%;
   position: absolute;
