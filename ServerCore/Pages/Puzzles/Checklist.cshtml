@@ -77,7 +77,11 @@
                 }
             </td>
             <td>
-                @if (item.AnswerFile != null)
+                @if (item.Puzzle.CustomSolutionURL != null)
+                {
+                    <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.Puzzle.CustomSolutionURL, item.Puzzle.ID, Model.Event.ID, null)" target="_blank">Link</a>
+                }
+                else if (item.AnswerFile != null)
                 {
                     @Html.ActionLink("File", "Index", "Files", new { eventId = Model.Event.ID, filename = item.AnswerFile.ShortName }, new { target = "_blank" })
                 }

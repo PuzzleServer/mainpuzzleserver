@@ -606,6 +606,9 @@ namespace Data.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
+                    b.Property<string>("CustomSolutionURL")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("CustomURL")
                         .HasColumnType("nvarchar(max)");
 

@@ -127,7 +127,11 @@
                 @if (Model.ShowAnswers)
                 {
                     <td>
-                        @if (item.Answer != null)
+                        @if (item.CustomSolutionUrl != null)
+                        {
+                            <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.CustomSolutionUrl, item.ID, Model.Event.ID, Model.TeamPassword)" target="_blank">View answer</a>
+                        }
+                        else if (item.Answer != null)
                         {
                             @Html.ActionLink("View answer", "Index", "Files", new { eventId = Model.Event.ID, filename = item.Answer.ShortName }, new { target = "_blank" })
                         }
