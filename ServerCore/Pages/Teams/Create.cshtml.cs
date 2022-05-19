@@ -68,7 +68,7 @@ namespace ServerCore.Pages.Teams
                 return Forbid();
             }
 
-            if (!Event.IsTeamRegistrationActive)
+            if (!Event.IsTeamRegistrationActive && EventRole != EventRole.admin)
             {
                 return NotFound();
             }

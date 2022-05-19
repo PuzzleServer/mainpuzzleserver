@@ -47,6 +47,7 @@ namespace ServerCore.DataModel
             MaxAnnotationKey = source.MaxAnnotationKey;
             SupportEmailAlias = source.SupportEmailAlias;
             CustomURL = source.CustomURL;
+            CustomSolutionURL = source.CustomSolutionURL;
             Description = source.Description;
             Errata = source.Errata;
             PieceMetaUsage = source.PieceMetaUsage;
@@ -205,6 +206,12 @@ namespace ServerCore.DataModel
         /// </summary>
         [DataType(DataType.Url)]
         public string CustomURL { get; set; }
+
+        /// <summary>
+        /// A custom URL the solution should link to instead of an associated file
+        /// </summary>
+        [DataType(DataType.Url)]
+        public string CustomSolutionURL { get; set; }
 
         /// <summary>
         /// Short description of the puzzle for authors or special pages
