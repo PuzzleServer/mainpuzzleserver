@@ -59,6 +59,13 @@
             <div class="form-group">
                 <div class="checkbox">
                     <label>
+                        <input asp-for="Event.EventHasSwag" /> @Html.DisplayNameFor(model => model.Event.EventHasSwag)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
                         <input asp-for="Event.HideHints" /> @Html.DisplayNameFor(model => model.Event.HideHints)
                     </label>
                 </div>

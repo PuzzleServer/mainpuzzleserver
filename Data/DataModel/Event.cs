@@ -40,6 +40,7 @@ namespace ServerCore.DataModel
         public int MaxTeamSize { get; set; }
         public int MaxExternalsPerTeam { get; set; }
         public bool IsInternEvent { get; set; }
+        public bool EventHasSwag { get; set; }
         public DateTime TeamRegistrationBegin { get; set; }
         public DateTime TeamRegistrationEnd { get; set; }
 

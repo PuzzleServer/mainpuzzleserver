@@ -310,6 +310,9 @@ namespace Data.Migrations
                     b.Property<DateTime>("EventBegin")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("EventHasSwag")
+                        .HasColumnType("bit");
+
                     b.Property<string>("FAQContent")
                         .HasColumnType("nvarchar(max)");
 

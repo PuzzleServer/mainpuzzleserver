@@ -106,10 +106,21 @@ namespace ServerCore.ModelBases
 
             return isEventAdmin.Value;
         }
-
+        
+        /// <summary>
+        ///  Whether or not the individual has filled out their swag request
+        /// </summary>
         public async Task<bool> HasSwag()
         {
-            return Event.IsInternEvent && await _context.Swag.Where(m => m.Event == Event && m.Player == LoggedInUser).AnyAsync();
+            return Event.EventHasSwag && await _context.Swag.Where(m => m.Event == Event && m.Player == LoggedInUser).AnyAsync();
+        }
+
+        /// <summary>
+        /// Whether or not the event is providing swag (i.e. shirt & lunch)
+        /// </summary>
+        public bool EventHasSwag()
+        {
+            return Event.EventHasSwag;
         }
 
         public async Task<int> GetTeamId()
@@ -149,7 +160,6 @@ namespace ServerCore.ModelBases
 
         public class RoleBinder : IModelBinder
         {
-#pragma warning disable 1998 // Async method that doesn't await anything forced by the IModelBinder interface
             // This doesn't actually run async but the compiler complains if I try to use BindModel :(
             public async Task BindModelAsync(ModelBindingContext bindingContext)
             {
@@ -170,7 +180,6 @@ namespace ServerCore.ModelBases
                     throw new Exception("Invalid route parameter '" + eventRoleAsString + "'. Please check your URL to make sure you are using the correct path. (code: InvalidRoleId)");
                 }
             }
-#pragma warning restore
         }
     }
 }
