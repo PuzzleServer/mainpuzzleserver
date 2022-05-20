@@ -179,7 +179,7 @@
                 <ul class="nav navbar-nav">
                     <li><a asp-page="/EventSpecific/Index">Event</a></li>
                     <li><a asp-page="/Teams/Play" asp-route-teamId="@teamId">Puzzles</a></li>
-                    @if (Event.IsInternEvent)
+                    @if (Event.EventHasSwag)
                     {
                         if (DateTime.UtcNow > Event.TeamMiscDataChangeEnd || await Model.HasSwag())
                         {
