@@ -232,6 +232,12 @@
     <p>A pre-populated email form will appear and you should add details to the message body. Remember: the author may only know specifics about this puzzle and not others in the event.</p>
 }
 
+@if (Model.AllowFeedback) 
+{
+    <h3>Have any feedback?</h3>
+    <p><a asp-Page="/Puzzles/SubmitFeedback" asp-route-puzzleid="@Model.Puzzle.ID">Click this link</a> to submit feedback.</p>
+}
+
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     @if (@Model.PuzzleState.LockoutExpiryTime != null)

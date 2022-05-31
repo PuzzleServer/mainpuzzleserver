@@ -41,6 +41,8 @@ namespace ServerCore.Pages.Submissions
         [BindProperty]
         public bool AllowFreeformSharing { get; set; }
 
+        public bool AllowFeedback { get; set; }
+
         public class SubmissionView
         {
             public Submission Submission { get; set; }
@@ -253,6 +255,8 @@ namespace ServerCore.Pages.Submissions
                     AnswerToken = "(marked as solved by admin or author)";
                 }
             }
+
+            AllowFeedback = Event.AllowFeedback;
         }
 
         /// <summary>
