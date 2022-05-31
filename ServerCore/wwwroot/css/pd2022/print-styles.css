@@ -54,3 +54,7 @@ h1 {
   margin: 0;
   border: none;
 }
+
+.help-link {
+  display: none;
+}
