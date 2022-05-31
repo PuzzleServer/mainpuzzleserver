@@ -29,15 +29,18 @@
 h1 {
   color-adjust: exact;
   -webkit-print-color-adjust: exact;
-  font-size: 18px;
-  font-family: Tahoma, Verdana, sans-serif;
-  margin: 20px;
+  font-size: 36px;
+  font-family: pd2022-font-title, Tahoma, Verdana, sans-serif;
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-bottom: 0px;
   text-align: left;
   text-transform: uppercase;
 }
 
 .byline-div {
-  font-size: inherit;
+  font-size: 14px;
+  line-height: 48px;
   margin: 0;
   float: right;
   text-transform: none;
