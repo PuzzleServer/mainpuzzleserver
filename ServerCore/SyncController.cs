@@ -613,6 +613,9 @@ namespace ServerCore.Pages
             Dictionary<string, object> response = await responseTask;
             var responseSerialized = JsonConvert.SerializeObject(response);
             var initialSyncString = HttpUtility.JavaScriptStringEncode(responseSerialized);
+
+            fileContents = fileContents.Replace("@EVENTID", currentEvent.ID.ToString());
+            fileContents = fileContents.Replace("@PUZZLEID", puzzleId.ToString());
             fileContents = fileContents.Replace("@SYNC", initialSyncString);
 
             // Return the file contents to the user.
