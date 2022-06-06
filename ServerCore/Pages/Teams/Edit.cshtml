@@ -26,29 +26,26 @@
                 <input asp-for="Team.Name" class="form-control" />
                 <span asp-validation-for="Team.Name" class="text-danger"></span>
             </div>
-            <!-- TODO: Conditionally show/hide based on event property (not needed for PuzzleHunt)
-    <div class="form-group">
-        <label asp-for="Team.RoomID" class="control-label"></label>
-        <input asp-for="Team.RoomID" class="form-control" />
-        <span asp-validation-for="Team.RoomID" class="text-danger"></span>
-    </div>
-    -->
+            <!-- TODO: Conditionally show/hide based on event property (not needed for PuzzleHunt) -->
+            <div class="form-group">
+                <label asp-for="Team.RoomID" class="control-label"></label>
+                <input asp-for="Team.RoomID" class="form-control" />
+                <span asp-validation-for="Team.RoomID" class="text-danger"></span>
+            </div>
             @if (Model.Event.IsInternEvent && Model.EventRole == ModelBases.EventRole.play)
             {
-            <div class="form-group">
-                <label asp-for="Team.CustomRoom" class="control-label">Team room (selected by organizers)</label>
-                <p>@Html.DisplayFor(model => model.Team.CustomRoom)</p>
-            </div>
+                <div class="form-group">
+                    <label asp-for="Team.CustomRoom" class="control-label">Team room (selected by organizers)</label>
+                    <p>@Html.DisplayFor(model => model.Team.CustomRoom)</p>
+                </div>
             }
             else
             {
-                <!--
-            <div class="form-group">
-                <label asp-for="Team.CustomRoom" class="control-label">Team room</label>
-                <input asp-for="Team.CustomRoom" class="form-control" />
-                <span asp-validation-for="Team.CustomRoom" class="text-danger"></span>
-            </div>
-                -->
+                <div class="form-group">
+                    <label asp-for="Team.CustomRoom" class="control-label">Team room</label>
+                    <input asp-for="Team.CustomRoom" class="form-control" />
+                    <span asp-validation-for="Team.CustomRoom" class="text-danger"></span>
+                </div>
             }
             <div class="form-group">
                 <label asp-for="Team.PrimaryContactEmail" class="control-label">Primary contact e-mail(s) separated by , or ;</label>
