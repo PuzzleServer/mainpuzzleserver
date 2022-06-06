@@ -2,7 +2,7 @@
 @model ServerCore.Pages.Swag.SwagRegisterModel
 
 @{
-    ViewData["Title"] = "T-Shirt and Lunch";
+    ViewData["Title"] = "Lunch";
     ViewData["AdminRoute"] = "/";
     ViewData["AuthorRoute"] = "/";
     ViewData["PlayRoute"] = "../Swag/Register";
@@ -15,7 +15,7 @@
     }
 </style>
 
-<h2>Order T-Shirt and Lunch for @Html.DisplayFor(model => model.Event.Name)</h2>
+<h2>Order Lunch for @Html.DisplayFor(model => model.Event.Name)</h2>
 
 @if (isEditable)
 {
@@ -34,25 +34,6 @@ else
     <div class="col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Swag.ShirtSize" class="control-label"></label>
-                <select asp-for="Swag.ShirtSize" class="form-control" required>
-                    <option value="MS">Men's Small</option>
-                    <option value="MM">Men's Medium</option>
-                    <option value="ML">Men's Large</option>
-                    <option value="MXL">Men's X-Large</option>
-                    <option value="M2XL">Men's XX-Large</option>
-                    <option value="M3XL">Men's XXX-Large</option>
-                    <option value="WXS">Women's X-Small</option>
-                    <option value="WS">Women's Small</option>
-                    <option value="WM">Women's Medium</option>
-                    <option value="WL">Women's Large</option>
-                    <option value="WXL">Women's X-Large</option>
-                    <option value="W2XL">Women's XX-Large</option>
-                    <option value="W3XL">Women's XXX-Large</option>
-                </select>
-                <span asp-validation-for="Swag.ShirtSize" class="text-danger"></span>
-            </div>
             <div class="form-group">
                 <label asp-for="Swag.Lunch" class="control-label"></label>
                 <br /><input asp-for="Swag.Lunch" type="radio" value="smoked-turkey" required /> Smoked Turkey and Havarti Cheese

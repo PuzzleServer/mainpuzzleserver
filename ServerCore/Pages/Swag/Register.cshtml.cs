@@ -57,7 +57,6 @@ namespace ServerCore.Pages.Swag
             {
                 editableSwag.Lunch = Swag.Lunch;
                 editableSwag.LunchModifications = Swag.LunchModifications;
-                editableSwag.ShirtSize = Swag.ShirtSize;
                 editableSwag.Player = LoggedInUser;
                 editableSwag.Event = Event;
 

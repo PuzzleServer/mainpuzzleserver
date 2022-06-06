@@ -183,11 +183,11 @@
                     {
                         if (DateTime.UtcNow > Event.TeamMiscDataChangeEnd || await Model.HasSwag())
                         {
-                            <li><a asp-page="/Swag/Register" title="Lunch/T-Shirt">&#x1f96a/&#x1f455</a></li>
+                            <li><a asp-page="/Swag/Register" title="Lunch">Lunch</a></li>
                         }
                         else
                         {
-                            <li><a style="color:yellow" asp-page="/Swag/Register" title="Lunch/T-Shirt">&#x1f96a/&#x1f455 by @(Event.TeamMiscDataChangeEnd.ToString("M/dd"))!</a></li>
+                            <li><a style="color:yellow" asp-page="/Swag/Register" title="Lunch">Pick Lunch by @(Event.TeamMiscDataChangeEnd.ToString("M/dd"))!</a></li>
                         }
                     }
                     <li class="dropdown">
