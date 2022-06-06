@@ -22,8 +22,12 @@ namespace ServerCore.DataModel
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
+        public int PuzzleID { get; set; }
+
         [Required]
         public virtual Puzzle Puzzle { get; set; }
+
+        public int SubmitterID { get; set; }
 
         /// <summary>
         /// The user who submitted the feedback>

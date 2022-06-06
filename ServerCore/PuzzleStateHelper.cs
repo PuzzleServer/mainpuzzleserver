@@ -170,7 +170,13 @@ namespace ServerCore
                 // Only allow solved time to be modified if it is being marked as unsolved (set to null) or if it is being solved for the first time
                 if (value == null || states[i].SolvedTime == null)
                 {
-                    states[i].SolvedTime = value;
+                    // Unlock puzzles when solving them
+                    if (value != null && states[i].UnlockedTime == null)
+                    {
+                        states[i].UnlockedTime = value;
+                    }
+
+                    states[i].SolvedTime = value;                    
                 }
             }
 
@@ -196,7 +202,7 @@ namespace ServerCore
             await context.SaveChangesAsync();
 
             // if this puzzle got solved, look for others to unlock
-            if (value != null)
+            if (puzzle != null && value != null)
             {
                 await UnlockAnyPuzzlesThatThisSolveUnlockedAsync(context,
                     eventObj,
@@ -328,7 +334,7 @@ namespace ServerCore
             while (true)
             {
                 var puzzlesToSolveByTime = await PuzzleStateHelper.GetSparseQuery(context, eventObj, null, team)
-                    .Where(state => state.SolvedTime == null && state.UnlockedTime != null && state.Puzzle.MinutesToAutomaticallySolve != null && state.UnlockedTime.Value + TimeSpan.FromMinutes(state.Puzzle.MinutesToAutomaticallySolve.Value) <= now)
+                    .Where(state => state.SolvedTime == null && state.UnlockedTime != null && state.Puzzle.MinutesToAutomaticallySolve != null && EF.Functions.DateDiffMinute(state.UnlockedTime.Value, now) >= state.Puzzle.MinutesToAutomaticallySolve.Value)
                     .Select((state) => new { Puzzle = state.Puzzle, UnlockedTime = state.UnlockedTime.Value })
                     .ToListAsync();
 
@@ -367,7 +373,7 @@ namespace ServerCore
         {
             DateTime now = DateTime.UtcNow;
             return PuzzleStateHelper.GetSparseQuery(context, eventObj, null, team)
-                .Where(state => state.SolvedTime == null && state.UnlockedTime != null && state.Puzzle.MinutesOfEventLockout != 0 && state.UnlockedTime.Value + TimeSpan.FromMinutes(state.Puzzle.MinutesOfEventLockout) > now)
+                .Where(state => state.SolvedTime == null && state.UnlockedTime != null && state.Puzzle.MinutesOfEventLockout != 0 && EF.Functions.DateDiffMinute(state.UnlockedTime.Value, now) < state.Puzzle.MinutesOfEventLockout)
                 .Select((s) => s.Puzzle);
         }
 
@@ -389,7 +395,7 @@ namespace ServerCore
         /// </summary>
         /// <param name="context">The puzzle DB context</param>
         /// <param name="eventObj">The event we are working in</param>
-        /// <param name="puzzleJustSolved">The puzzle just solved; if null, all the puzzles in the event (which will make more sense once we add per author filtering)</param>
+        /// <param name="puzzleJustSolved">The puzzle just solved</param>
         /// <param name="team">The team that just solved; if null, all the teams in the event.</param>
         /// <param name="unlockTime">The time that the puzzle should be marked as unlocked.</param>
         /// <returns></returns>
@@ -398,24 +404,22 @@ namespace ServerCore
             // a simple query for all puzzle IDs in the event - will be used at least once below
             IQueryable<int> allPuzzleIDsQ = context.Puzzles.Where(p => p.Event == eventObj).Select(p => p.ID);
 
-            // if we solved a group of puzzles, every puzzle needs an update.
-            // if we solved a single puzzle, only update the puzzles that have that one as a prerequisite.
-            IQueryable<int> needsUpdatePuzzleIDsQ =
-                puzzleJustSolved == null ?
-                allPuzzleIDsQ :
-                context.Prerequisites.Where(pre => pre.Prerequisite == puzzleJustSolved).Select(pre => pre.PuzzleID).Distinct();
 
             // get the prerequisites for all puzzles that need an update
-            // information we get per puzzle: { id, min count, prerequisite IDs }
-            var prerequisiteDataForNeedsUpdatePuzzles = await context.Prerequisites
-                .Where(pre => needsUpdatePuzzleIDsQ.Contains(pre.PuzzleID))
-                .GroupBy(pre => pre.Puzzle)
-                .Select(g => new {
-                    PuzzleID = g.Key.ID,
-                    g.Key.MinPrerequisiteCount,
-                    PrerequisiteIDs = g.Select(pre => pre.PrerequisiteID)
-                })
-                .ToListAsync();
+            // information we get per puzzle: { id, min count, number of solved prereqs including this one }
+            var prerequisiteDataForNeedsUpdatePuzzles = (from possibleUnlock in context.Prerequisites
+                                                        join unlockedBy in context.Prerequisites on possibleUnlock.PuzzleID equals unlockedBy.PuzzleID
+                                                        join pspt in context.PuzzleStatePerTeam on unlockedBy.PrerequisiteID equals pspt.PuzzleID
+                                                        join puz in context.Puzzles on unlockedBy.PrerequisiteID equals puz.ID
+                                                        where possibleUnlock.Prerequisite == puzzleJustSolved && (team == null || pspt.TeamID == team.ID) && pspt.SolvedTime != null
+                                                        group puz by new { unlockedBy.PuzzleID, unlockedBy.Puzzle.MinPrerequisiteCount, pspt.TeamID } into g
+                                                        select new
+                                                        {
+                                                            PuzzleID = g.Key.PuzzleID,
+                                                            TeamID = g.Key.TeamID,
+                                                            g.Key.MinPrerequisiteCount,
+                                                            TotalPrerequisiteCount = g.Sum(p => (p.PrerequisiteWeight ?? 1))
+                                                        }).ToList();
 
             // Are we updating one team or all teams?
             List<Team> teamsToUpdate = team == null ? await context.Teams.Where(t => t.Event == eventObj).ToListAsync() : new List<Team>() { team };
@@ -456,7 +460,7 @@ namespace ServerCore
                     }
 
                     // Enough puzzles unlocked by count? Let's unlock it
-                    if (puzzleToUpdate.PrerequisiteIDs.Where(id => solvedPuzzleIDsForTeamT.Contains(id)).Count() >= puzzleToUpdate.MinPrerequisiteCount)
+                    if (puzzleToUpdate.TeamID == t.ID && puzzleToUpdate.TotalPrerequisiteCount >= puzzleToUpdate.MinPrerequisiteCount)
                     {
                         PuzzleStatePerTeam state = await context.PuzzleStatePerTeam.Where(s => s.PuzzleID == puzzleToUpdate.PuzzleID && s.Team == t).FirstAsync();
                         state.UnlockedTime = unlockTime;
@@ -472,8 +476,8 @@ namespace ServerCore
         {
             using (IDbContextTransaction transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable))
             {
-                var submissionsThatMatchResponse = await (from PuzzleStatePerTeam pspt in context.PuzzleStatePerTeam
-                                                          join Submission sub in context.Submissions on pspt.Team equals sub.Team
+                var submissionsThatMatchResponse = await (from pspt in context.PuzzleStatePerTeam
+                                                          join sub in context.Submissions on pspt.Team equals sub.Team
                                                           where pspt.PuzzleID == response.PuzzleID &&
                                                           sub.PuzzleID == response.PuzzleID &&
                                                           sub.SubmissionText == response.SubmittedText
@@ -497,8 +501,8 @@ namespace ServerCore
                     await context.SaveChangesAsync();
                     transaction.Commit();
 
-                    var teamMembers = await (from TeamMembers tm in context.TeamMembers
-                                             join Submission sub in context.Submissions on tm.Team equals sub.Team
+                    var teamMembers = await (from tm in context.TeamMembers
+                                             join sub in context.Submissions on tm.Team equals sub.Team
                                              where sub.PuzzleID == response.PuzzleID && sub.SubmissionText == response.SubmittedText
                                              select tm.Member.Email).ToListAsync();
                     MailHelper.Singleton.SendPlaintextBcc(teamMembers,

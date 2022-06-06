@@ -14,55 +14,49 @@ namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
 
     public class IsRegisteredForEventHandler_Admin : AuthorizationHandler<IsRegisteredForEventRequirement>
     {
-        private readonly PuzzleServerContext dbContext;
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly AuthorizationHelper authHelper;
 
-        public IsRegisteredForEventHandler_Admin(PuzzleServerContext pContext, UserManager<IdentityUser> manager)
+        public IsRegisteredForEventHandler_Admin(AuthorizationHelper authHelper)
         {
-            dbContext = pContext;
-            userManager = manager;
+            this.authHelper = authHelper;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
                                                        IsRegisteredForEventRequirement requirement)
         {
-            await AuthorizationHelper.IsEventAdminCheck(authContext, dbContext, userManager, requirement);
+            await authHelper.IsEventAdminCheck(authContext, requirement);
         }
     }
 
     public class IsRegisteredForEventHandler_Author : AuthorizationHandler<IsRegisteredForEventRequirement>
     {
-        private readonly PuzzleServerContext dbContext;
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly AuthorizationHelper authHelper;
 
-        public IsRegisteredForEventHandler_Author(PuzzleServerContext pContext, UserManager<IdentityUser> manager)
+        public IsRegisteredForEventHandler_Author(AuthorizationHelper authHelper)
         {
-            dbContext = pContext;
-            userManager = manager;
+            this.authHelper = authHelper;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
                                                        IsRegisteredForEventRequirement requirement)
         {
-            await AuthorizationHelper.IsEventAuthorCheck(authContext, dbContext, userManager, requirement);
+            await authHelper.IsEventAuthorCheck(authContext, requirement);
         }
     }
 
     public class IsRegisteredForEventHandler_Player : AuthorizationHandler<IsRegisteredForEventRequirement>
     {
-        private readonly PuzzleServerContext dbContext;
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly AuthorizationHelper authHelper;
 
-        public IsRegisteredForEventHandler_Player(PuzzleServerContext pContext, UserManager<IdentityUser> manager)
+        public IsRegisteredForEventHandler_Player(AuthorizationHelper authHelper)
         {
-            dbContext = pContext;
-            userManager = manager;
+            this.authHelper = authHelper;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
                                                        IsRegisteredForEventRequirement requirement)
         {
-            await AuthorizationHelper.IsEventPlayerCheck(authContext, dbContext, userManager, requirement);
+            await authHelper.IsEventPlayerCheck(authContext, requirement);
         }
     }
 }

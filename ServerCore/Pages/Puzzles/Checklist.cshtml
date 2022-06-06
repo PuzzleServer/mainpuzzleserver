@@ -19,7 +19,7 @@
                 Name
             </th>
             <th>
-                Module
+                @(Model.Event.TermForGroup ?? "Group")
             </th>
             <th>
                 Author(s)
@@ -61,7 +61,7 @@
                 <a asp-Page="./Edit" asp-route-puzzleid=@item.Puzzle.ID>@Html.DisplayFor(modelItem => item.Puzzle.Name)</a>
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Puzzle.Group)
+                @ServerCore.Helpers.RawHtmlHelper.Display(item.Puzzle.Group, Html)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Authors)
@@ -77,13 +77,17 @@
                 }
             </td>
             <td>
-                @if (item.AnswerFile != null)
+                @if (item.Puzzle.CustomSolutionURL != null)
+                {
+                    <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.Puzzle.CustomSolutionURL, item.Puzzle.ID, Model.Event.ID, null)" target="_blank">Link</a>
+                }
+                else if (item.AnswerFile != null)
                 {
                     @Html.ActionLink("File", "Index", "Files", new { eventId = Model.Event.ID, filename = item.AnswerFile.ShortName }, new { target = "_blank" })
                 }
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Puzzle.MinPrerequisiteCount) of:
+                @Html.DisplayFor(modelItem => item.Puzzle.MinPrerequisiteCount) of @Html.DisplayFor(modelItem => item.PrerequisitesCount)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Prerequisites)

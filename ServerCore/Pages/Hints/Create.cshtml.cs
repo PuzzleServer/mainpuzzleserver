@@ -50,7 +50,7 @@ namespace ServerCore.Pages.Hints
 
             using (IDbContextTransaction transaction = _context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable))
             {
-                var teams = from Team team in _context.Teams
+                var teams = from team in _context.Teams
                             where team.Event == Event
                             select team;
                 _context.Hints.Add(Hint);

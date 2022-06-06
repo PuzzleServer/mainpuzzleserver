@@ -21,6 +21,14 @@ namespace ServerCore.DataModel
         public string EventID => UrlString ?? ID.ToString();
 
         /// <summary>
+        /// I was unable to put this in a separate ImportEvent model in import.cshtml.cs;
+        /// for some reason SelectList did not like those type of items.
+        /// Kludging the info here although I really shouldn't have to...
+        /// </summary>
+        [NotMapped]
+        public string NameAndContainer => $"{Name} (evt{ID})";
+
+        /// <summary>
         /// The prefix of the partial files that provide the Home, FAQ, and Rules content.
         /// </summary>
         public string HomePartial { get; set; }
@@ -32,6 +40,7 @@ namespace ServerCore.DataModel
         public int MaxTeamSize { get; set; }
         public int MaxExternalsPerTeam { get; set; }
         public bool IsInternEvent { get; set; }
+        public bool EventHasSwag { get; set; }
         public DateTime TeamRegistrationBegin { get; set; }
         public DateTime TeamRegistrationEnd { get; set; }
 
@@ -180,5 +189,35 @@ namespace ServerCore.DataModel
         /// True if the hint system will not be used
         /// </summary>
         public bool HideHints { get; set; }
+
+        /// <summary>
+        /// Announcement to be added to every page
+        /// </summary>
+        public string Announcement { get; set; }
+
+        /// <summary>
+        /// content for the home page
+        /// </summary>
+        public string HomeContent { get; set; }
+
+        /// <summary>
+        /// content for the home page
+        /// </summary>
+        public string FAQContent { get; set; }
+
+        /// <summary>
+        /// content for the home page
+        /// </summary>
+        public string RulesContent { get; set; }
+
+        /// <summary>
+        /// Entity copyrighting this event
+        /// </summary>
+        public string Copyright { get; set; }
+
+        /// <summary>
+        /// Publicly-visible term for "group"
+        /// </summary>
+        public string TermForGroup { get; set; }
     }
 }

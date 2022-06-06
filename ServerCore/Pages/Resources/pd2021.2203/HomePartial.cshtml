@@ -1,0 +1,59 @@
+﻿@{
+    var eventPage = Model as ServerCore.ModelBases.EventSpecificPageModel;
+    bool IsRegistered = false;
+    if (eventPage != null)
+    {
+        IsRegistered = await eventPage.IsRegisteredUser();
+    }
+}
+
+<div class="container" id="pd2021-container">
+    <h2 class="pd2021-title">
+        <span>March 2022 Intern Puzzleday</span>
+    </h2>
+    <div>
+        <img class="divider-img" src="~/images/divider.png">
+    </div>
+
+    <div class="pd2021-container-root">
+        <div class="pd2021-container-card">
+            <h3>WELCOME TO PUZZLEDAY</h3>
+            <p>We&rsquo;re honored to have you join us in what we&rsquo;re sure will be an event for the history books: March 2022 Intern Puzzleday! Our authors have written enough puzzles to keep your eyes glued to the pages for two days this March. And the best news: you don&rsquo;t need to worry about late fees!</p>
+
+            <p>This year&rsquo;s event will take place over two days: <b>Wednesday, March 23<sup>rd</sup></b> and <b>Thursday, March 24<sup>th</sup></b>. On both of those days, you&rsquo;ll have 4 hours from <b>1pm-5pm UTC</b> to solve puzzles, and both days of solving contribute to the overall event.  Some may also choose to keep solving after the end of the first day, but doing so is not required.</p>
+
+            <p>Take a look at our <b><a asp-page="/EventSpecific/FAQ">FAQ</a></b> and <b><a asp-page="/EventSpecific/Rules">Rules</a></b> if you have any questions.</p>
+
+            <p>We invite participation by interns of all abilities. If you require an accommodation,  please reach out to us at <a href="mailto:puzzhunt@microsoft.com">puzzhunt@microsoft.com</a>.</p>
+        </div>
+
+        <div class="pd2021-container-card">
+            <h3>SCHEDULE (all times UTC)</h3>
+
+            <h4>PREGAME PUZZLES (optional)</h4>
+
+            <p>PREGAME PUZZLES ARE NOW LIVE! These are a great way to get into the spirit of the event and learn how to use our website.  We hope they are fun and give you an idea of what to expect.  Click &quot;Puzzles&quot; at the top of the page to get to them, and if you don&rsquo;t see a link to the puzzles up there, make sure you&rsquo;re registered to play!</p>
+
+            <p>If you aren&rsquo;t registered, <a asp-page="/Teams/List">CLICK HERE</a> or click &quot;Register&quot; at the top of the page to get to the registration form.</p>
+
+            <h4>EVENT SCHEDULE</h4>
+
+            <p>On <b>March 23<sup>rd</sup></b> at <b>1pm</b>, there will be a short opening session where we will go over rules and theme. After that, your team will have until <b>5pm</b> to solve as many puzzles as you can! We&rsquo;ll take a snapshot of the leaderboard at that time, but these puzzles will still be available to solve until the end of the second day.</p>
+            <ul><li><b><a href="https://aka.ms/pdopening" target="_blank">Click here to join the opening session!</a></b> (Will be live shortly before scheduled start time)</li></ul>
+            <p>On <b>March 24<sup>th</sup></b> at <b>1pm</b>, a new set of puzzles will unlock, and you can also continue solving puzzles from the previous day.  Solving will end at <b>4:30pm</b>, and immediately afterwards there will be a short closing session where we will announce winners and wrap up the event.</p>
+            <ul><li><b><a href="https://aka.ms/pdclosing" target="_blank">Click here to join the closing session!</a></b> (Will be live shortly before scheduled start time)</li></ul>
+        </div>
+
+        <div class="pd2021-container-card">
+            <h3>HOW TO SIGN UP</h3>
+
+            <p>REGISTRATION IS NOW OPEN! If you don&rsquo;t have a team yet, you can <b><a asp-page="/Teams/List">create a team by clicking here</a></b>. Teams will consist of 4-6 players with all levels of puzzle experience. Since this year&rsquo;s event is 100% virtual, your team doesn&rsquo;t even need to be in the same place geographically. Once you&rsquo;ve made a team, you can invite specific people to join you or leave your team open for anyone to join.</p>
+            <p>If you want to join a team and haven&rsquo;t been specifically invited by anyone, you can <b><a asp-page="/Teams/List">find the list of teams looking for team members here</a></b> and request to join. If you&rsquo;re still looking for teammates, you should keep your team open by leaving &quot;Allow unsolicited applications&quot; checked on your team page. You can use the Bio to describe what your team philosophy is.</p>
+        </div>
+
+        <div class="pd2021-container-card">
+            <h3>NEW TO PUZZLES?</h3>
+            <p>You may have seen a jigsaw puzzle, a crossword puzzle, or a Sudoku at some point in your life, but those barely crack the cover on the whole anthology that is &quot;puzzling&quot;! Puzzleday puzzles also have a tendency to get... creative, so you might see something that looks especially strange! Check out a few <a asp-page="/EventSpecific/Samples">sample puzzles</a> or peruse our <a href="https://puzzlearchive.azurewebsites.net/puzzleday/main.html" target="_blank">collection of puzzles</a> from past events.</p>
+        </div>
+    </div>
+</div>

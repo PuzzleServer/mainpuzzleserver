@@ -29,6 +29,8 @@ namespace ServerCore.Pages.Teams
 
         public int TeamID { get; set; }
 
+        public string TeamPassword { get; set; }
+
         public SortOrder? Sort { get; set; }
 
         private const SortOrder DefaultSort = SortOrder.GroupAscending;
@@ -43,7 +45,8 @@ namespace ServerCore.Pages.Teams
             Team myTeam = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
             if (myTeam != null)
             {
-                this.TeamID = myTeam.ID;
+                TeamID = myTeam.ID;
+                TeamPassword = myTeam.Password;
                 await PuzzleStateHelper.CheckForTimedUnlocksAsync(_context, Event, myTeam);
             }
             else
@@ -75,7 +78,7 @@ namespace ServerCore.Pages.Teams
             // Note: EF gotcha is that you have to join into anonymous types in order to not lose valuable stuff
             var visiblePuzzlesQ = from Puzzle puzzle in puzzlesInEventQ
                                   join PuzzleStatePerTeam pspt in stateForTeamQ on puzzle.ID equals pspt.PuzzleID
-                                  select new PuzzleView { ID = puzzle.ID, Group = puzzle.Group, OrderInGroup = puzzle.OrderInGroup, Name = puzzle.Name, CustomUrl = puzzle.CustomURL, Errata = puzzle.Errata, SolvedTime = pspt.SolvedTime, PieceMetaUsage = puzzle.PieceMetaUsage };
+                                  select new PuzzleView { ID = puzzle.ID, Group = puzzle.Group, OrderInGroup = puzzle.OrderInGroup, Name = puzzle.Name, CustomUrl = puzzle.CustomURL, CustomSolutionUrl = puzzle.CustomSolutionURL, Errata = puzzle.Errata, SolvedTime = pspt.SolvedTime, PieceMetaUsage = puzzle.PieceMetaUsage };
 
             switch (sort ?? DefaultSort)
             {
@@ -157,6 +160,7 @@ namespace ServerCore.Pages.Teams
             public string Name { get; set; }
             public string Errata { get; set; }
             public string CustomUrl { get; set; }
+            public string CustomSolutionUrl { get; set; }
             public DateTime? SolvedTime { get; set; }
             public ContentFile Content { get; set; }
             public ContentFile Answer { get; set; }

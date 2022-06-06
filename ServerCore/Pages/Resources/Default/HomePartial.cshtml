@@ -1,3 +1,19 @@
-﻿<div class="container">
-    <h2>Default Homepage!</h2>
+﻿@{
+    var eventPage = Model as ServerCore.ModelBases.EventSpecificPageModel;
+    var Event = eventPage?.Event;
+}
+
+<div class="container">
+    @if (!string.IsNullOrEmpty(Event.HomeContent))
+    {
+        @Html.Raw(Event.HomeContent);
+    }
+    else
+    {
+        <h2>@Event?.Name homepage TBD</h2>
+        if (eventPage?.EventRole == ModelBases.EventRole.admin)
+        {
+            <p><b>Since you're an admin:</b> Either set the HomePartial field of your event to match a folder in the Pages\Resources directory, or place raw HTML into the HomeContent field of your event.</p>
+        }
+    }
 </div>

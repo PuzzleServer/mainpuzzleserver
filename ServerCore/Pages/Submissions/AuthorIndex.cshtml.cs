@@ -25,6 +25,8 @@ namespace ServerCore.Pages.Submissions
             public string ResponseText;
             public string SubmissionText;
             public DateTime TimeSubmitted;
+            public bool IsFreeform;
+            public bool Linkify;
         }
 
         public AuthorIndexModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
@@ -41,7 +43,11 @@ namespace ServerCore.Pages.Submissions
 
         public const SortOrder DefaultSort = SortOrder.TimeDescending;
 
-        public async Task<IActionResult> OnGetAsync(int? puzzleId, int? teamId, SortOrder? sort)
+        public bool HideFreeform { get; set; }
+
+        public bool FavoritesOnly { get; set; }
+
+        public async Task<IActionResult> OnGetAsync(int? puzzleId, int? teamId, SortOrder? sort, bool? hideFreeform, bool? favoritesOnly)
         {
             Sort = sort;
 
@@ -92,7 +98,23 @@ namespace ServerCore.Pages.Submissions
                     submissionsQ = _context.Submissions.Where((s) => s.Puzzle != null && s.Puzzle.ID == puzzleId && s.Team.ID == teamId);
                 }
             }
-            
+
+            if (hideFreeform == null || hideFreeform.Value)
+            {
+                HideFreeform = true;
+                submissionsQ = submissionsQ.Where(s => !s.Puzzle.IsFreeform);
+            }
+            else
+            {
+                HideFreeform = false;
+            }
+
+            if (favoritesOnly.HasValue && favoritesOnly.Value)
+            {
+                FavoritesOnly = true;
+                submissionsQ = submissionsQ.Where(s => s.FreeformFavorited);
+            }
+
             IQueryable<SubmissionView> submissionViewQ = submissionsQ
                 .Select((s) => new SubmissionView
                 {
@@ -101,7 +123,8 @@ namespace ServerCore.Pages.Submissions
                     PuzzleName = s.Puzzle.Name,
                     TeamID = s.Team.ID,
                     TeamName = s.Team.Name,
-                    SubmissionText = s.SubmissionText,
+                    IsFreeform = s.Puzzle.IsFreeform,
+                    SubmissionText = s.Puzzle.IsFreeform ? s.UnformattedSubmissionText : s.SubmissionText,
                     ResponseText = s.Response == null ? null : s.Response.ResponseText,
                     TimeSubmitted = s.TimeSubmitted
                 });
@@ -114,44 +137,59 @@ namespace ServerCore.Pages.Submissions
             switch (sort ?? DefaultSort)
             {
                 case SortOrder.PlayerAscending:
-                    submissionViewQ.OrderBy(submission => submission.SubmitterName);
+                    submissionViewQ = submissionViewQ.OrderBy(submission => submission.SubmitterName);
                     break;
                 case SortOrder.PlayerDescending:
-                    submissionViewQ.OrderByDescending(submission => submission.SubmitterName);
+                    submissionViewQ = submissionViewQ.OrderByDescending(submission => submission.SubmitterName);
                     break;
                 case SortOrder.TeamAscending:
-                    submissionViewQ.OrderBy(submission => submission.TeamName);
+                    submissionViewQ = submissionViewQ.OrderBy(submission => submission.TeamName);
                     break;
                 case SortOrder.TeamDescending:
-                    submissionViewQ.OrderByDescending(submission => submission.TeamName);
+                    submissionViewQ = submissionViewQ.OrderByDescending(submission => submission.TeamName);
                     break;
                 case SortOrder.PuzzleAscending:
-                    submissionViewQ.OrderBy(submission => submission.PuzzleName);
+                    submissionViewQ = submissionViewQ.OrderBy(submission => submission.PuzzleName);
                     break;
                 case SortOrder.PuzzleDescending:
-                    submissionViewQ.OrderByDescending(submission => submission.PuzzleName);
+                    submissionViewQ = submissionViewQ.OrderByDescending(submission => submission.PuzzleName);
                     break;
                 case SortOrder.ResponseAscending:
-                    submissionViewQ.OrderBy(submission => submission.ResponseText);
+                    submissionViewQ = submissionViewQ.OrderBy(submission => submission.ResponseText);
                     break;
                 case SortOrder.ResponseDescending:
-                    submissionViewQ.OrderByDescending(submission => submission.ResponseText);
+                    submissionViewQ = submissionViewQ.OrderByDescending(submission => submission.ResponseText);
                     break;
                 case SortOrder.SubmissionAscending:
-                    submissionViewQ.OrderBy(submission => submission.SubmissionText);
+                    submissionViewQ = submissionViewQ.OrderBy(submission => submission.SubmissionText);
                     break;
                 case SortOrder.SubmissionDescending:
-                    submissionViewQ.OrderByDescending(submission => submission.SubmissionText);
+                    submissionViewQ = submissionViewQ.OrderByDescending(submission => submission.SubmissionText);
                     break;
                 case SortOrder.TimeAscending:
-                    submissionViewQ.OrderBy(submission => submission.TimeSubmitted);
+                    submissionViewQ = submissionViewQ.OrderBy(submission => submission.TimeSubmitted);
                     break;
                 case SortOrder.TimeDescending:
-                    submissionViewQ.OrderByDescending(submission => submission.TimeSubmitted);
+                    submissionViewQ = submissionViewQ.OrderByDescending(submission => submission.TimeSubmitted);
                     break;
             }
 
             Submissions = await submissionViewQ.ToListAsync();
+
+            if (!HideFreeform)
+            {
+                foreach (SubmissionView view in Submissions)
+                {
+                    if (view.IsFreeform)
+                    {
+                        if (Uri.IsWellFormedUriString(view.SubmissionText, UriKind.Absolute))
+                        {
+                            view.Linkify = true;
+                        }
+                    }
+                }
+            }
+
             return Page();
         }
 

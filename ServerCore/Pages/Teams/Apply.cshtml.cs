@@ -51,7 +51,7 @@ namespace ServerCore.Pages.Teams
                 return RedirectToPage("./Details", new { teamId = playerTeam.Team.ID });
             }
 
-            Team = await (from Team t in _context.Teams
+            Team = await (from t in _context.Teams
                                where t.ID == teamID && t.Event == Event
                                select t).FirstOrDefaultAsync();
 
@@ -71,7 +71,7 @@ namespace ServerCore.Pages.Teams
             }
 
             // Only handle one application at a time for a player to avoid spamming all teams
-            IEnumerable<TeamApplication> oldApplications = from TeamApplication oldApplication in _context.TeamApplications
+            IEnumerable<TeamApplication> oldApplications = from oldApplication in _context.TeamApplications
                                                            where oldApplication.Player == LoggedInUser && oldApplication.Team.Event == Event
                                                            select oldApplication;
             _context.TeamApplications.RemoveRange(oldApplications);

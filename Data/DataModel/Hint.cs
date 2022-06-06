@@ -30,6 +30,9 @@ namespace ServerCore.DataModel
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         
+        [Required]
+        public int PuzzleID { get; set; }
+
         /// <summary>
         /// The puzzle this is a hint for
         /// </summary>

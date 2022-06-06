@@ -55,6 +55,18 @@ namespace ServerCore.DataModel
         public int HintCoinsUsed { get; set; }
 
         /// <summary>
+        /// The number of hint coins this team currently has earned since the event began
+        /// </summary>
+        [NotMapped]
+        public int HintCoinsEarned
+        {
+            get
+            {
+                return this.HintCoinCount + this.HintCoinsUsed;
+            }
+        }
+
+        /// <summary>
         /// Team bio for the signups page
         /// </summary>
         public string Bio { get; set; }

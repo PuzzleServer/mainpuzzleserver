@@ -14,7 +14,7 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Pieces
 {
-    [AllowAnonymous]
+    [Authorize(Policy = "IsEventAdmin")]
     public class SyncTestModel : EventSpecificPageModel
     {
         public int EventId { get; set; }
@@ -28,7 +28,6 @@ namespace ServerCore.Pages.Pieces
         {
         }
 
-        [Authorize(Policy = "IsEventAdmin")]
         public async Task<IActionResult> OnGetAsync(string eventId, int puzzleId)
         {
             Event currentEvent = await EventHelper.GetEventFromEventId(_context, eventId);

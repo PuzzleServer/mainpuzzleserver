@@ -21,7 +21,8 @@
         // Using ev here so that it isn't the same as Event that we bind in the <body>
         // Works fine if we use Event, but VS will yell at you with an error in the IDE
         var ev = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Event;
-        if (ev != null && ev.UrlString == "pd2019")
+        if (ev != null && (ev.UrlString == "pd2019" || ev.UrlString == "pd2020" || ev.UrlString == "nipd2020" || 
+            ev.UrlString == "pd2021" || ev.UrlString == "nipd2021" || ev.UrlString == "pd2021.2203" || ev.UrlString == "pd2022"))
         {
             <link rel="stylesheet" href="~/css/@(ev.UrlString)/styles.min.css" />
         }
@@ -32,16 +33,16 @@
         var refresh = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Refresh;
         if (refresh.HasValue)
         {
-            <meta http-equiv="refresh" content="@refresh.Value"/>
+            <meta http-equiv="refresh" content="@refresh.Value" />
         }
     }
 
 </head>
 <body>
-@{
-    var Event = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Event;
-    var EventRole = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.EventRole;
-}
+    @{
+        var Event = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Event;
+        var EventRole = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.EventRole;
+    }
     <!--CURRENT NAV BAR-->
     @if (Event == null)
     {
@@ -81,6 +82,11 @@
     }
 
     <div class="container body-content">
+        @if (!string.IsNullOrEmpty(Event?.Announcement))
+            {
+            <p class="announcement">@Event.Announcement</p>
+            <hr />
+            }
         @RenderBody()
         <hr />
         <footer>
@@ -90,7 +96,7 @@
                 <li><a href="https://go.microsoft.com/fwlink/?LinkID=206977">Terms Of Use</a></li>
                 <li><a href="https://go.microsoft.com/fwlink/?LinkId=506942">Trademarks</a></li>
                 <li><a href="http://go.microsoft.com/fwlink/?LinkId=521839">Privacy &amp; Cookies</a></li>
-                <li>© 2022 Puzzlehunt</li>
+                <li>© @(DateTime.Now.Year) @(Event?.Copyright ?? "Puzzlehunt")</li>
             </ul>
         </footer>
     </div>

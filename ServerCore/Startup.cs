@@ -5,25 +5,27 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using ServerCore.Areas.Deployment;
 using ServerCore.Areas.Identity.UserAuthorizationPolicy;
 using ServerCore.DataModel;
+using ServerCore.Areas.Identity;
 
 namespace ServerCore
 {
     public class Startup
     {
-        private IHostingEnvironment hostingEnvironment;
+        IWebHostEnvironment _hostEnv;
 
-        public Startup(IConfiguration configuration, IHostingEnvironment env)
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
+            _hostEnv = env;
             Configuration = configuration;
-            hostingEnvironment = env;
             MailHelper.Initialize(Configuration, env.IsDevelopment());
         }
 
-        public Startup(IHostingEnvironment env)
+        public Startup(IWebHostEnvironment env)
         {
             // Set up to use Azure settings
             IConfigurationBuilder configBuilder = new ConfigurationBuilder()
@@ -33,8 +35,6 @@ namespace ServerCore
                 .AddEnvironmentVariables();
             Configuration = configBuilder.Build();
             MailHelper.Initialize(Configuration, env.IsDevelopment());
-
-            hostingEnvironment = env;
         }
 
         public IConfiguration Configuration { get; }
@@ -42,23 +42,21 @@ namespace ServerCore
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc(config =>
+            // Endpoint routing breaks most of our links because it doesn't include "ambient" route parameters
+            // like eventId and eventRole in links -- they'd have to be manually specified everywhere
+            services.AddMvc(options =>
             {
-                var policy = new AuthorizationPolicyBuilder()
-                                 .RequireAuthenticatedUser()
-                                 .Build();
-                config.Filters.Add(new AuthorizeFilter(policy));
-            })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+                options.EnableEndpointRouting = false;
+            });
 
-            services.AddMvc()
-                .AddRazorPagesOptions(options =>
-                {
-                    options.Conventions.AuthorizeFolder("/Pages");
-                    options.Conventions.AuthorizeFolder("/ModelBases");
-                });
+            services.AddRazorPages()
+            .AddRazorPagesOptions(options =>
+            {
+                options.Conventions.AuthorizeFolder("/Pages");
+                options.Conventions.AuthorizeFolder("/ModelBases");
+            });
 
-            DeploymentConfiguration.ConfigureDatabase(Configuration, services, hostingEnvironment);
+            DeploymentConfiguration.ConfigureDatabase(Configuration, services, _hostEnv);
             FileManager.ConnectionString = Configuration.GetConnectionString("AzureStorageConnectionString");
 
             services.AddAuthentication().AddMicrosoftAccount(microsoftOptions =>
@@ -99,11 +97,12 @@ namespace ServerCore
             services.AddScoped<IAuthorizationHandler, IsRegisteredForEventHandler_Admin>();
             services.AddScoped<IAuthorizationHandler, IsRegisteredForEventHandler_Author>();
             services.AddScoped<IAuthorizationHandler, IsRegisteredForEventHandler_Player>();
-
+            services.AddScoped<BackgroundFileUploader>();
+            services.AddScoped<AuthorizationHelper>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment() && String.IsNullOrEmpty(Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME")))
             {
@@ -134,6 +133,7 @@ namespace ServerCore
             // Must be UseStaticFiles, UseAuthentication, UseMvc
             app.UseStaticFiles();
             app.UseAuthentication();
+            app.UseAuthorization();
             app.UseMvc();
         }
     }

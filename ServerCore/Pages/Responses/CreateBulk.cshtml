@@ -55,6 +55,13 @@
                 </tbody>
             </table>
             <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="DeleteExisting" /> @Html.DisplayNameFor(model => model.DeleteExisting)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Bulk Create" class="btn btn-default" />
             </div>
         </form>

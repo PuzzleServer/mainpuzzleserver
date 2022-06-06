@@ -65,7 +65,7 @@ You have <b>
     {
         <text>no</text>
     }
-</b> hint tickets.
+</b> hint coins.
 
 <table class="table">
     <thead>
@@ -116,7 +116,7 @@ You have <b>
                             {
                                 var clickString = hint.AdjustedCost == 0
                                     ? "return confirm('Are you sure you want to unlock this free hint?')"
-                                    : "return confirm('Are you sure you want to spend @hint.AdjustedCost tickets to find out &quot;@hint.Hint.Description&quot;?')";
+                                    : "return confirm('Are you sure you want to spend " + @hint.AdjustedCost + " coins to find out \\'" + @hint.Hint.Description + "\\'?')";
 
                                 <button type="submit" asp-route-hintId="@hint.Hint.Id" 
                                     asp-route-teamId="@Model.Team.ID" 
@@ -131,11 +131,11 @@ You have <b>
                                     style="margin-left: 5px; margin-right: 5px;">Unlock</button>
                                 if (hint.AdjustedCost - Model.Team.HintCoinCount == 1)
                                 {
-                                    <text>You need 1 more ticket to unlock.</text>
+                                    <text>You need 1 more coin to unlock.</text>
                                 }
                                 else
                                 {
-                                    <text>You need @(hint.AdjustedCost - Model.Team.HintCoinCount) more tickets to unlock.</text>
+                                    <text>You need @(hint.AdjustedCost - Model.Team.HintCoinCount) more coins to unlock.</text>
                                 }
                             }
                         </form>

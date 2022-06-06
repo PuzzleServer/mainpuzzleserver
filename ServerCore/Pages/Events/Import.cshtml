@@ -15,6 +15,7 @@
 
 <form method="post" enctype="multipart/form-data">
     <input type="hidden" asp-for="Event.ID" />
-    <select class="form-control" asp-for="ImportEventID" asp-items="@(new SelectList(Model.Events, "ID", "Name"))"></select>
+    <select class="form-control" asp-for="ImportEventID" asp-items="@(new SelectList(Model.Events, "ID", "NameAndContainer"))"></select>
     <input type="submit" value="Import" asp-page-handler="Import" class="btn btn-default" />
+    <p><b>Note: The import will not copy the files themselves, just the data. After successful import, use Azure Storage Explorer to clone the directory for your event into a new evt<span>@Model.Event.ID</span> directory.</b></p>
 </form>

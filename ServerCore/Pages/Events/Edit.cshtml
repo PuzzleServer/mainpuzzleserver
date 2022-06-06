@@ -65,6 +65,13 @@
             <div class="form-group">
                 <div class="checkbox">
                     <label>
+                        <input asp-for="EditableEvent.EventHasSwag" /> @Html.DisplayNameFor(model => model.EditableEvent.EventHasSwag)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
                         <input asp-for="EditableEvent.HideHints" /> @Html.DisplayNameFor(model => model.EditableEvent.HideHints)
                     </label>
                 </div>
@@ -159,6 +166,36 @@
                 <label asp-for="EditableEvent.MaxSubmissionCount" class="control-label"></label>
                 <input asp-for="EditableEvent.MaxSubmissionCount" class="form-control" />
                 <span asp-validation-for="EditableEvent.MaxSubmissionCount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EditableEvent.Announcement" class="control-label"></label>
+                <textarea asp-for="EditableEvent.Announcement" class="form-control"></textarea>
+                <span asp-validation-for="EditableEvent.Announcement" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EditableEvent.HomeContent" class="control-label"></label>
+                <textarea asp-for="EditableEvent.HomeContent" class="form-control"></textarea>
+                <span asp-validation-for="EditableEvent.HomeContent" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EditableEvent.FAQContent" class="control-label"></label>
+                <textarea asp-for="EditableEvent.FAQContent" class="form-control"></textarea>
+                <span asp-validation-for="EditableEvent.FAQContent" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EditableEvent.RulesContent" class="control-label"></label>
+                <textarea asp-for="EditableEvent.RulesContent" class="form-control"></textarea>
+                <span asp-validation-for="EditableEvent.RulesContent" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EditableEvent.Copyright" class="control-label"></label>
+                <textarea asp-for="EditableEvent.Copyright" class="form-control"></textarea>
+                <span asp-validation-for="EditableEvent.Copyright" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EditableEvent.TermForGroup" class="control-label"></label>
+                <textarea asp-for="EditableEvent.TermForGroup" class="form-control"></textarea>
+                <span asp-validation-for="EditableEvent.TermForGroup" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-default" />

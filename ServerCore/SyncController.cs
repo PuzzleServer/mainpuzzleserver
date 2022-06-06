@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNetCore.Authorization;
@@ -203,7 +204,7 @@ namespace ServerCore.Pages
         ///   has solved.
         /// </summary>
         private async Task HandleSyncAspectsRequiringListOfSolvedPuzzles(DecodedSyncRequest request, SyncResponse response,
-                                                                         string puzzleGroup, int teamId, int eventId, int puzzleId)
+                                                                         string puzzleGroup, string puzzlePieceMetaTagFilter, int teamId, int eventId, int puzzleId)
         {
             // If the requester isn't asking for pieces (by setting MinSolveCount to null), and isn't asking about
             // whether any puzzle IDs are solved, we can save time by not querying the list of solved puzzles.
@@ -211,6 +212,8 @@ namespace ServerCore.Pages
             if (request.MinSolveCount == null && (request.QueryPuzzleIds == null || request.QueryPuzzleIds.Count == 0)) {
                 return;
             }
+
+            Regex filterRegex = puzzlePieceMetaTagFilter == null ? null : new Regex(puzzlePieceMetaTagFilter);
 
             // If the request is asking which of the puzzle IDs in request.QueryPuzzleIds has been
             // solved, create a HashSet so that we can quickly look up if an ID is in that list.
@@ -249,8 +252,23 @@ namespace ServerCore.Pages
                 // and exactly 0 hint coins.
 
                 if (puzzleGroup == null || solvedPuzzle.Group != puzzleGroup) {
-                    if (solvedPuzzle.SolveValue >= 10 && solvedPuzzle.HintCoinsForSolve == 0) {
-                        maxSolveCount += 1;
+                    bool puzzleCounts = false;
+
+                    // If a filter is present, use it exclusively.
+                    // If not, use default logic that counts non-hint puzzles of standard value.
+                    if (filterRegex != null)
+                    {
+                        if (!string.IsNullOrEmpty(solvedPuzzle.PieceTag) && filterRegex.Match(solvedPuzzle.PieceTag)?.Success == true)
+                        {
+                            puzzleCounts = true;
+                        }
+                    }
+                    else if (solvedPuzzle.SolveValue >= 10 && solvedPuzzle.HintCoinsForSolve == 0) {
+                        puzzleCounts = true;
+                    }
+
+                    if (puzzleCounts) {
+                        maxSolveCount += (solvedPuzzle.PieceWeight ?? 1);
                     }
                 }
 
@@ -329,7 +347,7 @@ namespace ServerCore.Pages
           
           try {
               var sqlCommand = "UPDATE Annotations SET Version = Version + 1, Contents = @Contents, Timestamp = @Timestamp WHERE PuzzleID = @PuzzleID AND TeamID = @TeamID AND [Key] = @Key";
-              int result = await context.Database.ExecuteSqlCommandAsync(sqlCommand,
+              int result = await context.Database.ExecuteSqlRawAsync(sqlCommand,
                                                                          new SqlParameter("@Contents", contents),
                                                                          new SqlParameter("@Timestamp", DateTime.Now),
                                                                          new SqlParameter("@PuzzleID", puzzleId),
@@ -360,7 +378,7 @@ namespace ServerCore.Pages
             if (existingAnnotation != null)
             {
                 context.Entry(existingAnnotation).State = EntityState.Detached;
-                UpdateOneAnnotation(response, puzzleId, teamId, key, contents);
+                await UpdateOneAnnotation(response, puzzleId, teamId, key, contents);
             }
             else
             {
@@ -382,7 +400,7 @@ namespace ServerCore.Pages
                     // doesn't think the annotation is in the database.
     
                     context.Entry(annotation).State = EntityState.Detached;
-                    UpdateOneAnnotation(response, puzzleId, teamId, key, contents);
+                    await UpdateOneAnnotation(response, puzzleId, teamId, key, contents);
                 }
             }
         }
@@ -477,7 +495,7 @@ namespace ServerCore.Pages
             // Do any processing that requires fetching the list of all puzzles this team has
             // solved.
 
-            await HandleSyncAspectsRequiringListOfSolvedPuzzles(request, response, thisPuzzle.Group, teamId, eventId, puzzleId);
+            await HandleSyncAspectsRequiringListOfSolvedPuzzles(request, response, thisPuzzle.Group, thisPuzzle.PieceMetaTagFilter, teamId, eventId, puzzleId);
 
             // Store any annotations the requester provided
 
@@ -562,11 +580,6 @@ namespace ServerCore.Pages
                 }
             }
 
-            // Start doing a sync asynchronously while we download the file contents.
-
-            var helper = new SyncHelper(context);
-            Task<Dictionary<string, object>> responseTask = helper.GetSyncResponse(currentEvent.ID, team.ID, puzzleId, null, 0, null, null, true);
-
             // Find the material file with the latest-alphabetically ShortName that contains the substring "client".
 
             var materialFile = await (from f in context.ContentFiles
@@ -578,12 +591,19 @@ namespace ServerCore.Pages
                 return Content("ERROR:  There's no sync client registered for this puzzle");
             }
 
+            var materialUrl = materialFile.Url;
+
+            // Start doing a sync asynchronously while we download the file contents.
+
+            var helper = new SyncHelper(context);
+            Task<Dictionary<string, object>> responseTask = helper.GetSyncResponse(currentEvent.ID, team.ID, puzzleId, null, 0, null, null, true);
+
             // Download that material file.
 
             string fileContents;
             using (var wc = new System.Net.WebClient())
             {
-                fileContents = await wc.DownloadStringTaskAsync(materialFile.Url);
+                fileContents = await wc.DownloadStringTaskAsync(materialUrl);
             }
 
             // Wait for the asynchronous sync we started earlier to complete, then serialize
@@ -593,6 +613,9 @@ namespace ServerCore.Pages
             Dictionary<string, object> response = await responseTask;
             var responseSerialized = JsonConvert.SerializeObject(response);
             var initialSyncString = HttpUtility.JavaScriptStringEncode(responseSerialized);
+
+            fileContents = fileContents.Replace("@EVENTID", currentEvent.ID.ToString());
+            fileContents = fileContents.Replace("@PUZZLEID", puzzleId.ToString());
             fileContents = fileContents.Replace("@SYNC", initialSyncString);
 
             // Return the file contents to the user.

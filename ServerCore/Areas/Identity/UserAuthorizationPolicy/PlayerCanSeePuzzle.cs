@@ -19,36 +19,17 @@ namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
 
     public class PlayerCanSeePuzzleHandler : AuthorizationHandler<PlayerCanSeePuzzleRequirement>
     {
-        private readonly PuzzleServerContext dbContext;
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly AuthorizationHelper authHelper;
 
-        public PlayerCanSeePuzzleHandler(PuzzleServerContext pContext, UserManager<IdentityUser> manager)
+        public PlayerCanSeePuzzleHandler(AuthorizationHelper authHelper)
         {
-            dbContext = pContext;
-            userManager = manager;
+            this.authHelper = authHelper;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
                                                        PlayerCanSeePuzzleRequirement requirement)
         {
-            PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
-            Puzzle puzzle = await AuthorizationHelper.GetPuzzleFromContext(authContext);
-            Event thisEvent = await AuthorizationHelper.GetEventFromContext(authContext);
-
-            if (thisEvent != null && puzzle != null)
-            {
-                Team team = await UserEventHelper.GetTeamForPlayer(dbContext, thisEvent, puzzleUser);
-
-                if (team != null)
-                {
-                    IQueryable<PuzzleStatePerTeam> statesQ = PuzzleStateHelper.GetFullReadOnlyQuery(dbContext, thisEvent, puzzle, team);
-
-                    if (statesQ.FirstOrDefault().UnlockedTime != null || thisEvent.AreAnswersAvailableNow)
-                    {
-                        authContext.Succeed(requirement);
-                    }
-                }
-            }
+            await authHelper.PlayerCanSeePuzzleCheck(authContext, requirement);
         }
     }
 }

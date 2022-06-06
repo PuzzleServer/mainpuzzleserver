@@ -37,7 +37,7 @@ namespace ServerCore.Pages.Hints
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(int puzzleId)
         {
             // The Puzzle property doesn't get round-tripped by ASP.NET and would cause
             // the validation below to fail. By removing it from the ModelState,
@@ -48,6 +48,8 @@ namespace ServerCore.Pages.Hints
                 return Page();
             }
 
+            // Restore the missing puzzle property
+            Hint.PuzzleID = puzzleId;
             _context.Attach(Hint).State = EntityState.Modified;
 
             try
@@ -56,9 +58,10 @@ namespace ServerCore.Pages.Hints
 
                 var puzzleName = await _context.Hints.Where(m => m.Id == Hint.Id).Select(m => m.Puzzle.Name).FirstOrDefaultAsync();
 
-                var teamMembers = await (from TeamMembers tm in _context.TeamMembers
-                                         join HintStatePerTeam hspt in _context.HintStatePerTeam on tm.Team equals hspt.Team
-                                         where hspt.Hint.Id == Hint.Id && hspt.UnlockTime != null
+                var teamMembers = await (from tm in _context.TeamMembers
+                                         join hspt in _context.HintStatePerTeam on tm.Team equals hspt.Team
+                                         join pspt in _context.PuzzleStatePerTeam on tm.Team equals pspt.Team
+                                         where hspt.Hint.Id == Hint.Id && hspt.UnlockTime != null && pspt.PuzzleID == puzzleId && pspt.SolvedTime == null
                                          select tm.Member.Email).ToListAsync();
                 MailHelper.Singleton.SendPlaintextBcc(teamMembers,
                     $"{Event.Name}: Hint updated for {puzzleName}",

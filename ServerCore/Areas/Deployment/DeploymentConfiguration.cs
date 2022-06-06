@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using ServerCore.DataModel;
 
@@ -9,7 +10,7 @@ namespace ServerCore.Areas.Deployment
 {
     public class DeploymentConfiguration
     {
-        internal static void ConfigureDatabase(IConfiguration configuration, IServiceCollection services, IHostingEnvironment env)
+        internal static void ConfigureDatabase(IConfiguration configuration, IServiceCollection services, IWebHostEnvironment env)
         {
             // Use SQL Database if in Azure, otherwise, use localdb
             if (env.IsStaging() && Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") == "PuzzleServerTestDeploy")

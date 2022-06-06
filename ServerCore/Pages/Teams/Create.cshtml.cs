@@ -63,12 +63,12 @@ namespace ServerCore.Pages.Teams
             }
 
             if ((EventRole == EventRole.admin && !await LoggedInUser.IsAdminForEvent(_context, Event))
-                || IsNotAllowedInInternEvent())
+                || (EventRole != EventRole.admin && IsNotAllowedInInternEvent()))
             {
                 return Forbid();
             }
 
-            if (!Event.IsTeamRegistrationActive)
+            if (!Event.IsTeamRegistrationActive && EventRole != EventRole.admin)
             {
                 return NotFound();
             }
@@ -119,7 +119,7 @@ namespace ServerCore.Pages.Teams
                     _context.TeamMembers.Add(teamMember);
                 }
 
-                var hints = await (from Hint hint in _context.Hints
+                var hints = await (from hint in _context.Hints
                             where hint.Puzzle.Event == Event
                             select hint).ToListAsync();
 
@@ -128,7 +128,7 @@ namespace ServerCore.Pages.Teams
                     _context.HintStatePerTeam.Add(new HintStatePerTeam() { Hint = hint, Team = Team });
                 }
 
-                var puzzleIDs = await (from Puzzle puzzle in _context.Puzzles
+                var puzzleIDs = await (from puzzle in _context.Puzzles
                                 where puzzle.Event == Event
                                 select puzzle.ID).ToListAsync();
                 foreach (int puzzleID in puzzleIDs)

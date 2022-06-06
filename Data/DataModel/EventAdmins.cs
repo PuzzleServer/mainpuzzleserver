@@ -8,11 +8,15 @@ namespace ServerCore.DataModel
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
+        public int EventID { get; set; }
+
         /// <summary>
         /// Foreign key - event table
         /// </summary
         [Required]
         public virtual Event Event { get; set; }
+
+        public int AdminID { get; set; }
 
         /// <summary>
         /// Foreign key - user table

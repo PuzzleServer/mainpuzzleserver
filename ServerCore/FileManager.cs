@@ -5,8 +5,10 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using ServerCore.DataModel;
 
 namespace ServerCore
 {
@@ -25,7 +27,7 @@ namespace ServerCore
         /// <returns>Url of the file in blob storage</returns>
         public static async Task<Uri> UploadBlobAsync(string fileName, int eventId, Stream contents)
         {
-            CloudBlockBlob blob = await CreateNewBlob(fileName, eventId);
+            CloudBlockBlob blob = await CreateNewBlob(fileName, eventId, GetRandomDirectoryName());
 
             await blob.UploadFromStreamAsync(contents);
             return blob.Uri;
@@ -41,16 +43,18 @@ namespace ServerCore
         public static async Task<Uri> CloneBlobAsync(string fileName, int eventId, Uri sourceUri)
         {
             CloudBlockBlob blobSource = new CloudBlockBlob(sourceUri, StorageAccount.Credentials);
-
-            CloudBlockBlob blob = await CreateNewBlob(fileName, eventId);
+            Uri sourceContainerUri = new Uri(blobSource.Container.Uri.ToString() + "/");
+            Uri relativeUri = sourceContainerUri.MakeRelativeUri(sourceUri);
+            string newFileName = relativeUri.ToString();
+            CloudBlockBlob blob = await CreateNewBlob(newFileName, eventId, "");
             await blob.StartCopyAsync(blobSource);
 
             return blob.Uri;
         }
 
-        private static async Task<CloudBlockBlob> CreateNewBlob(string fileName, int eventId)
+        private static async Task<CloudBlockBlob> CreateNewBlob(string fileName, int eventId, string puzzleDirectoryName)
         {
-            CloudBlobDirectory puzzleDirectory = await GetRandomDirectoryAsync(eventId);
+            CloudBlobDirectory puzzleDirectory = await GetPuzzleDirectoryAsync(eventId, puzzleDirectoryName);
 
             CloudBlockBlob blob = puzzleDirectory.GetBlockBlobReference(fileName);
             if (fileExtensionProvider.TryGetContentType(fileName, out string contentType))
@@ -70,7 +74,7 @@ namespace ServerCore
         /// <returns>A dictionary with key of the file names and value of the urls of the files in blob storage</returns>
         public static async Task<Dictionary<string, Uri>> UploadBlobsAsync(Dictionary<string, Stream> files, int eventId)
         {
-            CloudBlobDirectory puzzleDirectory = await GetRandomDirectoryAsync(eventId);
+            CloudBlobDirectory puzzleDirectory = await GetPuzzleDirectoryAsync(eventId, GetRandomDirectoryName());
             Dictionary<string, Uri> fileUrls = new Dictionary<string, Uri>(files.Count);
 
             foreach (KeyValuePair<string, Stream> file in files)
@@ -103,17 +107,25 @@ namespace ServerCore
         /// Gets a reference to a random directory
         /// </summary>
         /// <param name="eventId">Event the directory should be associated with</param>
-        private static async Task<CloudBlobDirectory> GetRandomDirectoryAsync(int eventId)
+        /// <param name="puzzleDirectoryName">Name of a subdirectory to concatenate. Use empty string for none.</param>
+        private static async Task<CloudBlobDirectory> GetPuzzleDirectoryAsync(int eventId, string puzzleDirectoryName)
         {
             CloudBlobContainer eventContainer = await GetOrCreateEventContainerAsync(eventId);
+            CloudBlobDirectory puzzleDirectory = eventContainer.GetDirectoryReference(puzzleDirectoryName);
 
-            // Obfuscate the file by putting it in a random directory
+            return puzzleDirectory;
+        }
+
+        /// <summary>
+        /// Cretes a random directory name that will work in a URL
+        /// </summary>
+        private static string GetRandomDirectoryName()
+        {
             byte[] manglingBytes = new byte[16];
             RandomNumberGenerator.Fill(manglingBytes);
             // Turn the random bytes into legal URL characters
             string mangledString = Convert.ToBase64String(manglingBytes).Replace('/', '_');
-            CloudBlobDirectory puzzleDirectory = eventContainer.GetDirectoryReference(mangledString);
-            return puzzleDirectory;
+            return mangledString;
         }
 
         /// <summary>
@@ -134,6 +146,34 @@ namespace ServerCore
             { 
                 return CloudStorageAccount.Parse(ConnectionString);
             }
+        }
+    }
+
+    /// <summary>
+    /// Uploads files in the background and Saves them to the database when the upload is complete
+    /// </summary>
+    public class BackgroundFileUploader
+    {
+        PuzzleServerContext _context;
+
+        public BackgroundFileUploader(IServiceProvider serviceProvider)
+        {
+            IServiceScope newScope = serviceProvider.CreateScope();
+            _context = newScope.ServiceProvider.GetService<PuzzleServerContext>();            
+        }
+
+        public void CloneInBackground(ContentFile newFile, string fileName, int eventId, Uri sourceUri)
+        {
+            Task<Uri> t = FileManager.CloneBlobAsync(fileName, eventId, sourceUri);
+            t.ContinueWith((finishedTask) =>
+            {
+                newFile.Url = finishedTask.Result;
+                lock (_context)
+                {
+                    _context.ContentFiles.Add(newFile);
+                    _context.SaveChanges();
+                }
+            });
         }
     }
 }

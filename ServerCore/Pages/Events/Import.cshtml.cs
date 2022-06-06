@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -14,14 +15,17 @@ namespace ServerCore.Pages.Events
     [Authorize(Policy = "IsEventAdmin")]
     public class ImportModel : EventSpecificPageModel
     {
-        public ImportModel(PuzzleServerContext context, UserManager<IdentityUser> userManager) : base(context, userManager)
+        public ImportModel(PuzzleServerContext context, UserManager<IdentityUser> userManager, BackgroundFileUploader backgroundUploader) : base(context, userManager)
         {
+            _backgroundUploader = backgroundUploader;
         }
 
         public IList<Event> Events { get; set; }
 
         [BindProperty]
         public int ImportEventID { get; set; }
+
+        BackgroundFileUploader _backgroundUploader;
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
@@ -89,6 +93,8 @@ namespace ServerCore.Pages.Events
                 // Step 3: Save so that all our new objects have valid IDs
                 await _context.SaveChangesAsync();
 
+                Dictionary<ContentFile, Task<Uri>> allNewFiles = new Dictionary<ContentFile, Task<Uri>>();
+
                 // Step 4: Ancillary tables referring to puzzles
                 foreach (var sourcePuzzle in sourcePuzzles)
                 {
@@ -149,10 +155,16 @@ namespace ServerCore.Pages.Events
                     foreach (ContentFile contentFile in _context.ContentFiles.Where((c) => c.Puzzle == sourcePuzzle))
                     {
                         ContentFile newFile = new ContentFile(contentFile);
-                        newFile.Event = Event;
-                        newFile.Puzzle = puzzleCloneMap[contentFile.Puzzle.ID];
-                        newFile.Url = await FileManager.CloneBlobAsync(contentFile.ShortName, Event.ID, contentFile.Url);
+                        newFile.EventID = Event.ID;
+                        newFile.PuzzleID = puzzleCloneMap[contentFile.Puzzle.ID].ID;
+
+                        // new
+                        // does not copy the files; you have to use Azure Storage Explorer for that afterwards
+                        newFile.UrlString = contentFile.UrlString.Replace("evt" + ImportEventID, "evt" + Event.ID);
                         _context.ContentFiles.Add(newFile);
+
+                        // old
+                        //_backgroundUploader.CloneInBackground(newFile, contentFile.ShortName, Event.ID, contentFile.Url);
                     }
 
                     // Pieces

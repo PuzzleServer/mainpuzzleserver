@@ -106,10 +106,21 @@ namespace ServerCore.ModelBases
 
             return isEventAdmin.Value;
         }
-
+        
+        /// <summary>
+        ///  Whether or not the individual has filled out their swag request
+        /// </summary>
         public async Task<bool> HasSwag()
         {
-            return Event.IsInternEvent && await _context.Swag.Where(m => m.Event == Event && m.Player == LoggedInUser).AnyAsync();
+            return Event.EventHasSwag && await _context.Swag.Where(m => m.Event == Event && m.Player == LoggedInUser).AnyAsync();
+        }
+
+        /// <summary>
+        /// Whether or not the event is providing swag (i.e. shirt & lunch)
+        /// </summary>
+        public bool EventHasSwag()
+        {
+            return Event.EventHasSwag;
         }
 
         public async Task<int> GetTeamId()

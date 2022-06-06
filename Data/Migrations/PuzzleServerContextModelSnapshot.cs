@@ -15,29 +15,32 @@ namespace Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
+                .UseIdentityColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "5.0.2");
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken();
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("NormalizedName")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasName("RoleNameIndex")
+                        .HasDatabaseName("RoleNameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles");
@@ -47,14 +50,18 @@ namespace Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
-                    b.Property<string>("ClaimType");
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ClaimValue");
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RoleId")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -66,49 +73,63 @@ namespace Data.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
                 {
                     b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("AccessFailedCount");
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
 
                     b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken();
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
-                    b.Property<bool>("EmailConfirmed");
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
 
-                    b.Property<bool>("LockoutEnabled");
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
 
-                    b.Property<DateTimeOffset?>("LockoutEnd");
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
-                    b.Property<string>("PasswordHash");
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PhoneNumber");
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("PhoneNumberConfirmed");
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
 
-                    b.Property<string>("SecurityStamp");
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("TwoFactorEnabled");
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
 
                     b.Property<string>("UserName")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
-                        .HasName("EmailIndex");
+                        .HasDatabaseName("EmailIndex");
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
-                        .HasName("UserNameIndex")
+                        .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
@@ -118,14 +139,18 @@ namespace Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
-                    b.Property<string>("ClaimType");
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ClaimValue");
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -137,15 +162,19 @@ namespace Data.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderKey")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
-                    b.Property<string>("ProviderDisplayName");
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -156,9 +185,11 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.Property<string>("UserId");
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("RoleId");
+                    b.Property<string>("RoleId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -169,15 +200,19 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.Property<string>("UserId");
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
-                    b.Property<string>("Value");
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
@@ -186,19 +221,25 @@ namespace Data.Migrations
 
             modelBuilder.Entity("ServerCore.DataModel.Annotation", b =>
                 {
-                    b.Property<int>("PuzzleID");
+                    b.Property<int>("PuzzleID")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TeamID");
+                    b.Property<int>("TeamID")
+                        .HasColumnType("int");
 
-                    b.Property<int>("Key");
+                    b.Property<int>("Key")
+                        .HasColumnType("int");
 
                     b.Property<string>("Contents")
                         .IsRequired()
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
-                    b.Property<DateTime>("Timestamp");
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("Version");
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
 
                     b.HasKey("PuzzleID", "TeamID", "Key");
 
@@ -211,19 +252,25 @@ namespace Data.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
-                    b.Property<int>("EventID");
+                    b.Property<int>("EventID")
+                        .HasColumnType("int");
 
-                    b.Property<int>("FileType");
+                    b.Property<int>("FileType")
+                        .HasColumnType("int");
 
-                    b.Property<int>("PuzzleID");
+                    b.Property<int>("PuzzleID")
+                        .HasColumnType("int");
 
                     b.Property<string>("ShortName")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("UrlString")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
@@ -239,60 +286,108 @@ namespace Data.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
-                    b.Property<bool>("AllowFeedback");
+                    b.Property<bool>("AllowFeedback")
+                        .HasColumnType("bit");
 
-                    b.Property<DateTime>("AnswerSubmissionEnd");
+                    b.Property<string>("Announcement")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("AnswersAvailableBegin");
+                    b.Property<DateTime>("AnswerSubmissionEnd")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("ContactEmail");
+                    b.Property<DateTime>("AnswersAvailableBegin")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("EventBegin");
+                    b.Property<string>("ContactEmail")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("HideHints");
+                    b.Property<string>("Copyright")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("HomePartial");
+                    b.Property<DateTime>("EventBegin")
+                        .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsInternEvent");
+                    b.Property<bool>("EventHasSwag")
+                        .HasColumnType("bit");
 
-                    b.Property<double>("LockoutDurationMultiplier");
+                    b.Property<string>("FAQContent")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("LockoutIncorrectGuessLimit");
+                    b.Property<bool>("HideHints")
+                        .HasColumnType("bit");
 
-                    b.Property<double>("LockoutIncorrectGuessPeriod");
+                    b.Property<string>("HomeContent")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("MaxExternalsPerTeam");
+                    b.Property<string>("HomePartial")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("MaxNumberOfTeams");
+                    b.Property<bool>("IsInternEvent")
+                        .HasColumnType("bit");
 
-                    b.Property<long>("MaxSubmissionCount");
+                    b.Property<double>("LockoutDurationMultiplier")
+                        .HasColumnType("float");
 
-                    b.Property<int>("MaxTeamSize");
+                    b.Property<int>("LockoutIncorrectGuessLimit")
+                        .HasColumnType("int");
+
+                    b.Property<double>("LockoutIncorrectGuessPeriod")
+                        .HasColumnType("float");
+
+                    b.Property<int>("MaxExternalsPerTeam")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MaxNumberOfTeams")
+                        .HasColumnType("int");
+
+                    b.Property<long>("MaxSubmissionCount")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("MaxTeamSize")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("ShowFastestSolves");
+                    b.Property<string>("RulesContent")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("StandingsAvailableBegin");
+                    b.Property<bool>("ShowFastestSolves")
+                        .HasColumnType("bit");
 
-                    b.Property<bool>("StandingsOverride");
+                    b.Property<DateTime>("StandingsAvailableBegin")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("TeamDeleteEnd");
+                    b.Property<bool>("StandingsOverride")
+                        .HasColumnType("bit");
 
-                    b.Property<DateTime>("TeamMembershipChangeEnd");
+                    b.Property<DateTime>("TeamDeleteEnd")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("TeamMiscDataChangeEnd");
+                    b.Property<DateTime>("TeamMembershipChangeEnd")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("TeamNameChangeEnd");
+                    b.Property<DateTime>("TeamMiscDataChangeEnd")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("TeamRegistrationBegin");
+                    b.Property<DateTime>("TeamNameChangeEnd")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("TeamRegistrationEnd");
+                    b.Property<DateTime>("TeamRegistrationBegin")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("UrlString");
+                    b.Property<DateTime>("TeamRegistrationEnd")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TermForGroup")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UrlString")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("ID");
 
@@ -307,11 +402,14 @@ namespace Data.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
-                    b.Property<int>("AdminID");
+                    b.Property<int>("AdminID")
+                        .HasColumnType("int");
 
-                    b.Property<int>("EventID");
+                    b.Property<int>("EventID")
+                        .HasColumnType("int");
 
                     b.HasKey("ID");
 
@@ -326,11 +424,14 @@ namespace Data.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
-                    b.Property<int>("AuthorID");
+                    b.Property<int>("AuthorID")
+                        .HasColumnType("int");
 
-                    b.Property<int>("EventID");
+                    b.Property<int>("EventID")
+                        .HasColumnType("int");
 
                     b.HasKey("ID");
 
@@ -345,19 +446,26 @@ namespace Data.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
-                    b.Property<int>("Difficulty");
+                    b.Property<int>("Difficulty")
+                        .HasColumnType("int");
 
-                    b.Property<int>("Fun");
+                    b.Property<int>("Fun")
+                        .HasColumnType("int");
 
-                    b.Property<int>("PuzzleID");
+                    b.Property<int>("PuzzleID")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("SubmissionTime");
+                    b.Property<DateTime>("SubmissionTime")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("SubmitterID");
+                    b.Property<int>("SubmitterID")
+                        .HasColumnType("int");
 
-                    b.Property<string>("WrittenFeedback");
+                    b.Property<string>("WrittenFeedback")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
@@ -372,19 +480,25 @@ namespace Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
                     b.Property<string>("Content")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Cost");
+                    b.Property<int>("Cost")
+                        .HasColumnType("int");
 
                     b.Property<string>("Description")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("DisplayOrder");
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("int");
 
-                    b.Property<int>("PuzzleID");
+                    b.Property<int>("PuzzleID")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -395,11 +509,14 @@ namespace Data.Migrations
 
             modelBuilder.Entity("ServerCore.DataModel.HintStatePerTeam", b =>
                 {
-                    b.Property<int>("TeamID");
+                    b.Property<int>("TeamID")
+                        .HasColumnType("int");
 
-                    b.Property<int>("HintID");
+                    b.Property<int>("HintID")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime?>("UnlockTime");
+                    b.Property<DateTime?>("UnlockTime")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("TeamID", "HintID");
 
@@ -412,17 +529,23 @@ namespace Data.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
-                    b.Property<string>("EmailAddress");
+                    b.Property<string>("EmailAddress")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Expiration");
+                    b.Property<DateTime>("Expiration")
+                        .HasColumnType("datetime2");
 
-                    b.Property<Guid>("InvitationCode");
+                    b.Property<Guid>("InvitationCode")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("InvitationType");
+                    b.Property<string>("InvitationType")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("TeamID");
+                    b.Property<int?>("TeamID")
+                        .HasColumnType("int");
 
                     b.HasKey("ID");
 
@@ -435,14 +558,18 @@ namespace Data.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
                     b.Property<string>("Contents")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ProgressLevel");
+                    b.Property<int>("ProgressLevel")
+                        .HasColumnType("int");
 
-                    b.Property<int>("PuzzleID");
+                    b.Property<int>("PuzzleID")
+                        .HasColumnType("int");
 
                     b.HasKey("ID");
 
@@ -457,11 +584,14 @@ namespace Data.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
-                    b.Property<int>("PrerequisiteID");
+                    b.Property<int>("PrerequisiteID")
+                        .HasColumnType("int");
 
-                    b.Property<int>("PuzzleID");
+                    b.Property<int>("PuzzleID")
+                        .HasColumnType("int");
 
                     b.HasKey("ID");
 
@@ -476,56 +606,99 @@ namespace Data.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
-                    b.Property<string>("CustomURL");
+                    b.Property<string>("CustomSolutionURL")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Description");
+                    b.Property<string>("CustomURL")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Errata");
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("EventID");
+                    b.Property<string>("Errata")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Group");
+                    b.Property<int>("EventID")
+                        .HasColumnType("int");
 
-                    b.Property<bool>("HasDataConfirmation");
+                    b.Property<string>("Group")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("HintCoinsForSolve");
+                    b.Property<bool>("HasDataConfirmation")
+                        .HasColumnType("bit");
 
-                    b.Property<bool>("HintsAreCumulative");
+                    b.Property<int>("HintCoinsForSolve")
+                        .HasColumnType("int");
 
-                    b.Property<bool>("IsCheatCode");
+                    b.Property<bool>("HintsAreCumulative")
+                        .HasColumnType("bit");
 
-                    b.Property<bool>("IsFinalPuzzle");
+                    b.Property<bool>("IsCheatCode")
+                        .HasColumnType("bit");
 
-                    b.Property<bool>("IsGloballyVisiblePrerequisite");
+                    b.Property<bool>("IsFinalPuzzle")
+                        .HasColumnType("bit");
 
-                    b.Property<bool>("IsMetaPuzzle");
+                    b.Property<bool>("IsFreeform")
+                        .HasColumnType("bit");
 
-                    b.Property<bool>("IsPuzzle");
+                    b.Property<bool>("IsGloballyVisiblePrerequisite")
+                        .HasColumnType("bit");
 
-                    b.Property<int>("MaxAnnotationKey");
+                    b.Property<bool>("IsMetaPuzzle")
+                        .HasColumnType("bit");
 
-                    b.Property<int>("MinPrerequisiteCount");
+                    b.Property<bool>("IsPuzzle")
+                        .HasColumnType("bit");
 
-                    b.Property<int>("MinutesOfEventLockout");
+                    b.Property<int>("MaxAnnotationKey")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("MinutesToAutomaticallySolve");
+                    b.Property<int>("MinPrerequisiteCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MinutesOfEventLockout")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MinutesToAutomaticallySolve")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("OrderInGroup");
+                    b.Property<int>("OrderInGroup")
+                        .HasColumnType("int");
 
-                    b.Property<int>("PieceMetaUsage");
+                    b.Property<string>("PieceMetaTagFilter")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PuzzleVersion");
+                    b.Property<int>("PieceMetaUsage")
+                        .HasColumnType("int");
 
-                    b.Property<int>("SolveValue");
+                    b.Property<string>("PieceTag")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SupportEmailAlias");
+                    b.Property<int?>("PieceWeight")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Token");
+                    b.Property<int?>("PrerequisiteWeight")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PuzzleVersion")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SolveValue")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SupportEmailAlias")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Token")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
@@ -538,11 +711,14 @@ namespace Data.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
-                    b.Property<int>("AuthorID");
+                    b.Property<int>("AuthorID")
+                        .HasColumnType("int");
 
-                    b.Property<int>("PuzzleID");
+                    b.Property<int>("PuzzleID")
+                        .HasColumnType("int");
 
                     b.HasKey("ID");
 
@@ -555,23 +731,32 @@ namespace Data.Migrations
 
             modelBuilder.Entity("ServerCore.DataModel.PuzzleStatePerTeam", b =>
                 {
-                    b.Property<int>("PuzzleID");
+                    b.Property<int>("PuzzleID")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TeamID");
+                    b.Property<int>("TeamID")
+                        .HasColumnType("int");
 
-                    b.Property<bool>("IsEmailOnlyMode");
+                    b.Property<bool>("IsEmailOnlyMode")
+                        .HasColumnType("bit");
 
-                    b.Property<DateTime?>("LockoutExpiryTime");
+                    b.Property<DateTime?>("LockoutExpiryTime")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("Notes");
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Printed");
+                    b.Property<bool>("Printed")
+                        .HasColumnType("bit");
 
-                    b.Property<DateTime?>("SolvedTime");
+                    b.Property<DateTime?>("SolvedTime")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("UnlockedTime");
+                    b.Property<DateTime?>("UnlockedTime")
+                        .HasColumnType("datetime2");
 
-                    b.Property<long>("WrongSubmissionCountBuffer");
+                    b.Property<long>("WrongSubmissionCountBuffer")
+                        .HasColumnType("bigint");
 
                     b.HasKey("PuzzleID", "TeamID");
 
@@ -586,26 +771,36 @@ namespace Data.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
-                    b.Property<string>("Email");
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("EmployeeAlias");
+                    b.Property<string>("EmployeeAlias")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("IdentityUserId")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsGlobalAdmin");
+                    b.Property<bool>("IsGlobalAdmin")
+                        .HasColumnType("bit");
 
-                    b.Property<bool>("MayBeAdminOrAuthor");
+                    b.Property<bool>("MayBeAdminOrAuthor")
+                        .HasColumnType("bit");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PhoneNumber");
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("TShirtSize");
+                    b.Property<string>("TShirtSize")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("VisibleToOthers");
+                    b.Property<bool>("VisibleToOthers")
+                        .HasColumnType("bit");
 
                     b.HasKey("ID");
 
@@ -616,19 +811,25 @@ namespace Data.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
-                    b.Property<bool>("IsSolution");
+                    b.Property<bool>("IsSolution")
+                        .HasColumnType("bit");
 
-                    b.Property<string>("Note");
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PuzzleID");
+                    b.Property<int>("PuzzleID")
+                        .HasColumnType("int");
 
                     b.Property<string>("ResponseText")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SubmittedText")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
@@ -641,24 +842,49 @@ namespace Data.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
-                    b.Property<int>("PuzzleID");
+                    b.Property<bool>("AllowFreeformSharing")
+                        .HasColumnType("bit");
 
-                    b.Property<int?>("ResponseID");
+                    b.Property<bool?>("FreeformAccepted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("FreeformFavorited")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("FreeformJudgeID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FreeformResponse")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PuzzleID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ResponseID")
+                        .HasColumnType("int");
 
                     b.Property<string>("SubmissionText")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("SubmitterID");
+                    b.Property<int>("SubmitterID")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TeamID");
+                    b.Property<int>("TeamID")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("TeamID1");
+                    b.Property<int?>("TeamID1")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("TimeSubmitted");
+                    b.Property<DateTime>("TimeSubmitted")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("FreeformJudgeID");
 
                     b.HasIndex("PuzzleID");
 
@@ -678,17 +904,23 @@ namespace Data.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
-                    b.Property<int>("EventId");
+                    b.Property<int>("EventId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Lunch");
+                    b.Property<string>("Lunch")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LunchModifications");
+                    b.Property<string>("LunchModifications")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PlayerId");
+                    b.Property<int>("PlayerId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("ShirtSize");
+                    b.Property<string>("ShirtSize")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
@@ -703,34 +935,48 @@ namespace Data.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
-                    b.Property<string>("Bio");
+                    b.Property<string>("Bio")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CustomRoom");
+                    b.Property<string>("CustomRoom")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("EventID");
+                    b.Property<int>("EventID")
+                        .HasColumnType("int");
 
-                    b.Property<int>("HintCoinCount");
+                    b.Property<int>("HintCoinCount")
+                        .HasColumnType("int");
 
-                    b.Property<int>("HintCoinsUsed");
+                    b.Property<int>("HintCoinsUsed")
+                        .HasColumnType("int");
 
-                    b.Property<bool>("IsDisqualified");
+                    b.Property<bool>("IsDisqualified")
+                        .HasColumnType("bit");
 
-                    b.Property<bool>("IsLookingForTeammates");
+                    b.Property<bool>("IsLookingForTeammates")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Password");
+                    b.Property<string>("Password")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PrimaryContactEmail");
+                    b.Property<string>("PrimaryContactEmail")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PrimaryPhoneNumber");
+                    b.Property<string>("PrimaryPhoneNumber")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("RoomID");
+                    b.Property<int?>("RoomID")
+                        .HasColumnType("int");
 
-                    b.Property<string>("SecondaryPhoneNumber");
+                    b.Property<string>("SecondaryPhoneNumber")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
@@ -743,11 +989,14 @@ namespace Data.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
-                    b.Property<int>("PlayerID");
+                    b.Property<int>("PlayerID")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TeamID");
+                    b.Property<int>("TeamID")
+                        .HasColumnType("int");
 
                     b.HasKey("ID");
 
@@ -762,13 +1011,14 @@ namespace Data.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
-                    b.Property<int?>("Team.ID")
-                        .IsRequired();
+                    b.Property<int>("Team.ID")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("User.ID")
-                        .IsRequired();
+                    b.Property<int>("User.ID")
+                        .HasColumnType("int");
 
                     b.HasKey("ID");
 
@@ -781,47 +1031,53 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole")
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser")
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser")
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole")
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser")
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser")
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Annotation", b =>
@@ -829,12 +1085,18 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
                         .WithMany()
                         .HasForeignKey("PuzzleID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("ServerCore.DataModel.Team", "Team")
                         .WithMany()
                         .HasForeignKey("TeamID")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Puzzle");
+
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.ContentFile", b =>
@@ -842,12 +1104,18 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Event", "Event")
                         .WithMany()
                         .HasForeignKey("EventID")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
                         .WithMany("Contents")
                         .HasForeignKey("PuzzleID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
+
+                    b.Navigation("Puzzle");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.EventAdmins", b =>
@@ -855,12 +1123,18 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.PuzzleUser", "Admin")
                         .WithMany()
                         .HasForeignKey("AdminID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("ServerCore.DataModel.Event", "Event")
                         .WithMany()
                         .HasForeignKey("EventID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Admin");
+
+                    b.Navigation("Event");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.EventAuthors", b =>
@@ -868,12 +1142,18 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.PuzzleUser", "Author")
                         .WithMany()
                         .HasForeignKey("AuthorID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("ServerCore.DataModel.Event", "Event")
                         .WithMany()
                         .HasForeignKey("EventID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Event");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Feedback", b =>
@@ -881,12 +1161,18 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
                         .WithMany()
                         .HasForeignKey("PuzzleID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("ServerCore.DataModel.PuzzleUser", "Submitter")
                         .WithMany()
                         .HasForeignKey("SubmitterID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Puzzle");
+
+                    b.Navigation("Submitter");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Hint", b =>
@@ -894,7 +1180,10 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
                         .WithMany()
                         .HasForeignKey("PuzzleID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Puzzle");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.HintStatePerTeam", b =>
@@ -902,17 +1191,23 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Hint", "Hint")
                         .WithMany()
                         .HasForeignKey("HintID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("ServerCore.DataModel.Team", "Team")
                         .WithMany()
                         .HasForeignKey("TeamID")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Hint");
+
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Invitation", b =>
                 {
-                    b.HasOne("ServerCore.DataModel.Team")
+                    b.HasOne("ServerCore.DataModel.Team", null)
                         .WithMany("Invitations")
                         .HasForeignKey("TeamID");
                 });
@@ -922,7 +1217,10 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
                         .WithMany()
                         .HasForeignKey("PuzzleID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Puzzle");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Prerequisites", b =>
@@ -930,12 +1228,18 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Puzzle", "Prerequisite")
                         .WithMany()
                         .HasForeignKey("PrerequisiteID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
                         .WithMany()
                         .HasForeignKey("PuzzleID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Prerequisite");
+
+                    b.Navigation("Puzzle");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Puzzle", b =>
@@ -943,7 +1247,10 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Event", "Event")
                         .WithMany()
                         .HasForeignKey("EventID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.PuzzleAuthors", b =>
@@ -951,12 +1258,18 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.PuzzleUser", "Author")
                         .WithMany()
                         .HasForeignKey("AuthorID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
                         .WithMany()
                         .HasForeignKey("PuzzleID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Puzzle");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.PuzzleStatePerTeam", b =>
@@ -964,12 +1277,18 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
                         .WithMany()
                         .HasForeignKey("PuzzleID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("ServerCore.DataModel.Team", "Team")
                         .WithMany()
                         .HasForeignKey("TeamID")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Puzzle");
+
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Response", b =>
@@ -977,15 +1296,23 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
                         .WithMany()
                         .HasForeignKey("PuzzleID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Puzzle");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Submission", b =>
                 {
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "FreeformJudge")
+                        .WithMany()
+                        .HasForeignKey("FreeformJudgeID");
+
                     b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
                         .WithMany("Submissions")
                         .HasForeignKey("PuzzleID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("ServerCore.DataModel.Response", "Response")
                         .WithMany()
@@ -994,16 +1321,28 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.PuzzleUser", "Submitter")
                         .WithMany()
                         .HasForeignKey("SubmitterID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("ServerCore.DataModel.Team", "Team")
                         .WithMany()
                         .HasForeignKey("TeamID")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasOne("ServerCore.DataModel.Team")
+                    b.HasOne("ServerCore.DataModel.Team", null)
                         .WithMany("Submissions")
                         .HasForeignKey("TeamID1");
+
+                    b.Navigation("FreeformJudge");
+
+                    b.Navigation("Puzzle");
+
+                    b.Navigation("Response");
+
+                    b.Navigation("Submitter");
+
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Swag", b =>
@@ -1011,12 +1350,18 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Event", "Event")
                         .WithMany()
                         .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("ServerCore.DataModel.PuzzleUser", "Player")
                         .WithMany()
                         .HasForeignKey("PlayerId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
+
+                    b.Navigation("Player");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Team", b =>
@@ -1024,7 +1369,10 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Event", "Event")
                         .WithMany()
                         .HasForeignKey("EventID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.TeamApplication", b =>
@@ -1032,12 +1380,18 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.PuzzleUser", "Player")
                         .WithMany()
                         .HasForeignKey("PlayerID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("ServerCore.DataModel.Team", "Team")
                         .WithMany()
                         .HasForeignKey("TeamID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Player");
+
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.TeamMembers", b =>
@@ -1045,12 +1399,32 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Team", "Team")
                         .WithMany()
                         .HasForeignKey("Team.ID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("ServerCore.DataModel.PuzzleUser", "Member")
                         .WithMany()
                         .HasForeignKey("User.ID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Member");
+
+                    b.Navigation("Team");
+                });
+
+            modelBuilder.Entity("ServerCore.DataModel.Puzzle", b =>
+                {
+                    b.Navigation("Contents");
+
+                    b.Navigation("Submissions");
+                });
+
+            modelBuilder.Entity("ServerCore.DataModel.Team", b =>
+                {
+                    b.Navigation("Invitations");
+
+                    b.Navigation("Submissions");
                 });
 #pragma warning restore 612, 618
         }

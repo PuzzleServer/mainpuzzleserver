@@ -27,7 +27,7 @@ namespace ServerCore.Pages.Events
             {
                 using (var transaction = _context.Database.BeginTransaction())
                 {
-                    var eventTeams = from Team team in _context.Teams
+                    var eventTeams = from team in _context.Teams
                                      where team.Event == Event
                                      select team;
 
@@ -36,7 +36,7 @@ namespace ServerCore.Pages.Events
                         await TeamHelper.DeleteTeamAsync(_context, team);
                     }
 
-                    var eventPuzzles = from Puzzle puzzle in _context.Puzzles
+                    var eventPuzzles = from puzzle in _context.Puzzles
                                        where puzzle.Event == Event
                                        select puzzle;
                     foreach (Puzzle puzzle in eventPuzzles)

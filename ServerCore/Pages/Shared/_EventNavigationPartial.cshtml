@@ -58,6 +58,8 @@
                             <li><a asp-page="/Events/FastestSolves">Fastest solves</a></li>
                             <li class="divider"></li>
                             <li><a asp-page="/Events/Map">Puzzle state map</a></li>
+                            <li class="divider"></li>
+                            <li><a asp-page="/Events/PlayerSubmissions">Shared submissions</a></li>
                         </ul>
                     </li>
                     <li><a asp-page="/Events/Players">Users</a></li>
@@ -123,6 +125,8 @@
                             <li><a asp-page="/Events/FastestSolves">Fastest solves</a></li>
                             <li class="divider"></li>
                             <li><a asp-page="/Events/Map">Puzzle state map</a></li>
+                            <li class="divider"></li>
+                            <li><a asp-page="/Events/PlayerSubmissions">Shared submissions</a></li>
                         </ul>
                     </li>
                     <li class="dropdown">
@@ -206,6 +210,11 @@
                             <li><a asp-page="/Events/Standings">Standings</a></li>
                             <li class="divider"></li>
                             <li><a asp-page="/Events/FastestSolves">Fastest solves</a></li>
+                            @if (DateTime.UtcNow >= Event.AnswersAvailableBegin)
+                            {
+                                <li class="divider"></li>
+                                <li><a asp-page="/Events/PlayerSubmissions">Player submissions</a></li>
+                            }
                         </ul>
                     </li>
                     <li class="dropdown">

@@ -14,11 +14,15 @@ namespace ServerCore.DataModel
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
+        public int TeamID { get; set; }
+
         /// <summary>
         /// The team the player wants to join
         /// </summary>
         [Required]
         public virtual Team Team { get; set; }
+
+        public int PlayerID { get; set; }
 
         /// <summary>
         /// The user who wants to join the team

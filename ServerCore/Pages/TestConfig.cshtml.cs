@@ -9,7 +9,7 @@ namespace ServerCore.Pages
     [Authorize(Policy = "IsGlobalAdmin")]
     public class TestConfigModel : PageModel
     {
-        public async Task<IActionResult> OnPostSendTestEmailAsync()
+        public IActionResult OnPostSendTestEmail()
         {
             // The purpose of this function is to verify that the server is configured properly.
             // That's why there are no options and we don't try different kinds of recipients and bodies.

@@ -34,15 +34,25 @@
 <h2>@Model.Event.Name Puzzles (@Model.Puzzles.Count):</h2>
 
 <p>
-    <a asp-page="Create">Create new</a> |
+    Edit:
+    <a asp-page="Create">Create new puzzle</a> |
+    <a asp-page="/Responses/CreateBulkMulti">Bulk response create</a> |
+    @if (!Model.Event.HideHints)
+    {
+        <a asp-page="/Hints/CreateBulkMulti">Bulk hint create</a> @(" |")
+        <a asp-page="/Hints/Responses">View all hint responses</a> @(" |")
+    }
+    <a asp-page="/Puzzles/Checklist">View puzzle checklist</a>
+</p>
+<p>
+    Support:
     <a asp-page="/Submissions/AuthorIndex">View all submissions</a> |
     <a asp-page="/Puzzles/Feedback">View all feedback</a> |
     @if (!Model.Event.HideHints)
     {
-        <a asp-page="/Hints/Responses">View all hint responses</a> @(" |")
         <a asp-page="/Hints/AuthorIndex">View all hints taken</a> @(" |")
     }
-    <a asp-page="/Puzzles/Checklist">View puzzle checklist</a>
+    <a asp-page="/Submissions/FreeformQueue">View freeform queue</a>
 </p>
 <table class="table">
     <thead>
@@ -54,7 +64,7 @@
                 Puzzle file
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Puzzles[0].Puzzle.Group)
+                @(Model.Event.TermForGroup ?? "Group")
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Puzzles[0].Puzzle.OrderInGroup)
@@ -103,7 +113,7 @@
                     }
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Puzzle.Group)
+                    @ServerCore.Helpers.RawHtmlHelper.Display(item.Puzzle.Group, Html)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Puzzle.OrderInGroup)
@@ -148,13 +158,15 @@
                             <a asp-Page="./Edit" asp-route-puzzleid=@item.Puzzle.ID>Details/Edit</a><br />
                             <a asp-Page="./FileManagement" asp-route-puzzleid=@item.Puzzle.ID>Files</a><br />
                             <a asp-page="/Responses/Index" asp-route-puzzleid=@item.Puzzle.ID>Responses</a><br />
-                            @if (!Model.Event.HideHints) {
+                            @if (!Model.Event.HideHints)
+                            {
                                 <a asp-page="/Hints/Index" asp-route-puzzleid=@item.Puzzle.ID>Hints</a><br />
                             }
                             <a asp-page="/Pieces/Index" asp-route-puzzleid=@item.Puzzle.ID>Pieces</a><br />
                             ------<br />
                             <a asp-page="./Status" asp-route-puzzleid=@item.Puzzle.ID>Status</a><br />
                             <a asp-page="/Submissions/AuthorIndex" asp-route-puzzleid=@item.Puzzle.ID>Submissions</a><br />
+                            <a asp-page="/Submissions/FreeformQueue" asp-route-puzzleid=@item.Puzzle.ID>Freeform Queue</a><br />
                             @if (!Model.Event.HideHints)
                             {
                                 <a asp-page="/Hints/AuthorIndex" asp-route-puzzleid=@item.Puzzle.ID>Hints Taken</a><br />

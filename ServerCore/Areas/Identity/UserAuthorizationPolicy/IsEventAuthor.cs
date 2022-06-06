@@ -18,19 +18,17 @@ namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
 
     public class IsAuthorInEventHandler : AuthorizationHandler<IsAuthorInEventRequirement>
     {
-        private readonly PuzzleServerContext dbContext;
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly AuthorizationHelper authHelper;
 
-        public IsAuthorInEventHandler(PuzzleServerContext pContext, UserManager<IdentityUser> manager)
+        public IsAuthorInEventHandler(AuthorizationHelper authHelper)
         {
-            dbContext = pContext;
-            userManager = manager;
+            this.authHelper = authHelper;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
                                                        IsAuthorInEventRequirement requirement)
         {
-            await AuthorizationHelper.IsEventAuthorCheck(authContext, dbContext, userManager, requirement);
+            await authHelper.IsEventAuthorCheck(authContext, requirement);
         }
     }
 }

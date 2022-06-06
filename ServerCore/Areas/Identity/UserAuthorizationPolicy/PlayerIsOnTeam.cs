@@ -16,19 +16,17 @@ namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
 
     public class PlayerIsOnTeamHandler : AuthorizationHandler<PlayerIsOnTeamRequirement>
     {
-        private readonly PuzzleServerContext dbContext;
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly AuthorizationHelper authHelper;
 
-        public PlayerIsOnTeamHandler(PuzzleServerContext pContext, UserManager<IdentityUser> manager)
+        public PlayerIsOnTeamHandler(AuthorizationHelper authHelper)
         {
-            dbContext = pContext;
-            userManager = manager;
+            this.authHelper = authHelper;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
                                                        PlayerIsOnTeamRequirement requirement)
         {
-            await AuthorizationHelper.IsPlayerOnTeamCheck(authContext, dbContext, userManager, requirement);
+            await authHelper.IsPlayerOnTeamCheck(authContext, requirement);
         }
     }
 }

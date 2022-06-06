@@ -38,11 +38,16 @@ namespace ServerCore.Pages.Submissions
 
         public bool DuplicateSubmission { get; set; }
 
+        [BindProperty]
+        public bool AllowFreeformSharing { get; set; }
+
         public class SubmissionView
         {
             public Submission Submission { get; set; }
             public Response Response { get; set; }
             public string SubmitterName { get; set; }
+            public bool IsFreeform { get; set; }
+            public string FreeformReponse { get; set; }
         }
 
         public async Task<IActionResult> OnPostAsync(int puzzleId, string submissionText)
@@ -102,15 +107,26 @@ namespace ServerCore.Pages.Submissions
             // Create submission and add it to list
             Submission submission = new Submission
             {
-                SubmissionText = submissionText,
                 TimeSubmitted = DateTime.UtcNow,
                 Puzzle = PuzzleState.Puzzle,
                 Team = PuzzleState.Team,
                 Submitter = LoggedInUser,
+                AllowFreeformSharing = AllowFreeformSharing
             };
+
+            string submissionTextToCheck = ServerCore.DataModel.Response.FormatSubmission(submissionText);
+            if (Puzzle.IsFreeform)
+            {
+                submission.UnformattedSubmissionText = submissionText;
+            }
+            else
+            {
+                submission.SubmissionText = submissionText;
+            }
+
             submission.Response = await _context.Responses.Where(
                 r => r.Puzzle.ID == puzzleId &&
-                     submission.SubmissionText == r.SubmittedText)
+                     submissionTextToCheck == r.SubmittedText)
                 .FirstOrDefaultAsync();
 
             Submissions.Add(submission);
@@ -126,7 +142,7 @@ namespace ServerCore.Pages.Submissions
 
                 AnswerToken = submission.SubmissionText;
             }
-            else if (submission.Response == null && Event.IsAnswerSubmissionActive)
+            else if (!Puzzle.IsFreeform && submission.Response == null && Event.IsAnswerSubmissionActive)
             {
                 // We also determine if the puzzle should be set to email-only mode.
                 if (IsPuzzleSubmissionLimitReached(
@@ -173,7 +189,8 @@ namespace ServerCore.Pages.Submissions
             {
                 Submission = submission,
                 Response = submission.Response,
-                SubmitterName = LoggedInUser.Name
+                SubmitterName = LoggedInUser.Name,
+                IsFreeform = Puzzle.IsFreeform
             });
 
             return Page();
@@ -213,6 +230,8 @@ namespace ServerCore.Pages.Submissions
                                          Submission = submission,
                                          Response = response,
                                          SubmitterName = user.Name,
+                                         FreeformReponse = submission.FreeformResponse,
+                                         IsFreeform = Puzzle.IsFreeform
                                      }).ToListAsync();
 
             Submissions = new List<Submission>(SubmissionViews.Count);
@@ -225,7 +244,7 @@ namespace ServerCore.Pages.Submissions
 
             if (PuzzleState.SolvedTime != null)
             {
-                if (Submissions?.Count > 0)
+                if (!Puzzle.IsFreeform && Submissions?.Count > 0)
                 {
                     AnswerToken = Submissions.Last().SubmissionText;
                 }

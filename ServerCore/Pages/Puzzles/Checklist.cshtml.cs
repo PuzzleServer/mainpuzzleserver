@@ -48,62 +48,60 @@ namespace ServerCore.Pages.Puzzles
         {
             List<Puzzle> puzzles = await PuzzleHelper.GetPuzzles(_context, Event, LoggedInUser, EventRole);
 
-            Dictionary<int, List<string>> puzzleAuthors = await (from author in _context.PuzzleAuthors
-                                                                        where author.Puzzle.Event == Event
-                                                                        group author by author.PuzzleID into authorList
-                                                                        select new { Puzzle = authorList.Key, Authors = (from a in authorList select a.Author.Name).ToList() }).ToDictionaryAsync(x => x.Puzzle, x => x.Authors);
+            ILookup<int, string> puzzleAuthors = (await (from author in _context.PuzzleAuthors
+                                                  where author.Puzzle.Event == Event
+                                                  select author).ToListAsync()).ToLookup(author => author.PuzzleID, author => author.Author.Name);
             Dictionary<int, ContentFile> puzzleFiles = await (from file in _context.ContentFiles
                                                               where file.Event == Event && file.FileType == ContentFileType.Puzzle
                                                               select file).ToDictionaryAsync(file => file.PuzzleID);
             Dictionary<int, ContentFile> puzzleAnswers = await (from file in _context.ContentFiles
                                                                 where file.Event == Event && file.FileType == ContentFileType.Answer
                                                                 select file).ToDictionaryAsync(file => file.PuzzleID);
-            Dictionary<int, List<string>> puzzlePrereqs = await (from prerequisite in _context.Prerequisites
-                                                                 where prerequisite.Puzzle.Event == Event
-                                                                 group prerequisite by prerequisite.PuzzleID into prereqs
-                                                                 select new { Puzzle = prereqs.Key, Prereqs = (from p in prereqs orderby p.Prerequisite.Name select p.Prerequisite.Name).ToList() }).ToDictionaryAsync(x => x.Puzzle, x => x.Prereqs);
-            Dictionary<int, ResponseData> puzzleResponses = await (from response in _context.Responses
-                                                                   where response.Puzzle.Event == Event
-                                                                   group response by response.PuzzleID into responseList
-                                                                   select new { Puzzle = responseList.Key, Responses = new ResponseData { ResponseCount = responseList.Count(), HasAnswer = (from r in responseList where r.IsSolution select r).Count() > 0 } }).ToDictionaryAsync(x => x.Puzzle, x => x.Responses);
-            Dictionary<int, IEnumerable<int>> puzzleHints = await (from hint in _context.Hints
-                                                      where hint.Puzzle.Event == Event
-                                                      group hint by hint.Puzzle.ID into hints
-                                                      select new { Puzzle = hints.Key, Hints = (from h in hints select h.Cost) }).ToDictionaryAsync(x => x.Puzzle, x => x.Hints);
+            ILookup<int, string> puzzlePrereqs = (await (from prerequisite in _context.Prerequisites
+                                                  where prerequisite.Puzzle.Event == Event
+                                                  select prerequisite).ToListAsync()).ToLookup(prerequisite => prerequisite.PuzzleID, prerequisite => prerequisite.Prerequisite.Name);
+
+            HashSet<int> puzzlesWithSolutions = (await (from response in _context.Responses
+                                        where response.Puzzle.Event == Event && response.IsSolution
+                                        select response.PuzzleID).ToListAsync()).ToHashSet();
+            Dictionary<int, int> puzzleResponses = await (from response in _context.Responses
+                                                          where response.Puzzle.Event == Event
+                                                          group response by response.PuzzleID into responseList
+                                                          select new { Puzzle = responseList.Key, ResponseCount = responseList.Count() }).ToDictionaryAsync(x => x.Puzzle, x => x.ResponseCount);
+
+            ILookup<int, int> puzzleHints = (await (from hint in _context.Hints
+                                      where hint.Puzzle.Event == Event
+                                      select new { PuzzleId = hint.PuzzleID, Cost = hint.Cost }).ToListAsync()).ToLookup(hint => hint.PuzzleId, hint => hint.Cost);
 
             PuzzleData = new List<PuzzleView>();
             foreach (Puzzle puzzle in puzzles)
             {
-                puzzleAuthors.TryGetValue(puzzle.ID, out List<string> authors);
+                IEnumerable<string> authors = puzzleAuthors[puzzle.ID];
                 puzzleFiles.TryGetValue(puzzle.ID, out ContentFile puzzleFile);
                 puzzleAnswers.TryGetValue(puzzle.ID, out ContentFile puzzleAnswer);
-                puzzlePrereqs.TryGetValue(puzzle.ID, out List<string> prereqs);
-                puzzleResponses.TryGetValue(puzzle.ID, out ResponseData responses);
-                puzzleHints.TryGetValue(puzzle.ID, out IEnumerable<int> hints);
+                IEnumerable<string> prereqs = puzzlePrereqs[puzzle.ID];
+                puzzleResponses.TryGetValue(puzzle.ID, out int responses);
 
                 int totalHintCostThisPuzzle = 0;
                 int hintsCountThisPuzzle = 0;
-                if (hints != null)
+                
+                if (puzzleHints.Contains(puzzle.ID))
                 {
+                    IEnumerable<int> hints = puzzleHints[puzzle.ID];
                     int totalDiscount = 0;
 
                     hintsCountThisPuzzle = hints.Count();
+
+                    // positive hints cost what they say they cost.
+                    // negative hints apply discounts to each other, find the most negative hint.
                     foreach (int cost in hints)
                     {
                         totalDiscount = Math.Min(totalDiscount, cost);
+                        totalHintCostThisPuzzle += Math.Max(0, cost);
                     }
 
-                    // totalDiscount is 0 or negative. Start with that cost (flipped to positive
-                    // as it must be paid in order to reduce the cost of the others.
-                    totalHintCostThisPuzzle = -totalDiscount;
-
-                    foreach (int cost in hints)
-                    {
-                        // Negative cost hints will be ignored because Max(0,negative) is 0.
-                        // Positive cost hints will only be counted for the cost above the discount.
-                        // (The discount is counted against each other hint.)
-                        totalHintCostThisPuzzle += Math.Max(0, cost + totalDiscount);
-                    }
+                    // add the total available discount to the cost.
+                    totalHintCostThisPuzzle += Math.Abs(totalDiscount);
                 }
 
                 PuzzleData.Add(new PuzzleView()
@@ -112,9 +110,9 @@ namespace ServerCore.Pages.Puzzles
                     Authors = authors != null ? string.Join(", ", authors) : "",
                     PuzzleFile = puzzleFile,
                     AnswerFile = puzzleAnswer,
-                    Prerequisites = prereqs != null ? string.Join(", ", prereqs) : "",
+                    Prerequisites = prereqs != null ? string.Join(", ", prereqs.OrderBy(prereq => prereq)) : "",
                     PrerequisitesCount = prereqs != null ? prereqs.Count() : 0,
-                    Responses = responses != null ? responses : new ResponseData { ResponseCount = 0, HasAnswer = false },
+                    Responses = new ResponseData { ResponseCount = responses, HasAnswer = puzzlesWithSolutions.Contains(puzzle.ID) },
                     Hints = hintsCountThisPuzzle,
                     TotalHintCost = totalHintCostThisPuzzle
                 });
