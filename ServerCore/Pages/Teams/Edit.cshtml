@@ -27,11 +27,11 @@
                 <span asp-validation-for="Team.Name" class="text-danger"></span>
             </div>
             <!-- TODO: Conditionally show/hide based on event property (not needed for PuzzleHunt) -->
-            <div class="form-group">
+            @*<div class="form-group">
                 <label asp-for="Team.RoomID" class="control-label"></label>
                 <input asp-for="Team.RoomID" class="form-control" />
                 <span asp-validation-for="Team.RoomID" class="text-danger"></span>
-            </div>
+            </div>*@
             @if (Model.Event.IsInternEvent && Model.EventRole == ModelBases.EventRole.play)
             {
                 <div class="form-group">
