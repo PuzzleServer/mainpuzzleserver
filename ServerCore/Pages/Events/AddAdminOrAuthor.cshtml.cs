@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
+using ServerCore.Helpers;
 using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Events
@@ -17,7 +18,7 @@ namespace ServerCore.Pages.Events
     [Authorize("IsEventAdmin")]
     public class AddAdminOrAuthorModel : EventSpecificPageModel
     {
-        public IList<PuzzleUser> Users { get; set; }
+        public IList<AddUserHelper.PuzzleUserView> Users { get; set; }
 
         public bool addAdmin { get; set; }
 
@@ -29,24 +30,7 @@ namespace ServerCore.Pages.Events
         {
             this.addAdmin = addAdmin;
 
-            if (addAdmin)
-            {
-                Users = await (from user in _context.PuzzleUsers
-                               where !((from eventAdmin in _context.EventAdmins
-                                       where eventAdmin.Event == Event
-                                       where eventAdmin.Admin == user
-                                       select eventAdmin).Any())
-                               select user).ToListAsync();
-            }
-            else
-            {
-                Users = await (from user in _context.PuzzleUsers
-                               where !((from eventAuthor in _context.EventAuthors
-                                       where eventAuthor.Event == Event
-                                       where eventAuthor.Author == user
-                                       select eventAuthor).Any())
-                               select user).ToListAsync();
-            }
+            Users = addAdmin ? await AddUserHelper.GetNonAdminsForEvent(_context, Event) : await AddUserHelper.GetNonAuthorsForEvent(_context, Event);
 
             return Page();
         }
