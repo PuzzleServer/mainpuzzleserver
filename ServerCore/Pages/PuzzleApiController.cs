@@ -44,6 +44,29 @@ namespace ServerCore.Pages
                           select team).AnyAsync();
         }
 
+        /// <summary>
+        /// Allows external puzzles to validate a team password
+        /// </summary>
+        /// <param name="teamPassword">Potential team password</param>
+        /// <returns>True if the password belongs to a team, false otherwise</returns>
+        [HttpGet]
+        [Route("api/puzzleapi/getmailinfo")]
+        public async Task<ActionResult<MailInfo>> GetMailInfoAsync(string eventId, int puzzleId)
+        {
+            Event currentEvent = await EventHelper.GetEventFromEventId(context, eventId);
+            Team team = await UserEventHelper.GetTeamForCurrentPlayer(context, currentEvent, User, userManager);
+
+            MailInfo mailInfo = new MailInfo();
+
+            mailInfo.PuzzleName = await (from puzzle in context.Puzzles
+                                         where puzzle.ID == puzzleId
+                                         select puzzle.Name).FirstOrDefaultAsync();
+            mailInfo.TeamName = team.Name;
+            mailInfo.TeamContactEmail = team.PrimaryContactEmail;
+
+            return mailInfo;
+        }
+
         [HttpPost]
         [Authorize(Policy = "PlayerCanSeePuzzle")]
         [Route("api/puzzleapi/submitanswer/{eventId}/{puzzleId}")]
@@ -61,5 +84,12 @@ namespace ServerCore.Pages
     {
         public string SubmissionText { get; set; }
         public bool AllowFreeformSharing { get; set; }
+    }
+
+    public class MailInfo
+    {
+        public string PuzzleName { get; set; }
+        public string TeamName { get; set; }
+        public string TeamContactEmail { get; set; }
     }
 }
