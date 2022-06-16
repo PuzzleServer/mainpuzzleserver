@@ -66,6 +66,7 @@ namespace ServerCore.Pages.Teams
             if (Team.Name.Length > 50)
             {
                 ModelState.AddModelError("Team.Name", "Name too long. Character limit: 50");
+                return Page();
             }
 
 
