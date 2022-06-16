@@ -62,7 +62,9 @@ namespace ServerCore.Pages
                                          where puzzle.ID == puzzleId
                                          select puzzle.Name).FirstOrDefaultAsync();
             mailInfo.TeamName = team.Name;
-            mailInfo.TeamContactEmail = team.PrimaryContactEmail;
+
+            // replace commas with semicolons for better email support
+            mailInfo.TeamContactEmail = team.PrimaryContactEmail.Replace(',', ';');
 
             return mailInfo;
         }
