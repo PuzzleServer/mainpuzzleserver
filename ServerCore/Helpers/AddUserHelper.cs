@@ -14,7 +14,7 @@ namespace ServerCore.Helpers
         public static async Task<List<PuzzleUserView>> GetNonAdminsForEvent(PuzzleServerContext puzzleServerContext, Event thisEvent)
         {
             List<int> adminUserIDs = await (from eventAdmin in puzzleServerContext.EventAdmins
-                                         where eventAdmin.Event == thisEvent
+                                         where eventAdmin.EventID == thisEvent.ID
                                          orderby eventAdmin.AdminID
                                          select eventAdmin.AdminID).ToListAsync();
 
@@ -24,7 +24,7 @@ namespace ServerCore.Helpers
         public static async Task<List<PuzzleUserView>> GetNonAuthorsForEvent(PuzzleServerContext puzzleServerContext, Event thisEvent)
         {
             List<int> authorUserIDs = await (from eventAuthor in puzzleServerContext.EventAuthors
-                                            where eventAuthor.Event == thisEvent
+                                            where eventAuthor.EventID == thisEvent.ID
                                             orderby eventAuthor.AuthorID
                                             select eventAuthor.AuthorID).ToListAsync();
 
