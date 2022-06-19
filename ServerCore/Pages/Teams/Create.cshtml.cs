@@ -82,6 +82,11 @@ namespace ServerCore.Pages.Teams
                 ModelState.AddModelError("Team.PrimaryContactEmail", "This email address is not valid.");
             }
 
+            if (Team.Name.Length > 50)
+            {
+                ModelState.AddModelError("Team.Name", "Name too long. Character limit: 50");
+            }
+
             ModelState.Remove("Team.Event");
             if (!ModelState.IsValid)
             {
