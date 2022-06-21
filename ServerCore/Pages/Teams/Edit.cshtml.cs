@@ -63,6 +63,13 @@ namespace ServerCore.Pages.Teams
                 return Page();
             }
 
+            if (Team.Name.Length > 50)
+            {
+                ModelState.AddModelError("Team.Name", "Name too long. Character limit: 50");
+                return Page();
+            }
+
+
             // keep the room unchanged if an intern event, since interns can't edit their rooms
             if (Event.IsInternEvent && EventRole != EventRole.admin)
             {
