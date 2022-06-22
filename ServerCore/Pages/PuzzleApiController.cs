@@ -56,15 +56,31 @@ namespace ServerCore.Pages
             Event currentEvent = await EventHelper.GetEventFromEventId(context, eventId);
             Team team = await UserEventHelper.GetTeamForCurrentPlayer(context, currentEvent, User, userManager);
 
+            if (team == null)
+            {
+                return Unauthorized();
+            }
+
+            Puzzle puzzle = await (from p in context.Puzzles where p.ID == puzzleId select p).FirstOrDefaultAsync();
+
+            if (puzzle == null)
+            {
+                return NotFound();
+            }
+
+            PuzzleStatePerTeam puzzleState = await PuzzleStateHelper.GetFullReadOnlyQuery(context, currentEvent, puzzle, team, null).FirstOrDefaultAsync();
+            if (puzzleState.UnlockedTime == null)
+            {
+                return Unauthorized();
+            }
+
             MailInfo mailInfo = new MailInfo();
 
-            mailInfo.PuzzleName = await (from puzzle in context.Puzzles
-                                         where puzzle.ID == puzzleId
-                                         select puzzle.Name).FirstOrDefaultAsync();
+            mailInfo.PuzzleName = puzzle.Name;
             mailInfo.TeamName = team.Name;
 
             // replace commas with semicolons for better email support
-            mailInfo.TeamContactEmail = team.PrimaryContactEmail.Replace(',', ';');
+            mailInfo.TeamContactEmail = team.PrimaryContactEmail?.Replace(',', ';');
 
             return mailInfo;
         }
