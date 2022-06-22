@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -50,6 +51,7 @@ namespace ServerCore.Pages
         /// <param name="teamPassword">Potential team password</param>
         /// <returns>True if the password belongs to a team, false otherwise</returns>
         [HttpGet]
+        [EnableCors("PuzzleApi")]
         [Route("api/puzzleapi/getmailinfo")]
         public async Task<ActionResult<MailInfo>> GetMailInfoAsync(string eventId, int puzzleId)
         {

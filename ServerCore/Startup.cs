@@ -80,6 +80,18 @@ namespace ServerCore
                 options.AddPolicy("IsRegisteredForEvent", policy => policy.Requirements.Add(new IsRegisteredForEventRequirement()));
             });
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy("PuzzleApi",
+                    policy =>
+                    {
+                        policy.WithOrigins("localhost", "127.0.0.1:10000", "puzzleserverteststore.blob.core.windows.net")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                    });
+            });
+
             services.AddScoped<IAuthorizationHandler, IsAuthorInEventHandler>();
             services.AddScoped<IAuthorizationHandler, IsAdminInEventHandler>();
             services.AddScoped<IAuthorizationHandler, IsGlobalAdminHandler>();
@@ -135,6 +147,8 @@ namespace ServerCore
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseMvc();
+
+            app.UseCors();
         }
     }
 }
