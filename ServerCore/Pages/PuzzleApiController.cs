@@ -44,6 +44,47 @@ namespace ServerCore.Pages
                           select team).AnyAsync();
         }
 
+        /// <summary>
+        /// Allows external puzzles to validate a team password
+        /// </summary>
+        /// <param name="teamPassword">Potential team password</param>
+        /// <returns>True if the password belongs to a team, false otherwise</returns>
+        [HttpGet]
+        [Route("api/puzzleapi/getmailinfo")]
+        public async Task<ActionResult<MailInfo>> GetMailInfoAsync(string eventId, int puzzleId)
+        {
+            Event currentEvent = await EventHelper.GetEventFromEventId(context, eventId);
+            Team team = await UserEventHelper.GetTeamForCurrentPlayer(context, currentEvent, User, userManager);
+
+            if (team == null)
+            {
+                return Unauthorized();
+            }
+
+            Puzzle puzzle = await (from p in context.Puzzles where p.ID == puzzleId select p).FirstOrDefaultAsync();
+
+            if (puzzle == null)
+            {
+                return NotFound();
+            }
+
+            PuzzleStatePerTeam puzzleState = await PuzzleStateHelper.GetFullReadOnlyQuery(context, currentEvent, puzzle, team, null).FirstOrDefaultAsync();
+            if (puzzleState.UnlockedTime == null)
+            {
+                return Unauthorized();
+            }
+
+            MailInfo mailInfo = new MailInfo();
+
+            mailInfo.PuzzleName = puzzle.Name;
+            mailInfo.TeamName = team.Name;
+
+            // replace commas with semicolons for better email support
+            mailInfo.TeamContactEmail = team.PrimaryContactEmail?.Replace(',', ';');
+
+            return mailInfo;
+        }
+
         [HttpPost]
         [Authorize(Policy = "PlayerCanSeePuzzle")]
         [Route("api/puzzleapi/submitanswer/{eventId}/{puzzleId}")]
@@ -61,5 +102,12 @@ namespace ServerCore.Pages
     {
         public string SubmissionText { get; set; }
         public bool AllowFreeformSharing { get; set; }
+    }
+
+    public class MailInfo
+    {
+        public string PuzzleName { get; set; }
+        public string TeamName { get; set; }
+        public string TeamContactEmail { get; set; }
     }
 }

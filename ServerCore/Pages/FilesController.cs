@@ -51,7 +51,7 @@ namespace ServerCore.Pages
                 return Unauthorized();
             }
 
-            return Redirect(content.Url.ToString());
+            return Redirect($"{content.Url}{HttpContext.Request.QueryString}");
         }
 
         /// <summary>
