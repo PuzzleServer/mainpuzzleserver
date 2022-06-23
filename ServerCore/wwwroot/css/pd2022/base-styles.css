@@ -175,3 +175,21 @@ td,
 th {
   border: 1px solid var(--ink-black);
 }
+
+.help-button {
+    width: 120px;
+    height: 30px;
+    font-size: 18px;
+    font-family: Tahoma, Verdana, sans-serif;
+    font-weight: bold;
+    border: 2px solid;
+    border-radius: 5px;
+}
+
+.help-button:hover {
+    opacity: 0.5;
+}
+
+.help-button:active {
+    opacity: 0.8;
+}
