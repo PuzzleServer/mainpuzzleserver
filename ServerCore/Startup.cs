@@ -85,7 +85,7 @@ namespace ServerCore
                 options.AddPolicy("PuzzleApi",
                     policy =>
                     {
-                        policy.WithOrigins("localhost", "127.0.0.1:10000", "puzzleserverteststore.blob.core.windows.net")
+                        policy.WithOrigins("http://localhost", "http://127.0.0.1:10000", "http://puzzleserverteststore.blob.core.windows.net", "https://puzzleserverteststore.blob.core.windows.net")
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials();
