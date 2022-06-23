@@ -46,17 +46,29 @@ namespace ServerCore.Pages
         }
 
         /// <summary>
-        /// Allows external puzzles to validate a team password
+        /// Allows external puzzles to get information pertaining to how to identify that team in email
         /// </summary>
-        /// <param name="teamPassword">Potential team password</param>
-        /// <returns>True if the password belongs to a team, false otherwise</returns>
+        /// <param name="eventId">ID of the event</param>
+        /// <param name="puzzleId">ID of the puzzle</param>
+        /// <param name="teamPassword">Team password</param>
+        /// <returns>Identifying information for that team/puzzle</returns>
         [HttpGet]
         [EnableCors("PuzzleApi")]
         [Route("api/puzzleapi/getmailinfo")]
-        public async Task<ActionResult<MailInfo>> GetMailInfoAsync(string eventId, int puzzleId)
+        public async Task<ActionResult<MailInfo>> GetMailInfoAsync(string eventId, int puzzleId, string? teamPassword)
         {
             Event currentEvent = await EventHelper.GetEventFromEventId(context, eventId);
-            Team team = await UserEventHelper.GetTeamForCurrentPlayer(context, currentEvent, User, userManager);
+
+            Team team;
+
+            if (!string.IsNullOrEmpty(teamPassword))
+            {
+                team = await (from t in context.Teams where t.Event == currentEvent && t.Password == teamPassword select t).FirstOrDefaultAsync();
+            }
+            else
+            {
+                team = await UserEventHelper.GetTeamForCurrentPlayer(context, currentEvent, User, userManager);
+            }
 
             if (team == null)
             {
