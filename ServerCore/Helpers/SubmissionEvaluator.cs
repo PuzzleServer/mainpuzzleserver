@@ -235,16 +235,16 @@ namespace ServerCore.Helpers
                 return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.Correct, CompleteResponse = submission.Response };
             }
 
-            // Freeform response
-            if (puzzle.IsFreeform)
-            {
-                return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.Freeform, FreeformResponse = submission.FreeformResponse };
-            }
-
             // Partial response
             if (submission.Response != null && !submission.Response.IsSolution)
             {
                 return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.Partial, CompleteResponse = submission.Response };
+            }
+
+            // Freeform response
+            if (puzzle.IsFreeform)
+            {
+                return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.Freeform, FreeformResponse = submission.FreeformResponse };
             }
 
             // Default to incorrect
