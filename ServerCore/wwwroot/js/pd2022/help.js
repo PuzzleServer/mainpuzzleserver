@@ -79,8 +79,9 @@ function sendMail(contactMail, puzzleTitle, teamName) {
 	if (contactMail.length > 0) {
 		linkContent += "cc=";
 		linkContent += contactMail;
+		linkContent += "&";
 	}
-	linkContent += "&subject=%5B";
+	linkContent += "subject=%5B";
 	linkContent += puzzleTitle;
 	linkContent += "%5D";
 	if (teamName.length > 0) {
