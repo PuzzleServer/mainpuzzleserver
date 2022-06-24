@@ -31,12 +31,16 @@ window.addEventListener("load", function (event) {
 async function clicked(event) {
 
 	// If the URL has the necessary parameters to call the team name API, do it
-	if (window.location.href.split('?').length > 1) {
-		let params = window.location.href.split('?')[1];
-		if ((!params.includes("eventId")) || (!params.includes("puzzleId")) || (!params.includes("teamPassword"))) {
+	if (window.location.search.length == 0) {
+		backup();
+	}
+	else {
+		let params = new URLSearchParams(window.location.search);
+		if ((!params.has("eventId")) || (!params.has("puzzleId")) || (!params.has("teamPassword"))) {
 			backup();
-		} else {
-			if ((params.split('&')[0].split('=')[1].length == 0) || (params.split('&')[1].split('=')[1].length == 0) || (params.split('&')[2].split('=')[1].length == 0)) {
+		}
+		else {
+			if ((params.get("eventId").length == 0) || (params.get("puzzleId").length == 0) || (params.get("teamPassword").length == 0)) {
 				backup();
 			}
 			else {
@@ -60,9 +64,6 @@ async function clicked(event) {
 				}
 			}
 		}
-	}
-	else {
-		backup();
 	}
 }
 
