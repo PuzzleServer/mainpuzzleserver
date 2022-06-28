@@ -7,7 +7,6 @@
     ViewData["AuthorRoute"] = "/";
     ViewData["PlayRoute"] = "../Swag/Register";
     var isEditable = DateTime.UtcNow <= Model.Event.TeamMiscDataChangeEnd;
-    var showCustomText = Model.Swag.Lunch == "none-of-the-above";
 }
 
 <style>
@@ -37,42 +36,54 @@ else
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Swag.Lunch" class="control-label"></label>
-                <br /><input asp-for="Swag.Lunch" type="radio" value="chicken-caesar" required /> Grilled Herb Crusted Chicken Caesar
-                <div class="food-option-description">Marinated and Grilled Chicken Breast, Crisp Romaine, Parmesan and Vegetarian Caesar Dressing. Includes fruit and small dessert.</div>
-                <br /><input asp-for="Swag.Lunch" type="radio" value="garden-salad" /> Vegan Garden Salad
-                <div class="food-option-description">Kale, Cucumbers, Tomatoes, Carrots, Edamame, Radishes, Pickled Red Onions and Champagne Vinaigrette. Includes fruit and small dessert.</div>
-                <br /><input asp-for="Swag.Lunch" type="radio" value="turkey-cobb" /> Arugula Turkey Cobb Salad
-                <div class="food-option-description">Peppery Arugula, Hard-boiled Egg and Creamy Blue Cheese Dressing. Includes fruit and small dessert.</div>
-                <br /><input asp-for="Swag.Lunch" type="radio" value="roast-beef" /> Peppercorn Crusted Roast Beef Sandwich
+                <br /><input asp-for="Swag.Lunch" type="radio" class="choice" value="chicken-caesar" required /> Grilled Herb Crusted Chicken Caesar
+                    <div class="food-option-description">Marinated and Grilled Chicken Breast, Crisp Romaine, Parmesan and Vegetarian Caesar Dressing. Includes fruit and small dessert.</div>
+                <br /><input asp-for="Swag.Lunch" type="radio" class="choice" value="garden-salad" /> Vegan Garden Salad
+                    <div class="food-option-description">Kale, Cucumbers, Tomatoes, Carrots, Edamame, Radishes, Pickled Red Onions and Champagne Vinaigrette. Includes fruit and small dessert.</div>
+                <br /><input asp-for="Swag.Lunch" type="radio" class="choice" value="turkey-cobb" /> Arugula Turkey Cobb Salad
+                    <div class="food-option-description">Peppery Arugula, Hard-boiled Egg and Creamy Blue Cheese Dressing. Includes fruit and small dessert.</div>
+                <br /><input asp-for="Swag.Lunch" type="radio" class="choice" value="roast-beef" /> Peppercorn Crusted Roast Beef Sandwich
                       <div class="food-option-description">House-roasted Beef, Arugula and Horseradish Aioli on Onion Rye. Includes fruit, small dessert and chips.</div>
-                <br /><input asp-for="Swag.Lunch" type="radio" value="roasted-turkey" /> Lemon Pepper Roasted Turkey Sandwich
+                <br /><input asp-for="Swag.Lunch" type="radio" class="choice" value="roasted-turkey" /> Lemon Pepper Roasted Turkey Sandwich
                       <div class="food-option-description">Roasted Turkey Breast, Spring Mix and Sliced Tomato on Focaccia. Includes fruit, small dessert and chips.</div>
-                <br /><input asp-for="Swag.Lunch" type="radio" value="smoked-ham" /> Smoked Ham Sandwich
+                <br /><input asp-for="Swag.Lunch" type="radio" class="choice" value="smoked-ham" /> Smoked Ham Sandwich
                       <div class="food-option-description">Smoked Ham, Green Leaf Lettuce and Sliced Tomato on An Herb Torpedo Roll. Includes fruit, small dessert and chips.</div>
-                <br /><input asp-for="Swag.Lunch" type="radio" value="salmon-wrap" /> Blackened Salmon Wrap
+                <br /><input asp-for="Swag.Lunch" type="radio" class="choice" value="salmon-wrap" /> Blackened Salmon Wrap
                       <div class="food-option-description">Salmon With Cajun Spice and Baby Kale on A Sundried Tomato Wrap. Includes fruit, small dessert and chips.</div>
-                <br /><input asp-for="Swag.Lunch" type="radio" value="beet-sandwich" /> Vegan Salt-Roasted Beet + Asparagus Sandwich
+                <br /><input asp-for="Swag.Lunch" type="radio" class="choice" value="beet-sandwich" /> Vegan Salt-Roasted Beet + Asparagus Sandwich
                       <div class="food-option-description">Marinated Sliced Beets and Grilled Asparagus on A Potato Roll. Includes fruit, small dessert and chips.</div>
-                <br /><input asp-for="Swag.Lunch" type="radio" value="border-wrap" /> South of the Border Wrap
+                <br /><input asp-for="Swag.Lunch" type="radio" class="choice" value="border-wrap" /> South of the Border Wrap
                       <div class="food-option-description">Spicy Marinated Chicken, Charred Peppers, Roasted Corn Salsa, Chipotle Aioli in a Sundried Tomato Wrap. Includes chips.</div>
-                <br /><input asp-for="Swag.Lunch" type="radio" value="mushroom-wrap" /> Vegan Roasted Mushroom + Red Pepper Wrap
+                <br /><input asp-for="Swag.Lunch" type="radio" class="choice" value="mushroom-wrap" /> Vegan Roasted Mushroom + Red Pepper Wrap
                       <div class="food-option-description">Rosemary and Balsamic Roasted Portobello, Pickled Peppadew Peppers on a Plain Wrap. Includes chips.</div>
-                <br /><input asp-for="Swag.Lunch" type="radio" value="remote-participant" /> I will participate remotely
-                <div class="food-option-description"></div>
-                <br /><input asp-for="Swag.Lunch" type="radio" value="none-of-the-above" /> I cannot eat any of these
-                <div class="food-option-description">If you cannot have any of the options offered due to dietary restrictions, please describe them in the box below and we'll reach out to you about an alternative. If modifying one of the above options will work for you, please select that option and describe the required changes in the box below.</div>
-                <br /><input asp-for="Swag.Lunch" type="radio" value="no-food" /> I do not want any food, thanks
-                <div class="food-option-description">If you choose this option you will NOT get food on the day of the event.</div>
+                <br /><input asp-for="Swag.Lunch" type="radio" class="choice" value="none-of-the-above" /> I cannot eat any of these
+                    <div class="food-option-description">If you cannot have any of the options offered due to dietary restrictions, please describe them in the box below and we'll reach out to you about an alternative. If modifying one of the above options will work for you, please select that option and describe the required changes in the box below.</div>
+                <br /><input asp-for="Swag.Lunch" type="radio" class="choice" value="no-food" /> I do not want any food, thanks
+                    <div class="food-option-description">If you choose this option you will NOT get food on the day of the event.</div>
                 <span asp-validation-for="Swag.Lunch" class="text-danger"></span>
             </div>
-            @if (showCustomText)
-            {
-            <div class="form-group">
+            <script>
+                document.addEventListener("DOMContentLoaded", function(event) {
+                    let order = document.getElementById("custom-order");
+                    order.hidden = true;
+                    let radios = document.getElementsByClassName("choice");
+                    for (let radio of radios) {
+                        radio.addEventListener("click", function(event) {
+                            if ((this.value === "none-of-the-above") && (this.checked)) {
+                                order.hidden = false;
+                            }
+                            else {
+                                order.hidden = true;
+                            }
+                        });
+                    }
+                });
+            </script>
+            <div id="custom-order" class="form-group">
                 <label asp-for="Swag.LunchModifications" class="control-label"></label>
                 <textarea asp-for="Swag.LunchModifications" class="form-control"></textarea>
                 <span asp-validation-for="Swag.LunchModifications" class="text-danger"></span>
             </div>
-            }
             @if (isEditable)
             {
             <div class="form-group">
