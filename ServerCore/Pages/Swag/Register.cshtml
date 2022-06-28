@@ -7,6 +7,7 @@
     ViewData["AuthorRoute"] = "/";
     ViewData["PlayRoute"] = "../Swag/Register";
     var isEditable = DateTime.UtcNow <= Model.Event.TeamMiscDataChangeEnd;
+    var showCustomText = Model.Swag.Lunch == "none-of-the-above";
 }
 
 <style>
@@ -36,7 +37,7 @@ else
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Swag.Lunch" class="control-label"></label>
-                <br /><input asp-for="Swag.Lunch" type="radio" value="chicken-caesar" required /> Grilled Herb Crusted Chicken Caesar
+                <br /><input asp-for="Swag.Lunch" type="radio" value="chicken-caesar" oninput="update" required /> Grilled Herb Crusted Chicken Caesar
                 <div class="food-option-description">Marinated and Grilled Chicken Breast, Crisp Romaine, Parmesan and Vegetarian Caesar Dressing. Includes fruit and small dessert.</div>
                 <br /><input asp-for="Swag.Lunch" type="radio" value="garden-salad" /> Vegan Garden Salad
                 <div class="food-option-description">Kale, Cucumbers, Tomatoes, Carrots, Edamame, Radishes, Pickled Red Onions and Champagne Vinaigrette. Includes fruit and small dessert.</div>
@@ -64,11 +65,14 @@ else
                 <div class="food-option-description">If you choose this option you will NOT get food on the day of the event.</div>
                 <span asp-validation-for="Swag.Lunch" class="text-danger"></span>
             </div>
+            @if (showCustomText)
+            {
             <div class="form-group">
                 <label asp-for="Swag.LunchModifications" class="control-label"></label>
                 <textarea asp-for="Swag.LunchModifications" class="form-control"></textarea>
                 <span asp-validation-for="Swag.LunchModifications" class="text-danger"></span>
             </div>
+            }
             @if (isEditable)
             {
             <div class="form-group">
