@@ -193,3 +193,16 @@ th {
 .help-button:active {
     opacity: 0.8;
 }
+
+.online-note {
+    font-style: normal;
+    font-weight: bold;
+    border: solid 3px black;
+    padding: 0px 3px 3px 3px;
+}
+
+@media screen {
+    .print-only {
+        display: none;
+    }
+}
