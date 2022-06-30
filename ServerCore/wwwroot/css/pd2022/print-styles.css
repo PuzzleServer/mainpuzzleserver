@@ -49,6 +49,7 @@ h1 {
 .flavor-div {
   color-adjust: exact;
   -webkit-print-color-adjust: exact;
+  margin-top: 10px;
 }
 
 .content-div {
@@ -60,4 +61,8 @@ h1 {
 
 .help-link {
   display: none;
+}
+
+.online-only {
+    display: none;
 }
