@@ -73,6 +73,7 @@ namespace ServerCore.Pages.Teams
             if (await TeamHelper.IsTeamNameTakenAsync(_context, Event, Team.Name))
             {
                 ModelState.AddModelError("Team.Name", "Another team has this name.");
+                return Page();
             }
 
             // keep the room unchanged if an intern event, since interns can't edit their rooms
