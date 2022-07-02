@@ -48,6 +48,7 @@ namespace ServerCore.Pages.Events
                 return Forbid();
             }
 
+            var sourceEventAdmins = await _context.EventAdmins.Where((a) => a.Event.ID == ImportEventID).ToListAsync();
             var sourceEventAuthors = await _context.EventAuthors.Where((a) => a.Event.ID == ImportEventID).ToListAsync();
             var sourcePuzzles = await _context.Puzzles.Where((p) => p.Event.ID == ImportEventID).ToListAsync();
 
@@ -56,6 +57,20 @@ namespace ServerCore.Pages.Events
 
             using (var transaction = _context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable))
             {
+                // Step 0: Make sure all admins exist
+                foreach (var sourceEventAdmin in sourceEventAdmins)
+                {
+                    var destEventAdmin = await _context.EventAdmins.Where((e) => e.Event == Event && e.Admin == sourceEventAdmin.Admin).FirstOrDefaultAsync();
+
+                    if (destEventAdmin == null)
+                    {
+                        destEventAdmin = new EventAdmins();
+                        destEventAdmin.Admin = sourceEventAdmin.Admin;
+                        destEventAdmin.Event = Event;
+                        _context.EventAdmins.Add(destEventAdmin);
+                    }
+                }
+
                 // Step 1: Make sure all authors exist
                 foreach (var sourceEventAuthor in sourceEventAuthors)
                 {
