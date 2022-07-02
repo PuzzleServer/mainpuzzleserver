@@ -58,10 +58,10 @@ async function clicked(event) {
 				else {
 					let data = await response.json();
 					let contactMail = data.teamContactEmail;
-					let puzzleSupportEmail = data.puzzleSupportEmail;
+					let puzzleSupportAlias = data.puzzleSupportAlias;
 					let puzzleTitle = encodeURIComponent(data.puzzleName);
 					let teamName = encodeURIComponent(data.teamName);
-					sendMail(contactMail, puzzleSupportEmail, puzzleTitle, teamName);
+					sendMail(contactMail, puzzleSupportAlias, puzzleTitle, teamName);
 				}
 			}
 		}
@@ -75,8 +75,8 @@ function backup() {
 }
 
 // Construct the mailto: link
-function sendMail(contactMail, puzzleSupportEmail, puzzleTitle, teamName) {
-	let linkContent = "mailto:" + puzzleSupportEmail + "?";
+function sendMail(contactMail, puzzleSupportAlias, puzzleTitle, teamName) {
+	let linkContent = "mailto:" + puzzleSupportAlias + "?";
 	if (contactMail.length > 0) {
 		linkContent += "cc=";
 		linkContent += contactMail;
