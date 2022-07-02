@@ -58,9 +58,10 @@ async function clicked(event) {
 				else {
 					let data = await response.json();
 					let contactMail = data.teamContactEmail;
+					let puzzleSupportEmail = data.puzzleSupportEmail;
 					let puzzleTitle = encodeURIComponent(data.puzzleName);
 					let teamName = encodeURIComponent(data.teamName);
-					sendMail(contactMail, puzzleTitle, teamName);
+					sendMail(contactMail, puzzleSupportEmail, puzzleTitle, teamName);
 				}
 			}
 		}
@@ -70,12 +71,12 @@ async function clicked(event) {
 // If the API can't be used, scrape the puzzle title from the page
 function backup() {
 	let puzzleTitle = encodeURIComponent(document.getElementsByTagName("h1")[0].innerText.split("\n")[0].trim());
-	sendMail("", puzzleTitle, "");
+	sendMail("", "puzzhunt@microsoft.com", puzzleTitle, "");
 }
 
 // Construct the mailto: link
-function sendMail(contactMail, puzzleTitle, teamName) {
-	let linkContent = "mailto:puzzhunt@microsoft.com?";
+function sendMail(contactMail, puzzleSupportEmail, puzzleTitle, teamName) {
+	let linkContent = "mailto:" + puzzleSupportEmail + "?";
 	if (contactMail.length > 0) {
 		linkContent += "cc=";
 		linkContent += contactMail;
