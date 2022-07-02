@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -157,6 +158,38 @@ namespace ServerCore.Helpers
 
             team.IsDisqualified = value;
             await context.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Detects whether another team has claimed this name, modulo capitalization and spaces.
+        /// </summary>
+        /// <param name="context">The context</param>
+        /// <param name="eventObj">The event the team name is requested in</param>
+        /// <param name="name">The name being requested</param>
+        /// <returns>True if the name is in use, false otherwise.</returns>
+        public static async Task<bool> IsTeamNameTakenAsync(
+            PuzzleServerContext context,
+            Event eventObj,
+            string name)
+        {
+            string TruncateName(string name)
+            {
+                return name.Replace(" ", "").ToLowerInvariant();
+            }
+
+            string truncatedName = TruncateName(name);
+
+            List<string> existingNames = await (from t in context.Teams where t.EventID == eventObj.ID select t.Name).ToListAsync();
+
+            foreach (string existingName in existingNames)
+            {
+                if (truncatedName == TruncateName(existingName))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }
