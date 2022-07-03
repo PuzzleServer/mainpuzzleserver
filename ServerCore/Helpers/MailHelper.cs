@@ -71,7 +71,7 @@ your email as the contact address for a team, then you also need to remove it on
     /// <summary>
     /// Send plaintext mail to a single person.
     /// </summary>
-    public void SendPlaintextOneAddress(string recipient, string subject, string body, string extraBcc = null)
+    public void SendPlaintextOneAddress(string recipient, string subject, string body, IEnumerable<string> extraBcc = null)
     {
         SendInternal(new List<string> { recipient }, false, subject, body, false, extraBcc);
     }
@@ -79,7 +79,7 @@ your email as the contact address for a team, then you also need to remove it on
     /// <summary>
     /// Send html mail to a single person.
     /// </summary>
-    public void SendHtmlOneAddress(string recipient, string subject, string body, string extraBcc = null)
+    public void SendHtmlOneAddress(string recipient, string subject, string body, IEnumerable<string> extraBcc = null)
     {
         SendInternal(new List<string> { recipient }, false, subject, body, true, extraBcc);
     }
@@ -90,7 +90,7 @@ your email as the contact address for a team, then you also need to remove it on
     /// Still does BCC even if there's just one person to avoid exposing the fact that
     /// there is just one person.
     /// </summary>
-    public void SendPlaintextBcc(IEnumerable<string> recipients, string subject, string body, string extraBcc = null)
+    public void SendPlaintextBcc(IEnumerable<string> recipients, string subject, string body, IEnumerable<string> extraBcc = null)
     {
         SendInternal(recipients, true, subject, body, false, extraBcc);
     }
@@ -101,7 +101,7 @@ your email as the contact address for a team, then you also need to remove it on
     /// Still does BCC even if there's just one person to avoid exposing the fact that
     /// there is just one person.
     /// </summary>
-    public void SendHtmlBcc(IEnumerable<string> recipients, string subject, string body, string extraBcc = null)
+    public void SendHtmlBcc(IEnumerable<string> recipients, string subject, string body, IEnumerable<string> extraBcc = null)
     {
         SendInternal(recipients, true, subject, body, true, extraBcc);
     }
@@ -111,7 +111,7 @@ your email as the contact address for a team, then you also need to remove it on
     /// Since team members already see each other's email addresses, it's OK to let them
     /// see it here, and this avoids the everyone-replies-separately problem.
     /// </summary>
-    public void SendPlaintextWithoutBcc(IEnumerable<string> recipients, string subject, string body, string extraBcc = null)
+    public void SendPlaintextWithoutBcc(IEnumerable<string> recipients, string subject, string body, IEnumerable<string> extraBcc = null)
     {
         SendInternal(recipients, false, subject, body, false, extraBcc);
     }
@@ -121,12 +121,12 @@ your email as the contact address for a team, then you also need to remove it on
     /// Since team members already see each other's email addresses, it's OK to let them
     /// see it here, and this avoids the everyone-replies-separately problem.
     /// </summary>
-    public void SendHtmlWithoutBcc(IEnumerable<string> recipients, string subject, string body, string extraBcc = null)
+    public void SendHtmlWithoutBcc(IEnumerable<string> recipients, string subject, string body, IEnumerable<string> extraBcc = null)
     {
         SendInternal(recipients, false, subject, body, true, extraBcc);
     }
 
-    private void SendInternal(IEnumerable<string> recipients, bool bcc, string subject, string body, bool isHtml, string extraBcc)
+    private void SendInternal(IEnumerable<string> recipients, bool bcc, string subject, string body, bool isHtml, IEnumerable<string> extraBcc)
     {
         List<string> addresses = FlattenAddressLists(recipients);
         while (addresses.Count > 0)
@@ -138,7 +138,7 @@ your email as the contact address for a team, then you also need to remove it on
         }
     }
 
-    private void SendInternal2(IEnumerable<string> recipients, bool bcc, string subject, string body, bool isHtml, string extraBcc)
+    private void SendInternal2(IEnumerable<string> recipients, bool bcc, string subject, string body, bool isHtml, IEnumerable<string> extraBcc)
     {
         // See https://www.mailjet.com/docs/code/c/c-sharp for sample code from Mailjet.
 
@@ -179,7 +179,7 @@ your email as the contact address for a team, then you also need to remove it on
 
         if (extraBcc != null)
         {
-            msg.Bcc.Add(new MailAddress(extraBcc));
+            AddRecipients(msg.Bcc, extraBcc);
         }
 
         SmtpClient client = new SmtpClient("in.mailjet.com", 587);

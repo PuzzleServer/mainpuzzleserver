@@ -88,7 +88,7 @@ namespace ServerCore.Pages.Teams
             MailHelper.Singleton.SendPlaintextWithoutBcc(memberEmails.Union(mergeIntoMemberEmails),
                 $"{Event.Name}: Team '{Team.Name}' has been merged into '{mergeIntoTeam.Name}'",
                 $"These two teams have been merged into one superteam. Please welcome your new teammates!",
-                Event.ContactEmail ?? "puzzhunt@microsoft.com");
+                new string[] { Event.ContactEmail ?? "puzzhunt@microsoft.com" });
 
             return RedirectToPage("./Index");
         }
