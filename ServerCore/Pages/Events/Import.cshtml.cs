@@ -58,13 +58,12 @@ namespace ServerCore.Pages.Events
             using (var transaction = _context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable))
             {
                 // Step 0: Make sure all admins exist
+                var destEventAdminIDs = await (from ea in _context.EventAdmins where ea.EventID == Event.ID select ea.AdminID).ToListAsync();
                 foreach (var sourceEventAdmin in sourceEventAdmins)
                 {
-                    var destEventAdmin = await _context.EventAdmins.Where((e) => e.Event == Event && e.Admin == sourceEventAdmin.Admin).FirstOrDefaultAsync();
-
-                    if (destEventAdmin == null)
+                    if (!destEventAdminIDs.Contains(sourceEventAdmin.AdminID))
                     {
-                        destEventAdmin = new EventAdmins();
+                        var destEventAdmin = new EventAdmins();
                         destEventAdmin.Admin = sourceEventAdmin.Admin;
                         destEventAdmin.Event = Event;
                         _context.EventAdmins.Add(destEventAdmin);
@@ -72,13 +71,12 @@ namespace ServerCore.Pages.Events
                 }
 
                 // Step 1: Make sure all authors exist
+                var destEventAuthorIDs = await (from ea in _context.EventAuthors where ea.EventID == Event.ID select ea.AuthorID).ToListAsync();
                 foreach (var sourceEventAuthor in sourceEventAuthors)
                 {
-                    var destEventAuthor = await _context.EventAuthors.Where((e) => e.Event == Event && e.Author == sourceEventAuthor.Author).FirstOrDefaultAsync();
-
-                    if (destEventAuthor == null)
+                    if (!destEventAuthorIDs.Contains(sourceEventAuthor.AuthorID))
                     {
-                        destEventAuthor = new EventAuthors(sourceEventAuthor);
+                        var destEventAuthor = new EventAuthors(sourceEventAuthor);
                         destEventAuthor.Event = Event;
                         _context.EventAuthors.Add(destEventAuthor);
                     }
