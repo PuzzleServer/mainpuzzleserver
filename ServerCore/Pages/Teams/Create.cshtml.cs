@@ -87,6 +87,11 @@ namespace ServerCore.Pages.Teams
                 ModelState.AddModelError("Team.Name", "Name too long. Character limit: 50");
             }
 
+            if (await TeamHelper.IsTeamNameTakenAsync(_context, Event, Team.Name))
+            {
+                ModelState.AddModelError("Team.Name", "Another team has this name.");
+            }
+
             ModelState.Remove("Team.Event");
             if (!ModelState.IsValid)
             {

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
+using ServerCore.Helpers;
 using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Teams
@@ -69,6 +70,11 @@ namespace ServerCore.Pages.Teams
                 return Page();
             }
 
+            if (await TeamHelper.IsTeamNameTakenAsync(_context, Event, Team.Name))
+            {
+                ModelState.AddModelError("Team.Name", "Another team has this name.");
+                return Page();
+            }
 
             // keep the room unchanged if an intern event, since interns can't edit their rooms
             if (Event.IsInternEvent && EventRole != EventRole.admin)
