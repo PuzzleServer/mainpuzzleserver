@@ -177,7 +177,7 @@ th {
 }
 
 .help-button {
-  width: 350px;
+  width: 200px;
   height: 30px;
   font-size: 18px;
   font-family: Tahoma, Verdana, sans-serif;
@@ -190,10 +190,6 @@ th {
 }
 .help-button:active {
   opacity: 0.8;
-}
-
-.answer-button {
-  width: 250px;
 }
 
 .online-note {

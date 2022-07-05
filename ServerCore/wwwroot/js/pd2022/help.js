@@ -13,7 +13,7 @@ window.addEventListener("load", function (event) {
 	let helpspan = document.createElement("span");
 	let helplink = document.createElement("button");
 	helpspan.classList.add("online-only");
-	helplink.textContent = "click here to ask the author for help";
+	helplink.textContent = "ask for help";
 	helplink.classList.add("help-button");
 	helplink.onclick = helpClicked;
 	helpspan.append(helplink);
@@ -29,9 +29,8 @@ window.addEventListener("load", function (event) {
 		answerspan.classList.add("online-only");
 		break1.classList.add("online-only");
 		break2.classList.add("online-only");
-		answerlink.textContent = "SUBMIT AN ANSWER";
+		answerlink.textContent = "SUBMIT ANSWER";
 		answerlink.classList.add("help-button");
-		answerlink.classList.add("answer-button");
 		answerlink.onclick = answerClicked;
 		answerspan.append(answerlink);
 	}
