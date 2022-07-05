@@ -13,10 +13,10 @@ window.addEventListener("load", function (event) {
 	let helpspan = document.createElement("span");
 	helpspan.classList.add("help-link");
 	let helplink = document.createElement("button");
-	helplink.textContent = "click here";
+	helplink.textContent = "click here to ask the author for help";
 	helplink.classList.add("help-button");
 	helplink.onclick = clicked;
-	helpspan.append(" (", helplink, " to ask the author for help)");
+	helpspan.append(" (", helplink, ")");
 
 	// Insert the help button
 	if ((childindex + 1) == authordiv.childNodes.length) {
