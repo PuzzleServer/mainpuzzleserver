@@ -16,7 +16,7 @@ window.addEventListener("load", function (event) {
 	helplink.textContent = "click here to ask the author for help";
 	helplink.classList.add("help-button");
 	helplink.onclick = clicked;
-	helpspan.append(" (", helplink, ")");
+	helpspan.append(helplink);
 
 	// Insert the help button
 	if ((childindex + 1) == authordiv.childNodes.length) {
