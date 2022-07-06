@@ -9,6 +9,9 @@ namespace ServerCore.Pages.Teams
     [Authorize(Policy = "IsEventAdminOrEventAuthor")]    
     public class IndexModel : TeamListBase
     {
+        [BindProperty]
+        public int SmallTeamThreshold { get; set; } = 6;
+
         public IndexModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
         }
