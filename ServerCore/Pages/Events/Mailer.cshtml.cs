@@ -147,8 +147,6 @@ namespace ServerCore.Pages.Events
                     break;
 
                 case MailGroup.SmallTeams:
-                    List<string> smallTeamPlayers = new List<string>();
-
                     var players = await (from teamMember in _context.TeamMembers
                                        where teamMember.Team.EventID == Event.ID
                                        select new { Email = teamMember.Member.Email, TeamId = teamMember.Team.ID }).ToListAsync();
