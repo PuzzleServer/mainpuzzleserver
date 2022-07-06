@@ -20,7 +20,8 @@ namespace ServerCore.Pages.Events
         {
             Players,
             PrimaryContacts,
-            NonSolvers
+            NonSolvers,
+            SmallTeams
         }
 
         [BindProperty]
@@ -44,11 +45,13 @@ namespace ServerCore.Pages.Events
         [Required]
         public string MailBody { get; set; }
 
+        public string MailAddresses { get; set; }
+
         public MailerModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
         }
 
-        public async Task<IActionResult> OnGetAsync(MailGroup group, int? puzzleId, int? teamId)
+        public async Task<IActionResult> OnGetAsync(MailGroup group, int? puzzleId, int? teamId, int? smallTeamThreshold)
         {
             Group = group;
             PuzzleID = puzzleId;
@@ -67,10 +70,15 @@ namespace ServerCore.Pages.Events
             {
                 Team = await _context.Teams.FindAsync(teamId);
             }
+
+            IEnumerable<string> addresses = await BuildAddresses(smallTeamThreshold);
+
+            MailAddresses = string.Join(';', addresses);
+
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(int? smallTeamThreshold)
         {
             if (!ModelState.IsValid)
             {
@@ -81,10 +89,18 @@ namespace ServerCore.Pages.Events
             {
                 return NotFound("Incorrect page usage");
             }
+            IEnumerable<string> addresses = await BuildAddresses(smallTeamThreshold);
 
+            MailHelper.Singleton.SendPlaintextBcc(addresses, MailSubject, MailBody);
+
+            return RedirectToPage("./Players");
+        }
+
+        private async Task<IEnumerable<string>> BuildAddresses(int? smallTeamThreshold)
+        {
             IEnumerable<string> addresses = Enumerable.Empty<string>();
 
-            switch(Group)
+            switch (Group)
             {
                 case MailGroup.Players:
                     if (TeamID == null)
@@ -129,11 +145,36 @@ namespace ServerCore.Pages.Events
 
                     addresses = primariesSplit;
                     break;
+
+                case MailGroup.SmallTeams:
+                    List<string> smallTeamPlayers = new List<string>();
+
+                    var players = await (from teamMember in _context.TeamMembers
+                                       where teamMember.Team.EventID == Event.ID
+                                       select new { Email = teamMember.Member.Email, TeamId = teamMember.Team.ID }).ToListAsync();
+
+                    if (smallTeamThreshold == null)
+                    {
+                        smallTeamThreshold = 6;
+                    }
+
+                    var teams = (from player in players
+                                group player by player.TeamId into team
+                                where team.Count() <= smallTeamThreshold
+                                select new { TeamId = team.Key, Members = team.ToList() }).ToDictionary(team => team.TeamId);
+
+                    List<string> members = new List<string>();
+                    foreach (var teamGroup in teams)
+                    {
+                        members.AddRange(teamGroup.Value.Members.Select(member => member.Email));
+                    }
+
+                    addresses = members;
+
+                    break;
             }
 
-            MailHelper.Singleton.SendPlaintextBcc(addresses, MailSubject, MailBody);
-
-            return RedirectToPage("./Players");
+            return addresses;
         }
 
         private bool IsPageUsageValid(MailGroup group, int? puzzleId, int? teamId)
