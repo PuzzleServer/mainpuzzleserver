@@ -91,6 +91,7 @@ namespace ServerCore.Pages
             MailInfo mailInfo = new MailInfo();
 
             mailInfo.PuzzleName = puzzle.Name;
+            mailInfo.PuzzleSupportAlias = puzzle.SupportEmailAlias ?? currentEvent.ContactEmail ?? "puzzhunt@microsoft.com";
             mailInfo.TeamName = team.Name;
 
             // replace commas with semicolons for better email support
@@ -121,6 +122,7 @@ namespace ServerCore.Pages
     public class MailInfo
     {
         public string PuzzleName { get; set; }
+        public string PuzzleSupportAlias { get; set; }
         public string TeamName { get; set; }
         public string TeamContactEmail { get; set; }
     }
