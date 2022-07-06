@@ -177,32 +177,30 @@ th {
 }
 
 .help-button {
-    width: 350px;
-    height: 30px;
-    font-size: 18px;
-    font-family: Tahoma, Verdana, sans-serif;
-    font-weight: bold;
-    border: 2px solid;
-    border-radius: 5px;
+  width: 200px;
+  height: 30px;
+  font-size: 18px;
+  font-family: Tahoma, Verdana, sans-serif;
+  font-weight: bold;
+  border: 2px solid;
+  border-radius: 5px;
 }
-
 .help-button:hover {
-    opacity: 0.5;
+  opacity: 0.5;
 }
-
 .help-button:active {
-    opacity: 0.8;
+  opacity: 0.8;
 }
 
 .online-note {
-    font-style: normal;
-    font-weight: bold;
-    border: solid 3px black;
-    padding: 0px 3px 3px 3px;
+  font-style: normal;
+  font-weight: bold;
+  border: solid 3px black;
+  padding: 0px 3px 3px 3px;
 }
 
 @media screen {
-    .print-only {
-        display: none;
-    }
+  .print-only {
+    display: none;
+  }
 }

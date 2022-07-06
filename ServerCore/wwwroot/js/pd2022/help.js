@@ -11,24 +11,51 @@ window.addEventListener("load", function (event) {
 
 	// Create the help button
 	let helpspan = document.createElement("span");
-	helpspan.classList.add("help-link");
 	let helplink = document.createElement("button");
-	helplink.textContent = "click here to ask the author for help";
+	helpspan.classList.add("online-only");
+	helplink.textContent = "ask for help";
 	helplink.classList.add("help-button");
-	helplink.onclick = clicked;
+	helplink.onclick = helpClicked;
 	helpspan.append(helplink);
 
-	// Insert the help button
+	// Create the answer submission button if the puzzle ID is in the URL
+	let params = new URLSearchParams(window.location.search);
+	let hasPuzzleId = params.has("puzzleId") && (params.get("puzzleId").length > 0);
+	let answerspan = document.createElement("span");
+	let answerlink = document.createElement("button");
+	let break1 = document.createElement("br");
+	let break2 = document.createElement("br");
+	if (hasPuzzleId) {
+		answerspan.classList.add("online-only");
+		break1.classList.add("online-only");
+		break2.classList.add("online-only");
+		answerlink.textContent = "SUBMIT ANSWER";
+		answerlink.classList.add("help-button");
+		answerlink.onclick = answerClicked;
+		answerspan.append(answerlink);
+	}
+
+	// Insert the buttons
 	if ((childindex + 1) == authordiv.childNodes.length) {
 		authordiv.insertBefore(helpspan, null);
+		if (hasPuzzleId) {
+			authordiv.insertBefore(break1, null);
+			authordiv.insertBefore(break2, null);
+			authordiv.insertBefore(answerspan, null);
+		}
 	}
 	else {
 		const child = authordiv.childNodes[childindex + 1];
 		authordiv.insertBefore(helpspan, child);
+		if (hasPuzzleId) {
+			authordiv.insertBefore(break1, child);
+			authordiv.insertBefore(break2, child);
+			authordiv.insertBefore(answerspan, child);
+		}
 	}
 });
 
-async function clicked(event) {
+async function helpClicked(event) {
 
 	// If the URL has the necessary parameters to call the team name API, do it
 	if (window.location.search.length == 0) {
@@ -65,6 +92,17 @@ async function clicked(event) {
 			}
 		}
 	}
+}
+
+// Open a new tab to the answer submission page for this puzzle
+function answerClicked(event) {
+	let params = new URLSearchParams(window.location.search);
+	let link = document.createElement("a");
+	link.href = "https://puzzlehunt.azurewebsites.net/pd2022/play/Submissions/" + params.get("puzzleId");
+	link.target = "_blank";
+	document.body.appendChild(link);
+	link.click();
+	link.remove();
 }
 
 // If the API can't be used, scrape the puzzle title from the page
