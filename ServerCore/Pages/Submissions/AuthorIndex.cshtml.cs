@@ -115,6 +115,51 @@ namespace ServerCore.Pages.Submissions
                 submissionsQ = submissionsQ.Where(s => s.FreeformFavorited);
             }
 
+            if (teamId != null)
+            {
+                Team = await _context.Teams.Where(m => m.ID == teamId).FirstOrDefaultAsync();
+            }
+
+            switch (sort ?? DefaultSort)
+            {
+                case SortOrder.PlayerAscending:
+                    submissionsQ = submissionsQ.OrderBy(submission => submission.Submitter.Name);
+                    break;
+                case SortOrder.PlayerDescending:
+                    submissionsQ = submissionsQ.OrderByDescending(submission => submission.Submitter.Name);
+                    break;
+                case SortOrder.TeamAscending:
+                    submissionsQ = submissionsQ.OrderBy(submission => submission.Team.Name);
+                    break;
+                case SortOrder.TeamDescending:
+                    submissionsQ = submissionsQ.OrderByDescending(submission => submission.Team.Name);
+                    break;
+                case SortOrder.PuzzleAscending:
+                    submissionsQ = submissionsQ.OrderBy(submission => submission.Puzzle.Name);
+                    break;
+                case SortOrder.PuzzleDescending:
+                    submissionsQ = submissionsQ.OrderByDescending(submission => submission.Puzzle.Name);
+                    break;
+                case SortOrder.ResponseAscending:
+                    submissionsQ = submissionsQ.OrderBy(submission => submission.Response.ResponseText);
+                    break;
+                case SortOrder.ResponseDescending:
+                    submissionsQ = submissionsQ.OrderByDescending(submission => submission.Response.ResponseText);
+                    break;
+                case SortOrder.SubmissionAscending:
+                    submissionsQ = submissionsQ.OrderBy(submission => submission.SubmissionText);
+                    break;
+                case SortOrder.SubmissionDescending:
+                    submissionsQ = submissionsQ.OrderByDescending(submission => submission.SubmissionText);
+                    break;
+                case SortOrder.TimeAscending:
+                    submissionsQ = submissionsQ.OrderBy(submission => submission.TimeSubmitted);
+                    break;
+                case SortOrder.TimeDescending:
+                    submissionsQ = submissionsQ.OrderByDescending(submission => submission.TimeSubmitted);
+                    break;
+            }
+
             IQueryable<SubmissionView> submissionViewQ = submissionsQ
                 .Select((s) => new SubmissionView
                 {
@@ -128,51 +173,6 @@ namespace ServerCore.Pages.Submissions
                     ResponseText = s.Response == null ? null : s.Response.ResponseText,
                     TimeSubmitted = s.TimeSubmitted
                 });
-
-            if (teamId != null)
-            {
-                Team = await _context.Teams.Where(m => m.ID == teamId).FirstOrDefaultAsync();
-            }
-
-            switch (sort ?? DefaultSort)
-            {
-                case SortOrder.PlayerAscending:
-                    submissionViewQ = submissionViewQ.OrderBy(submission => submission.SubmitterName);
-                    break;
-                case SortOrder.PlayerDescending:
-                    submissionViewQ = submissionViewQ.OrderByDescending(submission => submission.SubmitterName);
-                    break;
-                case SortOrder.TeamAscending:
-                    submissionViewQ = submissionViewQ.OrderBy(submission => submission.TeamName);
-                    break;
-                case SortOrder.TeamDescending:
-                    submissionViewQ = submissionViewQ.OrderByDescending(submission => submission.TeamName);
-                    break;
-                case SortOrder.PuzzleAscending:
-                    submissionViewQ = submissionViewQ.OrderBy(submission => submission.PuzzleName);
-                    break;
-                case SortOrder.PuzzleDescending:
-                    submissionViewQ = submissionViewQ.OrderByDescending(submission => submission.PuzzleName);
-                    break;
-                case SortOrder.ResponseAscending:
-                    submissionViewQ = submissionViewQ.OrderBy(submission => submission.ResponseText);
-                    break;
-                case SortOrder.ResponseDescending:
-                    submissionViewQ = submissionViewQ.OrderByDescending(submission => submission.ResponseText);
-                    break;
-                case SortOrder.SubmissionAscending:
-                    submissionViewQ = submissionViewQ.OrderBy(submission => submission.SubmissionText);
-                    break;
-                case SortOrder.SubmissionDescending:
-                    submissionViewQ = submissionViewQ.OrderByDescending(submission => submission.SubmissionText);
-                    break;
-                case SortOrder.TimeAscending:
-                    submissionViewQ = submissionViewQ.OrderBy(submission => submission.TimeSubmitted);
-                    break;
-                case SortOrder.TimeDescending:
-                    submissionViewQ = submissionViewQ.OrderByDescending(submission => submission.TimeSubmitted);
-                    break;
-            }
 
             Submissions = await submissionViewQ.ToListAsync();
 
