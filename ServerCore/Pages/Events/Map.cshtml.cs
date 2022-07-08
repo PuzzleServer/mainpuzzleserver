@@ -21,15 +21,26 @@ namespace ServerCore.Pages.Events
 
         public StateStats[,] StateMap { get; private set; }
 
+        public string Groups { get; set; }
+
         public MapModel(PuzzleServerContext serverContext,
                         UserManager<IdentityUser> userManager)
             : base(serverContext, userManager) { }
 
-        public async Task<IActionResult> OnGetAsync(int? refresh)
+        public async Task<IActionResult> OnGetAsync(int? refresh, string? groups)
         {
             if (refresh != null)
             {
                 Refresh = refresh;
+            }
+
+            Groups = groups ?? "Meta|*";
+
+            Dictionary<string, int> groupSortIndex = new Dictionary<string, int>();
+            string[] groupList = Groups.Split("|");
+            for (int i = 0; i < groupList.Length; i++)
+            {
+                groupSortIndex[groupList[i]] = i;
             }
 
             // get the puzzles and teams
@@ -104,10 +115,26 @@ namespace ServerCore.Pages.Events
                 }
             }
 
-            // sort puzzles by group, then solve count, add the sort index to the lookup
+            // default: sort puzzles by group, then solve count, add the sort index to the lookup
             // but put non-puzzles to the end
-            puzzles = puzzles.OrderByDescending(p => p.Puzzle.IsPuzzle)
-                .ThenByDescending(p => p.Puzzle.Group)
+            // however, any explicitly-requested group ordering wins
+            for (int i = 0; i < puzzles.Count; i++)
+            {
+                int groupOrder;
+
+                if (string.IsNullOrEmpty(puzzles[i].Puzzle.Group) || !groupSortIndex.TryGetValue(puzzles[i].Puzzle.Group, out groupOrder))
+                {
+                    if (!groupSortIndex.TryGetValue("*", out groupOrder))
+                    {
+                        groupOrder = groupSortIndex.Count;
+                    }
+                }
+                puzzles[i].GroupOrder = groupOrder;
+            }
+
+            puzzles = puzzles.OrderBy(p => p.GroupOrder)
+                .ThenByDescending(p => p.Puzzle.IsPuzzle)
+                .ThenBy(p => p.Puzzle.Group)
                 .ThenBy(p => p.SolveCount)
                 .ThenBy(p => p.Puzzle.Name)
                 .ToList();
@@ -149,6 +176,7 @@ namespace ServerCore.Pages.Events
         public class PuzzleStats
         {
             public Puzzle Puzzle { get; set; }
+            public int GroupOrder { get; set; }
             public int SolveCount { get; set; }
             public int SortOrder { get; set; }
         }
