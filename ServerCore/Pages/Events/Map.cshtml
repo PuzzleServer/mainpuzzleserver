@@ -10,7 +10,7 @@
 
 <h2>Puzzle State Map</h2>
 <div>
-    Refresh every: <a asp-page="/Events/Map" asp-route-refresh="60">1 min</a> | <a asp-page="/Events/Map" asp-route-refresh="120">2 min</a> | <a asp-page="/Events/Map" asp-route-refresh="300">5 min</a> | <a asp-page="/Events/Map">off</a>
+    Refresh every: <a asp-page="/Events/Map" asp-route-refresh="60" asp-route-groups="@Model.Groups">1 min</a> | <a asp-page="/Events/Map" asp-route-refresh="120" asp-route-groups="@Model.Groups">2 min</a> | <a asp-page="/Events/Map" asp-route-refresh="300" asp-route-groups="@Model.Groups">5 min</a> | <a asp-page="/Events/Map" asp-route-groups="@Model.Groups">off</a>  | <form style="display:inline" method="get"><label>Grouping: </label><input type="text" asp-for="@Model.Groups"/><input type="submit" asp-page="/Events/Map" asp-route-refresh="@Model.Refresh" asp-route-groups="@Model.Groups" value="Update" /></form>
 </div>
 
 <table class="table table-condensed ph-statemap">
