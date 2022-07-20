@@ -1,0 +1,157 @@
+﻿@{
+    var eventPage = Model as ServerCore.ModelBases.EventSpecificPageModel;
+    var Event = eventPage?.Event;
+}
+
+@if (!string.IsNullOrEmpty(Event.FAQContent))
+{
+    @Html.Raw(Event.FAQContent)
+}
+else
+{
+
+    <div class="container">
+        <h2>FAQ for Non-Intern Puzzleday 2022</h2>
+
+        <h3>
+            What is Non-Intern Puzzleday?
+        </h3>
+        <p>
+            The Microsoft Non-Intern Puzzleday is an annual collaborative puzzle competition that challenges teams to solve a large number of original puzzles of all different kinds. These puzzles include wordplay, cryptograms, jigsaws, logic problems, and more.  It is originally created for and played by interns, most of whom have never played in a puzzle event before.  Think of it as a lighter version of Puzzlehunt. 
+        </p>
+
+        <h3>
+            Who is NIPD for?
+        </h3>
+        <p>
+            Non-Intern Puzzleday is for full-time Microsoft employees, their family, and friends. It's a team competition open to novice and hardcore puzzle solvers alike. Rule number 1 is &quot;HAVE FUN!&quot; More information about registration is available on the <a asp-page="/EventSpecific/Rules">Rules</a> page.
+        </p>
+
+        <h3>
+            When is NIPD 2022?
+        </h3>
+        <p>
+            NIPD begins at <strong>11 AM PDT on Saturday August 20th, 2022</strong> in Building 99. We'll have a few announcements, introduce the story with a presentation (new for this year!), and then let solving begin! Solving will end at 5PM, followed by a closing presentation and a chance to go over the answers back in Building 99.
+        </p>
+
+        <h3>
+            How many people can be on a team?
+        </h3>
+        <p>
+            Each team can have a maximum of 6 people.  Out of that 6, at least 2 need to be Microsoft FTEs (no interns allowed!)  While guests are allowed on campus, remember that you will also need members with Microsoft badges to get into buildings.  
+        </p>
+
+        <h3>
+            What equipment do I need?
+        </h3>
+        <p>
+            Primarily your brain and a lot of imagination. Every member of your team should have access to a computer. A pair of headphones or speakers may be desired. Building copy rooms will have all other office supplies you may need.  
+        </p>
+
+        <h3>
+            What about food?
+        </h3>
+        <p>
+            No food will be provided.
+        </p>
+
+        <h3>
+            Do I need to print the puzzles?
+        </h3>
+        <p>
+            All puzzle webpages can be solved online, and many puzzles have interactive components that will make them more convenient to solve online.  If you would like to print any puzzle, just print the puzzle's webpage straight from the browser!  If you need help installing the printer, follow the instructions at <a href="https://aka.ms/FollowMePrinting" target="_blank">aka.ms/FollowMePrinting</a>. 
+        </p>
+
+        <h3>
+            Who wins?
+        </h3>
+        <p>
+            See the <a asp-page="/EventSpecific/Rules">Rules</a> page for more information.
+        </p>
+
+        <h3>
+            How do we know if we've solved a puzzle?
+        </h3>
+        <p>
+            Each puzzle has a simple final answer, either a single word or a short phrase. In some puzzles you are explicitly told how to get the final answer. In others, figuring out how to extract the final answer is part of the puzzle. <strong>When you think you've found the answer, enter it into the website and it will immediately tell you if you are correct</strong>. Sometimes, you can get a long phrase while working through a puzzle. That phrase is probably a clue to a shorter answer. Try entering the phrase into the website. If the word/phrase is recognized, you may get a &quot;Keep going&quot; or similar message. This means that you entered a valid partial answer and are on the right track.
+        </p>
+
+        <h3>
+            What is a &quot;Metapuzzle&quot;?
+        </h3>
+        <p>
+            A metapuzzle is a special puzzle that takes the progress you've made from solving other puzzles and combines them in some way. It is not necessary to solve all other puzzles before solving the final metapuzzle, but solving more puzzles often makes progress on the metapuzzle easier. The metapuzzle will be clearly labeled, and it is highly recommended to start looking at it early.
+        </p>
+
+        <h3>
+            How do we solve puzzles that don't have instructions?
+        </h3>
+        <p>
+            The implicit instruction for all puzzles is &quot;Figure out the final answer.&quot; Puzzles without instructions are either classic puzzle forms, perhaps with a twist, or puzzles where the challenge is figuring out how to solve the puzzle. In the latter case, the key is usually to look for patterns or common bonds between the parts of the puzzle. For example, are many of the words spelled wrong? Have all the vowels been left out? Sometimes there may be a hint hidden in the puzzle.  You may also find inspiration by looking at the list of <a asp-page="/EventSpecific/Encodings">Encodings</a> or <a asp-page="/EventSpecific/Tools">Tools</a>.  
+        </p>
+
+        <h3>
+            What's the best way to win?
+        </h3>
+        <p>
+            The best way to win is to solve puzzles quickly so that you get to the final metapuzzle. The best way to accomplish this is with teamwork. Many teams prefer to work individually on the easier puzzles and work as a group on the harder puzzles. If you get stuck, ask for help or switch to another puzzle. Make sure you keep track of which puzzles you've already solved and confirmed using the answer submission system.
+        </p>
+
+        <h3>
+            What's the best way to lose?
+        </h3>
+        <p>
+            Not having fun. If you're not having fun working on a particular puzzle, switch to another one. 
+        </p>
+
+        <h3>
+            What are the prizes?
+        </h3>
+        <p>
+            Solving puzzles is its own reward!
+        </p>
+
+        <h3>
+            Can I finish by accident, without solving the puzzles?
+        </h3>
+        <p>
+            Haha. No.
+        </p>
+
+        <h3>
+            Do I have to register to participate?
+        </h3>
+        <p>
+            Yes. If you do miss the registration deadline, send mail to NIPD staff at <a href="mailto:puzzhunt@microsoft.com">puzzhunt</a>.
+        </p>
+
+        <h3>
+            Do I have to be on the Redmond campus to participate?
+        </h3>
+        <p>
+            No! This event is fully completable and fully enjoyable remotely.  There are a few puzzles that you have to be physically present for on campus (new this year!) to interact with people or items only available on campus, but skipping those puzzles won't affect your ability to finish the event.
+        </p>
+
+        <h3>
+            If I'm on campus, where am I allowed to go?
+        </h3>
+        <p>
+            Since all of the in-person components take place in Building 99, you'll probably want to stay west of 520.  Additionally, Studios A, B, C, Buildings 92, 111, 114, 120, 123 - 127, 21, 30, 33, 34, 41, 42, 50, 87, and all construction areas are OFF LIMITS and should not be entered under any circumstances.
+        </p>
+
+        <h3>
+            I'm not that good at solving puzzles and some of these puzzles look hard. Can I still participate?
+        </h3>
+        <p>
+            Yes! As in any event like this, some teams and some players will be very dedicated. But the event is designed so that less dedicated teams will also have fun. It's also OK to have teams that consist of some hard-core participants and some casual participants. There will be a variety of puzzles, so there's a good chance there will be puzzles that you enjoy (and that are easier than others).
+        </p>
+
+        <h3>
+            How do I contact NIPD staff?
+        </h3>
+        <p>
+            Send email to <a href="mailto:puzzhunt@microsoft.com">puzzhunt</a>. 
+        </p>
+    </div>
+
+}
