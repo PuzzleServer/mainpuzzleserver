@@ -23,13 +23,13 @@
             <input asp-for="Team.Password" class="hidden" />
             <div class="form-group">
                 <label asp-for="Team.Name" class="control-label">Team name</label>
-                <input asp-for="Team.Name" class="form-control" />
+                <input asp-for="Team.Name" class="form-control" maxlength="50" />
                 <span asp-validation-for="Team.Name" class="text-danger"></span>
             </div>
             <!-- TODO: Conditionally show/hide based on event property (not needed for PuzzleHunt) -->
             @*<div class="form-group">
                 <label asp-for="Team.RoomID" class="control-label"></label>
-                <input asp-for="Team.RoomID" class="form-control" />
+                <input asp-for="Team.RoomID" class="form-control" maxlength="20" />
                 <span asp-validation-for="Team.RoomID" class="text-danger"></span>
             </div>*@
             @if (Model.Event.IsInternEvent && Model.EventRole == ModelBases.EventRole.play)
@@ -43,23 +43,23 @@
             {
                 <div class="form-group">
                     <label asp-for="Team.CustomRoom" class="control-label">Team room</label>
-                    <input asp-for="Team.CustomRoom" class="form-control" />
+                    <input asp-for="Team.CustomRoom" class="form-control" maxlength="20" />
                     <span asp-validation-for="Team.CustomRoom" class="text-danger"></span>
                 </div>
             }
             <div class="form-group">
                 <label asp-for="Team.PrimaryContactEmail" class="control-label">Primary contact e-mail(s) separated by , or ;</label>
-                <input asp-for="Team.PrimaryContactEmail" class="form-control" />
+                <input asp-for="Team.PrimaryContactEmail" class="form-control" maxlength="50" />
                 <span asp-validation-for="Team.PrimaryContactEmail" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Team.PrimaryPhoneNumber" class="control-label">Primary phone number</label>
-                <input asp-for="Team.PrimaryPhoneNumber" class="form-control" />
+                <input asp-for="Team.PrimaryPhoneNumber" class="form-control" maxlength="20" />
                 <span asp-validation-for="Team.PrimaryPhoneNumber" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Team.SecondaryPhoneNumber" class="control-label">Secondary phone number (optional)</label>
-                <input asp-for="Team.SecondaryPhoneNumber" class="form-control" />
+                <input asp-for="Team.SecondaryPhoneNumber" class="form-control" maxlength="20" />
                 <span asp-validation-for="Team.SecondaryPhoneNumber" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -78,7 +78,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Team.Bio" class="control-label">Bio for unsolicited applications (visible to applicants)</label>
-                <input asp-for="Team.Bio" class="form-control" />
+                <input asp-for="Team.Bio" class="form-control" maxlength="500" />
                 <span asp-validation-for="Team.Bio" class="text-danger"></span>
             </div>
             <div class="form-group">

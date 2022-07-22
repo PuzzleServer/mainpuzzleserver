@@ -83,7 +83,7 @@ else
             </script>
             <div id="custom-order" class="form-group">
                 <label asp-for="Swag.LunchModifications" class="control-label"></label>
-                <textarea asp-for="Swag.LunchModifications" class="form-control"></textarea>
+                <textarea asp-for="Swag.LunchModifications" class="form-control" maxlength="500"></textarea>
                 <span asp-validation-for="Swag.LunchModifications" class="text-danger"></span>
             </div>
             @if (isEditable)

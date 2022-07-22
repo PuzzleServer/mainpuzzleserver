@@ -139,6 +139,10 @@ namespace ServerCore
                 app.UseHsts();
             }
 
+            app.UseCookiePolicy(new CookiePolicyOptions()
+            {
+                MinimumSameSitePolicy = Microsoft.AspNetCore.Http.SameSiteMode.Lax
+            });
             app.UseHttpsRedirection();
 
             // According to the Identity Scaffolding readme the order of the following calls matters
