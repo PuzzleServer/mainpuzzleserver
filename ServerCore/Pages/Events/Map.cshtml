@@ -2,6 +2,8 @@
 @model ServerCore.Pages.Events.MapModel
 
 @{
+    @using Helpers;
+
     ViewData["Title"] = "Puzzle State Map";
     ViewData["AdminRoute"] = "/Events/Map";
     ViewData["AuthorRoute"] = "/Events/Map";
@@ -31,7 +33,7 @@
                     @foreach (var puzzle in Model.Puzzles)
                     {
                         <th>
-                            <a asp-page="/Puzzles/Status" asp-route-puzzleId="@puzzle.Puzzle.ID">@(puzzle.Puzzle.Name) (@puzzle.SolveCount)</a>
+                            <a asp-page="/Puzzles/Status" asp-route-puzzleId="@puzzle.Puzzle.ID">@RawHtmlHelper.Plaintext(puzzle.Puzzle.Name, Model.Event.ID) (@puzzle.SolveCount)</a>
                         </th>
                     }
                 </tr>
