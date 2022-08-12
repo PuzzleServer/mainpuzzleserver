@@ -125,16 +125,17 @@ namespace ServerCore.Pages.Puzzles
                                                       select tm.Member.Email).ToListAsync();
 
                     string subject, body;
+                    string puzzleName = RawHtmlHelper.Plaintext(Puzzle.Name, Event.ID);
 
                     if (String.IsNullOrEmpty(Puzzle.Errata))
                     {
-                        subject = $"{Event.Name}: Errata removed for {Puzzle.Name}";
-                        body = $"The errata for {Puzzle.Name} has been removed.";
+                        subject = $"{Event.Name}: Errata removed for {puzzleName}";
+                        body = $"The errata for {puzzleName} has been removed.";
                     }
                     else
                     {
-                        subject = $"{Event.Name}: Errata updated for {Puzzle.Name}";
-                        body = $"{Puzzle.Name} has been updated with the following errata:\n\n{Puzzle.Errata}";
+                        subject = $"{Event.Name}: Errata updated for {puzzleName}";
+                        body = $"{puzzleName} has been updated with the following errata:\n\n{Puzzle.Errata}";
                     }
 
                     MailHelper.Singleton.SendPlaintextBcc(teamMembers, subject, body);

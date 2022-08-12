@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
+using ServerCore.Helpers;
 using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Hints
@@ -64,7 +65,7 @@ namespace ServerCore.Pages.Hints
                                          where hspt.Hint.Id == Hint.Id && hspt.UnlockTime != null && pspt.PuzzleID == puzzleId && pspt.SolvedTime == null
                                          select tm.Member.Email).ToListAsync();
                 MailHelper.Singleton.SendPlaintextBcc(teamMembers,
-                    $"{Event.Name}: Hint updated for {puzzleName}",
+                    $"{Event.Name}: Hint updated for {RawHtmlHelper.Plaintext(puzzleName, Event.ID)}",
                     $"The new content for '{Hint.Description}' is: '{Hint.Content}'.");
             }
             catch (DbUpdateConcurrencyException)

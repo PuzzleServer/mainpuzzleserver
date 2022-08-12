@@ -3,6 +3,7 @@
 
 @{
     @using System;
+    @using Helpers;
     ViewData["Title"] = "Fastest Solves";
     ViewData["AdminRoute"] = "/Events/FastestSolves";
     ViewData["AuthorRoute"] = "/Events/FastestSolves";
@@ -75,7 +76,7 @@
 
                 <tr>
                     <td>
-                        @(puzzle.PuzzleName)
+                        @(RawHtmlHelper.Display(puzzle.PuzzleName, Model.Event.ID, Html))
                     </td>
                     <td>
                         @(puzzle.SolveCount)
