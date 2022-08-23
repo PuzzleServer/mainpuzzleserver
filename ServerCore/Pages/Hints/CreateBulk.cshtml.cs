@@ -65,6 +65,10 @@ namespace ServerCore.Pages.Hints
             using StringReader costReader = new StringReader(Cost ?? string.Empty);
             using StringReader displayOrderReader = new StringReader(DisplayOrder ?? string.Empty);
 
+            var teams = from team in _context.Teams
+                        where team.Event == Event
+                        select team;
+
             while (true)
             {
                 string description = descriptionReader.ReadLine();
@@ -123,6 +127,11 @@ namespace ServerCore.Pages.Hints
                 };
 
                 _context.Hints.Add(hint);
+
+                foreach (Team team in teams)
+                {
+                    _context.HintStatePerTeam.Add(new HintStatePerTeam() { Hint = hint, Team = team });
+                }
             }
 
             if (!ModelState.IsValid)
