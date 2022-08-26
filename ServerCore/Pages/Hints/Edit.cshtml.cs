@@ -57,7 +57,7 @@ namespace ServerCore.Pages.Hints
             {
                 await _context.SaveChangesAsync();
 
-                var puzzleName = await _context.Hints.Where(m => m.Id == Hint.Id).Select(m => m.Puzzle.Name).FirstOrDefaultAsync();
+                var puzzle = await _context.Hints.Where(m => m.Id == Hint.Id).Select(m => m.Puzzle).FirstOrDefaultAsync();
 
                 var teamMembers = await (from tm in _context.TeamMembers
                                          join hspt in _context.HintStatePerTeam on tm.Team equals hspt.Team
@@ -65,7 +65,7 @@ namespace ServerCore.Pages.Hints
                                          where hspt.Hint.Id == Hint.Id && hspt.UnlockTime != null && pspt.PuzzleID == puzzleId && pspt.SolvedTime == null
                                          select tm.Member.Email).ToListAsync();
                 MailHelper.Singleton.SendPlaintextBcc(teamMembers,
-                    $"{Event.Name}: Hint updated for {RawHtmlHelper.Plaintext(puzzleName, Event.ID)}",
+                    $"{Event.Name}: Hint updated for {puzzle.PlaintextName}",
                     $"The new content for '{Hint.Description}' is: '{Hint.Content}'.");
             }
             catch (DbUpdateConcurrencyException)

@@ -82,6 +82,25 @@ namespace ServerCore.DataModel
         public string Name { get; set; }
 
         /// <summary>
+        /// The plaintext name of the puzzle, which is a subset of the name when the name is of the form:
+        /// {plaintextName}Html.Raw({htmlName})
+        /// </summary>
+        [NotMapped]
+        public string PlaintextName
+        {
+            get
+            {
+                string name = this.Name;
+                if (name != null && name.EndsWith(")") && name.Contains("Html.Raw("))
+                {
+                    name = name.Replace("{eventId}", $"{this.EventID}");
+                    name = name.Substring(0, name.IndexOf("Html.Raw(")).TrimEnd();
+                }
+                return name;
+            }
+        }
+
+        /// <summary>
         /// True only if not a "fake" puzzle like "READ THIS INSTRUCTION PAGE" or "START THE EVENT"
         /// </summary>
         public bool IsPuzzle { get; set; } = false;
