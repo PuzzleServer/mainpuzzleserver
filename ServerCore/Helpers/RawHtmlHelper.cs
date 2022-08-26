@@ -26,26 +26,5 @@ namespace ServerCore.Helpers
                 return helper.DisplayFor(m => text);
             }
         }
-
-        /// <summary>
-        /// Helper for extracting plaintext from a string if present.
-        /// The syntax we look for is: {anything}Html.Raw({raw html})
-        /// If we see that syntax, we return the {anything} part only.
-        /// If we see anything else, we return the entire string, processed by the standard ASP.NET IHtmlHelper.
-        /// </summary>
-        /// <param name="text">text which might contain raw HTML in</param>
-        /// <returns>string containing either the plaintext part before the Html.Raw or the entire string</returns>
-        public static string Plaintext(string text, int eventId)
-        {
-            if (text != null && text.EndsWith(")") && text.Contains("Html.Raw("))
-            {
-                text = text.Replace("{eventId}", $"{eventId}");
-                return text.Substring(0, text.IndexOf("Html.Raw(")).TrimEnd();
-            }
-            else
-            {
-                return text;
-            }
-        }
     }
 }

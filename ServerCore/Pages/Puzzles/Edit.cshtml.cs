@@ -125,7 +125,7 @@ namespace ServerCore.Pages.Puzzles
                                                       select tm.Member.Email).ToListAsync();
 
                     string subject, body;
-                    string puzzleName = RawHtmlHelper.Plaintext(Puzzle.Name, Event.ID);
+                    string puzzleName = Puzzle.PlaintextName;
 
                     if (String.IsNullOrEmpty(Puzzle.Errata))
                     {

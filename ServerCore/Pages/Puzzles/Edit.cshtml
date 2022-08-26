@@ -210,7 +210,7 @@
                     {
                         <tr>
                             <td>
-                                <a asp-page="./Edit" asp-route-id="@(pre.ID)">@(pre.Name)</a>
+                                <a asp-page="./Edit" asp-route-id="@(pre.ID)">@(pre.PlaintextName)</a>
                             </td>
                             <td>
                                 <a asp-page-handler="RemovePrerequisite" asp-route-id="@Model.Puzzle.ID" asp-route-prerequisite="@(pre.ID)">Remove</a>
@@ -219,7 +219,7 @@
                     }
                     <tr>
                         <td>
-                            <select class="form-control" asp-for="NewPrerequisiteID" asp-items="@(new SelectList(Model.PotentialPrerequisites, "ID", "Name"))"></select>
+                            <select class="form-control" asp-for="NewPrerequisiteID" asp-items="@(new SelectList(Model.PotentialPrerequisites, "ID", "PlaintextName"))"></select>
                         </td>
                         <td>
                             <input type="submit" value="Add" asp-page-handler="AddPrerequisite" class="btn btn-default" />
@@ -244,7 +244,7 @@
                     {
                         <tr>
                             <td>
-                                <a asp-page="./Edit" asp-route-id="@(p.ID)">@(p.Name)</a>
+                                <a asp-page="./Edit" asp-route-id="@(p.ID)">@(p.PlaintextName)</a>
                             </td>
                             <td>
                                 <a asp-page-handler="RemovePrerequisiteOf" asp-route-id="@Model.Puzzle.ID" asp-route-prerequisiteOf="@(p.ID)">Remove</a>
@@ -253,7 +253,7 @@
                     }
                     <tr>
                         <td>
-                            <select class="form-control" asp-for="NewPrerequisiteOfID" asp-items="@(new SelectList(Model.PotentialPrerequisitesOf, "ID", "Name"))"></select>
+                            <select class="form-control" asp-for="NewPrerequisiteOfID" asp-items="@(new SelectList(Model.PotentialPrerequisitesOf, "ID", "PlaintextName"))"></select>
                         </td>
                         <td>
                             <input type="submit" value="Add" asp-page-handler="AddPrerequisiteOf" class="btn btn-default" />
