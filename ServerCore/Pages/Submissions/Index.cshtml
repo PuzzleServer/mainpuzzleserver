@@ -122,11 +122,14 @@
                 </div>
             }
 
-            @if (Model.DuplicateSubmission)
+            @if (Model.DuplicateSubmission != null)
             {
             <div class="alert alert-danger" role="alert">
                 <h4>Oops</h4>
                 <span>You've already submitted @Model.SubmissionText!</span>
+                <div>
+                @ServerCore.Helpers.RawHtmlHelper.Display(Model.DuplicateSubmission, Model.Event.ID, Html);
+                </div>
             </div>
             }
             <div class="row">
