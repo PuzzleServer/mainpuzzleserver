@@ -97,7 +97,7 @@ namespace ServerCore.Pages.Submissions
             // Soft enforcement of duplicates to give a friendly message in most cases
             DuplicateSubmission = (from sub in Submissions
                                    where sub.SubmissionText == ServerCore.DataModel.Response.FormatSubmission(submissionText)
-                                   select sub).FirstOrDefault(null).?ResponseText;
+                                   select sub).FirstOrDefault(null)?.ResponseText;
 
             if (DuplicateSubmission != null)
             {
