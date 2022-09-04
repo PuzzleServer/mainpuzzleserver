@@ -70,8 +70,9 @@ You have <b>
 </b> hint coins.
 @if (Model.Hints.Any(h => h.Hint.Cost < 0)) {
     <text>
-        Hints marked ★ are creditable hints.
-        If you unlock these hints, you will receive credit for the cost of that hint against the cost of other creditable hints.
+        <br />
+        Hints marked ★ are creditable hints:
+        if you unlock these hints, you will receive credit for the cost of that hint against the cost of other creditable hints.
     </text>
 }
 
