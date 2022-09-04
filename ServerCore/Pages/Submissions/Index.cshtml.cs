@@ -36,7 +36,7 @@ namespace ServerCore.Pages.Submissions
 
         public IList<Puzzle> PuzzlesCausingGlobalLockout { get; set; }
 
-        public bool DuplicateSubmission { get; set; }
+        public string DuplicateSubmission { get; set; }
 
         [BindProperty]
         public bool AllowFreeformSharing { get; set; }
@@ -97,9 +97,9 @@ namespace ServerCore.Pages.Submissions
             // Soft enforcement of duplicates to give a friendly message in most cases
             DuplicateSubmission = (from sub in Submissions
                                    where sub.SubmissionText == ServerCore.DataModel.Response.FormatSubmission(submissionText)
-                                   select sub).Any();
+                                   select sub).FirstOrDefault(null).?ResponseText;
 
-            if (DuplicateSubmission)
+            if (DuplicateSubmission != null)
             {
                 return Page();
             }
