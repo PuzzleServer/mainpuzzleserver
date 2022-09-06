@@ -70,6 +70,21 @@ namespace ServerCore.DataModel
         public string Note { get; set; }
 
         /// <summary>
+        /// The plaintext responseText of the puzzle, which is a subset of the responseText when the responseText is of the form:
+        /// {plaintextResponseText}Html.Raw({htmlResponseText})
+        /// </summary>
+        public string GetPlaintextResponseText(int eventId)
+        {
+            string responseText = this.ResponseText;
+            if (responseText != null && responseText.EndsWith(")") && responseText.Contains("Html.Raw("))
+            {
+                responseText = responseText.Replace("{eventId}", $"{eventId}");
+                responseText = responseText.Substring(0, responseText.IndexOf("Html.Raw(")).TrimEnd();
+            }
+            return string.IsNullOrEmpty(responseText) ? this.ResponseText : responseText;
+        }
+        
+        /// <summary>
         /// Converts the submission to the common spaceless uppercase format used by the website
         /// </summary>
         /// <param name="submission">The submission text</param>
