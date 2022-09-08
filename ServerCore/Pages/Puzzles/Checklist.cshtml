@@ -58,7 +58,7 @@
         {
         <tr>
             <td>
-                <a asp-Page="./Edit" asp-route-puzzleid=@item.Puzzle.ID>@Html.DisplayFor(modelItem => item.Puzzle.Name)</a>
+                <a asp-Page="./Edit" asp-route-puzzleid=@item.Puzzle.ID>@ServerCore.Helpers.RawHtmlHelper.Display(item.Puzzle.Name, Model.Event.ID, Html)</a>
             </td>
             <td>
                 @ServerCore.Helpers.RawHtmlHelper.Display(item.Puzzle.Group, Model.Event.ID, Html)

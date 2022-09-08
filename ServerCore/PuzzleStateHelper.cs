@@ -507,7 +507,7 @@ namespace ServerCore
                                              select tm.Member.Email).ToListAsync();
                     MailHelper.Singleton.SendPlaintextBcc(teamMembers,
                         $"{puzzle.Event.Name}: {puzzle.PlaintextName} Response updated for '{response.SubmittedText}'",
-                        $"The new response for this submission is: '{response.ResponseText}'.");
+                        $"The new response for this submission is: '{response.GetPlaintextResponseText(puzzle?.EventID ?? 0)}'.");
                 }
             }
         }
