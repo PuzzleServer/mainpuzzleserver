@@ -39,11 +39,11 @@
 </div>
 <br/>
 <div>
-    <a class="radioButton" asp-page="./Play" asp-route-teamId="@Model.TeamID" asp-route-sort="@Model.Sort" asp-route-stateFilter="@PlayModel.PuzzleStateFilter.All">
-        <input id="StateFilter" name="StateFilter" value="All" type="radio" @(unsolvedFilter ? "" : "checked")> All
-    </a>
-    <a class="radioButton" asp-page="./Play" asp-route-teamId="@Model.TeamID" asp-route-sort="@Model.Sort" asp-route-stateFilter="@PlayModel.PuzzleStateFilter.Unsolved">
-        <input id="StateFilter" name="StateFilter" value="Unsolved" type="radio" @(unsolvedFilter ? "checked" : "")> Unsolved
+    <a asp-page="./Play" 
+       asp-route-teamId="@Model.TeamID" 
+       asp-route-sort="@Model.Sort" 
+       asp-route-stateFilter=@(unsolvedFilter ? PlayModel.PuzzleStateFilter.All : PlayModel.PuzzleStateFilter.Unsolved)>
+        Show @(unsolvedFilter ? "All" : "Unsolved") Puzzles
     </a>
 </div>
 <br/>
