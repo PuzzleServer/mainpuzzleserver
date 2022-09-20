@@ -11,6 +11,7 @@ using ServerCore.Areas.Deployment;
 using ServerCore.Areas.Identity.UserAuthorizationPolicy;
 using ServerCore.DataModel;
 using ServerCore.Areas.Identity;
+using Microsoft.AspNetCore.Http;
 
 namespace ServerCore
 {
@@ -137,6 +138,15 @@ namespace ServerCore
             {
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
+            }
+
+            // Allow cookies to be shared between localhost and the site name for local development
+            if (env.IsDevelopment())
+            {
+                app.UseCookiePolicy(new CookiePolicyOptions()
+                {
+                    MinimumSameSitePolicy = SameSiteMode.Lax
+                });
             }
 
             app.UseHttpsRedirection();
