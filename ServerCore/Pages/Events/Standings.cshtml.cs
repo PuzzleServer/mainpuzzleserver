@@ -28,8 +28,8 @@ namespace ServerCore.Pages.Events
             Sort = sort;
 
             var puzzleData = await _context.Puzzles
-                .Where(p => p.Event == Event && p.IsPuzzle)
-                .ToDictionaryAsync(p => p.ID, p => new { p.SolveValue, p.IsCheatCode, p.IsFinalPuzzle });
+                .Where(p => p.Event == Event)
+                .ToDictionaryAsync(p => p.ID, p => new { p.SolveValue, p.IsCheatCode, p.IsPuzzle, p.IsFinalPuzzle });
 
             DateTime submissionEnd = Event.AnswerSubmissionEnd;
             var stateData = await PuzzleStateHelper.GetSparseQuery(_context, this.Event, null, null)
@@ -56,7 +56,10 @@ namespace ServerCore.Pages.Events
                 }
 
                 ts.Score += p.SolveValue;
-                ts.SolveCount++;
+                if (p.IsPuzzle)
+                {
+                    ts.SolveCount++;
+                }
                 if (p.IsCheatCode)
                 {
                     ts.Cheated = true;
