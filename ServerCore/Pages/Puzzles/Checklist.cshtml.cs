@@ -59,7 +59,7 @@ namespace ServerCore.Pages.Puzzles
                                                                 select file).ToDictionaryAsync(file => file.PuzzleID);
             ILookup<int, string> puzzlePrereqs = (await (from prerequisite in _context.Prerequisites
                                                   where prerequisite.Puzzle.Event == Event
-                                                  select prerequisite).ToListAsync()).ToLookup(prerequisite => prerequisite.PuzzleID, prerequisite => prerequisite.Prerequisite.Name);
+                                                  select prerequisite).ToListAsync()).ToLookup(prerequisite => prerequisite.PuzzleID, prerequisite => prerequisite.Prerequisite.PlaintextName);
 
             HashSet<int> puzzlesWithSolutions = (await (from response in _context.Responses
                                         where response.Puzzle.Event == Event && response.IsSolution

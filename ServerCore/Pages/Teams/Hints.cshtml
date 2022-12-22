@@ -44,13 +44,15 @@
     }
 </style>
 @{
+    @using Helpers;
+
     ViewData["Title"] = "Hints";
     ViewData["AdminRoute"] = "/Puzzles/Index";
     ViewData["AuthorRoute"] = "/Puzzles/Index";
     //Needs route data - ViewData["PlayRoute"] = "/Teams/Hints";
 }
 
-<h2>Hints for @Model.PuzzleName</h2>
+<h2>Hints for @RawHtmlHelper.Display(Model.PuzzleName, Model.Event.ID, Html)</h2>
 
 <div>
     <a asp-page="/Teams/Play">Back to puzzle list</a>
@@ -66,6 +68,13 @@ You have <b>
         <text>no</text>
     }
 </b> hint coins.
+@if (Model.Hints.Any(h => h.Hint.Cost < 0)) {
+    <text>
+        <br />
+        Hints marked ★ are creditable hints:
+        if you unlock these hints, you will receive credit for the cost of that hint against the cost of other creditable hints.
+    </text>
+}
 
 <table class="table">
     <thead>
@@ -107,6 +116,9 @@ You have <b>
                         {
                             @hint.AdjustedCost
                         }
+                    }
+                    @if (hint.Hint.Cost < 0) {
+                        <text>★</text>
                     }
 
                     @if (!hint.IsUnlocked)

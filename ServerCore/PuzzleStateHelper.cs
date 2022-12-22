@@ -506,8 +506,8 @@ namespace ServerCore
                                              where sub.PuzzleID == response.PuzzleID && sub.SubmissionText == response.SubmittedText
                                              select tm.Member.Email).ToListAsync();
                     MailHelper.Singleton.SendPlaintextBcc(teamMembers,
-                        $"{puzzle.Event.Name}: {response.Puzzle.Name} Response updated for '{response.SubmittedText}'",
-                        $"The new response for this submission is: '{response.ResponseText}'.");
+                        $"{puzzle.Event.Name}: {puzzle.PlaintextName} Response updated for '{response.SubmittedText}'",
+                        $"The new response for this submission is: '{response.GetPlaintextResponseText(puzzle?.EventID ?? 0)}'.");
                 }
             }
         }

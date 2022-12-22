@@ -3,6 +3,7 @@
 
 @{
     @using System;
+    @using Helpers;
     ViewData["Title"] = "Fastest Solves";
     ViewData["AdminRoute"] = "/Events/FastestSolves";
     ViewData["AuthorRoute"] = "/Events/FastestSolves";
@@ -14,19 +15,10 @@
 <h2>Fastest Solves</h2>
 <br/>
 <div>
-    <a class="radioButton"
-       asp-page="./FastestSolves"
+    <a asp-page="./FastestSolves"
        asp-route-sort="@Model.Sort"
-       asp-route-stateFilter="@FastestSolvesModel.PuzzleStateFilter.All">
-
-        <input id="StateFilter" name="StateFilter" value="All" type="radio" @(unsolvedFilter ? "" : "checked")> All
-    </a>
-    <a class="radioButton"
-       asp-page="./FastestSolves"
-       asp-route-sort="@Model.Sort"
-       asp-route-stateFilter="@FastestSolvesModel.PuzzleStateFilter.Unsolved">
-
-        <input id="StateFilter" name="StateFilter" value="Unsolved" type="radio" @(unsolvedFilter ? "checked" : "")> Unsolved
+       asp-route-stateFilter=@(unsolvedFilter ? FastestSolvesModel.PuzzleStateFilter.All : FastestSolvesModel.PuzzleStateFilter.Unsolved)>
+        Show @(unsolvedFilter ? "All" : "Unsolved") Puzzles
     </a>
 </div>
 <br/>
@@ -75,7 +67,7 @@
 
                 <tr>
                     <td>
-                        @(puzzle.PuzzleName)
+                        @(RawHtmlHelper.Display(puzzle.PuzzleName, Model.Event.ID, Html))
                     </td>
                     <td>
                         @(puzzle.SolveCount)

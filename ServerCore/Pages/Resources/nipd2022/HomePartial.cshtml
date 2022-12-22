@@ -1,0 +1,61 @@
+﻿@{
+    var eventPage = Model as ServerCore.ModelBases.EventSpecificPageModel;
+    var Event = eventPage?.Event;
+}
+
+@if (!string.IsNullOrEmpty(Event.HomeContent))
+{
+    @Html.Raw(Event.HomeContent)
+}
+else
+{
+
+    <div class="container" id="pd2022-container">
+        <h2 class="pd2022-title">
+            <span>Non-Intern Puzzleday 2022</span>
+        </h2>
+
+        <div class="pd2022-container-root">
+            <div class="pd2022-container-card card-1">
+                <h3>WELCOME TO NIPD</h3>
+                <p>We've drawn up an event that will leave you satisfied down to the last frame: Non-Intern Puzzleday 2022! Our artists have been hard at work inking up a cavalcade of puzzles for you to solve, so whether you're a Disney diehard or a Miyazaki maven, we guarantee you'll finish the day more animated than when you started!</p>
+
+                <p>This year's event will take place on <b>August 20<sup>th</sup></b>. Rough schedule (all times PDT):</p>
+                <ul>
+                    <li><b>11AM:</b> Opening ceremony in 99/1919 (the room to the left of the main lobby as you enter) or <a href="https://aka.ms/nipdopening" target="_blank">online</a>, followed by release of puzzles</li>
+                    <li><b>12-2PM:</b> Drawn Together (live event) open, Cafe 99</li>
+                    <li><b>1-2PM:</b> Cartoon Network (live event) open, 99/1919</li>
+                    <li><b>5PM:</b> Puzzle submission closes</li>
+                    <li><b>5:10PM:</b> Brief wrap-up in 99/1919 or <a href="https://aka.ms/nipdclosing" target="_blank">online</a></li>
+                </ul>
+                <p>Note: The <a href="https://aka.ms/nipdopening" target="_blank">opening</a> and <a href="https://aka.ms/nipdclosing" target="_blank">closing</a> links will be activated close to the start of those events.</p>
+             </div>
+
+            <div class="pd2022-container-card card-2">
+                <h3>WHAT'S DIFFERENT ABOUT NIPD THIS TIME?</h3>
+                <p>We will be rerunning the whole Intern event complete with an opening and a closing along with live events and a puzzle with physical pieces. All remote participants will miss out on these in-person only interactions and activities.</p>
+                <p>If the <b><a asp-page="/EventSpecific/FAQ">FAQ page</a></b> and <b><a asp-page="/EventSpecific/Rules">Rules page</a> </b> don't answer your questions, ask <a href="mailto:puzzhunt@microsoft.com" target="_blank">puzzhunt@microsoft.com</a>.</p>
+
+                <p>IF THIS IS YOUR FIRST TIME IN A MICROSOFT BUILDING: Microsoft requires anybody entering its buildings to provide a proof of vaccination.  Please do that at <a href="https://aka.ms/healthcheck" target="_blank">https://aka.ms/healthcheck</a>, or for more information, check out <a href="https://aka.ms/covidfaq" target="_blank">https://aka.ms/covidfaq</a>.</p>
+            </div>
+
+            <div class="pd2022-container-card card-3">
+                <h3>SIGNING UP</h3>
+                <p>If you don't have a team yet, you can <b><a asp-page="/Teams/List">create a team using the link here</a></b>. Teams will consist of 4 to 6 players, at least 2 of which must be Microsoft FTEs. Guests on campus must be accompanied by an FTE at all times, and interns are not allowed to play in this event!</p>
+
+                <p>Please be aware that all in-person-only components of this event will take place in Building 99, so choose your team's conference room accordingly. Also keep in mind that Studios A, B, C, Buildings 92, 111, 114, 120, 123 - 127, 21, 30, 33, 34, 41, 42, 50, 87, and all construction areas are OFF LIMITS and should not be entered under any circumstances.</p>
+            </div>
+
+            <div class="pd2022-container-card card-4 column-container">
+                <div class="column-one-third">
+                    <h3>NEW TO PUZZLES?</h3>
+                    <p>You may have seen a jigsaw puzzle, a crossword puzzle, or a Sudoku at some point in your life, but those barely crack the cover on the whole anthology that is &quot;puzzling&quot;! Puzzleday puzzles also have a tendency to get... creative, so you might see something that looks especially strange! Check out a few <a asp-page="/EventSpecific/Samples">sample puzzles</a> or peruse our <a href="https://puzzlearchive.azurewebsites.net/puzzleday/main.html">collection of puzzles</a> from past events.</p>
+                </div>
+                <div class="column-two-third">
+                    <img src="~/images/pd2022/pd_2022_logo_NIPD.png" height="300" width="300" title="Puzzleday 2022 logo" alt="Puzzleday 2022 logo" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+}

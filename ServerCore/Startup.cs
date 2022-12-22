@@ -11,6 +11,7 @@ using ServerCore.Areas.Deployment;
 using ServerCore.Areas.Identity.UserAuthorizationPolicy;
 using ServerCore.DataModel;
 using ServerCore.Areas.Identity;
+using Microsoft.AspNetCore.Http;
 
 namespace ServerCore
 {
@@ -139,10 +140,15 @@ namespace ServerCore
                 app.UseHsts();
             }
 
-            app.UseCookiePolicy(new CookiePolicyOptions()
+            // Allow cookies to be shared between localhost and the site name for local development
+            if (env.IsDevelopment())
             {
-                MinimumSameSitePolicy = Microsoft.AspNetCore.Http.SameSiteMode.Lax
-            });
+                app.UseCookiePolicy(new CookiePolicyOptions()
+                {
+                    MinimumSameSitePolicy = SameSiteMode.Lax
+                });
+            }
+
             app.UseHttpsRedirection();
 
             // According to the Identity Scaffolding readme the order of the following calls matters

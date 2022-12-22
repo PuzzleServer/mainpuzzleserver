@@ -2,6 +2,8 @@
 @model ServerCore.Pages.Submissions.IndexModel
 
 @{
+    @using Helpers;
+
     ViewData["Title"] = "Create submissions";
     ViewData["AdminRoute"] = "../Submissions/AuthorIndex";
     ViewData["AuthorRoute"] = "../Submissions/AuthorIndex";
@@ -25,7 +27,7 @@
 
     // subject: Make this be about this puzzle
     mailtoUrl.Append("&subject=");
-    mailtoUrl.Append(Uri.EscapeDataString("[" + Model.Puzzle.Name + "]"));
+    mailtoUrl.Append(Uri.EscapeDataString("[" + Model.Puzzle.PlaintextName + "]"));
     // subject: Make this be from this team
     mailtoUrl.Append(Uri.EscapeDataString(" [" + Model.Team.Name + "]"));
 
@@ -49,7 +51,7 @@
 
 
 
-<h2>Submissions for @Model.Puzzle.Name</h2>
+<h2>Submissions for @RawHtmlHelper.Display(Model.Puzzle.Name, Model.Event.ID, Html)</h2>
 <hr />
 <div>
     <a asp-page="/Teams/Play" asp-route-teamId="@Model.Team.ID">Back to puzzle list</a>
@@ -93,7 +95,7 @@
         {
             <div class="alert alert-danger" role="alert">
                 <h4>Answer Submission Locked Indefinitely</h4>
-                <span>You've submitted too many wrong responses. Please <a href="@mailtoUrl">use this link to email us your answer for @Model.Puzzle.Name or ask for help</a>.</span>
+                <span>You've submitted too many wrong responses. Please <a href="@mailtoUrl">use this link to email us your answer for @Model.Puzzle.PlaintextName or ask for help</a>.</span>
             </div>
         }
         else if (Model.PuzzleState.IsTeamLockedOut)
@@ -214,7 +216,7 @@
                                 }
                                 else
                                 {
-                                    @ServerCore.Helpers.RawHtmlHelper.Display(response.ResponseText, Html);
+                                    @ServerCore.Helpers.RawHtmlHelper.Display(response.ResponseText, Model.Event.ID, Html);
                                 }
                             }
                         </td>
@@ -228,7 +230,7 @@
 @if (!Model.PuzzleState.IsEmailOnlyMode)
 { 
     <h3>Need some help?</h3>
-    <p>While solving this puzzle, if you've run into a bug, think there's an error, or are not having fun anymore, <a href="@mailtoUrl">use this link to contact the author for @Model.Puzzle.Name</a>!</p>
+    <p>While solving this puzzle, if you've run into a bug, think there's an error, or are not having fun anymore, <a href="@mailtoUrl">use this link to contact the author for @Model.Puzzle.PlaintextName</a>!</p>
     <p>A pre-populated email form will appear and you should add details to the message body. Remember: the author may only know specifics about this puzzle and not others in the event.</p>
 }
 

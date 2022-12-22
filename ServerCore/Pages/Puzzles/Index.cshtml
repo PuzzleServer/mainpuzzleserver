@@ -2,6 +2,8 @@
 @model ServerCore.Pages.Puzzles.IndexModel
 
 @{
+    @using Helpers;
+
     ViewData["Title"] = "Puzzle Index";
     ViewData["AdminRoute"] = "/Puzzles/Index";
     ViewData["AuthorRoute"] = "/Puzzles/Index";
@@ -100,7 +102,7 @@
         {
             <tr>
                 <td>
-                    <a asp-Page="./Edit" asp-route-puzzleid=@item.Puzzle.ID>@Html.DisplayFor(modelItem => item.Puzzle.Name)</a>
+                    <a asp-Page="./Edit" asp-route-puzzleid=@item.Puzzle.ID>@RawHtmlHelper.Display(item.Puzzle.Name, Model.Event.ID, Html)</a>
                 </td>
                 <td>
                     @if (item.Puzzle.CustomURL != null)
@@ -113,7 +115,7 @@
                     }
                 </td>
                 <td>
-                    @ServerCore.Helpers.RawHtmlHelper.Display(item.Puzzle.Group, Html)
+                    @ServerCore.Helpers.RawHtmlHelper.Display(item.Puzzle.Group, Model.Event.ID, Html)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Puzzle.OrderInGroup)
