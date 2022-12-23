@@ -66,6 +66,9 @@
                 Puzzle file
             </th>
             <th>
+                Solution file
+            </th>
+            <th>
                 @(Model.Event.TermForGroup ?? "Group")
             </th>
             <th>
@@ -112,6 +115,16 @@
                     else if (item.Content != null)
                     {
                         @Html.ActionLink("File", "Index", "Files", new { eventId = Model.Event.ID, filename = item.Content.ShortName }, new { target = "_blank" })
+                    }
+                </td>
+                <td>
+                    @if (item.Puzzle.CustomSolutionURL != null)
+                    {
+                        <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedSolutionUrl(item.Puzzle, Model.Event.ID)" target="_blank">Link</a>
+                    }
+                    else if (item.Answer != null)
+                    {
+                        @Html.ActionLink("File", "Index", "Files", new { eventId = Model.Event.ID, filename = item.Answer.ShortName }, new { target = "_blank" })
                     }
                 </td>
                 <td>
