@@ -140,7 +140,7 @@ namespace ServerCore.Pages.Submissions
             if (submission.Response == null)
             {
                 // If incorrect
-                AnswerRedAlertMessage = "Incorrect";
+                AnswerRedAlertMessage = $"\"{submission.SubmissionText}\" is incorrect";
                 await CheckAndHandleLockout(submission);
             }
             else if (submission.Response.IsSolution)
@@ -157,7 +157,7 @@ namespace ServerCore.Pages.Submissions
             else
             {
                 // Is partial
-                AnswerYellowAlertMessage = string.Format("Partial Answer: {0}", submission.Response.ResponseText);
+                AnswerYellowAlertMessage = string.Format($"\"{submission.SubmissionText}\" has partial answer: \"{submission.Response.ResponseText}\"");
             }
             
             _context.Submissions.Add(submission);
