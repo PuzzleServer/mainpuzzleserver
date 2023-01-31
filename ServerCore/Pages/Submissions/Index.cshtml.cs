@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -36,7 +37,9 @@ namespace ServerCore.Pages.Submissions
 
         public IList<Puzzle> PuzzlesCausingGlobalLockout { get; set; }
 
-        public bool DuplicateSubmission { get; set; }
+        public string AnswerRedAlertMessage { get; set; }
+
+        public string AnswerYellowAlertMessage { get; set; }
 
         [BindProperty]
         public bool AllowFreeformSharing { get; set; }
@@ -52,6 +55,8 @@ namespace ServerCore.Pages.Submissions
 
         public async Task<IActionResult> OnPostAsync(int puzzleId, string submissionText)
         {
+            AnswerRedAlertMessage = null;
+            AnswerYellowAlertMessage = null;
             if (String.IsNullOrWhiteSpace(submissionText))
             {
                 ModelState.AddModelError("submissionText", "Your answer cannot be empty");
@@ -95,12 +100,13 @@ namespace ServerCore.Pages.Submissions
             }
 
             // Soft enforcement of duplicates to give a friendly message in most cases
-            DuplicateSubmission = (from sub in Submissions
+            bool isDuplicateSubmission = (from sub in Submissions
                                    where sub.SubmissionText == ServerCore.DataModel.Response.FormatSubmission(submissionText)
                                    select sub).Any();
 
-            if (DuplicateSubmission)
+            if (isDuplicateSubmission)
             {
+                AnswerRedAlertMessage = $"Oops! You've already submitted \"{submissionText}\"";
                 return Page();
             }
 
@@ -131,9 +137,15 @@ namespace ServerCore.Pages.Submissions
 
             Submissions.Add(submission);
 
-            // Update puzzle state if submission was correct
-            if (submission.Response != null && submission.Response.IsSolution)
+            if (submission.Response == null)
             {
+                // If incorrect
+                AnswerRedAlertMessage = "Incorrect";
+                await CheckAndHandleLockout(submission);
+            }
+            else if (submission.Response.IsSolution)
+            {
+                // If submission was correct, update puzzle state
                 await PuzzleStateHelper.SetSolveStateAsync(_context,
                     Event,
                     submission.Puzzle,
@@ -142,44 +154,10 @@ namespace ServerCore.Pages.Submissions
 
                 AnswerToken = submission.SubmissionText;
             }
-            else if (!Puzzle.IsFreeform && submission.Response == null && Event.IsAnswerSubmissionActive)
+            else
             {
-                // We also determine if the puzzle should be set to email-only mode.
-                if (IsPuzzleSubmissionLimitReached(
-                        Event,
-                        Submissions,
-                        PuzzleState))
-                {
-                    await PuzzleStateHelper.SetEmailOnlyModeAsync(_context,
-                        Event,
-                        submission.Puzzle,
-                        submission.Team,
-                        true);
-
-                    var authors = await _context.PuzzleAuthors.Where((pa) => pa.Puzzle == submission.Puzzle).Select((pa) => pa.Author.Email).ToListAsync();
-
-                    MailHelper.Singleton.SendPlaintextBcc(authors,
-                        $"{Event.Name}: Team {submission.Team.Name} is in email mode for {submission.Puzzle.Name}",
-                        "");
-                }
-                else
-                {
-                    // If the submission was incorrect and not a partial solution,
-                    // we will do the lockout computations now.
-                    DateTime? lockoutExpiryTime = ComputeLockoutExpiryTime(
-                        Event,
-                        Submissions,
-                        PuzzleState);
-
-                    if (lockoutExpiryTime != null)
-                    {
-                        await PuzzleStateHelper.SetLockoutExpiryTimeAsync(_context,
-                            Event,
-                            submission.Puzzle,
-                            submission.Team,
-                            lockoutExpiryTime);
-                    }
-                }
+                // Is partial
+                AnswerYellowAlertMessage = string.Format("Partial Answer: {0}", submission.Response.ResponseText);
             }
             
             _context.Submissions.Add(submission);
@@ -201,6 +179,52 @@ namespace ServerCore.Pages.Submissions
             await SetupContext(puzzleId);
 
             return Page();
+        }
+
+        private async Task CheckAndHandleLockout(Submission submission)
+        {
+            // If puzzle is freeform or answer submission is not active,
+            // don't need to do any additional computations.
+            if (Puzzle.IsFreeform || !Event.IsAnswerSubmissionActive)
+            {
+                return;
+            }
+
+            // We also determine if the puzzle should be set to email-only mode.
+            if (IsPuzzleSubmissionLimitReached(
+                    Event,
+                    Submissions,
+                    PuzzleState))
+            {
+                await PuzzleStateHelper.SetEmailOnlyModeAsync(_context,
+                    Event,
+                    submission.Puzzle,
+                    submission.Team,
+                    true);
+
+                var authors = await _context.PuzzleAuthors.Where((pa) => pa.Puzzle == submission.Puzzle).Select((pa) => pa.Author.Email).ToListAsync();
+
+                MailHelper.Singleton.SendPlaintextBcc(authors,
+                    $"{Event.Name}: Team {submission.Team.Name} is in email mode for {submission.Puzzle.Name}",
+                    "");
+            }
+            else
+            {
+                // Do lockout computations
+                DateTime? lockoutExpiryTime = ComputeLockoutExpiryTime(
+                    Event,
+                    Submissions,
+                    PuzzleState);
+
+                if (lockoutExpiryTime != null)
+                {
+                    await PuzzleStateHelper.SetLockoutExpiryTimeAsync(_context,
+                        Event,
+                        submission.Puzzle,
+                        submission.Team,
+                        lockoutExpiryTime);
+                }
+            }
         }
 
         private async Task SetupContext(int puzzleId)
