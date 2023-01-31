@@ -17,6 +17,8 @@ namespace ServerCore.Pages.Submissions
     [Authorize(Policy = "PlayerCanSeePuzzle")]
     public class IndexModel : EventSpecificPageModel
     {
+        public const string IncorrectResponseText = "Incorrect";
+
         public IndexModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
         }
@@ -100,13 +102,14 @@ namespace ServerCore.Pages.Submissions
             }
 
             // Soft enforcement of duplicates to give a friendly message in most cases
-            bool isDuplicateSubmission = (from sub in Submissions
+            Submission duplicatedSubmission = (from sub in Submissions
                                    where sub.SubmissionText == ServerCore.DataModel.Response.FormatSubmission(submissionText)
-                                   select sub).Any();
+                                   select sub).FirstOrDefault();
 
-            if (isDuplicateSubmission)
+            if (duplicatedSubmission != null)
             {
-                AnswerRedAlertMessage = $"Oops! You've already submitted \"{submissionText}\"";
+                string response = duplicatedSubmission.Response != null ? duplicatedSubmission.Response.ResponseText : IndexModel.IncorrectResponseText;
+                AnswerRedAlertMessage = $"Oops! You've already submitted \"{submissionText}\", which had the response \"{response}\"";
                 return Page();
             }
 
@@ -139,7 +142,7 @@ namespace ServerCore.Pages.Submissions
 
             if (submission.Response == null)
             {
-                // If incorrect
+                // Is incorrect
                 AnswerRedAlertMessage = $"\"{submission.SubmissionText}\" is incorrect";
                 await CheckAndHandleLockout(submission);
             }
@@ -159,7 +162,7 @@ namespace ServerCore.Pages.Submissions
                 // Is partial
                 AnswerYellowAlertMessage = string.Format($"\"{submission.SubmissionText}\" has partial answer: \"{submission.Response.ResponseText}\"");
             }
-            
+
             _context.Submissions.Add(submission);
             await _context.SaveChangesAsync();
 
