@@ -12,7 +12,6 @@ namespace ServerCore.DataModel
     /// <summary>
     /// Custom user object that holds the puzzle user specific data (i.e. the data that's used by the puzzle system, not the data used for auth)
     /// </summary>
-    [PersonalData]
     public class PuzzleUser
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -25,11 +24,19 @@ namespace ServerCore.DataModel
         [Required]
         public string IdentityUserId { get; set; }
 
+        [PersonalData]
         public string Name { get; set; }
+
+        [PersonalData]
         public string EmployeeAlias { get; set; }
+
+        [PersonalData]
         public string Email { get; set; }
         public bool IsGlobalAdmin { get; set; }
+        
+        [PersonalData]
         public string PhoneNumber { get; set; }
+        [PersonalData]
         public string TShirtSize { get; set; }
         public bool VisibleToOthers { get; set; }
 
