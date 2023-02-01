@@ -194,15 +194,16 @@ your email as the contact address for a team, then you also need to remove it on
 
     /// <summary>
     /// Flatten comma- or semicolon-separated list of addresses to a flat list.
+    /// De-duplicates and sorts the list.
     /// </summary>
     /// <param name="collection"></param>
     /// <param name="recipients"></param>
     private static List<string> FlattenAddressLists(IEnumerable<string> recipients)
     {
-        List<string> result = new List<string>();
+        HashSet<string> addressSet = new HashSet<string>();
         if (recipients == null)
         {
-            return result;
+            return new List<string>();
         }
 
         foreach (string recipient in recipients)
@@ -217,11 +218,13 @@ your email as the contact address for a team, then you also need to remove it on
             {
                 if (!String.IsNullOrWhiteSpace(address))
                 {
-                    result.Add(address.Trim());
+                    addressSet.Add(address.Trim());
                 }
             }
         }
-        return result;
+        List<string> addressList = new List<string>(addressSet);
+        addressList.Sort();
+        return addressList;
     }
 
     /// <summary>
