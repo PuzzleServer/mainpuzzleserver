@@ -99,7 +99,7 @@ async function helpClicked(event) {
 function answerClicked(event) {
 	let params = new URLSearchParams(window.location.search);
 	let link = document.createElement("a");
-	link.href = "https://puzzlehunt.azurewebsites.net/pd2022/play/Submissions/" + params.get("puzzleId");
+	link.href = "https://puzzlehunt.azurewebsites.net/" + params.get("eventId") + "/play/Submissions/" + params.get("puzzleId");
 	link.target = "_blank";
 	document.body.appendChild(link);
 	link.click();
