@@ -195,7 +195,7 @@ your email as the contact address for a team, then you also need to remove it on
         }
         else
         {
-            if (!IsDev)
+            if (IsDev)
             {
                 Debug.WriteLine("Mail not sent - no recipients.");
             }
