@@ -145,7 +145,7 @@ namespace ServerCore.Pages.Teams
 
                 string email = groupMember.TeamMember.Email;
                 string alias = groupMember.TeamMember.EmployeeAlias;
-                if (email.EndsWith("@microsoft.com"))
+                if (email != null && email.EndsWith("@microsoft.com"))
                 {
                     if (email.StartsWith("t-"))
                     {
