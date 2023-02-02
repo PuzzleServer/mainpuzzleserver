@@ -143,7 +143,7 @@ namespace ServerCore.Pages.Submissions
                 .FirstOrDefaultAsync();
 
             Submissions.Add(submission);
-            // OLD
+
             if (submission.Response != null)
             {
                 if (submission.Response.IsSolution)
