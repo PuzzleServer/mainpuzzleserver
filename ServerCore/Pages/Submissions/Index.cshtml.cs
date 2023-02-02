@@ -16,6 +16,8 @@ namespace ServerCore.Pages.Submissions
     [Authorize(Policy = "PlayerCanSeePuzzle")]
     public class IndexModel : EventSpecificPageModel
     {
+        public const string IncorrectResponseText = "Incorrect";
+
         public IndexModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
         }
@@ -36,7 +38,9 @@ namespace ServerCore.Pages.Submissions
 
         public IList<Puzzle> PuzzlesCausingGlobalLockout { get; set; }
 
-        public bool DuplicateSubmission { get; set; }
+        public string AnswerRedAlertMessage { get; set; }
+
+        public string AnswerYellowAlertMessage { get; set; }
 
         [BindProperty]
         public bool AllowFreeformSharing { get; set; }
@@ -52,6 +56,8 @@ namespace ServerCore.Pages.Submissions
 
         public async Task<IActionResult> OnPostAsync(int puzzleId, string submissionText)
         {
+            AnswerRedAlertMessage = null;
+            AnswerYellowAlertMessage = null;
             if (String.IsNullOrWhiteSpace(submissionText))
             {
                 ModelState.AddModelError("submissionText", "Your answer cannot be empty");
@@ -95,12 +101,19 @@ namespace ServerCore.Pages.Submissions
             }
 
             // Soft enforcement of duplicates to give a friendly message in most cases
-            DuplicateSubmission = (from sub in Submissions
+            Submission duplicatedSubmission = (from sub in Submissions
                                    where sub.SubmissionText == ServerCore.DataModel.Response.FormatSubmission(submissionText)
-                                   select sub).Any();
+                                   select sub).FirstOrDefault();
 
-            if (DuplicateSubmission)
+            if (duplicatedSubmission != null)
             {
+                AnswerRedAlertMessage = $"Oops! You've already submitted \"{submissionText}\"";
+                if (!Puzzle.IsFreeform)
+                {
+                    string response = duplicatedSubmission.Response?.ResponseText ?? IndexModel.IncorrectResponseText;
+                    AnswerRedAlertMessage += $", which had the response \"{response}\"";
+                }
+
                 return Page();
             }
 
@@ -131,19 +144,29 @@ namespace ServerCore.Pages.Submissions
 
             Submissions.Add(submission);
 
-            // Update puzzle state if submission was correct
-            if (submission.Response != null && submission.Response.IsSolution)
+            if (submission.Response != null)
             {
-                await PuzzleStateHelper.SetSolveStateAsync(_context,
-                    Event,
-                    submission.Puzzle,
-                    submission.Team,
-                    submission.TimeSubmitted);
+                if (submission.Response.IsSolution)
+                {
+                    // Update puzzle state if submission was correct
+                    await PuzzleStateHelper.SetSolveStateAsync(_context,
+                        Event,
+                        submission.Puzzle,
+                        submission.Team,
+                        submission.TimeSubmitted);
 
-                AnswerToken = submission.SubmissionText;
+                    AnswerToken = submission.SubmissionText;
+                }
+                else
+                {
+                    // Is partial
+                    AnswerYellowAlertMessage = string.Format($"\"{submission.SubmissionText}\" has partial answer: \"{submission.Response.ResponseText}\"");
+                }
             }
             else if (!Puzzle.IsFreeform && submission.Response == null && Event.IsAnswerSubmissionActive)
             {
+                AnswerRedAlertMessage = $"\"{submission.SubmissionText}\" is incorrect";
+
                 // We also determine if the puzzle should be set to email-only mode.
                 if (IsPuzzleSubmissionLimitReached(
                         Event,
@@ -181,7 +204,7 @@ namespace ServerCore.Pages.Submissions
                     }
                 }
             }
-            
+
             _context.Submissions.Add(submission);
             await _context.SaveChangesAsync();
 
