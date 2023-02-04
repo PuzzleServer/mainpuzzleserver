@@ -57,11 +57,11 @@ namespace ServerCore.Pages.Teams
                 return NotFound();
             }
 
-            // Enforce the name change cutoff
-            if (Team.Name != existingTeam.Name && EventRole != EventRole.admin && !Event.CanChangeTeamName)
+            // If the name cannot be changed, ignore input
+            // Note: It should generally never reach this point because the form itself should not allow this to change.
+            if (!this.CanChangeTeamName())
             {
-                ModelState.AddModelError("Team.Name", "Team names for this event can no longer be changed by players.");
-                return Page();
+                Team.Name = existingTeam.Name;
             }
 
             if (Team.Name.Length > 50)
@@ -104,6 +104,11 @@ namespace ServerCore.Pages.Teams
             }
 
             return RedirectToPage("./Details", new { eventId = Event.ID, eventRole = EventRole, teamId = Team.ID });
+        }
+
+        public bool CanChangeTeamName()
+        {
+            return EventRole == EventRole.admin || Event.CanChangeTeamName;
         }
 
         private bool TeamExists(int teamId)

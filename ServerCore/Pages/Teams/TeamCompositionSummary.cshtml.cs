@@ -89,13 +89,10 @@ namespace ServerCore.Pages.Teams
                 .GroupBy(intermediate => intermediate.TeamID)
                 .Select(this.MapToTeamComposition);
 
-            if (SortDirection == SortDirectionEnum.Ascend)
+            this.SortTeamComposition();
+            if (SortDirection == SortDirectionEnum.Descend)
             {
-                TeamCompositions = TeamCompositions.OrderBy(this.GetSortSelector());
-            }
-            else
-            {
-                TeamCompositions = TeamCompositions.OrderByDescending(this.GetSortSelector());
+                TeamCompositions = TeamCompositions.Reverse();
             }
 
             return Page();
@@ -111,25 +108,32 @@ namespace ServerCore.Pages.Teams
                 });
         }
 
-        private Func<TeamComposition, string> GetSortSelector()
+        private void SortTeamComposition()
         {
             switch (SortBy)
             {
                 case SortEnum.EmployeeCount:
-                    return teamComp => teamComp.EmployeeCount.ToString();
+                    TeamCompositions = TeamCompositions.OrderBy(teamComp => teamComp.EmployeeCount);
+                    break;
                 case SortEnum.InternCount:
-                    return teamComp => teamComp.InternCount.ToString();
+                    TeamCompositions = TeamCompositions.OrderBy(teamComp => teamComp.InternCount);
+                    break;
                 case SortEnum.NonMicrosoftAndPossibleAliases:
-                    return teamComp => (teamComp.NonMicrosoftCount + teamComp.PossibleEmployeeAliases.Count).ToString();
+                    TeamCompositions = TeamCompositions.OrderBy(teamComp => teamComp.NonMicrosoftCount + teamComp.PossibleEmployeeAliases.Count);
+                    break;
                 case SortEnum.NonMicrosoftCount:
-                    return teamComp => teamComp.NonMicrosoftCount.ToString();
+                    TeamCompositions = TeamCompositions.OrderBy(teamComp => teamComp.NonMicrosoftCount);
+                    break;
                 case SortEnum.PossibleEmployeeAliasas:
-                    return teamComp => teamComp.PossibleEmployeeAliases.Count.ToString();
+                    TeamCompositions = TeamCompositions.OrderBy(teamComp => teamComp.PossibleEmployeeAliases.Count);
+                    break;
                 case SortEnum.Total:
-                    return teamComp => teamComp.Total.ToString();
+                    TeamCompositions = TeamCompositions.OrderBy(teamComp => teamComp.Total);
+                    break;
                 case SortEnum.Title:
                 default:
-                    return teamComp => teamComp.TeamName;
+                    TeamCompositions = TeamCompositions.OrderBy(teamComp => teamComp.TeamName);
+                    break;
             }
         }
 
