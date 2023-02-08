@@ -182,27 +182,38 @@ your email as the contact address for a team, then you also need to remove it on
             AddRecipients(msg.Bcc, extraBcc);
         }
 
-        SmtpClient client = new SmtpClient("in.mailjet.com", 587);
-        // Unlike port 25 which is for general SMTP, port 587 is for
-        // MSA (Message Submission Agent) use and is authenticated.
-        client.DeliveryMethod = SmtpDeliveryMethod.Network;
-        client.EnableSsl = true;
-        client.UseDefaultCredentials = false;
-        client.Credentials = new NetworkCredential(PublicSecret, PrivateSecret);
-        client.SendMailAsync(msg);
+        if (msg.To.Count > 0 || msg.CC.Count > 0 || msg.Bcc.Count > 0)
+        {
+            SmtpClient client = new SmtpClient("in.mailjet.com", 587);
+            // Unlike port 25 which is for general SMTP, port 587 is for
+            // MSA (Message Submission Agent) use and is authenticated.
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;
+            client.EnableSsl = true;
+            client.UseDefaultCredentials = false;
+            client.Credentials = new NetworkCredential(PublicSecret, PrivateSecret);
+            client.SendMailAsync(msg);
+        }
+        else
+        {
+            if (IsDev)
+            {
+                Debug.WriteLine("Mail not sent - no recipients.");
+            }
+        }
     }
 
     /// <summary>
     /// Flatten comma- or semicolon-separated list of addresses to a flat list.
+    /// De-duplicates and sorts the list.
     /// </summary>
     /// <param name="collection"></param>
     /// <param name="recipients"></param>
     private static List<string> FlattenAddressLists(IEnumerable<string> recipients)
     {
-        List<string> result = new List<string>();
+        HashSet<string> addressSet = new HashSet<string>();
         if (recipients == null)
         {
-            return result;
+            return new List<string>();
         }
 
         foreach (string recipient in recipients)
@@ -217,11 +228,13 @@ your email as the contact address for a team, then you also need to remove it on
             {
                 if (!String.IsNullOrWhiteSpace(address))
                 {
-                    result.Add(address.Trim());
+                    addressSet.Add(address.Trim());
                 }
             }
         }
-        return result;
+        List<string> addressList = new List<string>(addressSet);
+        addressList.Sort();
+        return addressList;
     }
 
     /// <summary>

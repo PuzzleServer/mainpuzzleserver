@@ -122,13 +122,20 @@
                 </div>
             }
 
-            @if (Model.DuplicateSubmission)
+            if (!string.IsNullOrEmpty(Model.AnswerRedAlertMessage))
             {
-            <div class="alert alert-danger" role="alert">
-                <h4>Oops</h4>
-                <span>You've already submitted @Model.SubmissionText!</span>
-            </div>
+                <div class="alert alert-danger" role="alert">
+                    <h4>@Model.AnswerRedAlertMessage</h4>
+                </div>
             }
+
+            if (!string.IsNullOrEmpty(Model.AnswerYellowAlertMessage))
+            {
+                <div class="alert alert-warning" role="alert">
+                    <h4>@Model.AnswerYellowAlertMessage</h4>
+                </div>
+            }
+
             <div class="row">
                 <div class="col-md-4">
                     <form method="post">
@@ -211,7 +218,7 @@
                                     }
                                     else
                                     {
-                                        <text>Incorrect</text>
+                                        <text>@IndexModel.IncorrectResponseText</text>
                                     }
                                 }
                                 else
