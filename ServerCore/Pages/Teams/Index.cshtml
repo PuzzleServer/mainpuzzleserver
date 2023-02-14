@@ -99,6 +99,9 @@
                 @Html.DisplayNameFor(model => model.Teams.FirstOrDefault().IsDisqualified)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.Teams.FirstOrDefault().Bio)
+            </th>
+            <th>
                 Shortcuts
             </th>
         </tr>
@@ -133,6 +136,9 @@
                     {
                         <text>Disqualified</text>
                     }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Bio)
                 </td>
                 <td>
                     @if (Model.EventRole == ModelBases.EventRole.admin)
