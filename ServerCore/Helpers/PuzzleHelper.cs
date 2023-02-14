@@ -36,6 +36,11 @@ namespace ServerCore.Helpers
             return GetFormattedUrl(puzzle.CustomURL, puzzle.ID, eventId, null);
         }
 
+        public static string GetFormattedSolutionUrl(Puzzle puzzle, int eventId)
+        {
+            return GetFormattedUrl(puzzle.CustomSolutionURL, puzzle.ID, eventId, null);
+        }
+
         public static string GetFormattedUrl(string customUrl, int puzzleId, int eventId, string teamPassword)
         {
             if (customUrl == null)

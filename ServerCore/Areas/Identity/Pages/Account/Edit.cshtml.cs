@@ -38,11 +38,7 @@ namespace ServerCore.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
-            if (string.IsNullOrEmpty(PuzzleUser.Email))
-            {
-                ModelState.AddModelError("PuzzleUser.Email", "An email is required.");
-            }
-            else if (!MailHelper.IsValidEmail(PuzzleUser.Email))
+            if (!MailHelper.IsValidEmail(PuzzleUser.Email))
             {
                 ModelState.AddModelError("PuzzleUser.Email", "This email address is not valid.");
             }

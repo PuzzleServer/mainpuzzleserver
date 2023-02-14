@@ -33,7 +33,7 @@ namespace ServerCore.Pages.Teams
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (string.IsNullOrEmpty(Team.PrimaryContactEmail))
+            if (string.IsNullOrWhiteSpace(Team.PrimaryContactEmail))
             {
                 ModelState.AddModelError("Team.PrimaryContactEmail", "An email is required.");
             }
@@ -64,9 +64,9 @@ namespace ServerCore.Pages.Teams
                 Team.Name = existingTeam.Name;
             }
 
-            if (Team.Name.Length > 50)
+            if (string.IsNullOrWhiteSpace(Team.Name))
             {
-                ModelState.AddModelError("Team.Name", "Name too long. Character limit: 50");
+                ModelState.AddModelError("Team.Name", "Team names cannot be left blank.");
                 return Page();
             }
 

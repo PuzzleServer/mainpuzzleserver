@@ -73,7 +73,7 @@ namespace ServerCore.Pages.Teams
                 return NotFound();
             }
 
-            if (string.IsNullOrEmpty(Team.PrimaryContactEmail))
+            if (string.IsNullOrWhiteSpace(Team.PrimaryContactEmail))
             {
                 ModelState.AddModelError("Team.PrimaryContactEmail", "An email is required.");
             }
@@ -82,9 +82,9 @@ namespace ServerCore.Pages.Teams
                 ModelState.AddModelError("Team.PrimaryContactEmail", "This email address is not valid.");
             }
 
-            if (Team.Name.Length > 50)
+            if (string.IsNullOrWhiteSpace(Team.Name))
             {
-                ModelState.AddModelError("Team.Name", "Name too long. Character limit: 50");
+                ModelState.AddModelError("Team.Name", "Team names cannot be left blank.");
             }
 
             if (await TeamHelper.IsTeamNameTakenAsync(_context, Event, Team.Name))

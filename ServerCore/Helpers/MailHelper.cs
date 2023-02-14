@@ -281,7 +281,7 @@ your email as the contact address for a team, then you also need to remove it on
     /// </summary>
     public static bool IsValidEmail(string s)
     {
-        if (string.IsNullOrEmpty(s))
+        if (string.IsNullOrWhiteSpace(s))
         {
             return false;
         }
