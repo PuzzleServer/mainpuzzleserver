@@ -2,7 +2,11 @@
     var eventPage = Model as ServerCore.ModelBases.EventSpecificPageModel;
     var Event = eventPage?.Event;
 }
-
+<style>
+    a:hover {
+        cursor: pointer;
+    }
+</style>
 <div class="container">
     @if (!string.IsNullOrEmpty(Event.HomeContent))
     {
@@ -14,6 +18,10 @@
         if (eventPage?.EventRole == ModelBases.EventRole.admin)
         {
             <p><b>Since you're an admin:</b> Either set the HomePartial field of your event to match a folder in the Pages\Resources directory, or place raw HTML into the HomeContent field of your event.</p>
+        }
+        if (eventPage?.EventRole == ModelBases.EventRole.author)
+        {
+            <p><b>Since you're an author:</b> Take a look at <a src="https://github.com/PuzzleServer/mainpuzzleserver/wiki/Authors:-How-to-use-the-site">Authors: How to use the site</a> wiki for more information on how to use this site as an author.</p>
         }
     }
 </div>
