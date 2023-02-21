@@ -23,7 +23,7 @@
         {
             <tr>
                 <td>
-                    <a asp-page="/Submissions/SubmitProto" asp-route-puzzleId="@puz.ID">@RawHtmlHelper.Display(puz.Name, Model.Event.ID, Html)</a>
+                    <a asp-page="/Submissions/SubmitProto" asp-route-puzzleId="@puz.ID" target="_blank">@RawHtmlHelper.Display(puz.Name, Model.Event.ID, Html)</a>
                 </td>
             </tr>
         }
