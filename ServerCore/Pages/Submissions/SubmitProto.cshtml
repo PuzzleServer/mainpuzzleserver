@@ -16,6 +16,10 @@
         width: 100%;
         height: calc(100vh - 265px);
     }
+    #pdf-frame {
+        width: 100%;
+        height: calc(100vh - 285px);
+    }
 </style>
 @if (Model.Puzzle.CustomURL != null)
 {
@@ -23,7 +27,10 @@
 }
 else if (Model.PuzzleFile != null)
 {
-    <iframe id="puzzle-frame" title="@Model.Puzzle.Name" sandbox="allow-same-origin allow-scripts" src="@Model.PuzzleFile.Url.AbsoluteUri"></iframe>
+    <object id="pdf-frame" title="@Model.Puzzle.Name" data="@Model.PuzzleFile.Url.AbsoluteUri" type="application/pdf">
+        <embed src="@Model.PuzzleFile.Url.AbsoluteUri" type="application/pdf" />
+    </object>
+    <div>Trouble viewing the PDF? <a download href="@Model.PuzzleFile.Url.AbsoluteUri">Click here</a> to download it!</div>
 }
 else {
     <div>This puzzle has no online content. Please look elsewhere for what you need to solve it.</div>
