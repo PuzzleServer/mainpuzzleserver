@@ -1,19 +1,30 @@
-﻿@page "/{eventId}/{eventRole}/Submissions/SubmitProto"
+﻿@page "/{eventId}/{eventRole}/SubmitProto/{puzzleId}"
 @model ServerCore.Pages.Submissions.SubmitProtoModel
 
 @{
     @using Helpers;
-
     ViewData["Title"] = "Solve here and submit your answer";
     ViewData["AdminRoute"] = "../Submissions/AuthorIndex";
     ViewData["AuthorRoute"] = "../Submissions/AuthorIndex";
-    // TODO: Needs to handle implicit teams - ViewData["PlayRoute"] = "../Submissions/Index";
     ViewData["RoutingPuzzleId"] = ViewContext.RouteData.Values["puzzleId"];
 }
 
-@using System.Text @* for StringBuilder *@
-
-<h2>Solve and submit answers for your puzzle</h2>
+<h2>Solve and submit answers for @RawHtmlHelper.Display(Model.Puzzle.Name, Model.Event.ID, Html)</h2>
 <hr />
-<iframe title="Puzzle" width="1500" height="800" sandbox="allow-same-origin allow-scripts" credentialless src="https://puzzlehunt.azurewebsites.net/4/Files/example-puzzle%2Findex.html"></iframe>
-<iframe title="Puzzle" width="1500" height="800" sandbox="allow-same-origin allow-scripts" credentialless src="https://puzzleserverteststore.blob.core.windows.net/evt4/GINMPx+Ko8rDJnnhDY4_JA==/example-puzzle/index.html"></iframe>
+<style>
+    #puzzle-frame {
+        width: 100%;
+        height: calc(100vh - 265px);
+    }
+</style>
+@if (Model.Puzzle.CustomURL != null)
+{
+    <iframe id="puzzle-frame" title="@Model.Puzzle.Name" sandbox="allow-same-origin allow-scripts" src="@Model.Puzzle.CustomURL"></iframe>
+}
+else if (Model.PuzzleFile != null)
+{
+    <iframe id="puzzle-frame" title="@Model.Puzzle.Name" sandbox="allow-same-origin allow-scripts" src="@Model.PuzzleFile.ShortName"></iframe>
+}
+else {
+    <div>This puzzle has no online content. Please look elsewhere for what you need to solve it.</div>
+}
