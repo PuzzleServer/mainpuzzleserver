@@ -19,11 +19,11 @@
 </style>
 @if (Model.Puzzle.CustomURL != null)
 {
-    <iframe id="puzzle-frame" title="@Model.Puzzle.Name" sandbox="allow-same-origin allow-scripts" src="@Model.Puzzle.CustomURL"></iframe>
+    <iframe id="puzzle-frame" title="@Model.Puzzle.Name" sandbox="allow-same-origin allow-scripts" src="@PuzzleHelper.GetFormattedUrl(Model.Puzzle, Model.Event.ID)"></iframe>
 }
 else if (Model.PuzzleFile != null)
 {
-    <iframe id="puzzle-frame" title="@Model.Puzzle.Name" sandbox="allow-same-origin allow-scripts" src="@Model.PuzzleFile.ShortName"></iframe>
+    <iframe id="puzzle-frame" title="@Model.Puzzle.Name" sandbox="allow-same-origin allow-scripts" src="@Model.PuzzleFile.Url.AbsoluteUri"></iframe>
 }
 else {
     <div>This puzzle has no online content. Please look elsewhere for what you need to solve it.</div>
