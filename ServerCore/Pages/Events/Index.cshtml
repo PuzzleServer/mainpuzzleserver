@@ -15,13 +15,13 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Events[0].Name)
+                Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Events[0].UrlString)
+                UrlString
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Events[0].IsInternEvent)
+                IsInternEvent
             </th>
             <th></th>
         </tr>
@@ -31,14 +31,14 @@
         <tr>
             <td>
                 <a asp-page="/EventSpecific/Index" asp-route-eventId="@item.EventID" asp-route-eventRole="play">
-                    @Html.DisplayFor(modelItem => item.Name)
+                    @item.Name
                 </a>
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.UrlString)
+                @item.UrlString
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.IsInternEvent)
+                @item.IsInternEvent
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-eventId="@item.EventID" asp-route-eventRole="admin">Edit</a> |

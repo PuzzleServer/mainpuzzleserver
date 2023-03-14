@@ -75,31 +75,31 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Teams.FirstOrDefault().Name)
+                Name
             </th>
             <th>
                 Size
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Teams.FirstOrDefault().RoomID)
+                RoomID
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Teams.FirstOrDefault().CustomRoom)
+                CustomRoom
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Teams.FirstOrDefault().PrimaryContactEmail)
+                PrimaryContactEmail
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Teams.FirstOrDefault().PrimaryPhoneNumber)
+                PrimaryPhoneNumber
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Teams.FirstOrDefault().SecondaryPhoneNumber)
+                SecondaryPhoneNumber
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Teams.FirstOrDefault().IsDisqualified)
+                IsDisqualified
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Teams.FirstOrDefault().Bio)
+                Bio
             </th>
             <th>
                 Shortcuts
@@ -111,25 +111,25 @@
         {
             <tr>
                 <td>
-                    <a asp-page="./Status" asp-route-teamId="@item.ID">@Html.DisplayFor(modelItem => item.Name)</a>
+                    <a asp-page="./Status" asp-route-teamId="@item.ID">@item.Name)</a>
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => @Model.PlayerCountByTeamID[item.ID])
+                    @Model.PlayerCountByTeamID[item.ID]
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.RoomID)
+                    @item.RoomID
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.CustomRoom)
+                    @item.CustomRoom
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.PrimaryContactEmail)
+                    @item.PrimaryContactEmail
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.PrimaryPhoneNumber)
+                    @item.PrimaryPhoneNumber
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.SecondaryPhoneNumber)
+                    @item.SecondaryPhoneNumber
                 </td>
                 <td>
                     @if(item.IsDisqualified)
@@ -138,7 +138,7 @@
                     }
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Bio)
+                    @item.Bio
                 </td>
                 <td>
                     @if (Model.EventRole == ModelBases.EventRole.admin)

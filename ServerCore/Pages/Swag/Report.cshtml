@@ -16,13 +16,13 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.SwagViews[0].TeamName)
+                TeamName
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.SwagViews[0].PlayerName)
+                PlayerName
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.SwagViews[0].PlayerEmail)
+                PlayerEmail
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.SwagViews[0].Lunch)
@@ -37,19 +37,19 @@
         {
         <tr>
             <td>
-                @Html.DisplayFor(model => item.TeamName)
+                @item.TeamName
             </td>
             <td>
-                @Html.DisplayFor(model => item.PlayerName)
+                @item.PlayerName
             </td>
             <td>
-                @Html.DisplayFor(model => item.PlayerEmail)
+                @item.PlayerEmail
             </td>
             <td>
-                @Html.DisplayFor(model => item.Lunch)
+                @item.Lunch
             </td>
             <td>
-                @Html.DisplayFor(model => item.LunchModifications)
+                @item.LunchModifications
             </td>
         </tr>
         }

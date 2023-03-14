@@ -24,8 +24,8 @@ else
 }
 <div>
     <br />
-    <h4><b>Avg Fun Rating:</b> @Html.DisplayFor(x => x.FunScore) / @FeedbackModel.FeedbackMax</h4>
-    <h4><b>Avg Difficulty Rating:</b> @Html.DisplayFor(x => x.DiffScore) / @FeedbackModel.FeedbackMax</h4>
+    <h4><b>Avg Fun Rating:</b> @Model.FunScore / @FeedbackModel.FeedbackMax</h4>
+    <h4><b>Avg Difficulty Rating:</b> @Model.DiffScore / @FeedbackModel.FeedbackMax</h4>
 </div>
 
 <br>
@@ -37,25 +37,25 @@ else
                 Puzzle
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Feedbacks[0].TeamName)
+                TeamName
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Feedbacks[0].Submitter.Name)
+                Submitter.Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Feedbacks[0].Submitter.Email)
+                Submitter.Email
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Feedbacks[0].Feedback.SubmissionTime)
+                Feedback.SubmissionTime
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Feedbacks[0].Feedback.WrittenFeedback)
+                Feedback.WrittenFeedback
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Feedbacks[0].Feedback.Difficulty)
+                Feedback.Difficulty
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Feedbacks[0].Feedback.Fun)
+                Feedback.Fun
             </th>
         </tr>
     </thead>
@@ -64,28 +64,28 @@ else
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Puzzle.Name)
+                    @item.Puzzle.Name
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.TeamName)
+                    @item.TeamName
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Submitter.Name)
+                    @item.Submitter.Name
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Submitter.Email)
+                    @item.Submitter.Email
                 </td>
                 <td>
                     @Html.Raw(Model.LocalTime(item.Feedback.SubmissionTime))
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Feedback.WrittenFeedback)
+                    @item.Feedback.WrittenFeedback
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Feedback.Difficulty)
+                    @item.Feedback.Difficulty
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Feedback.Fun)
+                    @item.Feedback.Fun
                 </td>
             </tr>
         }

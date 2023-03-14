@@ -15,10 +15,10 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Pieces[0].ProgressLevel)
+                ProgressLevel
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Pieces[0].Contents)
+                Contents
             </th>
             <th></th>
         </tr>
@@ -27,10 +27,10 @@
 @foreach (var item in Model.Pieces) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.ProgressLevel)
+                @item.ProgressLevel
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Contents)
+                @item.Contents
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-puzzleId="@Model.PuzzleId" asp-route-id="@item.ID">Edit</a> |

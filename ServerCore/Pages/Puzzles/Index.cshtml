@@ -60,7 +60,7 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Puzzles[0].Puzzle.Name)
+                Name
             </th>
             <th>
                 Puzzle file
@@ -72,10 +72,10 @@
                 @(Model.Event.TermForGroup ?? "Group")
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Puzzles[0].Puzzle.OrderInGroup)
+                OrderInGroup
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Puzzles[0].Puzzle.SolveValue)
+                SolveValue
             </th>
             <th>
                 Puzzle
@@ -131,10 +131,10 @@
                     @ServerCore.Helpers.RawHtmlHelper.Display(item.Puzzle.Group, Model.Event.ID, Html)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Puzzle.OrderInGroup)
+                    @item.Puzzle.OrderInGroup)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Puzzle.SolveValue)
+                    @item.Puzzle.SolveValue)
                 </td>
                 <td>
                     @if (item.Puzzle.IsPuzzle)
@@ -161,10 +161,10 @@
                     }
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Puzzle.MinPrerequisiteCount)
+                    @item.Puzzle.MinPrerequisiteCount
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Puzzle.SupportEmailAlias)
+                    @item.Puzzle.SupportEmailAlias
                 </td>
                 <td>
                     <div class="shortcut-menu-dropdown">

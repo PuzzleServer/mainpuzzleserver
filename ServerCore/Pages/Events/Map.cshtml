@@ -22,13 +22,13 @@
                         Rank
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Teams[0].Team.Name)
+                        Name
                     </th>
                     <th>
                         Puzzles
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Teams[0].Score)
+                        Score
                     </th>
                     @foreach (var puzzle in Model.Puzzles)
                     {
@@ -49,10 +49,10 @@
                         <a asp-page="/Teams/Status" asp-route-teamId="@team.Team.ID">@(team.Team.Name)</a>
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => team.SolveCount)
+                        @team.SolveCount
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => team.Score)
+                        @team.Score
                     </td>
             @for (int x = 0; x < Model.Puzzles.Count; x++)
             {
