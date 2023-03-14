@@ -231,7 +231,7 @@
                             <td>
                                 @if (Model.LoggedInUser.IsGlobalAdmin)
                                 {
-                                    <a asp-area="Identity" asp-page="/Account/Edit" asp-route-userId="@item.Member.ID" asp-route-returnUrl="@Request.GetEncodedUrl()">@item.Member.Name)</a>
+                                    <a asp-area="Identity" asp-page="/Account/Edit" asp-route-userId="@item.Member.ID" asp-route-returnUrl="@Request.GetEncodedUrl()">@item.Member.Name</a>
                                 }
                                 else
                                 {
