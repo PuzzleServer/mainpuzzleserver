@@ -210,7 +210,7 @@
                     {
                         <tr>
                             <td>
-                                <a asp-page="./Edit" asp-route-id="@(pre.ID)">@(pre.PlaintextName)</a>
+                                <a asp-page="./Edit" asp-route-puzzleid="@(pre.ID)">@(pre.PlaintextName)</a>
                             </td>
                             <td>
                                 <a asp-page-handler="RemovePrerequisite" asp-route-id="@Model.Puzzle.ID" asp-route-prerequisite="@(pre.ID)">Remove</a>
@@ -244,7 +244,7 @@
                     {
                         <tr>
                             <td>
-                                <a asp-page="./Edit" asp-route-id="@(p.ID)">@(p.PlaintextName)</a>
+                                <a asp-page="./Edit" asp-route-puzzleid="@(p.ID)">@(p.PlaintextName)</a>
                             </td>
                             <td>
                                 <a asp-page-handler="RemovePrerequisiteOf" asp-route-id="@Model.Puzzle.ID" asp-route-prerequisiteOf="@(p.ID)">Remove</a>
