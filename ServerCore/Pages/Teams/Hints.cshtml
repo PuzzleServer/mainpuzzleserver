@@ -80,7 +80,7 @@ You have <b>
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Hints[0].Hint.Description)
+                Description
             </th>
             <th>
                 <text>Hint</text>
@@ -94,12 +94,12 @@ You have <b>
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => hint.Hint.Description)
+                    @hint.Hint.Description
                 </td>
                 <td>
                     @if (hint.IsUnlocked)
                     {
-                        @Html.DisplayFor(modelItem => hint.Hint.Content)
+                        @hint.Hint.Content
                     }
                     else
                     {

@@ -57,7 +57,7 @@
     }
 </style>
 
-<h2>@Html.DisplayFor(model => model.Team.Name) Team</h2>
+<h2>@(Model.Team.Name) Team</h2>
 
 @if (Model.Team.IsDisqualified)
 {
@@ -104,14 +104,14 @@
                     Team name
                 </dt>
                 <dd>
-                    @Html.DisplayFor(model => model.Team.Name)
+                    @Model.Team.Name
                 </dd>
                 <!-- TODO: Conditionally show/hide based on event property (not needed for PuzzleHunt)
     <dt>
-        @Html.DisplayNameFor(model => model.Team.RoomID)
+        RoomID
     </dt>
     <dd>
-        @Html.DisplayFor(model => model.Team.RoomID)
+        @Model.Team.RoomID
     </dd>
     -->
                 
@@ -132,7 +132,7 @@
                     }
                     else
                     {
-                    @Html.DisplayFor(model => model.Team.CustomRoom)
+                    @Model.Team.CustomRoom
                     }
                 </dd>
                 
@@ -146,7 +146,7 @@
                     }
                     else
                     {
-                    @Html.DisplayFor(model => model.Team.PrimaryPhoneNumber)
+                    @Model.Team.PrimaryPhoneNumber
                     }
                 </dd>
                 <dt>
@@ -159,7 +159,7 @@
                     }
                     else
                     {
-                    @Html.DisplayFor(model => model.Team.SecondaryPhoneNumber)
+                    @Model.Team.SecondaryPhoneNumber
                     }
                 </dd>
                 <dt>
@@ -172,7 +172,7 @@
                     }
                     else
                     {
-                    @Html.DisplayFor(model => model.Team.PrimaryContactEmail)
+                    @Model.Team.PrimaryContactEmail
                     }
                 </dd>
                 <dt>
@@ -198,7 +198,7 @@
                     }
                     else
                     {
-                    @Html.DisplayFor(model => model.Team.Bio)
+                    @Model.Team.Bio
                     }
                 </dd>
             </dl>
@@ -213,13 +213,13 @@
                 <thead>
                     <tr>
                         <th>
-                            @Html.DisplayNameFor(model => model.Members[0].Member.Name)
+                            Name
                         </th>
                         <th>
-                            @Html.DisplayNameFor(model => model.Members[0].Member.Email)
+                            Email
                         </th>
                         <th>
-                            @Html.DisplayNameFor(model => model.Members[0].Member.EmployeeAlias)
+                            EmployeeAlias
                         </th>
                         <th></th>
                     </tr>
@@ -231,15 +231,15 @@
                             <td>
                                 @if (Model.LoggedInUser.IsGlobalAdmin)
                                 {
-                                    <a asp-area="Identity" asp-page="/Account/Edit" asp-route-userId="@item.Member.ID" asp-route-returnUrl="@Request.GetEncodedUrl()">@Html.DisplayFor(modelItem => item.Member.Name)</a>
+                                    <a asp-area="Identity" asp-page="/Account/Edit" asp-route-userId="@item.Member.ID" asp-route-returnUrl="@Request.GetEncodedUrl()">@item.Member.Name</a>
                                 }
                                 else
                                 {
-                                    @Html.DisplayFor(modelItem => item.Member.Name)
+                                    @item.Member.Name
                                 }
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.Member.Email)
+                                @item.Member.Email
                             </td>
                             <td>
                                 @if (item.Member.EmployeeAlias == null)
@@ -248,7 +248,7 @@
                                 }
                                 else
                                 {
-                                    @Html.DisplayFor(modelItem => item.Member.EmployeeAlias);
+                                    @item.Member.EmployeeAlias
                                 }
                             </td>
                             @if (Model.EventRole == ModelBases.EventRole.admin || Model.Event.IsTeamMembershipChangeActive)
@@ -320,13 +320,13 @@
                     <thead>
                         <tr>
                             <th>
-                                @Html.DisplayNameFor(model => model.Users[0].Item1.Name)
+                                Name
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.Users[0].Item1.Email)
+                                Email
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.Users[0].Item1.EmployeeAlias)
+                                EmployeeAlias
                             </th>
                             <th>
                                 Approve application
@@ -341,10 +341,10 @@
                         {
                             <tr>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.Item1.Name)
+                                    @item.Item1.Name
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.Item1.Email)
+                                    @item.Item1.Email
                                 </td>
                                 <td>
                                     @if (item.Item1.EmployeeAlias == null)
@@ -353,7 +353,7 @@
                                     }
                                     else
                                     {
-                                        @Html.DisplayFor(modelItem => item.Item1.EmployeeAlias);
+                                        @item.Item1.EmployeeAlias
                                     }
                                 </td>
                                 <td>

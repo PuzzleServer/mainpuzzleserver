@@ -22,15 +22,15 @@
                 </th>
                 <th>
                     <a asp-page="./Responses" asp-route-sort="@(Model.SortForColumnLink(ResponsesModel.SortOrder.DescriptionAscending, ResponsesModel.SortOrder.DescriptionDescending))">
-                        @Html.DisplayNameFor(model => model.HintViews[0].Description)
+                        Description
                     </a>
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.HintViews[0].Content)
+                    Content
                 </th>
                 <th>
                     <a asp-page="./Responses" asp-route-sort="@(Model.SortForColumnLink(ResponsesModel.SortOrder.CostAscending, ResponsesModel.SortOrder.CostDescending))">
-                        @Html.DisplayNameFor(model => model.HintViews[0].Cost)
+                        Cost
                     </a>
                 </th>
             </tr>
@@ -40,16 +40,16 @@
             {
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => item.PuzzleName)
+                        @item.PuzzleName
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Description)
+                        @item.Description
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Content)
+                        @item.Content
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Cost)
+                        @item.Cost
                     </td>
                 </tr>
             }

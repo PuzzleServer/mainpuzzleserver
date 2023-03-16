@@ -46,17 +46,17 @@
                 </th>
                 <th>
                     <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.DescriptionAscending, AuthorIndexModel.SortOrder.DescriptionDescending))">
-                        @Html.DisplayNameFor(model => model.HintViews[0].Description)
+                        Description
                     </a>
                 </th>
                 <th>
                     <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.CostAscending, AuthorIndexModel.SortOrder.CostDescending))">
-                        @Html.DisplayNameFor(model => model.HintViews[0].Cost)
+                        Cost
                     </a>
                 </th>
                 <th>
                     <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.TimeAscending, AuthorIndexModel.SortOrder.TimeDescending))">
-                        @Html.DisplayNameFor(model => model.HintViews[0].UnlockTime)
+                        UnlockTime
                     </a>
                 </th>
                 <th></th>
@@ -67,16 +67,16 @@
             {
             <tr>
                 <td>
-                    <a asp-page="AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@item.TeamId">@Html.DisplayFor(modelItem => item.TeamName)</a>
+                    <a asp-page="AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@item.TeamId">@item.TeamName</a>
                 </td>
                 <td>
-                    <a asp-page="AuthorIndex" asp-route-puzzleId="@item.PuzzleId" asp-route-teamId="@Model.Team?.ID">@Html.DisplayFor(modelItem => item.PuzzleName)</a>
+                    <a asp-page="AuthorIndex" asp-route-puzzleId="@item.PuzzleId" asp-route-teamId="@Model.Team?.ID">@item.PuzzleName</a>
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Description)
+                    @item.Description
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Cost)
+                    @item.Cost
                 </td>
                 <td>
                     @Html.Raw(Model.LocalTime(item.UnlockTime))

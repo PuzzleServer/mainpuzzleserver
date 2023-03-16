@@ -91,13 +91,13 @@
 
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Name)
+                        @(item.Name)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Bio)
+                        @(item.Bio)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => @Model.PlayerCountByTeamID[item.ID])
+                        @(Model.PlayerCountByTeamID[item.ID])
                     </td>
                     @if (canRegister)
                     {

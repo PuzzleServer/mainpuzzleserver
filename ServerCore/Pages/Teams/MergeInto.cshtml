@@ -9,7 +9,7 @@
     Layout = "_teamLayout.cshtml";
 }
 
-<h2>@Html.DisplayFor(model => model.Team.Name): Merge Into Another Team</h2>
+<h2>@(Model.Team.Name): Merge Into Another Team</h2>
 <div>
     <a asp-page="./Details" asp-route-teamId="@Model.Team.ID">Cancel</a>
 </div>
@@ -24,7 +24,7 @@
                 Team name
             </dt>
             <dd>
-                @Html.DisplayFor(model => model.Team.Name)
+                @(Model.Team.Name)
             </dd>
             <dt>
                 Primary contact e-mail
@@ -36,7 +36,7 @@
                 }
                 else
                 {
-                    @Html.DisplayFor(model => model.Team.PrimaryContactEmail)
+                    @(Model.Team.PrimaryContactEmail)
                 }
             </dd>
             <dt>
