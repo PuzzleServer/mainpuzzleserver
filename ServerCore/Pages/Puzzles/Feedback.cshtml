@@ -24,8 +24,8 @@ else
 }
 <div>
     <br />
-    <h4><b>Avg Fun Rating:</b> @Model.FunScore / @FeedbackModel.FeedbackMax</h4>
-    <h4><b>Avg Difficulty Rating:</b> @Model.DiffScore / @FeedbackModel.FeedbackMax</h4>
+    <h4><b>Avg Fun Rating:</b> @Html.DisplayFor(x => x.FunScore) / @FeedbackModel.FeedbackMax</h4>
+    <h4><b>Avg Difficulty Rating:</b> @Html.DisplayFor(x => x.DiffScore) / @FeedbackModel.FeedbackMax</h4>
 </div>
 
 <br>
