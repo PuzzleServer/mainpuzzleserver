@@ -12,7 +12,7 @@
 @if (Model.PuzzleName != null)
 {
     Layout = "_puzzleManagementLayout.cshtml";
-    <h2>@Html.DisplayFor(model => model.PuzzleName): Feedback</h2>
+    <h2>@(Model.PuzzleName): Feedback</h2>
 }
 else
 {

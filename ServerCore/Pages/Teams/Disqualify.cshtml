@@ -5,7 +5,7 @@
     Layout = "_teamLayout.cshtml";
 }
 
-<h2>@Html.DisplayFor(model => model.Team.Name): Disqualify</h2>
+<h2>@(Model.Team.Name): Disqualify</h2>
 <div>
     <a asp-page="./Details" asp-route-teamId="@Model.Team.ID">Cancel</a>
 </div>
@@ -27,7 +27,7 @@ else
             Team name
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Team.Name)
+            @(Model.Team.Name)
         </dd>
     </dl>
     
