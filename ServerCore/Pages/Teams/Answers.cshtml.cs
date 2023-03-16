@@ -39,7 +39,7 @@ namespace ServerCore.Pages.Teams
                 .Where((state) => state.TeamID == teamId && state.SolvedTime != null);
 
             IQueryable<Submission> correctSubmissions = _context.Submissions
-                .Where((s) => s.TeamID == teamId && s.Response.IsSolution);
+                .Where((s) => s.Puzzle.IsPuzzle && s.TeamID == teamId && s.Response.IsSolution);
 
             IQueryable<SubmissionView> finalSubmissions = 
                 from state in puzzleStates
