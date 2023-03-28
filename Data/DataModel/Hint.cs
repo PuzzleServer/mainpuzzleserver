@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 // Hint: The PR pipeline is supposed to work
+// No really
 namespace ServerCore.DataModel
 {
     /// <summary>
