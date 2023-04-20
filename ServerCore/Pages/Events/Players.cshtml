@@ -17,13 +17,13 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Admins[0].Name)
+                Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Admins[0].Email)
+                Email
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Admins[0].EmployeeAlias)
+                EmployeeAlias
             </th>
             <th>
             </th>
@@ -37,18 +37,18 @@
                 <td>
                     @if (Model.LoggedInUser.IsGlobalAdmin)
                     {
-                        <a asp-area="Identity" asp-page="/Account/Edit" asp-route-userId="@item.ID" asp-route-returnUrl="@Request.GetEncodedUrl()">@Html.DisplayFor(modelItem => item.Name)</a>
+                        <a asp-area="Identity" asp-page="/Account/Edit" asp-route-userId="@item.ID" asp-route-returnUrl="@Request.GetEncodedUrl()">@item.Name</a>
                     }
                     else
                     {
-                        @Html.DisplayFor(modelItem => item.Name)
+                        @item.Name
                     }
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Email)
+                    @item.Email
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.EmployeeAlias)
+                    @item.EmployeeAlias
                 </td>
                 <td>
                     <a asp-page-handler="RemoveAdmin" asp-route-userId=@item.ID onclick="return confirm('Are you sure you want to remove @item.Name from the event admins?')">Remove</a>
@@ -70,13 +70,13 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Authors[0].Item1.Name)
+                Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Authors[0].Item1.Email)
+                Email
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Authors[0].Item1.EmployeeAlias)
+                EmployeeAlias
             </th>
             <th>
                 Puzzle count
@@ -93,21 +93,21 @@
                 <td>
                     @if (Model.LoggedInUser.IsGlobalAdmin)
                     {
-                        <a asp-area="Identity" asp-page="/Account/Edit" asp-route-userId="@item.Item1.ID" asp-route-returnUrl="@Request.GetEncodedUrl()">@Html.DisplayFor(modelItem => item.Item1.Name)</a>
+                        <a asp-area="Identity" asp-page="/Account/Edit" asp-route-userId="@item.Item1.ID" asp-route-returnUrl="@Request.GetEncodedUrl()">@item.Item1.Name</a>
                     }
                     else
                     {
-                        @Html.DisplayFor(modelItem => item.Item1.Name)
+                        @item.Item1.Name
                     }
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Item1.Email)
+                    @item.Item1.Email
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Item1.EmployeeAlias)
+                    @item.Item1.EmployeeAlias
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Item2)
+                    @item.Item2
                 </td>
                 <td>
                     <a asp-page-handler="RemoveAuthor" asp-route-userId=@item.Item1.ID onclick="return confirm('Are you sure you want to remove @item.Item1.Name from the event authors?')">Remove</a>
@@ -128,13 +128,13 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Players[0].Name)
+                Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Players[0].Email)
+                Email
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Players[0].EmployeeAlias)
+                EmployeeAlias
             </th>
             <th>
                 Team Name
@@ -149,21 +149,21 @@
                 <td>
                     @if (Model.LoggedInUser.IsGlobalAdmin)
                     {
-                        <a asp-area="Identity" asp-page="/Account/Edit" asp-route-userId="@item.ID" asp-route-returnUrl="@Request.GetEncodedUrl()">@Html.DisplayFor(modelItem => item.Name)</a>
+                        <a asp-area="Identity" asp-page="/Account/Edit" asp-route-userId="@item.ID" asp-route-returnUrl="@Request.GetEncodedUrl()">@item.Name</a>
                     }
                     else
                     {
-                        @Html.DisplayFor(modelItem => item.Name)
+                        @item.Name
                     }
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Email)
+                    @item.Email
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.EmployeeAlias)
+                    @item.EmployeeAlias
                 </td>
                 <td>
-                    <a asp-page="/Teams/Details" asp-route-teamId="@item.TeamID">@Html.DisplayFor(modelItem => item.TeamName)</a>
+                    <a asp-page="/Teams/Details" asp-route-teamId="@item.TeamID">@item.TeamName</a>
                 </td>
                 <td></td>
             </tr>

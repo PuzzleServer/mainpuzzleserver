@@ -22,16 +22,16 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Responses[0].IsSolution)
+                IsSolution
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Responses[0].SubmittedText)
+                SubmittedText
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Responses[0].ResponseText)
+                ResponseText
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Responses[0].Note)
+                Note
             </th>
             <th>
                 Actions
@@ -49,13 +49,13 @@
                 }
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.SubmittedText)
+                @item.SubmittedText
             </td>
             <td>
                 @ServerCore.Helpers.RawHtmlHelper.Display(item.ResponseText, Model.Event.ID, Html)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Note)
+                @item.Note
             </td>
             <td>
                 <div class="shortcut-menu-dropdown">

@@ -90,16 +90,16 @@
             {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.SubmitterName)
+                    @(item.SubmitterName)
                 </td>
                 <td>
-                    <a asp-page="AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@item.TeamID">@Html.DisplayFor(modelItem => item.TeamName)</a>
+                    <a asp-page="AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@item.TeamID">@(item.TeamName)</a>
                 </td>
                 <td>
-                    <a asp-page="AuthorIndex" asp-route-puzzleId="@item.PuzzleID" asp-route-teamId="@Model.Team?.ID">@Html.DisplayFor(modelItem => item.PuzzleName)</a>
+                    <a asp-page="AuthorIndex" asp-route-puzzleId="@item.PuzzleID" asp-route-teamId="@Model.Team?.ID">@(item.PuzzleName)</a>
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.ResponseText)
+                    @(item.ResponseText)
                 </td>
                 <td style="max-width: 500px; word-wrap: break-word">
                     @if (item.Linkify)
@@ -108,7 +108,7 @@
                     }
                     else
                     {
-                        @Html.DisplayFor(modelItem => item.SubmissionText)
+                        @(item.SubmissionText)
                     }
                 </td>
                 <td>

@@ -20,7 +20,7 @@
                     </th>
                     <th>
                         <a asp-page="./Standings" asp-route-sort="@(Model.SortForColumnLink(StandingsModel.SortOrder.NameAscending, StandingsModel.SortOrder.NameDescending))">
-                            @Html.DisplayNameFor(model => model.Teams[0].Team.Name)
+                            Name
                         </a>
                     </th>
                     <th>
@@ -30,7 +30,7 @@
                     </th>
                     <th>
                         <a asp-page="./Standings" asp-route-sort="@(Model.SortForColumnLink(StandingsModel.SortOrder.ScoreDescending, StandingsModel.SortOrder.ScoreAscending))">
-                            @Html.DisplayNameFor(model => model.Teams[0].Score)
+                            Score
                         </a>
                     </th>
                     @if (!Model.Event.HideHints)
@@ -60,18 +60,18 @@
                         @(team.Team.Name)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => team.SolveCount)
+                        @(team.SolveCount)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => team.Score)
+                        @(team.Score)
                     </td>
                     @if (!Model.Event.HideHints)
                     {
                         <td>
-                            @Html.DisplayFor(modelItem => team.Team.HintCoinsEarned)
+                            @(team.Team.HintCoinsEarned)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => team.Team.HintCoinsUsed)
+                            @(team.Team.HintCoinsUsed)
                         </td>
                     }
                 </tr>

@@ -9,7 +9,7 @@
     Layout = "_teamLayout.cshtml";
 }
 
-<h2>@Html.DisplayFor(model => model.Team.Name): Delete</h2>
+<h2>@(Model.Team.Name): Delete</h2>
 <div>
     <a asp-page="./Details" asp-route-teamId="@Model.Team.ID">Cancel</a>
 </div>
@@ -23,14 +23,14 @@
             Team name
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Team.Name)
+            @Model.Team.Name
         </dd>
         <!-- TODO: Conditionally show/hide based on event property (not needed for PuzzleHunt)
     <dt>
-        @Html.DisplayNameFor(model => model.Team.RoomID)
+        RoomID
     </dt>
     <dd>
-        @Html.DisplayFor(model => model.Team.RoomID)
+        @Model.Team.RoomID
     </dd>
     -->
         <dt>
@@ -43,7 +43,7 @@
             }
             else
             {
-                @Html.DisplayFor(model => model.Team.CustomRoom)
+                @Model.Team.CustomRoom
             }
         </dd>
         <dt>
@@ -56,7 +56,7 @@
             }
             else
             {
-                @Html.DisplayFor(model => model.Team.PrimaryPhoneNumber)
+                @Model.Team.PrimaryPhoneNumber
             }
         </dd>
         <dt>
@@ -69,7 +69,7 @@
             }
             else
             {
-                @Html.DisplayFor(model => model.Team.SecondaryPhoneNumber)
+                @Model.Team.SecondaryPhoneNumber
             }
         </dd>
         <dt>
@@ -82,7 +82,7 @@
             }
             else
             {
-                @Html.DisplayFor(model => model.Team.PrimaryContactEmail)
+                @Model.Team.PrimaryContactEmail
             }
         </dd>
         <dt>

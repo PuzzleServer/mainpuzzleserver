@@ -194,10 +194,10 @@
                             @Html.Raw(Model.LocalTime(Model.SubmissionViews[i].Submission.TimeSubmitted))
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => Model.SubmissionViews[i].SubmitterName)
+                            @(Model.SubmissionViews[i].SubmitterName)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => Model.SubmissionViews[i].Submission.SubmissionText)
+                            @(Model.SubmissionViews[i].Submission.SubmissionText)
                         </td>
                         <td>
                             @{
@@ -209,7 +209,7 @@
                                     {
                                         if (Model.SubmissionViews[i].Submission.FreeformAccepted != null)
                                         {
-                                            @Html.DisplayFor(modelItem => Model.SubmissionViews[i].FreeformReponse);
+                                            @(Model.SubmissionViews[i].FreeformReponse);
                                         }
                                         else if (Model.PuzzleState.SolvedTime == null)
                                         {

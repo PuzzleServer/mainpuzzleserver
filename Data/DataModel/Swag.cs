@@ -16,13 +16,10 @@ namespace ServerCore.DataModel
 
         public virtual PuzzleUser Player { get; set; }
 
-        [Display(Name ="Lunch Selection")]
         public string Lunch { get; set; }
 
-        [Display(Name = "Dietary Modifications (e.g. no cheese)")]
         public string LunchModifications { get; set; }
 
-        [Display(Name = "T-Shirt Size")]
         public string ShirtSize { get; set; }
     }
 }
