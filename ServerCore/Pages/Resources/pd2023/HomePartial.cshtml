@@ -1,0 +1,59 @@
+﻿@{
+    var eventPage = Model as ServerCore.ModelBases.EventSpecificPageModel;
+    var Event = eventPage?.Event;
+}
+
+@if (!string.IsNullOrEmpty(Event.HomeContent))
+{
+    @Html.Raw(Event.HomeContent)
+}
+else
+{
+
+    <div class="container" id="pd2023-container">
+        <h2 class="pd2023-title">
+            <span>Intern Puzzleday 2023</span>
+        </h2>
+
+        <div class="pd2023-container-root">
+            <div class="pd2023-container-card card-1 column-container">
+                <div class="column-one-third">
+                    <h3>WELCOME TO PUZZLEDAY</h3>
+                    <p>Puzzleday is a fun 8-hour event where teams of 10-12 players solve puzzles.  We accept puzzle solvers of all levels!  Check out our <b><a asp-page="/EventSpecific/FAQ">FAQ</a></b> and <b><a asp-page="/EventSpecific/Rules">Rules</a></b> pages for more information or to request accommodations.</p>
+                </div>
+                <div class="column-two-third">
+                    <img src="~/images/pd2023/pd2023logo.png" height="160" width="160" title="Puzzleday 2023 logo" alt="Puzzleday 2023 logo" />
+                </div>
+            </div>
+
+            <div class="pd2023-container-card card-2">
+                <h3>NEW TO PUZZLES?</h3>
+                <p>You may know about jigsaw puzzles, crossword puzzles, and Sudoku puzzles, but that's just the beginning! Puzzleday puzzles also have a tendency to get&hellip; creative, so you might see something that looks especially strange! Check out a few <a asp-page="/EventSpecific/Samples">sample puzzles</a> or peruse our <a href="https://puzzlearchive.azurewebsites.net/puzzleday/main.html">collection of puzzles</a> from past events.</p>
+            </div>
+
+            <div class="pd2023-container-card card-3">
+                <h3>FULL SCHEDULE (all times PDT)</h3>
+
+                <h4>July 3-7 (optional)</h4>
+                <p>A variety of pregame puzzles for fun and learning how to use our website. Log into the site, join a team, and then click "Puzzles" at the top of the page.</p>
+
+                <h4>July 8 - DAY OF EVENT</h4>
+                <ul>
+                    <li><b>9:30</b> Meet in 33/McKinley to sign in and get important information.</li>
+                    <li><b>10:00</b> Opening ceremony and receive your puzzles.</li>
+                    <li><b>10:15-5:00</b> Solve puzzles in your assigned conference rooms.</li>
+                    <li><b>5:15-6ish</b> Meet in 33/McKinley to celebrate the winners, see the solutions, and chat with the puzzle creators.</li>
+                </ul>
+            </div>
+
+            <div class="pd2023-container-card card-4">
+                <h3>HOW TO SIGN UP</h3>
+                <p>REGISTRATION IS NOW OPEN!</p>
+                <p><a href="https://puzzlehunt.azurewebsites.net/pd2023play/Teams/List"><b>CLICK HERE</b></a> to create a team and/or look for teams who are open to new members.</p>
+                <p>By the time the event starts, teams must have at least 6 interns present on the Redmond campus during the event. Teams can include remote interns. Teams can include 1 or 2 non-Microsoft-employee guests. Recommended team size is 10-12.</p>
+                <p>On July 8<sup>th</sup> if your team has fewer than 6 people, you will need to combine with another team. If you need help doing this, let us know and we'll help!</p>
+            </div>
+        </div>
+    </div>
+
+}

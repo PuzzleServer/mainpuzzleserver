@@ -1,0 +1,160 @@
+﻿@{
+    var eventPage = Model as ServerCore.ModelBases.EventSpecificPageModel;
+    var Event = eventPage?.Event;
+}
+
+@if (!string.IsNullOrEmpty(Event.FAQContent))
+{
+    @Html.Raw(Event.FAQContent)
+}
+else
+{
+
+    <div class="container">
+        <h2>FAQ for Intern Puzzleday 2023</h2>
+
+        <h3>
+            What is Intern Puzzleday?
+        </h3>
+        <p>
+            Microsoft Intern Puzzleday is an annual collaborative puzzle competition that challenges teams to solve a large number of original puzzles of all different kinds. These puzzles include wordplay, cryptograms, live events, logic problems, and more. 
+        </p>
+
+        <h3>
+            Who is Puzzleday for?
+        </h3>
+        <p>
+            Puzzleday is for Microsoft interns. It's a team competition open to novice and hardcore puzzle solvers alike. More information about registration is available on the <a asp-page="/EventSpecific/Rules">Rules</a> page.
+        </p>
+
+        <h3>
+            When is Intern Puzzleday 2023?
+        </h3>
+        <p>
+            Puzzleday begins at <strong>10:00 AM on Saturday July 8th, 2023</strong> in 33/McKinley. You should show up at 9:30 AM to meet your team and check in. We'll have an opening ceremony and then hand out the puzzle packets shortly after 10:00 AM. Puzzleday runs continuously, with answer submission ending at 5:00 PM. An awards and puzzle-demystification ceremony will be held shortly thereafter, starting at 5:15 PM in 33/McKinley.
+        </p>
+
+        <h3>
+            How many people can be on a team?
+        </h3>
+        <p>
+            Each team can have a maximum of 12 people.  At least six people must be Microsoft interns and must be physically present on-campus. Remote interns are allowed. One or two members of your team can be non-Microsoft intern guests, but remember that no Microsoft FTEs are allowed. Remember that your guests will need members with Microsoft badges to get into buildings.
+        </p>
+
+        <h3>
+            What equipment do I need?
+        </h3>
+        <p>
+            Primarily your brain and a lot of imagination. Every member of your team should have access to a computer. A pair of headphones or speakers may be desired. Building copy rooms will have all other office supplies you may need.  
+        </p>
+
+        <h3>
+            What if I need extra copies of a puzzle?
+        </h3>
+        <p>
+            All Microsoft employees have access to printers.  Just print the puzzle's webpage straight from the browser!  If you need help installing the printer, follow the instructions at <a href="https://aka.ms/FollowMePrinting" target="_blank">aka.ms/FollowMePrinting</a>. 
+        </p>
+
+        <h3>
+            Who wins?
+        </h3>
+        <p>
+            See the <a asp-page="/EventSpecific/Rules">Rules</a> page for more information.
+        </p>
+
+        <h3>
+            How do we know if we've solved a puzzle?
+        </h3>
+        <p>
+            Each puzzle solves to either a single word or a short phrase. In some puzzles you are explicitly told how to get the final answer. In others, figuring out how to extract the final answer is part of the puzzle. <strong>When you think you've found the answer, enter it into the website and it will immediately tell you if you are correct</strong>. Sometimes, you can get a long phrase while working through a puzzle. That phrase is probably a clue to a shorter answer. Try entering the phrase into the website. If the word/phrase is recognized, you may get a &quot;Keep going&quot; or similar message. This means that you entered a valid partial answer and are on the right track.
+        </p>
+
+        <h3>
+            What is a &quot;Metapuzzle&quot;?
+        </h3>
+        <p>
+            A metapuzzle is a special puzzle that takes the progress you've made from solving other puzzles and combines them in some way. It is not necessary to solve all other puzzles before solving the final metapuzzle, but solving more puzzles often makes progress on the metapuzzle easier. The metapuzzle will be clearly labeled, and it is highly recommended to start looking at it early.
+        </p>
+
+        <h3>
+            How do we solve puzzles that don't have instructions?
+        </h3>
+        <p>
+            In some puzzles, the challenge is figuring out what the puzzle is asking of you. The key is usually to look for patterns or common bonds between the parts of the puzzle. For example, are many of the words spelled wrong? Have all the vowels been left out? Sometimes there may be a hint hidden in the puzzle.  You may also find inspiration by looking at the list of <a asp-page="/EventSpecific/Encodings">Encodings</a> or <a asp-page="/EventSpecific/Tools">Tools</a>. Also, the title is sometimes a hint as to what is going on. 
+        </p>
+
+        <h3>
+            What's the best way to win?
+        </h3>
+        <p>
+            The best way to win is to solve puzzles quickly so that you get to the final metapuzzle. The best way to accomplish this is with teamwork. Many teams prefer to work individually on the easier puzzles and work as a group on the harder puzzles. If you get stuck, ask for help or switch to another puzzle. Make sure you keep track of which puzzles you've already solved and confirmed using the answer submission system.
+        </p>
+
+        <h3>
+            What's the best way to lose?
+        </h3>
+        <p>
+            Not having fun. If you're not having fun working on a particular puzzle, switch to another one.
+        </p>
+
+        <h3>
+            What if we're really stuck?
+        </h3>
+        <p>
+            If you don't understand how to solve a puzzle, request a hint using the link associated with that puzzle.
+        </p>
+
+        <h3>
+            What are the prizes?
+        </h3>
+        <p>
+            Each member of the winning teams will receive a modest and thematic prize.
+        </p>
+
+        <h3>
+            Can I finish by accident, without solving the puzzles?
+        </h3>
+        <p>
+            Haha. No.
+        </p>
+
+        <h3>
+            Do I have to register to participate?
+        </h3>
+        <p>
+            Yes.
+        </p>
+
+        <h3>
+            Do I have to be on the Redmond campus to participate?
+        </h3>
+        <p>
+            Each team is required to have six Microsoft interns physically present on the Redmond campus during the event. Any other players can be in-person or remote.
+        </p>
+
+        <h3>
+            I'm not that good at solving puzzles and some of these puzzles look hard. Can I still participate?
+        </h3>
+        <p>
+            Yes! The event is designed so that less experienced teams will have fun. It's also OK to have teams that consist of some hard-core participants and some casual participants. Our puzzles have a variety of difficulty levels, so there's a good chance there will be puzzles that you enjoy.
+        </p>
+
+        <h3 id="Accommodation_Requests">
+            I have an accommodation request and/or require the use of assistive technology. Can I still participate?
+        </h3>
+        <p>
+            Absolutely. We endeavor to make our puzzles in general accessible to all audiences, although some specific puzzles may use mechanics that are less accessible to people of certain abilities than others. 
+        </p>
+        <p>    
+            If you think you will require alternate versions of puzzles or any other accommodation, please reach out to Puzzleday staff <a href="https://aka.ms/pdaccform22" target="_blank">by filling out this form</a> as soon as you can before the event so we can prepare the materials. By default, the puzzles we provide digitally are compatible with Windows' built-in accessibility tools like <strong>Narrator</strong>. For more customized accommodations, we will engage in a dialog with you to determine what will be most effective.  
+        </p>
+
+        <h3>
+            How do I contact Puzzleday staff?
+        </h3>
+        <p>
+            Send email to <a href="mailto:puzzhunt@microsoft.com">puzzhunt</a>.
+        </p>
+    </div>
+
+}
