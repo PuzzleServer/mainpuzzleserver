@@ -138,12 +138,22 @@ namespace ServerCore.Pages.Teams
                     _context.HintStatePerTeam.Add(new HintStatePerTeam() { Hint = hint, Team = Team });
                 }
 
-                var puzzleIDs = await (from puzzle in _context.Puzzles
+                var puzzles = await (from puzzle in _context.Puzzles
                                 where puzzle.Event == Event
-                                select puzzle.ID).ToListAsync();
-                foreach (int puzzleID in puzzleIDs)
+                                select puzzle).ToListAsync();
+                foreach (Puzzle puzzle in puzzles)
                 {
-                    _context.PuzzleStatePerTeam.Add(new PuzzleStatePerTeam() { PuzzleID = puzzleID, Team = Team });
+                    if (puzzle.IsForSinglePlayer)
+                    {
+                        if (EventRole == EventRole.play)
+                        {
+                            _context.SinglePlayerPuzzleStatePerPlayer.Add(new SinglePlayerPuzzleStatePerPlayer() { PuzzleID = puzzle.ID, UserID = LoggedInUser.ID });
+                        }
+                    }
+                    else
+                    {
+                        _context.PuzzleStatePerTeam.Add(new PuzzleStatePerTeam() { PuzzleID = puzzle.ID, Team = Team });
+                    }
                 }
 
                 await _context.SaveChangesAsync();

@@ -9,6 +9,10 @@ using ServerCore.Helpers;
 
 namespace ServerCore
 {
+    /// <summary>
+    /// The helper to for <see cref="PuzzleStatePerTeam"/>.
+    /// Note that single player puzzles (puzzles associated with the individuals rather than the teams) will have their "team" property set to "null".
+    /// </summary>
     public class PuzzleStateHelper
     {
         /// <summary>

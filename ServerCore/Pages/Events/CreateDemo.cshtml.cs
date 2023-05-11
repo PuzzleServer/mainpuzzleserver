@@ -149,6 +149,21 @@ namespace ServerCore.Pages.Events
                 };
                 _context.Puzzles.Add(hard);
 
+                Puzzle singlePlayer = new Puzzle
+                {
+                    Name = "Single player sample",
+                    Event = Event,
+                    IsPuzzle = true,
+                    SolveValue = 10,
+                    HintCoinsForSolve = 3,
+                    Group = "Sample",
+                    OrderInGroup = 3,
+                    MinPrerequisiteCount = 1,
+                    Description = "Demonstrates single player puzzles",
+                    IsForSinglePlayer = true
+                };
+                _context.Puzzles.Add(singlePlayer);
+
                 Puzzle meta = new Puzzle
                 {
                     Name = "Lagomorph Meta",
@@ -280,6 +295,8 @@ namespace ServerCore.Pages.Events
                 _context.Responses.Add(new Response() { Puzzle = intermediate, SubmittedText = "ANSWER", ResponseText = "Correct!", IsSolution = true });
                 _context.Responses.Add(new Response() { Puzzle = hard, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
                 _context.Responses.Add(new Response() { Puzzle = hard, SubmittedText = "ANSWER", ResponseText = "Correct!", IsSolution = true });
+                _context.Responses.Add(new Response() { Puzzle = singlePlayer, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
+                _context.Responses.Add(new Response() { Puzzle = singlePlayer, SubmittedText = "ANSWER", ResponseText = "Correct!", IsSolution = true });
                 _context.Responses.Add(new Response() { Puzzle = meta, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
                 _context.Responses.Add(new Response() { Puzzle = meta, SubmittedText = "ANSWER", ResponseText = "Correct!", IsSolution = true });
                 _context.Responses.Add(new Response() { Puzzle = other, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
@@ -405,6 +422,10 @@ namespace ServerCore.Pages.Events
                 var teams = await _context.Teams.Where((t) => t.Event == Event).ToListAsync();
                 var hints = await _context.Hints.Where((h) => h.Puzzle.Event == Event).ToListAsync();
                 var puzzles = await _context.Puzzles.Where(p => p.Event == Event).ToListAsync();
+                var teamMemberIds = await _context.TeamMembers
+                    .Where((tm) => tm.Team.EventID == Event.ID)
+                    .Select(tm => tm.Member.ID)
+                    .ToListAsync();
 
                 foreach (Team team in teams)
                 {
@@ -412,9 +433,23 @@ namespace ServerCore.Pages.Events
                     {
                         _context.HintStatePerTeam.Add(new HintStatePerTeam() { Hint = hint, Team = team });
                     }
-                    foreach (Puzzle puzzle in puzzles)
+                }
+
+                foreach (Puzzle puzzle in puzzles)
+                {
+                    if (puzzle.IsForSinglePlayer)
                     {
-                        _context.PuzzleStatePerTeam.Add(new PuzzleStatePerTeam() { PuzzleID = puzzle.ID, TeamID = team.ID });
+                        foreach (var teamMemberId in teamMemberIds)
+                        {
+                            _context.SinglePlayerPuzzleStatePerPlayer.Add(new SinglePlayerPuzzleStatePerPlayer() { PuzzleID = puzzle.ID, UserID = teamMemberId });
+                        }
+                    }
+                    else
+                    {
+                        foreach (Team team in teams)
+                        {
+                            _context.PuzzleStatePerTeam.Add(new PuzzleStatePerTeam() { PuzzleID = puzzle.ID, TeamID = team.ID });
+                        }
                     }
                 }
 

@@ -3,6 +3,7 @@
     var Event = eventPage?.Event;
     var EventRole = eventPage?.EventRole;
     bool IsRegistered = false;
+
     int? teamId = null;
     if (eventPage != null)
     {
@@ -178,7 +179,17 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li><a asp-page="/EventSpecific/Index">Event</a></li>
-                    <li><a asp-page="/Teams/Play" asp-route-teamId="@teamId">Puzzles</a></li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            Puzzles
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a asp-page="/Teams/Play" asp-route-teamId="@teamId">Team Puzzles</a></li>
+                            <li class="divider"></li>
+                            <li><a asp-page="/Players/SinglePlayerPuzzles">Non-team puzzles</a></li>
+                        </ul>
+                    </li>
                     @if (Event.EventHasSwag)
                     {
                         if (DateTime.UtcNow > Event.TeamMiscDataChangeEnd || await Model.HasSwag())

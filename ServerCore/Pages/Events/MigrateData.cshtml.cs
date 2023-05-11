@@ -111,7 +111,7 @@ namespace ServerCore.Pages.Events
             foreach (int ev in allEvents)
             {
                 List<int> allPuzzles = await (from puzzle in _context.Puzzles
-                                              where puzzle.EventID == ev
+                                              where puzzle.EventID == ev && !puzzle.IsForSinglePlayer
                                               select puzzle.ID).ToListAsync();
                 List<int> allTeams = await (from team in _context.Teams
                                             where team.EventID == ev
@@ -144,6 +144,60 @@ namespace ServerCore.Pages.Events
             else
             {
                 Status = "No new PuzzleStatePerTeam rows needed";
+            }
+
+            return Page();
+        }
+
+        /// <summary>
+        /// Create missing SinglePlayerPuzzleStatePerPlayer rows from when they were lazily created
+        /// </summary>
+        public async Task<IActionResult> OnPostCreateMissingPSPIAsync()
+        {
+            List<int> allEvents = await (from ev in _context.Events
+                                         select ev.ID).ToListAsync();
+
+            var allSinglePlayerPuzzleStates = await (from state in _context.SinglePlayerPuzzleStatePerPlayer
+                                  select new { state.PuzzleID, state.UserID }).ToDictionaryAsync(pspi => (((ulong)pspi.PuzzleID) << 32) | (uint)pspi.UserID);
+
+            List<SinglePlayerPuzzleStatePerPlayer> newStates = new List<SinglePlayerPuzzleStatePerPlayer>();
+
+            foreach (int ev in allEvents)
+            {
+                List<int> allPuzzles = await (from puzzle in _context.Puzzles
+                                              where puzzle.EventID == ev && puzzle.IsForSinglePlayer
+                                              select puzzle.ID).ToListAsync();
+                List<int> allTeamMemberIds = await (from teamMember in _context.TeamMembers
+                                            where teamMember.Team.EventID == ev
+                                            select teamMember.Member.ID).ToListAsync();
+
+                foreach (int puzzle in allPuzzles)
+                {
+                    foreach (int teamMemberId in allTeamMemberIds)
+                    {
+                        ulong key = (((ulong)puzzle) << 32) | (uint)teamMemberId;
+                        if (!allSinglePlayerPuzzleStates.ContainsKey(key))
+                        {
+                            SinglePlayerPuzzleStatePerPlayer newState = new SinglePlayerPuzzleStatePerPlayer()
+                            {
+                                PuzzleID = puzzle,
+                                UserID = teamMemberId,
+                            };
+
+                            newStates.Add(newState);
+                        }
+                    }
+                }
+            }
+            if (newStates.Count > 0)
+            {
+                _context.SinglePlayerPuzzleStatePerPlayer.AddRange(newStates.ToArray());
+                await _context.SaveChangesAsync();
+                Status = $"Added {newStates.Count} missing SinglePlayerPuzzleStatePerPlayer rows";
+            }
+            else
+            {
+                Status = "No new SinglePlayerPuzzleStatePerPlayer rows needed";
             }
 
             return Page();

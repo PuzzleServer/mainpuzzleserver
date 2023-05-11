@@ -149,18 +149,39 @@ namespace ServerCore.Pages.Events
                         }
                     }
 
-                    // PuzzleStatePerTeam
-                    foreach (Team team in _context.Teams.Where(t => t.Event == Event))
+                    if (sourcePuzzle.IsForSinglePlayer)
                     {
-                        int newPuzzleId = puzzleCloneMap[sourcePuzzle.ID].ID;
-                        bool hasPuzzleStatePerTeam = await (from pspt in _context.PuzzleStatePerTeam
-                                                            where pspt.PuzzleID == newPuzzleId &&
-                                                            pspt.TeamID == team.ID
-                                                            select pspt).AnyAsync();
-                        if (!hasPuzzleStatePerTeam)
+                        foreach (int userId in _context.TeamMembers
+                            .Where(member => member.Team.EventID == Event.ID)
+                            .Select(member => member.Member.ID))
                         {
-                            PuzzleStatePerTeam newPspt = new PuzzleStatePerTeam() { TeamID = team.ID, PuzzleID = newPuzzleId };
-                            _context.PuzzleStatePerTeam.Add(newPspt);
+                            int newPuzzleId = puzzleCloneMap[sourcePuzzle.ID].ID;
+                            bool hasSinglePlayerPuzzleStatePerPlayer = await (from state in _context.SinglePlayerPuzzleStatePerPlayer
+                                                                        where state.PuzzleID == newPuzzleId &&
+                                                                        state.UserID == userId
+                                                                        select state).AnyAsync();
+                            if (!hasSinglePlayerPuzzleStatePerPlayer)
+                            {
+                                SinglePlayerPuzzleStatePerPlayer newState = new SinglePlayerPuzzleStatePerPlayer() { UserID = userId, PuzzleID = newPuzzleId };
+                                _context.SinglePlayerPuzzleStatePerPlayer.Add(newState);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // PuzzleStatePerTeam
+                        foreach (Team team in _context.Teams.Where(t => t.Event == Event))
+                        {
+                            int newPuzzleId = puzzleCloneMap[sourcePuzzle.ID].ID;
+                            bool hasPuzzleStatePerTeam = await (from pspt in _context.PuzzleStatePerTeam
+                                                                where pspt.PuzzleID == newPuzzleId &&
+                                                                pspt.TeamID == team.ID
+                                                                select pspt).AnyAsync();
+                            if (!hasPuzzleStatePerTeam)
+                            {
+                                PuzzleStatePerTeam newPspt = new PuzzleStatePerTeam() { TeamID = team.ID, PuzzleID = newPuzzleId };
+                                _context.PuzzleStatePerTeam.Add(newPspt);
+                            }
                         }
                     }
 
