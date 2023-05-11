@@ -77,7 +77,7 @@ namespace ServerCore.Pages.Submissions
             }
             
             // Don't allow submissions if the team is locked out.
-            if (PuzzleState.IsTeamLockedOut)
+            if (PuzzleState.IsLockedOut)
             {
                 return Page();
             }

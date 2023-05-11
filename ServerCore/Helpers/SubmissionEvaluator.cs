@@ -99,7 +99,7 @@ namespace ServerCore.Helpers
             }
 
             // The team is locked out
-            if (puzzleState.IsTeamLockedOut || puzzleState.IsEmailOnlyMode)
+            if (puzzleState.IsLockedOut || puzzleState.IsEmailOnlyMode)
             {
                 return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.TeamLockedOut };
             }

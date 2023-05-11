@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ServerCore.DataModel;
 
+#nullable disable
+
 namespace Data.Migrations
 {
     [DbContext(typeof(PuzzleServerContext))]
@@ -15,9 +17,13 @@ namespace Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .UseIdentityColumns()
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.2");
+                .HasAnnotation("ProductVersion", "7.0.2")
+                .HasAnnotation("Proxies:ChangeTracking", false)
+                .HasAnnotation("Proxies:CheckEquality", false)
+                .HasAnnotation("Proxies:LazyLoading", true)
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -43,15 +49,16 @@ namespace Data.Migrations
                         .HasDatabaseName("RoleNameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
-                    b.ToTable("AspNetRoles");
+                    b.ToTable("AspNetRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -67,7 +74,7 @@ namespace Data.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims");
+                    b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
@@ -132,15 +139,16 @@ namespace Data.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.ToTable("AspNetUsers");
+                    b.ToTable("AspNetUsers", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -156,7 +164,7 @@ namespace Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims");
+                    b.ToTable("AspNetUserClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -180,7 +188,7 @@ namespace Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins");
+                    b.ToTable("AspNetUserLogins", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -195,7 +203,7 @@ namespace Data.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles");
+                    b.ToTable("AspNetUserRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -216,7 +224,7 @@ namespace Data.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens");
+                    b.ToTable("AspNetUserTokens", (string)null);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Annotation", b =>
@@ -252,8 +260,9 @@ namespace Data.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<int>("EventID")
                         .HasColumnType("int");
@@ -286,8 +295,9 @@ namespace Data.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<bool>("AllowFeedback")
                         .HasColumnType("bit");
@@ -402,8 +412,9 @@ namespace Data.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<int>("AdminID")
                         .HasColumnType("int");
@@ -424,8 +435,9 @@ namespace Data.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<int>("AuthorID")
                         .HasColumnType("int");
@@ -446,8 +458,9 @@ namespace Data.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<int>("Difficulty")
                         .HasColumnType("int");
@@ -480,8 +493,9 @@ namespace Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Content")
                         .IsRequired()
@@ -529,8 +543,9 @@ namespace Data.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<string>("EmailAddress")
                         .HasColumnType("nvarchar(max)");
@@ -558,8 +573,9 @@ namespace Data.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<string>("Contents")
                         .IsRequired()
@@ -584,8 +600,9 @@ namespace Data.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<int>("PrerequisiteID")
                         .HasColumnType("int");
@@ -606,8 +623,9 @@ namespace Data.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<string>("CustomSolutionURL")
                         .HasColumnType("nvarchar(max)");
@@ -640,6 +658,9 @@ namespace Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsFinalPuzzle")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsForSinglePlayer")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsFreeform")
@@ -711,8 +732,9 @@ namespace Data.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<int>("AuthorID")
                         .HasColumnType("int");
@@ -771,8 +793,9 @@ namespace Data.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
@@ -811,8 +834,9 @@ namespace Data.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<bool>("IsSolution")
                         .HasColumnType("bit");
@@ -838,12 +862,104 @@ namespace Data.Migrations
                     b.ToTable("Responses");
                 });
 
+            modelBuilder.Entity("ServerCore.DataModel.SinglePlayerPuzzleStatePerPlayer", b =>
+                {
+                    b.Property<int>("PuzzleID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsEmailOnlyMode")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LockoutExpiryTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Printed")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("SolvedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UnlockedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("WrongSubmissionCountBuffer")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("PuzzleID", "UserID");
+
+                    b.HasIndex("UserID");
+
+                    b.HasIndex("UserID", "SolvedTime");
+
+                    b.ToTable("SinglePlayerPuzzleStatePerPlayer");
+                });
+
+            modelBuilder.Entity("ServerCore.DataModel.SinglePlayerPuzzleSubmission", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<bool>("AllowFreeformSharing")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("FreeformAccepted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("FreeformFavorited")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("FreeformJudgeID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FreeformResponse")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PuzzleID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ResponseID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SubmissionText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("SubmitterID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("TimeSubmitted")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("FreeformJudgeID");
+
+                    b.HasIndex("PuzzleID");
+
+                    b.HasIndex("ResponseID");
+
+                    b.HasIndex("SubmitterID", "PuzzleID", "SubmissionText")
+                        .IsUnique();
+
+                    b.ToTable("SinglePlayerPuzzleSubmissions");
+                });
+
             modelBuilder.Entity("ServerCore.DataModel.Submission", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<bool>("AllowFreeformSharing")
                         .HasColumnType("bit");
@@ -904,8 +1020,9 @@ namespace Data.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<int>("EventId")
                         .HasColumnType("int");
@@ -935,8 +1052,9 @@ namespace Data.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<string>("Bio")
                         .HasColumnType("nvarchar(max)");
@@ -989,8 +1107,9 @@ namespace Data.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<int>("PlayerID")
                         .HasColumnType("int");
@@ -1011,8 +1130,9 @@ namespace Data.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<int>("Team.ID")
                         .HasColumnType("int");
@@ -1300,6 +1420,56 @@ namespace Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Puzzle");
+                });
+
+            modelBuilder.Entity("ServerCore.DataModel.SinglePlayerPuzzleStatePerPlayer", b =>
+                {
+                    b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
+                        .WithMany()
+                        .HasForeignKey("PuzzleID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Puzzle");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ServerCore.DataModel.SinglePlayerPuzzleSubmission", b =>
+                {
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "FreeformJudge")
+                        .WithMany()
+                        .HasForeignKey("FreeformJudgeID");
+
+                    b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
+                        .WithMany()
+                        .HasForeignKey("PuzzleID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ServerCore.DataModel.Response", "Response")
+                        .WithMany()
+                        .HasForeignKey("ResponseID");
+
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Submitter")
+                        .WithMany()
+                        .HasForeignKey("SubmitterID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("FreeformJudge");
+
+                    b.Navigation("Puzzle");
+
+                    b.Navigation("Response");
+
+                    b.Navigation("Submitter");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Submission", b =>
