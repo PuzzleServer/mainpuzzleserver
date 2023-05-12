@@ -74,6 +74,12 @@ namespace ServerCore.Pages.Puzzles
                     break;
                 case PuzzleType.StartPuzzle:
                     break;
+                case PuzzleType.SinglePlayerPuzzle:
+                    p.IsPuzzle = true;
+                    p.SolveValue = 1;
+                    p.MinPrerequisiteCount = 1;
+                    p.IsForSinglePlayer = true;
+                    break;
             }
 
             using (IDbContextTransaction transaction = _context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable))
@@ -124,7 +130,8 @@ namespace ServerCore.Pages.Puzzles
             FinalMetaPuzzle,
             CheatCode,
             StartPuzzle,
-            InvisiblePuzzle
+            InvisiblePuzzle,
+            SinglePlayerPuzzle
         }
     }
 }

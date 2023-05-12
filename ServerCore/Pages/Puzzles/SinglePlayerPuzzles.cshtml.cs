@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 using ServerCore.ModelBases;
 
-namespace ServerCore.Pages.Players
+namespace ServerCore.Pages.Puzzles
 {
     /// <summary>
     /// Model for the player's "Puzzles" page. Shows a list of the player's individual unsolved puzzles, with sorting options.
@@ -36,25 +36,25 @@ namespace ServerCore.Pages.Players
 
         public async Task OnGetAsync(SortOrder? sort, PuzzleStateFilter? stateFilter)
         {
-            this.Sort = sort;
-            this.StateFilter = stateFilter;
+            Sort = sort;
+            StateFilter = stateFilter;
 
             ShowAnswers = Event.AnswersAvailableBegin <= DateTime.UtcNow;
             AllowFeedback = Event.AllowFeedback;
 
             // all puzzles for this event that are real puzzles
-            var puzzlesInEventQ = _context.Puzzles.Where(puzzle => puzzle.Event.ID == this.Event.ID && puzzle.IsPuzzle && puzzle.IsForSinglePlayer);
+            var puzzlesInEventQ = _context.Puzzles.Where(puzzle => puzzle.Event.ID == Event.ID && puzzle.IsPuzzle && puzzle.IsForSinglePlayer);
 
             // all puzzle states that are unlocked (note: IsUnlocked bool is going to harm perf, just null check the time here)
             // Note that it's OK if some puzzles do not yet have a state record; those puzzles are clearly still locked and hence invisible.
             // All puzzles will show if all answers have been released)
-            var puzzleStateQ = _context.SinglePlayerPuzzleStatePerPlayer.Where(state => state.UserID == this.LoggedInUser.ID && (ShowAnswers || state.UnlockedTime != null));
+            var puzzleStateQ = _context.SinglePlayerPuzzleStatePerPlayer.Where(state => state.UserID == LoggedInUser.ID && (ShowAnswers || state.UnlockedTime != null));
 
             // join 'em (note: just getting all properties for max flexibility, can pick and choose columns for perf later)
             // Note: EF gotcha is that you have to join into anonymous types in order to not lose valuable stuff
             var visiblePuzzlesQ = from Puzzle puzzle in puzzlesInEventQ
                                   join SinglePlayerPuzzleStatePerPlayer pspi in puzzleStateQ on puzzle.ID equals pspi.PuzzleID
-                                  select new PuzzleView 
+                                  select new PuzzleView
                                   {
                                       ID = puzzle.ID,
                                       Group = puzzle.Group,
@@ -91,7 +91,7 @@ namespace ServerCore.Pages.Players
                     throw new ArgumentException($"unknown sort: {sort}");
             }
 
-            if (this.StateFilter == PuzzleStateFilter.Unsolved)
+            if (StateFilter == PuzzleStateFilter.Unsolved)
             {
                 visiblePuzzlesQ = visiblePuzzlesQ.Where(puzzles => puzzles.SolvedTime == null);
             }
@@ -126,7 +126,7 @@ namespace ServerCore.Pages.Players
         {
             SortOrder result = ascendingSort;
 
-            if (result == (this.Sort ?? DefaultSort))
+            if (result == (Sort ?? DefaultSort))
             {
                 result = descendingSort;
             }

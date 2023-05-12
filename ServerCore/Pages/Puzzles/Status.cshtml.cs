@@ -32,6 +32,10 @@ namespace ServerCore.Pages.Puzzles
                 return NotFound();
             }
 
+            if (Puzzle.IsForSinglePlayer)
+            {
+                return RedirectToPage("/Puzzles/SinglePlayerPuzzleStatus", new { puzzleId = puzzleId });
+            }
             return await InitializeModelAsync(Puzzle, null, sort: sort);
         }
 

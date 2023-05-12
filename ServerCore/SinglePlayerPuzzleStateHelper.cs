@@ -134,6 +134,17 @@ namespace ServerCore
             await context.SaveChangesAsync();
         }
 
+        public static IQueryable<Puzzle> PuzzlesCausingGlobalLockout(
+            PuzzleServerContext context,
+            Event eventObj,
+            int playerId)
+        {
+            DateTime now = DateTime.UtcNow;
+            return SinglePlayerPuzzleStateHelper.GetSparseQuery(context, eventObj, puzzleId: null, playerId: playerId)
+                .Where(state => state.SolvedTime == null && state.UnlockedTime != null && state.Puzzle.MinutesOfEventLockout != 0 && EF.Functions.DateDiffMinute(state.UnlockedTime.Value, now) < state.Puzzle.MinutesOfEventLockout)
+                .Select((s) => s.Puzzle);
+        }
+
         /// <summary>
         /// Get a writable query of puzzle state. In the course of constructing the query, it will instantiate any state records that are missing on the server.
         /// </summary>
