@@ -277,6 +277,9 @@ namespace ServerCore.Pages.Submissions
         {
             await SetupContext(puzzleId);
 
+
+            return RedirectToPage("/Puzzles/SinglePlayerPuzzleStatus", new { puzzleId = puzzleId });
+
             return Page();
         }
 

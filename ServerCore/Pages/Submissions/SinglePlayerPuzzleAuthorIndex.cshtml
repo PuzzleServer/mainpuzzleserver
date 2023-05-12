@@ -1,0 +1,128 @@
+﻿@page "/{eventId}/{eventRole}/Submissions/SinglePlayerPuzzleAuthorIndex/{puzzleId?}"
+@model ServerCore.Pages.Submissions.SinglePlayerPuzzleAuthorIndexModel
+@{
+    ViewData["Title"] = "Submissions";
+    ViewData["AdminRoute"] = "../Submissions/SinglePlayerPuzzleAuthorIndex";
+    ViewData["AuthorRoute"] = "../Submissions/SinglePlayerPuzzleAuthorIndex";
+    // TODO: Needs to handle implicit teams - ViewData["PlayRoute"] = "../Submissions/Index";
+    ViewData["RoutingPuzzleId"] = ViewContext.RouteData.Values["puzzleId"];
+
+    if (Model.Puzzle != null)
+    {
+        Layout = "../Puzzles/_puzzleManagementLayout.cshtml";
+    }
+    // TODO: Do we need a combined layout, or is that rare enough as to be unnecessary? Maybe those bar layouts should be sections/components?
+}
+
+<h2>@if (Model.Puzzle != null)
+    {
+        <text>@Model.Puzzle.Name:</text>
+    } Submissions @if (Model.PlayerName != null)
+    {
+        <text>by @Model.PlayerName</text>
+    }</h2>
+<a asp-page="/Puzzles/Index">Back to puzzle list</a> | <a asp-page="/Submissions/SubmissionsWithoutResponses" asp-route-puzzleId="@Model.Puzzle?.ID">Submissions without responses</a>
+<div>
+    @if (Model.Puzzle != null)
+    {
+        <a asp-page="./SinglePlayerPuzzleAuthorIndex" asp-route-puzzleId="" asp-route-playerId="@Model.PlayerId" asp-route-hideFreeform="@Model.HideFreeform" asp-route-favoritesOnly="@Model.FavoritesOnly">Clear Puzzle Filter</a>
+    }
+    @if (Model.Puzzle != null && Model.PlayerId.HasValue)
+    {
+        <text>|</text>
+    }
+    @if (Model.PlayerId.HasValue)
+    {
+        <a asp-page="./SinglePlayerPuzzleAuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-playerId="" asp-route-hideFreeform="@Model.HideFreeform" asp-route-favoritesOnly="@Model.FavoritesOnly">Clear Player Filter</a>
+    }
+    @if (Model.Puzzle != null && Model.PlayerId.HasValue)
+    {
+        <text>|</text> <a asp-page="./SinglePlayerPuzzleAuthorIndex" asp-route-puzzleId="" asp-route-playerId="" asp-route-hideFreeform="@Model.HideFreeform" asp-route-favoritesOnly="false">Clear All Filters</a>
+    }
+    <text>|</text>
+    @if (Model.HideFreeform)
+    {
+        <a asp-page="./SinglePlayerPuzzleAuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-playerId="@Model.PlayerId" asp-route-hideFreeform="false" asp-route-sort="@Model.Sort" asp-route-favoritesOnly="@Model.FavoritesOnly">Show Freeform</a>
+    }
+    else
+    {
+        <a asp-page="./SinglePlayerPuzzleAuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-playerId="@Model.PlayerId" asp-route-hideFreeform="true" asp-route-sort="@Model.Sort" asp-route-favoritesOnly="@Model.FavoritesOnly">Hide Freeform</a>
+    }
+    @if (!Model.FavoritesOnly)
+    {
+        <a asp-page="./SinglePlayerPuzzleAuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-playerId="@Model.PlayerId" asp-route-hideFreeform="@Model.HideFreeform" asp-route-favoritesOnly="true" asp-route-sort="@Model.Sort">| Favorites Only</a>
+    }
+    else
+    {
+        <a asp-page="./SinglePlayerPuzzleAuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-playerId="@Model.PlayerId" asp-route-hideFreeform="@Model.HideFreeform" asp-route-favoritesOnly="false" asp-route-sort="@Model.Sort">| Clear Favorite Filter</a>
+    }
+</div>
+<br />
+<div>
+    Submitted answers shown below are capitalized and stripped of non-alphanumeric characters
+</div>
+<br />
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    <a asp-page="./SinglePlayerPuzzleAuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-playerId="@Model.PlayerId" asp-route-hideFreeform="@Model.HideFreeform" asp-route-sort="@(Model.SortForColumnLink(SinglePlayerPuzzleAuthorIndexModel.SortOrder.PlayerAscending, SinglePlayerPuzzleAuthorIndexModel.SortOrder.PlayerDescending))">
+                        Player
+                    </a>
+                </th>
+                <th>
+                    <a asp-page="./SinglePlayerPuzzleAuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-playerId="@Model.PlayerId" asp-route-hideFreeform="@Model.HideFreeform" asp-route-sort="@(Model.SortForColumnLink(SinglePlayerPuzzleAuthorIndexModel.SortOrder.PuzzleAscending, SinglePlayerPuzzleAuthorIndexModel.SortOrder.PuzzleDescending))">
+                        Puzzle
+                    </a>
+                </th>
+                <th>
+                    <a asp-page="./SinglePlayerPuzzleAuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-playerId="@Model.PlayerId" asp-route-hideFreeform="@Model.HideFreeform" asp-route-sort="@(Model.SortForColumnLink(SinglePlayerPuzzleAuthorIndexModel.SortOrder.ResponseAscending, SinglePlayerPuzzleAuthorIndexModel.SortOrder.ResponseDescending))">
+                        ResponseText
+                    </a>
+                </th>
+                <th>
+                    <a asp-page="./SinglePlayerPuzzleAuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-playerId="@Model.PlayerId" asp-route-hideFreeform="@Model.HideFreeform" asp-route-sort="@(Model.SortForColumnLink(SinglePlayerPuzzleAuthorIndexModel.SortOrder.SubmissionAscending, SinglePlayerPuzzleAuthorIndexModel.SortOrder.SubmissionDescending))">
+                        SubmissionText
+                    </a>
+                </th>
+                <th>
+                    <a asp-page="./SinglePlayerPuzzleAuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-playerId="@Model.PlayerId" asp-route-hideFreeform="@Model.HideFreeform" asp-route-sort="@(Model.SortForColumnLink(SinglePlayerPuzzleAuthorIndexModel.SortOrder.TimeAscending, SinglePlayerPuzzleAuthorIndexModel.SortOrder.TimeDescending))">
+                        TimeSubmitted
+                    </a>
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Submissions)
+            {
+                <tr>
+                    <td>
+                        @(item.SubmitterName)
+                    </td>
+                    <td>
+                        <a asp-page="AuthorIndex" asp-route-puzzleId="@item.PuzzleID" asp-route-playerId="@Model.PlayerId">@(item.PuzzleName)</a>
+                    </td>
+                    <td>
+                        @(item.ResponseText)
+                    </td>
+                    <td style="max-width: 500px; word-wrap: break-word">
+                        @if (item.Linkify)
+                        {
+                            <a href="@item.SubmissionText" target="_blank">@item.SubmissionText</a>
+                        }
+                        else
+                        {
+                            @(item.SubmissionText)
+                        }
+                    </td>
+                    <td>
+                        @Html.Raw(Model.LocalTime(item.TimeSubmitted))
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+

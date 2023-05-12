@@ -335,6 +335,8 @@ namespace ServerCore.DataModel
 
         public virtual List<Submission> Submissions { get; set; }
 
+        public virtual List<SinglePlayerPuzzleSubmission> SinglePlayerPuzzleSubmissions { get; set; }
+
         //
         // WARNING: If you add new properties add them to the constructor as well so importing will work.
         //
