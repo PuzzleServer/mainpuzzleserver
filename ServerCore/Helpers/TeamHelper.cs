@@ -118,9 +118,6 @@ namespace ServerCore.Helpers
             context.TeamMembers.Add(Member);
             await context.SaveChangesAsync();
 
-            // In background also include the single player puzzle state per player row for the newly added member.
-            Task _ = TeamHelper.AddSinglePlayerPuzzleStatePerPlayerAsync(context, Event.ID, user.ID);
-
             MailHelper.Singleton.SendPlaintextWithoutBcc(new string[] { team.PrimaryContactEmail, user.Email },
                 $"{Event.Name}: {user.Name} has now joined {team.Name}!",
                 $"Have a great time!");
@@ -193,26 +190,6 @@ namespace ServerCore.Helpers
             }
 
             return false;
-        }
-
-        /// <summary>
-        /// Adds the appropriate rows of single player puzzle state per player.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="eventId">The event id.</param>
-        /// <param name="userId">The user id.</param>
-        /// <returns>The task that adds the appropriate rows of puzzle state per player.</returns>
-        private static async Task AddSinglePlayerPuzzleStatePerPlayerAsync(PuzzleServerContext context, int eventId, int userId)
-        {
-            List<int> singlePlayerPuzzleIds = await (from puzzle in context.Puzzles
-                                                   where puzzle.IsForSinglePlayer && puzzle.EventID == eventId
-                                                   select puzzle.ID).ToListAsync();
-            foreach (int puzzleId in singlePlayerPuzzleIds)
-            {
-                context.SinglePlayerPuzzleStatePerPlayer.Add(new SinglePlayerPuzzleStatePerPlayer() { PuzzleID = puzzleId, UserID = userId });
-            }
-
-            await context.SaveChangesAsync();
         }
     }
 }

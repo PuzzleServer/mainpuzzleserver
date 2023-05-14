@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Numerics;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace ServerCore
 {
@@ -156,6 +157,25 @@ namespace ServerCore
         private static IQueryable<SinglePlayerPuzzleStatePerPlayer> GetFullReadWriteQuery(PuzzleServerContext context, Event eventObj, int? puzzleId, int? playerId, PuzzleUser author)
         {
             return GetSparseQuery(context, eventObj, puzzleId, playerId, author);
+        }
+
+        public static async Task AddStateIfNotThere(
+            PuzzleServerContext context,
+            Event eventObj, 
+            int puzzleId,
+            int playerId)
+        {
+            IQueryable<SinglePlayerPuzzleStatePerPlayer> statesQ = SinglePlayerPuzzleStateHelper
+                .GetFullReadWriteQuery(context, eventObj, puzzleId, playerId, author: null);
+            SinglePlayerPuzzleStatePerPlayer state = statesQ.FirstOrDefault();
+            if (state == null)
+            {
+                SinglePlayerPuzzleUnlockState unlockState = context.SinglePlayerPuzzleUnlockStates
+                    .Where(state => state.PuzzleID == puzzleId)
+                    .FirstOrDefault();
+                context.SinglePlayerPuzzleStatePerPlayer.Add(new SinglePlayerPuzzleStatePerPlayer { PuzzleID = puzzleId, UserID = playerId, UnlockedTime = unlockState?.UnlockedTime });
+                await context.SaveChangesAsync();
+            }
         }
 
         /// <summary>

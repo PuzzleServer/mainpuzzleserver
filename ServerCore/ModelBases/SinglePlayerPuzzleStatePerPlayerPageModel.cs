@@ -22,9 +22,9 @@ namespace ServerCore.ModelBases
 
         protected abstract SortOrder DefaultSort { get; }
 
-        public async Task<IActionResult> InitializeModelAsync(Puzzle puzzle, SortOrder? sort)
+        public async Task<IActionResult> InitializeModelAsync(SinglePlayerPuzzleUnlockState unlockState, SortOrder? sort)
         {
-            if (puzzle == null)
+            if (unlockState == null)
             {
                 return NotFound();
             }
@@ -33,7 +33,7 @@ namespace ServerCore.ModelBases
             IQueryable<SinglePlayerPuzzleStatePerPlayer> statesQ = SinglePlayerPuzzleStateHelper.GetFullReadOnlyQuery(
                 _context,
                 Event,
-                puzzle.ID,
+                unlockState.PuzzleID,
                 playerId: isAuthorOrAdmin ? null : LoggedInUser.ID,
                 author: EventRole == EventRole.admin ? null : LoggedInUser);
             Sort = sort;
@@ -51,12 +51,6 @@ namespace ServerCore.ModelBases
                     break;
                 case SortOrder.UserDescending:
                     statesQ = statesQ.OrderByDescending(state => state.User.Name);
-                    break;
-                case SortOrder.UnlockAscending:
-                    statesQ = statesQ.OrderBy(state => state.UnlockedTime ?? DateTime.MaxValue);
-                    break;
-                case SortOrder.UnlockDescending:
-                    statesQ = statesQ.OrderByDescending(state => state.UnlockedTime ?? DateTime.MaxValue);
                     break;
                 case SortOrder.SolveAscending:
                     statesQ = statesQ.OrderBy(state => state.SolvedTime ?? DateTime.MaxValue);
@@ -90,17 +84,6 @@ namespace ServerCore.ModelBases
             return result;
         }
 
-        public async Task SetUnlockStateAsync(int puzzleId, bool value)
-        {
-            await SinglePlayerPuzzleStateHelper.SetUnlockStateAsync(
-                _context,
-                Event,
-                puzzleId,
-                this.LoggedInUser.ID,
-                value ? (DateTime?)DateTime.UtcNow : null,
-                EventRole == EventRole.admin ? null : LoggedInUser);
-        }
-
         public async Task SetSolveStateAsync(int puzzleId, int? puzzleUserId, bool value)
         {
             await SinglePlayerPuzzleStateHelper.SetSolveStateAsync(
@@ -129,8 +112,6 @@ namespace ServerCore.ModelBases
             PuzzleDescending,
             UserAscending,
             UserDescending,
-            UnlockAscending,
-            UnlockDescending,
             SolveAscending,
             SolveDescending
         }

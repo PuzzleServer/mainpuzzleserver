@@ -151,20 +151,14 @@ namespace ServerCore.Pages.Events
 
                     if (sourcePuzzle.IsForSinglePlayer)
                     {
-                        foreach (int userId in _context.TeamMembers
-                            .Where(member => member.Team.EventID == Event.ID)
-                            .Select(member => member.Member.ID))
+                        int newPuzzleId = puzzleCloneMap[sourcePuzzle.ID].ID;
+                        bool hasUnlockState = await (from state in _context.SinglePlayerPuzzleUnlockStates
+                                                            where state.PuzzleID == newPuzzleId
+                                                            select state).AnyAsync();
+                        if (!hasUnlockState)
                         {
-                            int newPuzzleId = puzzleCloneMap[sourcePuzzle.ID].ID;
-                            bool hasSinglePlayerPuzzleStatePerPlayer = await (from state in _context.SinglePlayerPuzzleStatePerPlayer
-                                                                        where state.PuzzleID == newPuzzleId &&
-                                                                        state.UserID == userId
-                                                                        select state).AnyAsync();
-                            if (!hasSinglePlayerPuzzleStatePerPlayer)
-                            {
-                                SinglePlayerPuzzleStatePerPlayer newState = new SinglePlayerPuzzleStatePerPlayer() { UserID = userId, PuzzleID = newPuzzleId };
-                                _context.SinglePlayerPuzzleStatePerPlayer.Add(newState);
-                            }
+                            SinglePlayerPuzzleUnlockState newState = new SinglePlayerPuzzleUnlockState() { Puzzle = puzzleCloneMap[sourcePuzzle.ID] };
+                            _context.SinglePlayerPuzzleUnlockStates.Add(newState);
                         }
                     }
                     else

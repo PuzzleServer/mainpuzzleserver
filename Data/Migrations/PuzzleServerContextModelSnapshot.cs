@@ -953,6 +953,19 @@ namespace Data.Migrations
                     b.ToTable("SinglePlayerPuzzleSubmissions");
                 });
 
+            modelBuilder.Entity("ServerCore.DataModel.SinglePlayerPuzzleUnlockState", b =>
+                {
+                    b.Property<int>("PuzzleID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UnlockedTime")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("PuzzleID");
+
+                    b.ToTable("SinglePlayerPuzzleUnlockStates");
+                });
+
             modelBuilder.Entity("ServerCore.DataModel.Submission", b =>
                 {
                     b.Property<int>("ID")
@@ -1448,7 +1461,7 @@ namespace Data.Migrations
                         .HasForeignKey("FreeformJudgeID");
 
                     b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
-                        .WithMany()
+                        .WithMany("SinglePlayerPuzzleSubmissions")
                         .HasForeignKey("PuzzleID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1470,6 +1483,17 @@ namespace Data.Migrations
                     b.Navigation("Response");
 
                     b.Navigation("Submitter");
+                });
+
+            modelBuilder.Entity("ServerCore.DataModel.SinglePlayerPuzzleUnlockState", b =>
+                {
+                    b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
+                        .WithMany()
+                        .HasForeignKey("PuzzleID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Puzzle");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Submission", b =>
@@ -1586,6 +1610,8 @@ namespace Data.Migrations
             modelBuilder.Entity("ServerCore.DataModel.Puzzle", b =>
                 {
                     b.Navigation("Contents");
+
+                    b.Navigation("SinglePlayerPuzzleSubmissions");
 
                     b.Navigation("Submissions");
                 });

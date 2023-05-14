@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -19,25 +21,38 @@ namespace ServerCore.Pages.Puzzles
         {
         }
 
+        public DateTime? UnlockedTime { get; set; }
         public Puzzle Puzzle { get; set; }
 
         protected override SortOrder DefaultSort => SortOrder.UserAscending;
 
         public async Task<IActionResult> OnGetAsync(int puzzleId, SortOrder? sort)
         {
-            Puzzle = await _context.Puzzles.FirstOrDefaultAsync(m => m.ID == puzzleId);
+            SinglePlayerPuzzleUnlockState unlockState = await _context.SinglePlayerPuzzleUnlockStates.FirstOrDefaultAsync(m => m.PuzzleID == puzzleId);
 
-            if (Puzzle == null)
+            if (unlockState == null)
             {
                 return NotFound();
             }
 
-            return await InitializeModelAsync(Puzzle, sort: sort);
+            Puzzle = unlockState.Puzzle;
+            UnlockedTime = unlockState.UnlockedTime;
+            return await InitializeModelAsync(unlockState, sort: sort);
         }
 
         public async Task<IActionResult> OnGetUnlockStateAsync(int puzzleId, bool value, string sort)
         {
-            await this.SetUnlockStateAsync(puzzleId, value);
+            var unlockStates = _context.SinglePlayerPuzzleUnlockStates.Where(unlockState => unlockState.PuzzleID == puzzleId).ToList();
+            if (value)
+            {
+                unlockStates[0].UnlockedTime = DateTime.UtcNow;
+            }
+            else
+            {
+                unlockStates[0].UnlockedTime = null;
+            }
+
+            await _context.SaveChangesAsync();
 
             // redirect without the unlock info to keep the URL clean
             return RedirectToPage(new { puzzleId, sort });

@@ -422,10 +422,6 @@ namespace ServerCore.Pages.Events
                 var teams = await _context.Teams.Where((t) => t.Event == Event).ToListAsync();
                 var hints = await _context.Hints.Where((h) => h.Puzzle.Event == Event).ToListAsync();
                 var puzzles = await _context.Puzzles.Where(p => p.Event == Event).ToListAsync();
-                var teamMemberIds = await _context.TeamMembers
-                    .Where((tm) => tm.Team.EventID == Event.ID)
-                    .Select(tm => tm.Member.ID)
-                    .ToListAsync();
 
                 foreach (Team team in teams)
                 {
@@ -439,10 +435,7 @@ namespace ServerCore.Pages.Events
                 {
                     if (puzzle.IsForSinglePlayer)
                     {
-                        foreach (var teamMemberId in teamMemberIds)
-                        {
-                            _context.SinglePlayerPuzzleStatePerPlayer.Add(new SinglePlayerPuzzleStatePerPlayer() { PuzzleID = puzzle.ID, UserID = teamMemberId });
-                        }
+                        _context.SinglePlayerPuzzleUnlockStates.Add(new SinglePlayerPuzzleUnlockState() { PuzzleID = puzzle.ID, UnlockedTime = null });
                     }
                     else
                     {

@@ -144,7 +144,7 @@ namespace ServerCore.Areas.Identity
             PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
             Event thisEvent = await GetEventFromRoute();
 
-            if (thisEvent != null && await puzzleUser.IsPlayerInEvent(dbContext, thisEvent))
+            if (thisEvent != null)
             {
                 authContext.Succeed(requirement);
             }
@@ -181,11 +181,16 @@ namespace ServerCore.Areas.Identity
 
             if (thisEvent != null && puzzle != null)
             {
+                if (thisEvent.AreAnswersAvailableNow)
+                {
+                    authContext.Succeed(requirement);
+                    return;
+                }
                 if (puzzle.IsForSinglePlayer)
                 {
-                    IQueryable<SinglePlayerPuzzleStatePerPlayer> statesQ = SinglePlayerPuzzleStateHelper.GetFullReadOnlyQuery(dbContext, thisEvent, puzzle.ID, puzzleUser.ID);
+                    IQueryable<SinglePlayerPuzzleUnlockState> statesQ = SinglePlayerPuzzleUnlockStateHelper.GetFullReadOnlyQuery(dbContext, thisEvent, puzzle.ID);
 
-                    if (statesQ.FirstOrDefault().UnlockedTime != null || thisEvent.AreAnswersAvailableNow)
+                    if (statesQ.FirstOrDefault().UnlockedTime != null)
                     {
                         authContext.Succeed(requirement);
                     }
@@ -198,7 +203,7 @@ namespace ServerCore.Areas.Identity
                     {
                         IQueryable<PuzzleStatePerTeam> statesQ = PuzzleStateHelper.GetFullReadOnlyQuery(dbContext, thisEvent, puzzle, team);
 
-                        if (statesQ.FirstOrDefault().UnlockedTime != null || thisEvent.AreAnswersAvailableNow)
+                        if (statesQ.FirstOrDefault().UnlockedTime != null)
                         {
                             authContext.Succeed(requirement);
                         }

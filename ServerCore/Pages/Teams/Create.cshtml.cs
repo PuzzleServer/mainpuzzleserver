@@ -143,14 +143,7 @@ namespace ServerCore.Pages.Teams
                                 select puzzle).ToListAsync();
                 foreach (Puzzle puzzle in puzzles)
                 {
-                    if (puzzle.IsForSinglePlayer)
-                    {
-                        if (EventRole == EventRole.play)
-                        {
-                            _context.SinglePlayerPuzzleStatePerPlayer.Add(new SinglePlayerPuzzleStatePerPlayer() { PuzzleID = puzzle.ID, UserID = LoggedInUser.ID });
-                        }
-                    }
-                    else
+                    if (!puzzle.IsForSinglePlayer)
                     {
                         _context.PuzzleStatePerTeam.Add(new PuzzleStatePerTeam() { PuzzleID = puzzle.ID, Team = Team });
                     }

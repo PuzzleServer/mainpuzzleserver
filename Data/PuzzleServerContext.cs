@@ -25,6 +25,7 @@ namespace ServerCore.DataModel
         public DbSet<PuzzleAuthors> PuzzleAuthors { get; set; }
         public DbSet<PuzzleStatePerTeam> PuzzleStatePerTeam { get; set; }
         public DbSet<SinglePlayerPuzzleStatePerPlayer> SinglePlayerPuzzleStatePerPlayer { get; set; }
+        public DbSet<SinglePlayerPuzzleUnlockState> SinglePlayerPuzzleUnlockStates { get; set; }
         public DbSet<Response> Responses { get; set; }
         public DbSet<Submission> Submissions { get; set; }
         public DbSet<SinglePlayerPuzzleSubmission> SinglePlayerPuzzleSubmissions { get; set; }
@@ -71,11 +72,13 @@ namespace ServerCore.DataModel
             modelBuilder.Entity<SinglePlayerPuzzleStatePerPlayer>().HasKey(state => new { state.PuzzleID, state.UserID });
             modelBuilder.Entity<SinglePlayerPuzzleStatePerPlayer>().HasIndex(pspt => new { pspt.UserID });
             modelBuilder.Entity<SinglePlayerPuzzleStatePerPlayer>().HasIndex(pspt => new { pspt.UserID, pspt.SolvedTime });
+            modelBuilder.Entity<SinglePlayerPuzzleUnlockState>().HasKey(state => new { state.PuzzleID });
 
             // SQL doesn't allow multiple cacasding delete paths from one entity to another, so cut links that cause those
             modelBuilder.Entity<ContentFile>().HasOne(contentFile => contentFile.Event).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<PuzzleStatePerTeam>().HasOne(state => state.Team).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<SinglePlayerPuzzleStatePerPlayer>().HasOne(state => state.User).WithMany().OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<SinglePlayerPuzzleUnlockState>().HasOne(state => state.Puzzle).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<HintStatePerTeam>().HasOne(state => state.Team).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Submission>().HasOne(submission => submission.Team).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<SinglePlayerPuzzleSubmission>().HasOne(submission => submission.Submitter).WithMany().OnDelete(DeleteBehavior.Restrict);

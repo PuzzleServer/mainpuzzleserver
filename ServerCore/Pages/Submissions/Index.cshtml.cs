@@ -277,9 +277,6 @@ namespace ServerCore.Pages.Submissions
         {
             await SetupContext(puzzleId);
 
-
-            return RedirectToPage("/Puzzles/SinglePlayerPuzzleStatus", new { puzzleId = puzzleId });
-
             return Page();
         }
 
@@ -287,6 +284,11 @@ namespace ServerCore.Pages.Submissions
         {
             Puzzle = await _context.Puzzles.Where(
                 (p) => p.ID == puzzleId).FirstOrDefaultAsync();
+
+            await SinglePlayerPuzzleStateHelper.AddStateIfNotThere(_context,
+                Event,
+                puzzleId,
+                LoggedInUser.ID);
 
             IsPuzzleForSinglePlayer = Puzzle.IsForSinglePlayer;
             List<SubmissionView> submissionViews = new List<SubmissionView>();

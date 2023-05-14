@@ -42,30 +42,30 @@ namespace ServerCore.Pages.Puzzles
             ShowAnswers = Event.AnswersAvailableBegin <= DateTime.UtcNow;
             AllowFeedback = Event.AllowFeedback;
 
-            // all puzzles for this event that are real puzzles
-            var puzzlesInEventQ = _context.Puzzles.Where(puzzle => puzzle.Event.ID == Event.ID && puzzle.IsPuzzle && puzzle.IsForSinglePlayer);
+            Dictionary<int, PuzzleView> puzzleViewDict = _context.SinglePlayerPuzzleUnlockStates
+                .ToDictionary(unlockState => unlockState.PuzzleID, unlockState => new PuzzleView
+                {
+                    ID = unlockState.Puzzle.ID,
+                    Group = unlockState.Puzzle.Group,
+                    OrderInGroup = unlockState.Puzzle.OrderInGroup,
+                    Name = unlockState.Puzzle.Name,
+                    CustomUrl = unlockState.Puzzle.CustomURL,
+                    CustomSolutionUrl = unlockState.Puzzle.CustomSolutionURL,
+                    Errata = unlockState.Puzzle.Errata,
+                    UnlockedTime = unlockState.UnlockedTime,
+                    SolvedTime = null,
+                    PieceMetaUsage = unlockState.Puzzle.PieceMetaUsage
+                });
 
-            // all puzzle states that are unlocked (note: IsUnlocked bool is going to harm perf, just null check the time here)
-            // Note that it's OK if some puzzles do not yet have a state record; those puzzles are clearly still locked and hence invisible.
-            // All puzzles will show if all answers have been released)
-            var puzzleStateQ = _context.SinglePlayerPuzzleStatePerPlayer.Where(state => state.UserID == LoggedInUser.ID && (ShowAnswers || state.UnlockedTime != null));
+            // Populate solve time based on statePerPlayer
+            var puzzleStatePerPlayer = _context.SinglePlayerPuzzleStatePerPlayer
+                .Where(state => state.UserID == LoggedInUser.ID);
+            foreach (SinglePlayerPuzzleStatePerPlayer statePerPlayer in puzzleStatePerPlayer)
+            {
+                puzzleViewDict[statePerPlayer.PuzzleID].SolvedTime = statePerPlayer.SolvedTime;
+            }
 
-            // join 'em (note: just getting all properties for max flexibility, can pick and choose columns for perf later)
-            // Note: EF gotcha is that you have to join into anonymous types in order to not lose valuable stuff
-            var visiblePuzzlesQ = from Puzzle puzzle in puzzlesInEventQ
-                                  join SinglePlayerPuzzleStatePerPlayer pspi in puzzleStateQ on puzzle.ID equals pspi.PuzzleID
-                                  select new PuzzleView
-                                  {
-                                      ID = puzzle.ID,
-                                      Group = puzzle.Group,
-                                      OrderInGroup = puzzle.OrderInGroup,
-                                      Name = puzzle.Name,
-                                      CustomUrl = puzzle.CustomURL,
-                                      CustomSolutionUrl = puzzle.CustomSolutionURL,
-                                      Errata = puzzle.Errata,
-                                      SolvedTime = pspi.SolvedTime,
-                                      PieceMetaUsage = puzzle.PieceMetaUsage
-                                  };
+            var visiblePuzzlesQ = puzzleViewDict.Values.AsEnumerable().Where(puzzleView => ShowAnswers || puzzleView.UnlockedTime != null);
 
             switch (sort ?? DefaultSort)
             {
@@ -96,7 +96,7 @@ namespace ServerCore.Pages.Puzzles
                 visiblePuzzlesQ = visiblePuzzlesQ.Where(puzzles => puzzles.SolvedTime == null);
             }
 
-            PuzzleViews = await visiblePuzzlesQ.ToListAsync();
+            PuzzleViews = visiblePuzzlesQ.ToList();
 
             Dictionary<int, ContentFile> files = await (from file in _context.ContentFiles
                                                         where file.Event == Event && file.FileType == ContentFileType.Puzzle
@@ -148,6 +148,7 @@ namespace ServerCore.Pages.Puzzles
             public string Errata { get; set; }
             public string CustomUrl { get; set; }
             public string CustomSolutionUrl { get; set; }
+            public DateTime? UnlockedTime { get; set; }
             public DateTime? SolvedTime { get; set; }
             public ContentFile Content { get; set; }
             public ContentFile Answer { get; set; }

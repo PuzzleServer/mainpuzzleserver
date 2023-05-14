@@ -11,6 +11,14 @@
 }
 
 <h2>@Model.Puzzle.Name: Status</h2>
+@if (Model.UnlockedTime != null)
+{
+    <h4>Puzzle was unlocked at @Html.Raw(Model.LocalTime(Model.UnlockedTime))</h4>
+}
+else
+{
+    <h4>Puzzle is currently locked</h4>
+}
 
 <table class="table">
     <thead>
@@ -21,9 +29,7 @@
                 </a>
             </th>
             <th>
-                <a asp-page="./SinglePlayerPuzzleStatus" asp-route-puzzleId="@Model.Puzzle.ID" asp-route-sort="@(Model.SortForColumnLink(ServerCore.Pages.Puzzles.SinglePlayerPuzzleStatusModel.SortOrder.UnlockAscending, ServerCore.Pages.Puzzles.SinglePlayerPuzzleStatusModel.SortOrder.UnlockDescending))">
-                    UnlockedTime
-                </a>
+                UnlockedTime
             </th>
             <th>
                 <a asp-page="./SinglePlayerPuzzleStatus" asp-route-puzzleId="@Model.Puzzle.ID" asp-route-sort="@(Model.SortForColumnLink(ServerCore.Pages.Puzzles.SinglePlayerPuzzleStatusModel.SortOrder.SolveAscending, ServerCore.Pages.Puzzles.SinglePlayerPuzzleStatusModel.SortOrder.SolveDescending))">
@@ -42,6 +48,40 @@
         </tr>
     </thead>
     <tbody>
+
+        <tr>
+            <td></td>
+            <td>
+                <a asp-page-handler="UnlockState" asp-route-sort="@Model.Sort" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-value="true" onclick="return confirm('Are you sure you want to mark ALL USERS as unlocked?')">Unlock All</a>
+            </td>
+            <td>
+                <a asp-page-handler="SolveState" asp-route-sort="@Model.Sort" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-value="true" onclick="return confirm('Are you sure you want to mark ALL USERS as solved?')">Solve All</a>
+            </td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <a asp-page-handler="UnlockState" asp-route-sort="@Model.Sort" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-value="false" onclick="return confirm('Are you sure you want to mark ALL USERS as locked?')">Lock All</a>
+            </td>
+            <td>
+                <a asp-page-handler="SolveState" asp-route-sort="@Model.Sort" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-value="false" onclick="return confirm('Are you sure you want to mark ALL USERS as unsolved?')">Unsolve All</a>
+            </td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <a asp-page-handler="EmailMode" asp-route-sort="@Model.Sort" asp-route-puzzleId="@Model.Puzzle.ID" asp-route-value="false" onclick="return confirm('Are you sure you want to release all users from email-only mode?')">Release all</a>
+            </td>
+            <td>
+                <a asp-page-handler="EmailMode" asp-route-sort="@Model.Sort" asp-route-puzzleId="@Model.Puzzle.ID" asp-route-value="true" onclick="return confirm('Are you sure you want to restrict all users to email-only mode?')">Restrict all</a>
+            </td>
+            <td></td>
+            <td></td>
+        </tr>
         @foreach (var item in Model.SinglePlayerPuzzleStatePerPlayer)
         {
             string userName = !string.IsNullOrEmpty(item.User.Name) ? item.User.Name : item.User.Email;
@@ -89,39 +129,5 @@
                 </td>
             </tr>
         }
-
-        <tr>
-            <td></td>
-            <td>
-                <a asp-page-handler="UnlockState" asp-route-sort="@Model.Sort" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-value="true" onclick="return confirm('Are you sure you want to mark ALL TEAMS as unlocked?')">Unlock All</a>
-            </td>
-            <td>
-                <a asp-page-handler="SolveState" asp-route-sort="@Model.Sort" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-value="true" onclick="return confirm('Are you sure you want to mark ALL TEAMS as solved?')">Solve All</a>
-            </td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td>
-                <a asp-page-handler="UnlockState" asp-route-sort="@Model.Sort" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-value="false" onclick="return confirm('Are you sure you want to mark ALL TEAMS as locked?')">Lock All</a>
-            </td>
-            <td>
-                <a asp-page-handler="SolveState" asp-route-sort="@Model.Sort" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-value="false" onclick="return confirm('Are you sure you want to mark ALL TEAMS as unsolved?')">Unsolve All</a>
-            </td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td>
-                <a asp-page-handler="EmailMode" asp-route-sort="@Model.Sort" asp-route-puzzleId="@Model.Puzzle.ID" asp-route-value="false" onclick="return confirm('Are you sure you want to release all teams from email-only mode?')">Release all</a>
-            </td>
-            <td>
-                <a asp-page-handler="EmailMode" asp-route-sort="@Model.Sort" asp-route-puzzleId="@Model.Puzzle.ID" asp-route-value="true" onclick="return confirm('Are you sure you want to restrict all teams to email-only mode?')">Restrict all</a>
-            </td>
-            <td></td>
-            <td></td>
-        </tr>
     </tbody>
 </table>
