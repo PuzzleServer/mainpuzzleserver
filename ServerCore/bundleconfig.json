@@ -127,5 +127,19 @@
     },
     "includeInProject": true,
     "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/css/pd2023/styles.min.css",
+    // An array of relative input file paths. Globbing patterns supported
+    "inputFiles": [
+      "wwwroot/css/pd2023/styles.css"
+    ],
+    // Optionally specify minification options
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "includeInProject": true,
+    "sourceMap": false
   }
 ]
