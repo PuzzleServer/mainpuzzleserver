@@ -52,6 +52,7 @@ namespace ServerCore.DataModel
             Errata = source.Errata;
             PieceMetaUsage = source.PieceMetaUsage;
             IsFreeform = source.IsFreeform;
+            IsForSinglePlayer = source.IsForSinglePlayer;
             PrerequisiteWeight = source.PrerequisiteWeight;
             PieceMetaTagFilter = source.PieceMetaTagFilter;
             PieceTag = source.PieceTag;
@@ -262,6 +263,11 @@ namespace ServerCore.DataModel
         /// </summary>
         public bool IsFreeform { get; set; }
 
+        /// <summary>
+        /// True if puzzle can be solved as a player rather than solved as a team.
+        /// </summary>
+        public bool IsForSinglePlayer { get; set; }
+
         //
         // WARNING: If you add new properties add them to the constructor as well so importing will work.
         //
@@ -328,6 +334,8 @@ namespace ServerCore.DataModel
         }        
 
         public virtual List<Submission> Submissions { get; set; }
+
+        public virtual List<SinglePlayerPuzzleSubmission> SinglePlayerPuzzleSubmissions { get; set; }
 
         //
         // WARNING: If you add new properties add them to the constructor as well so importing will work.
