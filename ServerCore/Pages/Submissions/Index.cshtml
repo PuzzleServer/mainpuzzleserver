@@ -98,7 +98,7 @@
                 <span>You've submitted too many wrong responses. Please <a href="@mailtoUrl">use this link to email us your answer for @Model.Puzzle.PlaintextName or ask for help</a>.</span>
             </div>
         }
-else if (Model.PuzzleState.IsLockedOut)
+        else if (Model.PuzzleState.IsLockedOut)
         {
             <div class="alert alert-danger" role="alert">
                 <h4>Answer Submission Locked</h4>
