@@ -129,19 +129,19 @@ namespace ServerCore.Pages.Teams
                     _context.TeamMembers.Add(teamMember);
                 }
 
-                var hints = await (from hint in _context.Hints
-                            where hint.Puzzle.Event == Event
+                var teamHints = await (from hint in _context.Hints
+                            where hint.Puzzle.Event == Event && !hint.Puzzle.IsForSinglePlayer
                             select hint).ToListAsync();
 
-                foreach (Hint hint in hints)
+                foreach (Hint hint in teamHints)
                 {
                     _context.HintStatePerTeam.Add(new HintStatePerTeam() { Hint = hint, Team = Team });
                 }
 
-                var puzzleIDs = await (from puzzle in _context.Puzzles
-                                where puzzle.Event == Event
+                var teamPuzzleIDs = await (from puzzle in _context.Puzzles
+                                where puzzle.Event == Event && !puzzle.IsForSinglePlayer
                                 select puzzle.ID).ToListAsync();
-                foreach (int puzzleID in puzzleIDs)
+                foreach (int puzzleID in teamPuzzleIDs)
                 {
                     _context.PuzzleStatePerTeam.Add(new PuzzleStatePerTeam() { PuzzleID = puzzleID, Team = Team });
                 }

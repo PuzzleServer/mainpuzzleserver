@@ -143,24 +143,30 @@ namespace ServerCore.Pages.Events
                         destHint.Puzzle = puzzleCloneMap[sourceHint.Puzzle.ID];
                         _context.Hints.Add(destHint);
 
-                        foreach (Team team in _context.Teams.Where(t => t.Event == Event))
+                        if (!sourcePuzzle.IsForSinglePlayer)
                         {
-                            _context.HintStatePerTeam.Add(new HintStatePerTeam() { Hint = destHint, TeamID = team.ID });
+                            foreach (Team team in _context.Teams.Where(t => t.Event == Event))
+                            {
+                                _context.HintStatePerTeam.Add(new HintStatePerTeam() { Hint = destHint, TeamID = team.ID });
+                            }
                         }
                     }
 
                     // PuzzleStatePerTeam
-                    foreach (Team team in _context.Teams.Where(t => t.Event == Event))
+                    if (!sourcePuzzle.IsForSinglePlayer)
                     {
-                        int newPuzzleId = puzzleCloneMap[sourcePuzzle.ID].ID;
-                        bool hasPuzzleStatePerTeam = await (from pspt in _context.PuzzleStatePerTeam
-                                                            where pspt.PuzzleID == newPuzzleId &&
-                                                            pspt.TeamID == team.ID
-                                                            select pspt).AnyAsync();
-                        if (!hasPuzzleStatePerTeam)
+                        foreach (Team team in _context.Teams.Where(t => t.Event == Event))
                         {
-                            PuzzleStatePerTeam newPspt = new PuzzleStatePerTeam() { TeamID = team.ID, PuzzleID = newPuzzleId };
-                            _context.PuzzleStatePerTeam.Add(newPspt);
+                            int newPuzzleId = puzzleCloneMap[sourcePuzzle.ID].ID;
+                            bool hasPuzzleStatePerTeam = await (from pspt in _context.PuzzleStatePerTeam
+                                                                where pspt.PuzzleID == newPuzzleId &&
+                                                                pspt.TeamID == team.ID
+                                                                select pspt).AnyAsync();
+                            if (!hasPuzzleStatePerTeam)
+                            {
+                                PuzzleStatePerTeam newPspt = new PuzzleStatePerTeam() { TeamID = team.ID, PuzzleID = newPuzzleId };
+                                _context.PuzzleStatePerTeam.Add(newPspt);
+                            }
                         }
                     }
 

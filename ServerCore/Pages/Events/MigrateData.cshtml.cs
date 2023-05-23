@@ -110,14 +110,14 @@ namespace ServerCore.Pages.Events
 
             foreach (int ev in allEvents)
             {
-                List<int> allPuzzles = await (from puzzle in _context.Puzzles
-                                              where puzzle.EventID == ev
+                List<int> allTeamPuzzles = await (from puzzle in _context.Puzzles
+                                              where puzzle.EventID == ev && !puzzle.IsForSinglePlayer
                                               select puzzle.ID).ToListAsync();
                 List<int> allTeams = await (from team in _context.Teams
                                             where team.EventID == ev
                                             select team.ID).ToListAsync();
 
-                foreach (int puzzle in allPuzzles)
+                foreach (int puzzle in allTeamPuzzles)
                 {
                     foreach (int team in allTeams)
                     {
