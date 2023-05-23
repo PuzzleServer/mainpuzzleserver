@@ -14,8 +14,12 @@ namespace ServerCore.DataModel
         DbSet<PuzzleAuthors> PuzzleAuthors { get; set; }
         DbSet<ContentFile> ContentFiles { get; set; }
         DbSet<PuzzleStatePerTeam> PuzzleStatePerTeam { get; set; }
+        DbSet<SinglePlayerPuzzleHintStatePerPlayer> SinglePlayerPuzzleHintStatePerPlayer { get; set; }
+        DbSet<SinglePlayerPuzzleStatePerPlayer> SinglePlayerPuzzleStatePerPlayer { get; set; }
+        DbSet<SinglePlayerPuzzleUnlockState> SinglePlayerPuzzleUnlockStates { get; set; }
         DbSet<Response> Responses { get; set; }
         DbSet<Submission> Submissions { get; set; }
+        DbSet<SinglePlayerPuzzleSubmission> SinglePlayerPuzzleSubmissions { get; set; }
         DbSet<TeamMembers> TeamMembers { get; set; }
         DbSet<Team> Teams { get; set; }
         DbSet<PuzzleUser> PuzzleUsers { get; set; }
