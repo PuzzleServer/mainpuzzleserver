@@ -148,5 +148,52 @@ namespace ServerCore.Pages.Events
 
             return Page();
         }
+
+        /// <summary>
+        /// Create missing SinglePlayerPuzzleUnlockState rows from when they were lazily created
+        /// </summary>
+        public async Task<IActionResult> OnPostCreateMissingSinglePlayerUnlockStatesAsync()
+        {
+            List<int> allEvents = await (from ev in _context.Events
+                                         select ev.ID).ToListAsync();
+
+            HashSet<int> allUnlockStatePuzzleIds = (await (from unlockState in _context.SinglePlayerPuzzleUnlockStates
+                                  select unlockState.PuzzleID).ToListAsync()).ToHashSet();
+
+            var newUnlockStates = new List<SinglePlayerPuzzleUnlockState>();
+
+            foreach (int ev in allEvents)
+            {
+                List<int> allSinglePlayerPuzzleIds = await (from puzzle in _context.Puzzles
+                                                  where puzzle.EventID == ev && puzzle.IsForSinglePlayer
+                                                  select puzzle.ID).ToListAsync();
+
+                foreach (int puzzleId in allSinglePlayerPuzzleIds)
+                {
+                    if (!allUnlockStatePuzzleIds.Contains(puzzleId))
+                    {
+                        var newUnlockState = new SinglePlayerPuzzleUnlockState()
+                        {
+                            PuzzleID = puzzleId
+                        };
+
+                        newUnlockStates.Add(newUnlockState);
+                    }
+                }
+            }
+
+            if (newUnlockStates.Count > 0)
+            {
+                _context.SinglePlayerPuzzleUnlockStates.AddRange(newUnlockStates);
+                await _context.SaveChangesAsync();
+                Status = $"Added {newUnlockStates.Count} missing SinglePlayerPuzzleUnlockStates rows";
+            }
+            else
+            {
+                Status = "No new SinglePlayerPuzzleUnlockStates rows needed";
+            }
+
+            return Page();
+        }
     }
 }
