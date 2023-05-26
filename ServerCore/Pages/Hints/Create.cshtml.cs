@@ -50,14 +50,18 @@ namespace ServerCore.Pages.Hints
 
             using (IDbContextTransaction transaction = _context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable))
             {
-                var teams = from team in _context.Teams
-                            where team.Event == Event
-                            select team;
                 _context.Hints.Add(Hint);
 
-                foreach (Team team in teams)
+                if (!puzzle.IsForSinglePlayer)
                 {
-                    _context.HintStatePerTeam.Add(new HintStatePerTeam() { Hint = Hint, Team = team });
+                    var teams = from team in _context.Teams
+                                where team.Event == Event
+                                select team;
+
+                    foreach (Team team in teams)
+                    {
+                        _context.HintStatePerTeam.Add(new HintStatePerTeam() { Hint = Hint, Team = team });
+                    }
                 }
 
                 await _context.SaveChangesAsync();
