@@ -153,11 +153,16 @@ namespace ServerCore.Pages.Events
                     }
 
                     // PuzzleStatePerTeam
-                    if (!sourcePuzzle.IsForSinglePlayer)
+                    int newPuzzleId = puzzleCloneMap[sourcePuzzle.ID].ID;
+                    if (sourcePuzzle.IsForSinglePlayer)
+                    {
+                        var destSinglePlayerPuzzleUnlockState = new SinglePlayerPuzzleUnlockState() { PuzzleID = newPuzzleId };
+                        _context.SinglePlayerPuzzleUnlockStates.Add(destSinglePlayerPuzzleUnlockState);
+                    }
+                    else
                     {
                         foreach (Team team in _context.Teams.Where(t => t.Event == Event))
                         {
-                            int newPuzzleId = puzzleCloneMap[sourcePuzzle.ID].ID;
                             bool hasPuzzleStatePerTeam = await (from pspt in _context.PuzzleStatePerTeam
                                                                 where pspt.PuzzleID == newPuzzleId &&
                                                                 pspt.TeamID == team.ID

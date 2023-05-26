@@ -405,6 +405,7 @@ namespace ServerCore.Pages.Events
                 var teams = await _context.Teams.Where((t) => t.Event == Event).ToListAsync();
                 var teamHints = await _context.Hints.Where((h) => h.Puzzle.Event == Event && !h.Puzzle.IsForSinglePlayer).ToListAsync();
                 var teamPuzzles = await _context.Puzzles.Where(p => p.Event == Event && !p.IsForSinglePlayer).ToListAsync();
+                var singlePlayerPuzzles = await _context.Puzzles.Where(p => p.Event == Event && p.IsForSinglePlayer).ToListAsync();
 
                 foreach (Team team in teams)
                 {
@@ -416,6 +417,11 @@ namespace ServerCore.Pages.Events
                     {
                         _context.PuzzleStatePerTeam.Add(new PuzzleStatePerTeam() { PuzzleID = puzzle.ID, TeamID = team.ID });
                     }
+                }
+
+                foreach(Puzzle puzzle in singlePlayerPuzzles)
+                {
+                    _context.SinglePlayerPuzzleUnlockStates.Add(new SinglePlayerPuzzleUnlockState() { Puzzle = puzzle });
                 }
 
                 await _context.SaveChangesAsync();
