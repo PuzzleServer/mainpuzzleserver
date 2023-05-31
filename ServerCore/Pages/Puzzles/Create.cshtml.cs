@@ -81,15 +81,22 @@ namespace ServerCore.Pages.Puzzles
                 _context.Puzzles.Add(p);
                 _context.PuzzleAuthors.Add(new PuzzleAuthors() { Puzzle = p, Author = LoggedInUser });
 
-                var teamIDs = await (from team in _context.Teams
-                                       where team.Event == Event
-                                       select team.ID).ToListAsync();
-                foreach (int teamID in teamIDs)
+                if (p.IsForSinglePlayer)
                 {
-                    _context.PuzzleStatePerTeam.Add(new PuzzleStatePerTeam() { Puzzle = p, TeamID = teamID });
+                    _context.SinglePlayerPuzzleUnlockStates.Add(new SinglePlayerPuzzleUnlockState { Puzzle = p });
                 }
-                await _context.SaveChangesAsync();
+                else
+                {
+                    var teamIDs = await (from team in _context.Teams
+                                         where team.Event == Event
+                                         select team.ID).ToListAsync();
+                    foreach (int teamID in teamIDs)
+                    {
+                        _context.PuzzleStatePerTeam.Add(new PuzzleStatePerTeam() { Puzzle = p, TeamID = teamID });
+                    }
+                }
 
+                await _context.SaveChangesAsync();
                 transaction.Commit();
             }
 

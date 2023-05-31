@@ -168,10 +168,12 @@ namespace ServerCore.Pages.Hints
                 };
 
                 _context.Hints.Add(hint);
-
-                foreach (Team team in teams)
+                if (!hint.Puzzle.IsForSinglePlayer)
                 {
-                    _context.HintStatePerTeam.Add(new HintStatePerTeam() { Hint = hint, Team = team });
+                    foreach (Team team in teams)
+                    {
+                        _context.HintStatePerTeam.Add(new HintStatePerTeam() { Hint = hint, Team = team });
+                    }
                 }
             }
 

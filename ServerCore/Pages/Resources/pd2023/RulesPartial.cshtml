@@ -1,0 +1,69 @@
+﻿@{
+    var eventPage = Model as ServerCore.ModelBases.EventSpecificPageModel;
+    var Event = eventPage?.Event;
+}
+
+@if (!string.IsNullOrEmpty(Event.RulesContent))
+{
+    @Html.Raw(Event.RulesContent)
+}
+else
+{
+
+    <div class="container">
+        <h2>Rules for Intern Puzzleday 2023</h2>
+        <h3>How to play</h3>
+        <ol>
+            <li><strong>HAVE FUN!</strong> And if you're not having fun, let us know.</li>
+            <li>None of the puzzles require you to do anything illegal, immoral, or that would cause Microsoft security to be concerned.</li>
+            <li>All reference sources on the internet or otherwise are allowed. Non-teammate friends or strangers can be asked for a particular piece of information, but not to help you solve entire puzzles (e.g., you could call someone to ask them a trivia question but not send them a whole list of trivia questions for them to research). You may not send entire puzzles to non-teammates for help.</li>
+            <li>Writing a computer program to solve a puzzle is allowed, but never necessary. The use of tools, such as anagrammers, etc., is allowed.</li>
+            <li>
+                Hacking puzzles is not in the spirit of the event and is strictly prohibited. This includes:
+                <ul>
+                    <li>hacking into any computer system to find answers</li>
+                    <li>giving false information to another team</li>
+                    <li>trying to purloin answers from another team, and</li>
+                    <li>colluding with other teams</li>
+                </ul>
+            </li>
+            <li>Puzzles are considered solved when the correct answer is entered into the correct answer submission box on the website before the event ends.</li>
+            <li>Teams must be reachable by email during the event. New puzzles, instructions, and corrections to puzzles may need to be sent out via email. <b>Make sure mail from msph@puzzlehunt.org isn't going to junk!</b></li>
+        </ol>
+        <h3>Team registration</h3>
+        <ul>
+            <li>Teams can have a maximum of 12 people.</li>
+            <li>Teams must include at least 6 Microsoft interns who can be physically present on the Redmond campus during the event; any additional players can be remote.</li>
+            <li>Teams may include a maximum of two players that are not Microsoft interns (family or friends*).</li>
+            <li>*Non-intern Microsoft employees of any badge color (sometimes referred to as FTEs) are not permitted to participate in this specific event.</li>
+        </ul>
+        <p>You may register a team with only 1 person and fill out the roster later.</p>
+        <p>Teams that have fewer than 6 members are encouraged to merge with other small teams or find more members. If you need help doing this, let us know and we&rsquo;ll help.</p>
+
+        <h3>Winning and scoring</h3>
+        <ol>
+            <li>There will be prizes for the top ranking teams.</li>
+            <li>Teams will first be ranked according to the time by which they solve the final metapuzzle.</li>
+            <li>Any ties will be broken in the following order:
+                <ol>
+                    <li>Most total points by the end of the event.</li>
+                    <li>Most puzzles solved by the end of the event.</li>
+                    <li>First to reach their point total.</li>
+                    <li>Random drawing.</li>
+                </ol>
+            </li>
+            <li>Teams in violation of the event rules will be disqualified from the event and become ineligible for prizes. If disqualification happens before the event is over, that team may continue to solve puzzles at the discretion of Puzzleday staff.</li>
+            <li>The decisions of Puzzleday staff are final.</li>
+        </ol>
+
+        <hr>
+        <h3>Microsoft Entertainment Code of Conduct</h3>
+        <p>Microsoft's mission is to empower every person and every organization on the planet to achieve more. This includes Microsoft parties where we seek to create a respectful, friendly, fun and inclusive experience for all participants.</p>
+        <p>We do not tolerate harassing or disrespectful behavior, messages, images, or interactions by any party participant, in any form, at any aspect of the program including business and social activities, regardless of location. </p>
+        <p>We do not tolerate any behavior that is degrading to any gender, race, sexual orientation or disability, or any behavior that would violate the company's Anti-Harassment and Anti-Discrimination Policy, Equal Employment Opportunity Policy, or Standards of Business Conduct, even if the entertainment is not paid for by Microsoft. In short, the entire experience at the venue must meet our culture standards. </p>
+        <p>We encourage everyone to assist in creating a welcoming and safe environment. Please report any concerns, harassing behavior, or suspicious or disruptive activity to venue staff, the event host or owner, or the nearest event staff.  We also encourage employees to contact their Microsoft Manager or our Business Conduct Hotline (1-877-320-MSFT or <a href="mailto:buscond@microsoft.com">buscond@microsoft.com</a>) at any time if you feel a party is against our policy or inconsistent with the Microsoft culture. Outside the United States, call collect to 1-470-219-7087.</p>
+        <p>Microsoft reserves the right to refuse admittance to, or remove any person from a party at any time at its sole discretion. </p>
+        <p>We make this policy visible for all Microsoft parties so all attendees can see what is expected and what steps they should take if they see or experience behavior not consistent with this policy.</p>
+    </div>
+
+}
