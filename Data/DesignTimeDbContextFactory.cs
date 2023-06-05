@@ -4,6 +4,10 @@ using ServerCore.DataModel;
 
 namespace ServerCore
 {
+    /// <summary>
+    /// Helps EF Core tools create a PuzzleServerContext when the site isn't running, e.g. for scaffolding.
+    /// Never runs at runtime.
+    /// </summary>
     public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<PuzzleServerContext>
     {
         public PuzzleServerContext CreateDbContext(string[] args)
