@@ -149,6 +149,21 @@ namespace ServerCore.Pages.Events
                 };
                 _context.Puzzles.Add(hard);
 
+                Puzzle singlePlayer = new Puzzle
+                {
+                    Name = "Single player sample",
+                    Event = Event,
+                    IsPuzzle = true,
+                    SolveValue = 10,
+                    HintCoinsForSolve = 3,
+                    Group = "Sample",
+                    OrderInGroup = 3,
+                    MinPrerequisiteCount = 1,
+                    Description = "Demonstrates single player puzzles",
+                    IsForSinglePlayer = true
+                };
+                _context.Puzzles.Add(singlePlayer);
+
                 Puzzle meta = new Puzzle
                 {
                     Name = "Lagomorph Meta",
@@ -280,6 +295,8 @@ namespace ServerCore.Pages.Events
                 _context.Responses.Add(new Response() { Puzzle = intermediate, SubmittedText = "ANSWER", ResponseText = "Correct!", IsSolution = true });
                 _context.Responses.Add(new Response() { Puzzle = hard, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
                 _context.Responses.Add(new Response() { Puzzle = hard, SubmittedText = "ANSWER", ResponseText = "Correct!", IsSolution = true });
+                _context.Responses.Add(new Response() { Puzzle = singlePlayer, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
+                _context.Responses.Add(new Response() { Puzzle = singlePlayer, SubmittedText = "ANSWER", ResponseText = "Correct!", IsSolution = true });
                 _context.Responses.Add(new Response() { Puzzle = meta, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
                 _context.Responses.Add(new Response() { Puzzle = meta, SubmittedText = "ANSWER", ResponseText = "Correct!", IsSolution = true });
                 _context.Responses.Add(new Response() { Puzzle = other, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
