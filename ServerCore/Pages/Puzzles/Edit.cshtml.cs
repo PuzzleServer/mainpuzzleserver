@@ -104,9 +104,14 @@ namespace ServerCore.Pages.Puzzles
             Puzzle.ID = puzzleId; // to be safe
             Puzzle.EventID = Event.ID;
 
-            string oldErrata = await (from Puzzle puzzle in _context.Puzzles
+            OldPuzzleView oldPuzzleView = await (from Puzzle puzzle in _context.Puzzles
                                       where puzzle.ID == puzzleId
-                                      select puzzle.Errata).FirstOrDefaultAsync();
+                                      select new OldPuzzleView
+                                      {
+                                          ID = puzzle.ID,
+                                          IsForSinglePlayer = puzzle.IsForSinglePlayer,
+                                          Errata = puzzle.Errata
+                                      }).FirstOrDefaultAsync();
 
             _context.Attach(Puzzle).State = EntityState.Modified;
 
@@ -116,6 +121,7 @@ namespace ServerCore.Pages.Puzzles
 
                 // Check if the errata was updated, and notify teams accordingly if so.
                 // Changing from null to an empty string or vice-versa doesn't count.
+                string oldErrata = oldPuzzleView.Errata;
                 if (!(String.IsNullOrEmpty(Puzzle.Errata) && String.IsNullOrEmpty(oldErrata)) && Puzzle.Errata != oldErrata)
                 {
                     // Only notify teams who have unlocked this puzzle
@@ -152,6 +158,41 @@ namespace ServerCore.Pages.Puzzles
                     throw;
                 }
             }
+
+            if (oldPuzzleView.IsForSinglePlayer != Puzzle.IsForSinglePlayer)
+            {
+                if (Puzzle.IsForSinglePlayer) // If switch from team puzzle to single player puzzle
+                {
+                    if (!_context.SinglePlayerPuzzleUnlockStates.Where(unlockState => unlockState.PuzzleID == oldPuzzleView.ID).Any())
+                    {
+                        _context.SinglePlayerPuzzleUnlockStates.Add(new SinglePlayerPuzzleUnlockState() { PuzzleID = oldPuzzleView.ID });
+                    }
+
+                    List<PuzzleStatePerTeam> allPsptsToDelete = await (from pspt in _context.PuzzleStatePerTeam
+                                          where pspt.Puzzle.EventID == Puzzle.EventID && pspt.Puzzle.ID == Puzzle.ID
+                                          select pspt).ToListAsync();
+
+                    foreach(PuzzleStatePerTeam toDelete in allPsptsToDelete)
+                    {
+                        _context.PuzzleStatePerTeam.Remove(toDelete);
+                    }
+                }
+                else // If switch from single player puzzle to team puzzle
+                {
+                    List<PuzzleStatePerTeam> missingPuzzleStates = await this.GetMissingPuzzleStatesPerTeam(_context, Puzzle.EventID, oldPuzzleView.ID);
+                    foreach (PuzzleStatePerTeam missingPuzzleState in missingPuzzleStates)
+                    {
+                        _context.PuzzleStatePerTeam.Add(missingPuzzleState);
+                    }
+
+                    SinglePlayerPuzzleUnlockState unlockStateToDelete = _context.SinglePlayerPuzzleUnlockStates.Where(unlockState => unlockState.PuzzleID == oldPuzzleView.ID).FirstOrDefault();
+                    if (unlockStateToDelete != null)
+                    {
+                        _context.SinglePlayerPuzzleUnlockStates.Remove(unlockStateToDelete);
+                    }
+                }
+            }
+            await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");
         }
@@ -254,6 +295,45 @@ namespace ServerCore.Pages.Puzzles
         private bool PrerequisiteExists(int puzzleId, int prerequisiteId)
         {
             return _context.Prerequisites.Any(pr => pr.Puzzle.ID == puzzleId && pr.Prerequisite.ID == prerequisiteId);
+        }
+
+        private async Task<List<PuzzleStatePerTeam>> GetMissingPuzzleStatesPerTeam(PuzzleServerContext context, int eventId, int puzzleId)
+        {
+            var newPspts = new List<PuzzleStatePerTeam>();
+
+            var allPspts = await (from pspt in _context.PuzzleStatePerTeam
+                                  where pspt.Puzzle.EventID == eventId
+                                  select new { pspt.PuzzleID, pspt.TeamID }).ToDictionaryAsync(pspt => (((ulong)pspt.PuzzleID) << 32) | (uint)pspt.TeamID);
+
+            List<int> allTeams = await (from team in context.Teams
+                                        where team.EventID == eventId
+                                        select team.ID).ToListAsync();
+
+            foreach (int team in allTeams)
+            {
+                ulong key = (((ulong)puzzleId) << 32) | (uint)team;
+                if (!allPspts.ContainsKey(key))
+                {
+                    PuzzleStatePerTeam newPspt = new PuzzleStatePerTeam()
+                    {
+                        PuzzleID = puzzleId,
+                        TeamID = team,
+                    };
+
+                    newPspts.Add(newPspt);
+                }
+            }
+
+            return newPspts;
+        }
+
+        private class OldPuzzleView
+        {
+            public int ID { get; init; }
+
+            public bool IsForSinglePlayer { get; init; }
+
+            public string Errata { get; init; }
         }
     }
 }
