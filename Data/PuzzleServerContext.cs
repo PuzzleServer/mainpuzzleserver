@@ -38,7 +38,7 @@ namespace ServerCore.DataModel
         public DbSet<HintStatePerTeam> HintStatePerTeam { get; set; }
         public DbSet<Annotation> Annotations { get; set; }
         public DbSet<Piece> Pieces { get; set; }
-        public DbSet<Swag> Swag { get; set; }
+        public DbSet<PlayerInEvent> PlayerInEvent { get; set; }
 
         public static void UpdateDatabase(IApplicationBuilder app)
         {

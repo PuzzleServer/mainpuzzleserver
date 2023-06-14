@@ -2,7 +2,7 @@
 
 namespace ServerCore.DataModel
 {
-    public class Swag
+    public class PlayerInEvent
     {
         public int ID { get; set; }
 

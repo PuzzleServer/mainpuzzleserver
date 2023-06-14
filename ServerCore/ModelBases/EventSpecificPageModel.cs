@@ -112,7 +112,7 @@ namespace ServerCore.ModelBases
         /// </summary>
         public async Task<bool> HasSwag()
         {
-            return Event.EventHasSwag && await _context.Swag.Where(m => m.Event == Event && m.Player == LoggedInUser).AnyAsync();
+            return Event.EventHasSwag && await _context.PlayerInEvent.Where(m => m.Event == Event && m.Player == LoggedInUser).AnyAsync();
         }
 
         /// <summary>
