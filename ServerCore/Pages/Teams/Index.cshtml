@@ -58,7 +58,7 @@
     <div>
         Summaries:
         <a asp-page="/Teams/TeamCompositionSummary">Team Composition</a> @("|")
-        @if (Model.Event.EventHasSwag)
+        @if (Model.Event.HasSwag)
         {
             <a asp-page="/Swag/Report">Intern T-shirts and Lunch</a> @("|")
         }

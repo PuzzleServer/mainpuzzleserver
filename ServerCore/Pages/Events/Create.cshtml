@@ -52,6 +52,20 @@
             <div class="form-group">
                 <div class="checkbox">
                     <label>
+                        <input asp-for="Event.IsRemote" /> IsRemote
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="Event.AllowsRemote" /> AllowsRemote
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
                         <input asp-for="Event.IsInternEvent" /> IsInternEvent
                     </label>
                 </div>
@@ -59,7 +73,21 @@
             <div class="form-group">
                 <div class="checkbox">
                     <label>
-                        <input asp-for="Event.EventHasSwag" /> EventHasSwag
+                        <input asp-for="Event.HasSwag" /> HasSwag
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="Event.HasTShirts" /> HasTShirts
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="Event.HasIndividualLunch" /> HasIndividualLunch
                     </label>
                 </div>
             </div>

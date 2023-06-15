@@ -1,0 +1,61 @@
+﻿@page "/{eventId}/{eventRole}/Player/Details"
+@model ServerCore.Pages.Player.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>PlayerInEvent</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.PlayerInEvent.Event)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.PlayerInEvent.Event.Name)
+        </dd>
+
+        @if (Model.Event.AllowsRemote)
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.PlayerInEvent.IsRemote)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.PlayerInEvent.IsRemote)
+        </dd>
+        }
+
+        @if (Model.Event.HasIndividualLunch)
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.PlayerInEvent.Lunch)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.PlayerInEvent.Lunch)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.PlayerInEvent.LunchModifications)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.PlayerInEvent.LunchModifications)
+        </dd>
+        }
+
+        @if (Model.Event.HasTShirts)
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.PlayerInEvent.ShirtSize)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.PlayerInEvent.ShirtSize)
+        </dd>
+        }
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.PlayerInEvent.ID">Edit</a> |
+    <a asp-page="/Teams/List">Find a Team or View My Team</a>
+</div>
