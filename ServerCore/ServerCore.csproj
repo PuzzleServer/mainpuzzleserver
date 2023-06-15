@@ -56,6 +56,7 @@
   <ItemGroup>
     <Folder Include="Areas\Identity\Data\" />
     <Folder Include="Content\" />
+    <Folder Include="Pages\Player\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="wwwroot\css\pd2019\styles.css" />
