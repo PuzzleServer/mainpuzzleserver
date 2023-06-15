@@ -36,9 +36,15 @@ namespace ServerCore.Pages.Player
             {
                 return NotFound();
             }
-           ViewData["EventId"] = new SelectList(_context.Events, "ID", "Name");
-           ViewData["PlayerId"] = new SelectList(_context.PuzzleUsers, "ID", "IdentityUserId");
-            return Page();
+            ViewData["EventId"] = new SelectList(_context.Events, "ID", "Name");
+            ViewData["PlayerId"] = new SelectList(_context.PuzzleUsers, "ID", "IdentityUserId");
+
+            if (await LoggedInUser.IsAdminForEvent(_context, Event) || LoggedInUser.ID == PlayerInEvent.PlayerId)
+            {
+                return Page();
+            }
+
+            return Forbid();
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -50,19 +56,23 @@ namespace ServerCore.Pages.Player
 
             _context.Attach(PlayerInEvent).State = EntityState.Modified;
 
-            try
+            if (await LoggedInUser.IsAdminForEvent(_context, Event) || LoggedInUser.ID == PlayerInEvent.PlayerId)
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PlayerInEventExists(PlayerInEvent.ID))
+
+                try
                 {
-                    return NotFound();
+                    await _context.SaveChangesAsync();
                 }
-                else
+                catch (DbUpdateConcurrencyException)
                 {
-                    throw;
+                    if (!PlayerInEventExists(PlayerInEvent.ID))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
             }
 

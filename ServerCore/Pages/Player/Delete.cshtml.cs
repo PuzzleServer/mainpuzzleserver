@@ -8,8 +8,7 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Player
 {
-    // An empty Authorize attribute requires that the person is signed in but sets no other requirements
-    [Authorize]
+    [Authorize(Policy = "IsEventAdmin")]
     public class DeleteModel : EventSpecificPageModel
     {
         public DeleteModel(PuzzleServerContext serverContext, UserManager<IdentityUser> manager) : base(serverContext, manager)

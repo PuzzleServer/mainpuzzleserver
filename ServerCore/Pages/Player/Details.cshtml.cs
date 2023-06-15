@@ -33,7 +33,13 @@ namespace ServerCore.Pages.Player
             {
                 return NotFound();
             }
-            return Page();
+
+            if(await LoggedInUser.IsAdminForEvent(_context, Event) || LoggedInUser.ID == PlayerInEvent.PlayerId)
+            {
+                return Page();
+            }
+
+            return Forbid();
         }
     }
 }

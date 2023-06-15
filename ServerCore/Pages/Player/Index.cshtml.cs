@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -20,6 +21,7 @@ namespace ServerCore.Pages.Player
         public async Task OnGetAsync()
         {
             PlayerInEvent = await _context.PlayerInEvent
+                .Where(p => p.EventId == Event.ID)
                 .Include(p => p.Event)
                 .Include(p => p.Player).ToListAsync();
         }
