@@ -3,11 +3,15 @@
     var Event = eventPage?.Event;
     var EventRole = eventPage?.EventRole;
     bool IsRegistered = false;
+    bool isOnTeam = false;
     int? teamId = null;
+    int? playerEventId = null;
     if (eventPage != null)
     {
         IsRegistered = await eventPage.IsRegisteredUser();
+        isOnTeam = await eventPage.PlayerHasTeamForEvent();
         teamId = await eventPage.GetTeamId();
+        playerEventId = await eventPage.GetPlayerEventId();
     }
 }
 
@@ -62,7 +66,17 @@
                             <li><a asp-page="/Events/PlayerSubmissions">Shared submissions</a></li>
                         </ul>
                     </li>
-                    <li><a asp-page="/Events/Players">Users</a></li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            Users
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a asp-page="/Events/Players">All Users</a></li>
+                            <li class="divider"></li>
+                            <li><a asp-page="/Player/Index">Players in Event</a></li>
+                        </ul>
+                    </li>
                     <li class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                             Resources
@@ -178,8 +192,24 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li><a asp-page="/EventSpecific/Index">Event</a></li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            Event
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a asp-page="/EventSpecific/Index">Event Homepage</a></li>
+                            <li class="divider"></li>
+                            <li><a asp-page="/Player/Details" asp-route-id="@playerEventId">My registration</a></li>
+                        </ul>
+                    </li>
+                    <li><a asp-page="/Player/Details">View Registration</a></li>
+                    @if(!isOnTeam)
+                    {
+                        <li><a style="color:yellow" asp-page="/Teams/List"> Join or Create a Team!</a></li>
+                    }
                     <li><a asp-page="/Teams/Play" asp-route-teamId="@teamId">Puzzles</a></li>
-                    @if (Event.EventHasSwag)
+                    @if (Event.HasSwag)
                     {
                         if (DateTime.UtcNow > Event.TeamMiscDataChangeEnd || await Model.HasSwag())
                         {
@@ -266,7 +296,7 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li><a asp-page="/EventSpecific/Index">Event</a></li>
-                    <li><a style="color:yellow" asp-page="/Teams/List">Register</a></li>
+                    <li><a style="color:yellow" asp-page="/Player/Create">Register</a></li>
                     <li><a asp-page="/Teams/AllTeams">View all teams</a></li>
                     <li class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">

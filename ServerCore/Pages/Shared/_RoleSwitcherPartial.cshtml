@@ -11,12 +11,20 @@
         if (IsAdmin || IsAuthor)
         {
             var IsRegistered = await EventModel.IsRegisteredUser();
+            var PlayerHasTeam = await EventModel.PlayerHasTeamForEvent();
             var AdminRoute = ViewData["AdminRoute"] as string ?? "/EventSpecific/Index";
             var AuthorRoute = ViewData["AuthorRoute"] as string ?? "/EventSpecific/Index";
             var PlayRoute = ViewData["PlayRoute"] as string ?? "/EventSpecific/Index";
-            if (!IsRegistered && !PlayRoute.StartsWith("/EventSpecific/") && !PlayRoute.Equals("/Teams/Apply") && !PlayRoute.Equals("/Teams/Create"))
+
+            if(!IsRegistered)
             {
-                // If the user isn't registered and isn't on an event page or the two teams pages they have access to, always redirect to the registration page
+                // If the user isn't registered for the event, redirect to the user registration page
+                PlayRoute = "/Player/Create";
+            }
+
+            if (!PlayerHasTeam && !PlayRoute.StartsWith("/EventSpecific/") && !PlayRoute.Equals("/Teams/Apply") && !PlayRoute.Equals("/Teams/Create"))
+            {
+                // If the user is registered for the event but doesn't have a team, redirect to the teams registration page
                 PlayRoute = "/Teams/List";
             }
             var RoutingPuzzleId = ViewData["RoutingPuzzleId"] as string;
