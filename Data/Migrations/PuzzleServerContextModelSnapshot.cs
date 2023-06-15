@@ -316,8 +316,14 @@ namespace Data.Migrations
                     b.Property<string>("Copyright")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("DefaultLunch")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("EventBegin")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("EventHasTeamSwag")
+                        .HasColumnType("bit");
 
                     b.Property<string>("FAQContent")
                         .HasColumnType("nvarchar(max)");
@@ -356,6 +362,9 @@ namespace Data.Migrations
                     b.Property<double>("LockoutIncorrectGuessPeriod")
                         .HasColumnType("float");
 
+                    b.Property<DateTime>("LunchReportDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("MaxExternalsPerTeam")
                         .HasColumnType("int");
 
@@ -371,6 +380,9 @@ namespace Data.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PlayersPerLunch")
+                        .HasColumnType("int");
 
                     b.Property<string>("RulesContent")
                         .HasColumnType("nvarchar(max)");
@@ -1169,6 +1181,30 @@ namespace Data.Migrations
                     b.ToTable("TeamApplications");
                 });
 
+            modelBuilder.Entity("ServerCore.DataModel.TeamLunch", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("Lunch")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LunchModifications")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TeamId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("TeamId");
+
+                    b.ToTable("TeamLunch");
+                });
+
             modelBuilder.Entity("ServerCore.DataModel.TeamMembers", b =>
                 {
                     b.Property<int>("ID")
@@ -1633,6 +1669,17 @@ namespace Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Player");
+
+                    b.Navigation("Team");
+                });
+
+            modelBuilder.Entity("ServerCore.DataModel.TeamLunch", b =>
+                {
+                    b.HasOne("ServerCore.DataModel.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Team");
                 });

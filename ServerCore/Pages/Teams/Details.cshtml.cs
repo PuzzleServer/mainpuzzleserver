@@ -10,6 +10,9 @@ using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
 using ServerCore.ModelBases;
+using Microsoft.Extensions.Options;
+using System.Drawing;
+using System.ComponentModel.DataAnnotations;
 
 namespace ServerCore.Pages.Teams
 {
@@ -25,6 +28,13 @@ namespace ServerCore.Pages.Teams
         public IList<TeamMembers> Members { get; set; }
         public string Emails { get; set; }
         public IList<Tuple<PuzzleUser, int>> Users { get; set; }
+
+        public int PlayersPerLunch { get; set; }
+        public int MaxLunches { get; set; }
+        public int EditableLunches { get; set; }
+        public IList<TeamLunch> Lunches { get; set; }
+        public string NewLunch { get; set; }
+        public static readonly string[] PizzaOptions = { "Cheese", "Pepperoni", "Philly Steak", "Salami", "Meatballs", "Grilled Chicken", "Canadian Bacon", "Beef", "Sausage", "Spicy Italian Sausage", "Bacon", "Pineapple", "Green Peppers", "Spinach", "Jalapeños", "Olives", "Mushrooms", "Artichoke Hearts", "Banana Peppers", "Tomatoes", "Garlic", "Onions" };
 
         private async Task<(bool passed, IActionResult redirect)> AuthChecks(int teamId)
         {
@@ -90,6 +100,24 @@ namespace ServerCore.Pages.Teams
                               select teamMember).Any())
                            select new Tuple<PuzzleUser, int>(application.Player, application.ID)).ToListAsync();
 
+            // Lunch
+            if (Event.EventHasTeamSwag)
+            {
+                PlayersPerLunch = 1;
+                if (Event.PlayersPerLunch != null)
+                {
+                    PlayersPerLunch = Event.PlayersPerLunch.Value;
+                }
+
+                MaxLunches = (int)Math.Ceiling((double)Event.MaxTeamSize / (double)PlayersPerLunch);
+                EditableLunches = (int)Math.Ceiling((double)Members.Count / (double)PlayersPerLunch);
+
+                Lunches = await (from lunch in _context.TeamLunch
+                                 where lunch.TeamId == teamId
+                                 orderby lunch.ID
+                                 select lunch).ToListAsync();
+            }
+
             return Page();
         }
 
@@ -112,11 +140,11 @@ namespace ServerCore.Pages.Teams
                 return NotFound("Could not find team member with ID '" + teamMemberId + "'. They may have already been removed from the team.");
             }
 
+            int teamCount = await (from count in _context.TeamMembers
+                                   where count.Team.ID == teamId
+                                   select count).CountAsync();
             if (EventRole == EventRole.play)
             {
-                int teamCount = await (from count in _context.TeamMembers
-                                       where count.Team.ID == teamId
-                                       select count).CountAsync();
                 if (teamCount == 1)
                 {
                     return NotFound("Cannot remove the last member of a team. Delete the team instead.");
@@ -124,6 +152,22 @@ namespace ServerCore.Pages.Teams
             }
 
             _context.TeamMembers.Remove(member);
+
+            // If the team fell below eligibility for a lunch, remove the most recent one
+            if (Event.EventHasTeamSwag && Event.CanChangeLunch && ((Event.PlayersPerLunch ?? 0) != 0))
+            {
+                int newLunchesAllowed = (int)Math.Ceiling((double)(teamCount - 1) / (double)Event.PlayersPerLunch.Value);
+                List<TeamLunch> curLunches = await (from lunch in _context.TeamLunch
+                                 where lunch.TeamId == teamId
+                                 orderby lunch.ID descending
+                                 select lunch).ToListAsync();
+
+                if (newLunchesAllowed < curLunches.Count)
+                {
+                    _context.TeamLunch.Remove(curLunches[0]);
+                }    
+            }
+
             await _context.SaveChangesAsync();
             
             if (EventRole == EventRole.play && member.Member == LoggedInUser)
@@ -200,6 +244,46 @@ namespace ServerCore.Pages.Teams
             MailHelper.Singleton.SendPlaintextWithoutBcc(new string[] { application.Player.Email },
                 $"{Event.Name}: Your application to {team.Name} was not approved",
                 $"Sorry! You can apply to another team if you wish.");
+
+            return RedirectToPage("./Details", new { teamId = teamId });
+        }
+
+        public async Task<IActionResult> OnPostAddLunchAsync(int teamId, string newLunch)
+        {
+            var authResult = await AuthChecks(teamId);
+            if (!authResult.passed)
+            {
+                return authResult.redirect;
+            }
+
+            if (!String.IsNullOrWhiteSpace(newLunch))
+            {
+                TeamLunch teamLunch = new() { Lunch = newLunch, TeamId = teamId };
+                _context.TeamLunch.Add(teamLunch);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToPage("./Details", new { teamId = teamId });
+        }
+
+        public async Task<IActionResult> OnGetRemoveLunchAsync(int teamId, int lunchId)
+        {
+            var authResult = await AuthChecks(teamId);
+            if (!authResult.passed)
+            {
+                return authResult.redirect;
+            }
+
+            TeamLunch teamLunchToRemove = await (from teamLunch in _context.TeamLunch
+                                          where teamLunch.ID == lunchId &&
+                                          teamLunch.TeamId == teamId // the teamId check isn't necessary for finding the row, but prevents removing other teams' lunches
+                                          select teamLunch).SingleOrDefaultAsync();
+
+            if (teamLunchToRemove != null)
+            {
+                _context.TeamLunch.Remove(teamLunchToRemove);
+                await _context.SaveChangesAsync();
+            }
 
             return RedirectToPage("./Details", new { teamId = teamId });
         }
