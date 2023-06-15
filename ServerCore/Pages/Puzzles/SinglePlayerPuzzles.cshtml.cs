@@ -41,6 +41,7 @@ namespace ServerCore.Pages.Puzzles
             AllowFeedback = Event.AllowFeedback;
 
             Dictionary<int, PuzzleView> puzzleViewDict = _context.SinglePlayerPuzzleUnlockStates
+                .Where(unlockState => unlockState.Puzzle.EventID == Event.ID)
                 .ToDictionary(unlockState => unlockState.PuzzleID, unlockState => new PuzzleView
                 {
                     ID = unlockState.Puzzle.ID,
@@ -57,7 +58,7 @@ namespace ServerCore.Pages.Puzzles
 
             // Populate solve time based on statePerPlayer
             var puzzleStatePerPlayer = _context.SinglePlayerPuzzleStatePerPlayer
-                .Where(state => state.PlayerID == LoggedInUser.ID);
+                .Where(state => state.PlayerID == LoggedInUser.ID && state.Puzzle.EventID == Event.ID);
             foreach (SinglePlayerPuzzleStatePerPlayer statePerPlayer in puzzleStatePerPlayer)
             {
                 puzzleViewDict[statePerPlayer.PuzzleID].SolvedTime = statePerPlayer.SolvedTime;
