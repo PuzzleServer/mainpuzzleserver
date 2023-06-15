@@ -294,7 +294,14 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li><a asp-page="/EventSpecific/Index">Event</a></li>
-                    <li><a style="color:yellow" asp-page="/Player/Create">Register</a></li>
+                    @if(isOnTeam && Event.IsTeamMembershipChangeActive && !Event.EventHasStarted) // Exclude previous events from this registration prompt
+                    {
+                        <li><a style="color:yellow" asp-page="/Player/Create">Complete Your Registration</a></li>
+                    }
+                    else
+                    {
+                        <li><a style="color:yellow" asp-page="/Player/Create">Register</a></li>
+                    }
                     <li><a asp-page="/Teams/AllTeams">View all teams</a></li>
                     <li class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
