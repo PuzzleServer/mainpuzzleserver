@@ -298,6 +298,9 @@ namespace Data.Migrations
                     b.Property<bool>("AllowFeedback")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("AllowsRemote")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Announcement")
                         .HasColumnType("nvarchar(max)");
 
@@ -316,11 +319,17 @@ namespace Data.Migrations
                     b.Property<DateTime>("EventBegin")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("EventHasSwag")
-                        .HasColumnType("bit");
-
                     b.Property<string>("FAQContent")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("HasIndividualLunch")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("HasSwag")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("HasTShirts")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("HideHints")
                         .HasColumnType("bit");
@@ -332,6 +341,9 @@ namespace Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsInternEvent")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsRemote")
                         .HasColumnType("bit");
 
                     b.Property<double>("LockoutDurationMultiplier")
@@ -590,6 +602,41 @@ namespace Data.Migrations
                     b.HasIndex("PuzzleID");
 
                     b.ToTable("Pieces");
+                });
+
+            modelBuilder.Entity("ServerCore.DataModel.PlayerInEvent", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<int>("EventId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsRemote")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Lunch")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LunchModifications")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PlayerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ShirtSize")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("PlayerId");
+
+                    b.ToTable("Swag");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Prerequisites", b =>
@@ -1043,38 +1090,6 @@ namespace Data.Migrations
                     b.ToTable("Submissions");
                 });
 
-            modelBuilder.Entity("ServerCore.DataModel.Swag", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
-
-                    b.Property<int>("EventId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Lunch")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LunchModifications")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PlayerId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ShirtSize")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("EventId");
-
-                    b.HasIndex("PlayerId");
-
-                    b.ToTable("Swag");
-                });
-
             modelBuilder.Entity("ServerCore.DataModel.Team", b =>
                 {
                     b.Property<int>("ID")
@@ -1370,6 +1385,25 @@ namespace Data.Migrations
                     b.Navigation("Puzzle");
                 });
 
+            modelBuilder.Entity("ServerCore.DataModel.PlayerInEvent", b =>
+                {
+                    b.HasOne("ServerCore.DataModel.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Player")
+                        .WithMany()
+                        .HasForeignKey("PlayerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
+
+                    b.Navigation("Player");
+                });
+
             modelBuilder.Entity("ServerCore.DataModel.Prerequisites", b =>
                 {
                     b.HasOne("ServerCore.DataModel.Puzzle", "Prerequisite")
@@ -1570,25 +1604,6 @@ namespace Data.Migrations
                     b.Navigation("Submitter");
 
                     b.Navigation("Team");
-                });
-
-            modelBuilder.Entity("ServerCore.DataModel.Swag", b =>
-                {
-                    b.HasOne("ServerCore.DataModel.Event", "Event")
-                        .WithMany()
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Player")
-                        .WithMany()
-                        .HasForeignKey("PlayerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Event");
-
-                    b.Navigation("Player");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Team", b =>
