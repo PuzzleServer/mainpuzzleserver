@@ -636,7 +636,7 @@ namespace Data.Migrations
 
                     b.HasIndex("PlayerId");
 
-                    b.ToTable("PlayerInEvent");
+                    b.ToTable("Swag");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Prerequisites", b =>

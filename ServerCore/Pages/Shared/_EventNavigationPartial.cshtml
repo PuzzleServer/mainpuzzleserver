@@ -224,7 +224,14 @@
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a asp-page="/Teams/Details" asp-route-teamId="@teamId">My team</a></li>
+                            @if (!isOnTeam)
+                            {
+                                <li><a asp-page="/Teams/List"> Join or Create a Team!</a></li>
+                            }
+                            else
+                            {
+                                <li><a asp-page="/Teams/Details" asp-route-teamId="@teamId">My team</a></li>
+                            }
                             <li class="divider"></li>
                             <li><a asp-page="/Teams/AllTeams">All teams</a></li>
                         </ul>

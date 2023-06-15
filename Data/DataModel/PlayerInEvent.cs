@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ServerCore.DataModel
 {
+    [Table("Swag")]
     public class PlayerInEvent
     {
         public int ID { get; set; }

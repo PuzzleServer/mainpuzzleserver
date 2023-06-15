@@ -12,8 +12,8 @@ using ServerCore.DataModel;
 namespace Data.Migrations
 {
     [DbContext(typeof(PuzzleServerContext))]
-    [Migration("20230615071157_FixIsRemoteType")]
-    partial class FixIsRemoteType
+    [Migration("20230615092125_AddPlayerRegistration")]
+    partial class AddPlayerRegistration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -639,7 +639,7 @@ namespace Data.Migrations
 
                     b.HasIndex("PlayerId");
 
-                    b.ToTable("PlayerInEvent");
+                    b.ToTable("Swag");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Prerequisites", b =>
