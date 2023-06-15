@@ -210,8 +210,8 @@
                 <div class="row">
                     <h2>Pizza</h2>
                     <p>
-                        Your team can currently have @Model.EditableLunches pizza(s). Don&apos;t want a pizza? Pick &quot;No Pizza&quot;. If you don&apos;t select, you will get @Model.Event.DefaultLunch.
-                        @if (Model.EditableLunches < Model.MaxLunches)
+                        Your team can currently have @Model.EditableLunches pizza(s). Don&apos;t want a pizza? Pick &quot;No Pizza&quot;.
+                        @if (Model.EditableLunches < Model.MaxLunches && Model.Event.CanChangeLunch)
                         {
                             <span>
                                 Recruit @(Model.Event.PlayersPerLunch - Model.Members.Count % Model.Event.PlayersPerLunch + 1) more player(s) to get another pizza, up to @Model.MaxLunches pizzas total!
@@ -244,6 +244,10 @@
                                 }
                             </span>
                         </p>
+                    }
+                    @if(Model.Lunches.Count < Model.EditableLunches)
+                    {
+                        <div>You have not chosen @(Model.EditableLunches - Model.Lunches.Count) pizza(s) yet. If you do not choose, you will get @Model.Event.DefaultLunch.</div>
                     }
                 </div>
             }
