@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ServerCore.DataModel;
 
@@ -11,9 +12,11 @@ using ServerCore.DataModel;
 namespace Data.Migrations
 {
     [DbContext(typeof(PuzzleServerContext))]
-    partial class PuzzleServerContextModelSnapshot : ModelSnapshot
+    [Migration("20230614204558_RenameSwagAddRemote")]
+    partial class RenameSwagAddRemote
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -298,9 +301,6 @@ namespace Data.Migrations
                     b.Property<bool>("AllowFeedback")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("AllowsRemote")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Announcement")
                         .HasColumnType("nvarchar(max)");
 
@@ -316,20 +316,20 @@ namespace Data.Migrations
                     b.Property<string>("Copyright")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("EventAllowsRemote")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("EventBegin")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("EventHasSwag")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("EventIsRemote")
+                        .HasColumnType("bit");
+
                     b.Property<string>("FAQContent")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("HasIndividualLunch")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasSwag")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasTShirts")
-                        .HasColumnType("bit");
 
                     b.Property<bool>("HideHints")
                         .HasColumnType("bit");
@@ -341,9 +341,6 @@ namespace Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsInternEvent")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsRemote")
                         .HasColumnType("bit");
 
                     b.Property<double>("LockoutDurationMultiplier")
@@ -614,9 +611,6 @@ namespace Data.Migrations
 
                     b.Property<int>("EventId")
                         .HasColumnType("int");
-
-                    b.Property<string>("IsRemote")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Lunch")
                         .HasColumnType("nvarchar(max)");

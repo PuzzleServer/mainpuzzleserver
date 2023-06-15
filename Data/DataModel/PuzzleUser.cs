@@ -113,13 +113,23 @@ namespace ServerCore.DataModel
 
 
         /// <summary>
-        /// Returns whether or not a user is a player in the given event
+        /// Returns whether or not a user has joined a team for the given event
         /// </summary>
         /// <param name="thisEvent">The event that's being checked</param>
         /// <param name="puzzleServerContext">Current PuzzleServerContext</param>
-        public async Task<bool> IsPlayerInEvent(PuzzleServerContext dbContext, Event thisEvent)
+        public async Task<bool> IsPlayerOnTeam(PuzzleServerContext dbContext, Event thisEvent)
         {
             return await dbContext.TeamMembers.Where(tm => tm.Member.ID == ID && tm.Team.Event.ID == thisEvent.ID).AnyAsync();
+        }
+
+        /// <summary>
+        /// Returns whether or not a user has completed the registration form for the given event
+        /// </summary>
+        /// <param name="dbContext">Current PuzzleServerContext</param>
+        /// <param name="thisEvent">The event that's being checked</param>
+        public async Task<bool> IsRegisteredForEvent(PuzzleServerContext dbContext, Event thisEvent)
+        {
+            return await dbContext.PlayerInEvent.Where(p => p.PlayerId == ID && p.EventId == thisEvent.ID).AnyAsync();
         }
     }
 }

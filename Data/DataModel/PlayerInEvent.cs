@@ -21,5 +21,7 @@ namespace ServerCore.DataModel
         public string LunchModifications { get; set; }
 
         public string ShirtSize { get; set; }
+
+        public string IsRemote { get; set; }
     }
 }

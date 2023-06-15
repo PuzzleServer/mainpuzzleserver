@@ -40,7 +40,7 @@ else
                  <input asp-for="Team.RoomID" class="form-control" />
                  <span asp-validation-for="Team.RoomID" class="text-danger"></span>
              </div> -->
-            @if (!Model.Event.EventIsRemote)
+            @if (!Model.Event.IsRemote)
             {
                 @if (Model.Event.IsInternEvent && Model.EventRole == ModelBases.EventRole.play)
                 {

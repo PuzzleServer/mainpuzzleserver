@@ -21,9 +21,9 @@ namespace ServerCore.Pages.Swag
 
         public async Task<IActionResult> OnGetAsync()
         {
-            if (!Event.EventHasSwag)
+            if (!Event.HasIndividualLunch)
             {
-                return Forbid("This page is only available for events that have swag.");
+                return Forbid("This page is only available for events that have individual lunch orders.");
             }
 
             PlayerInEvent = await _context.PlayerInEvent.Where(m => m.Event == Event && m.Player == LoggedInUser).FirstOrDefaultAsync();
