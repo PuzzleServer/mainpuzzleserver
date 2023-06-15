@@ -40,6 +40,8 @@ namespace ServerCore.DataModel
         public int MaxTeamSize { get; set; }
         public int MaxExternalsPerTeam { get; set; }
         public bool IsInternEvent { get; set; }
+
+        [Column("EventHasSwag")]
         public bool HasSwag { get; set; }
         public bool HasIndividualLunch { get; set; }
         public bool HasTShirts { get; set; }

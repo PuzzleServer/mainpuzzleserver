@@ -26,1635 +26,1651 @@ namespace Data.Migrations
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
-            {
-                b.Property<string>("Id")
-                    .HasColumnType("nvarchar(450)");
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
-                b.Property<string>("ConcurrencyStamp")
-                    .IsConcurrencyToken()
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<string>("Name")
-                    .HasMaxLength(256)
-                    .HasColumnType("nvarchar(256)");
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
-                b.Property<string>("NormalizedName")
-                    .HasMaxLength(256)
-                    .HasColumnType("nvarchar(256)");
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
-                b.HasKey("Id");
+                    b.HasKey("Id");
 
-                b.HasIndex("NormalizedName")
-                    .IsUnique()
-                    .HasDatabaseName("RoleNameIndex")
-                    .HasFilter("[NormalizedName] IS NOT NULL");
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
 
-                b.ToTable("AspNetRoles", (string)null);
-            });
+                    b.ToTable("AspNetRoles", (string)null);
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
-            {
-                b.Property<int>("Id")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("int");
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                b.Property<string>("ClaimType")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<string>("ClaimValue")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<string>("RoleId")
-                    .IsRequired()
-                    .HasColumnType("nvarchar(450)");
+                    b.Property<string>("RoleId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
-                b.HasKey("Id");
+                    b.HasKey("Id");
 
-                b.HasIndex("RoleId");
+                    b.HasIndex("RoleId");
 
-                b.ToTable("AspNetRoleClaims", (string)null);
-            });
+                    b.ToTable("AspNetRoleClaims", (string)null);
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
-            {
-                b.Property<string>("Id")
-                    .HasColumnType("nvarchar(450)");
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
-                b.Property<int>("AccessFailedCount")
-                    .HasColumnType("int");
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
 
-                b.Property<string>("ConcurrencyStamp")
-                    .IsConcurrencyToken()
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<string>("Email")
-                    .HasMaxLength(256)
-                    .HasColumnType("nvarchar(256)");
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
-                b.Property<bool>("EmailConfirmed")
-                    .HasColumnType("bit");
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
 
-                b.Property<bool>("LockoutEnabled")
-                    .HasColumnType("bit");
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
 
-                b.Property<DateTimeOffset?>("LockoutEnd")
-                    .HasColumnType("datetimeoffset");
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
 
-                b.Property<string>("NormalizedEmail")
-                    .HasMaxLength(256)
-                    .HasColumnType("nvarchar(256)");
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
-                b.Property<string>("NormalizedUserName")
-                    .HasMaxLength(256)
-                    .HasColumnType("nvarchar(256)");
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
-                b.Property<string>("PasswordHash")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<string>("PhoneNumber")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<bool>("PhoneNumberConfirmed")
-                    .HasColumnType("bit");
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
 
-                b.Property<string>("SecurityStamp")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<bool>("TwoFactorEnabled")
-                    .HasColumnType("bit");
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
 
-                b.Property<string>("UserName")
-                    .HasMaxLength(256)
-                    .HasColumnType("nvarchar(256)");
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
-                b.HasKey("Id");
+                    b.HasKey("Id");
 
-                b.HasIndex("NormalizedEmail")
-                    .HasDatabaseName("EmailIndex");
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
 
-                b.HasIndex("NormalizedUserName")
-                    .IsUnique()
-                    .HasDatabaseName("UserNameIndex")
-                    .HasFilter("[NormalizedUserName] IS NOT NULL");
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                b.ToTable("AspNetUsers", (string)null);
-            });
+                    b.ToTable("AspNetUsers", (string)null);
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
-            {
-                b.Property<int>("Id")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("int");
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                b.Property<string>("ClaimType")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<string>("ClaimValue")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<string>("UserId")
-                    .IsRequired()
-                    .HasColumnType("nvarchar(450)");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
-                b.HasKey("Id");
+                    b.HasKey("Id");
 
-                b.HasIndex("UserId");
+                    b.HasIndex("UserId");
 
-                b.ToTable("AspNetUserClaims", (string)null);
-            });
+                    b.ToTable("AspNetUserClaims", (string)null);
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
-            {
-                b.Property<string>("LoginProvider")
-                    .HasColumnType("nvarchar(450)");
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
 
-                b.Property<string>("ProviderKey")
-                    .HasColumnType("nvarchar(450)");
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("nvarchar(450)");
 
-                b.Property<string>("ProviderDisplayName")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<string>("UserId")
-                    .IsRequired()
-                    .HasColumnType("nvarchar(450)");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
-                b.HasKey("LoginProvider", "ProviderKey");
+                    b.HasKey("LoginProvider", "ProviderKey");
 
-                b.HasIndex("UserId");
+                    b.HasIndex("UserId");
 
-                b.ToTable("AspNetUserLogins", (string)null);
-            });
+                    b.ToTable("AspNetUserLogins", (string)null);
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-            {
-                b.Property<string>("UserId")
-                    .HasColumnType("nvarchar(450)");
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
-                b.Property<string>("RoleId")
-                    .HasColumnType("nvarchar(450)");
+                    b.Property<string>("RoleId")
+                        .HasColumnType("nvarchar(450)");
 
-                b.HasKey("UserId", "RoleId");
+                    b.HasKey("UserId", "RoleId");
 
-                b.HasIndex("RoleId");
+                    b.HasIndex("RoleId");
 
-                b.ToTable("AspNetUserRoles", (string)null);
-            });
+                    b.ToTable("AspNetUserRoles", (string)null);
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
-            {
-                b.Property<string>("UserId")
-                    .HasColumnType("nvarchar(450)");
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
-                b.Property<string>("LoginProvider")
-                    .HasColumnType("nvarchar(450)");
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
 
-                b.Property<string>("Name")
-                    .HasColumnType("nvarchar(450)");
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
 
-                b.Property<string>("Value")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
 
-                b.HasKey("UserId", "LoginProvider", "Name");
+                    b.HasKey("UserId", "LoginProvider", "Name");
 
-                b.ToTable("AspNetUserTokens", (string)null);
-            });
+                    b.ToTable("AspNetUserTokens", (string)null);
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.Annotation", b =>
-            {
-                b.Property<int>("PuzzleID")
-                    .HasColumnType("int");
+                {
+                    b.Property<int>("PuzzleID")
+                        .HasColumnType("int");
 
-                b.Property<int>("TeamID")
-                    .HasColumnType("int");
+                    b.Property<int>("TeamID")
+                        .HasColumnType("int");
 
-                b.Property<int>("Key")
-                    .HasColumnType("int");
+                    b.Property<int>("Key")
+                        .HasColumnType("int");
 
-                b.Property<string>("Contents")
-                    .IsRequired()
-                    .HasMaxLength(255)
-                    .HasColumnType("nvarchar(255)");
+                    b.Property<string>("Contents")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
-                b.Property<DateTime>("Timestamp")
-                    .HasColumnType("datetime2");
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
 
-                b.Property<int>("Version")
-                    .HasColumnType("int");
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
 
-                b.HasKey("PuzzleID", "TeamID", "Key");
+                    b.HasKey("PuzzleID", "TeamID", "Key");
 
-                b.HasIndex("TeamID");
+                    b.HasIndex("TeamID");
 
-                b.ToTable("Annotations");
-            });
+                    b.ToTable("Annotations");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.ContentFile", b =>
-            {
-                b.Property<int>("ID")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("int");
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                b.Property<int>("EventID")
-                    .HasColumnType("int");
+                    b.Property<int>("EventID")
+                        .HasColumnType("int");
 
-                b.Property<int>("FileType")
-                    .HasColumnType("int");
+                    b.Property<int>("FileType")
+                        .HasColumnType("int");
 
-                b.Property<int>("PuzzleID")
-                    .HasColumnType("int");
+                    b.Property<int>("PuzzleID")
+                        .HasColumnType("int");
 
-                b.Property<string>("ShortName")
-                    .IsRequired()
-                    .HasColumnType("nvarchar(450)");
+                    b.Property<string>("ShortName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
-                b.Property<string>("UrlString")
-                    .IsRequired()
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("UrlString")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                b.HasKey("ID");
+                    b.HasKey("ID");
 
-                b.HasIndex("PuzzleID");
+                    b.HasIndex("PuzzleID");
 
-                b.HasIndex("EventID", "ShortName")
-                    .IsUnique();
+                    b.HasIndex("EventID", "ShortName")
+                        .IsUnique();
 
-                b.ToTable("ContentFiles");
-            });
+                    b.ToTable("ContentFiles");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.Event", b =>
-            {
-                b.Property<int>("ID")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("int");
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                b.Property<bool>("AllowFeedback")
-                    .HasColumnType("bit");
+                    b.Property<bool>("AllowFeedback")
+                        .HasColumnType("bit");
 
-                b.Property<string>("Announcement")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("AllowsRemote")
+                        .HasColumnType("bit");
 
-                b.Property<DateTime>("AnswerSubmissionEnd")
-                    .HasColumnType("datetime2");
+                    b.Property<string>("Announcement")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<DateTime>("AnswersAvailableBegin")
-                    .HasColumnType("datetime2");
+                    b.Property<DateTime>("AnswerSubmissionEnd")
+                        .HasColumnType("datetime2");
 
-                b.Property<string>("ContactEmail")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("AnswersAvailableBegin")
+                        .HasColumnType("datetime2");
 
-                b.Property<string>("Copyright")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("ContactEmail")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<DateTime>("EventBegin")
-                    .HasColumnType("datetime2");
+                    b.Property<string>("Copyright")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<bool>("EventHasSwag")
-                    .HasColumnType("bit");
+                    b.Property<DateTime>("EventBegin")
+                        .HasColumnType("datetime2");
 
-                b.Property<string>("FAQContent")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("FAQContent")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<bool>("HideHints")
-                    .HasColumnType("bit");
+                    b.Property<bool>("HasIndividualLunch")
+                        .HasColumnType("bit");
 
-                b.Property<string>("HomeContent")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("HasSwag")
+                        .HasColumnType("bit")
+                        .HasColumnName("EventHasSwag");
 
-                b.Property<string>("HomePartial")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("HasTShirts")
+                        .HasColumnType("bit");
 
-                b.Property<bool>("IsInternEvent")
-                    .HasColumnType("bit");
+                    b.Property<bool>("HideHints")
+                        .HasColumnType("bit");
 
-                b.Property<double>("LockoutDurationMultiplier")
-                    .HasColumnType("float");
+                    b.Property<string>("HomeContent")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<int>("LockoutIncorrectGuessLimit")
-                    .HasColumnType("int");
+                    b.Property<string>("HomePartial")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<double>("LockoutIncorrectGuessPeriod")
-                    .HasColumnType("float");
+                    b.Property<bool>("IsInternEvent")
+                        .HasColumnType("bit");
 
-                b.Property<int>("MaxExternalsPerTeam")
-                    .HasColumnType("int");
+                    b.Property<bool>("IsRemote")
+                        .HasColumnType("bit");
 
-                b.Property<int>("MaxNumberOfTeams")
-                    .HasColumnType("int");
+                    b.Property<double>("LockoutDurationMultiplier")
+                        .HasColumnType("float");
 
-                b.Property<long>("MaxSubmissionCount")
-                    .HasColumnType("bigint");
+                    b.Property<int>("LockoutIncorrectGuessLimit")
+                        .HasColumnType("int");
 
-                b.Property<int>("MaxTeamSize")
-                    .HasColumnType("int");
+                    b.Property<double>("LockoutIncorrectGuessPeriod")
+                        .HasColumnType("float");
 
-                b.Property<string>("Name")
-                    .IsRequired()
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<int>("MaxExternalsPerTeam")
+                        .HasColumnType("int");
 
-                b.Property<string>("RulesContent")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<int>("MaxNumberOfTeams")
+                        .HasColumnType("int");
 
-                b.Property<bool>("ShowFastestSolves")
-                    .HasColumnType("bit");
+                    b.Property<long>("MaxSubmissionCount")
+                        .HasColumnType("bigint");
 
-                b.Property<DateTime>("StandingsAvailableBegin")
-                    .HasColumnType("datetime2");
+                    b.Property<int>("MaxTeamSize")
+                        .HasColumnType("int");
 
-                b.Property<bool>("StandingsOverride")
-                    .HasColumnType("bit");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<DateTime>("TeamDeleteEnd")
-                    .HasColumnType("datetime2");
+                    b.Property<string>("RulesContent")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<DateTime>("TeamMembershipChangeEnd")
-                    .HasColumnType("datetime2");
+                    b.Property<bool>("ShowFastestSolves")
+                        .HasColumnType("bit");
 
-                b.Property<DateTime>("TeamMiscDataChangeEnd")
-                    .HasColumnType("datetime2");
+                    b.Property<DateTime>("StandingsAvailableBegin")
+                        .HasColumnType("datetime2");
 
-                b.Property<DateTime>("TeamNameChangeEnd")
-                    .HasColumnType("datetime2");
+                    b.Property<bool>("StandingsOverride")
+                        .HasColumnType("bit");
 
-                b.Property<DateTime>("TeamRegistrationBegin")
-                    .HasColumnType("datetime2");
+                    b.Property<DateTime>("TeamDeleteEnd")
+                        .HasColumnType("datetime2");
 
-                b.Property<DateTime>("TeamRegistrationEnd")
-                    .HasColumnType("datetime2");
+                    b.Property<DateTime>("TeamMembershipChangeEnd")
+                        .HasColumnType("datetime2");
 
-                b.Property<string>("TermForGroup")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("TeamMiscDataChangeEnd")
+                        .HasColumnType("datetime2");
 
-                b.Property<string>("UrlString")
-                    .HasColumnType("nvarchar(450)");
+                    b.Property<DateTime>("TeamNameChangeEnd")
+                        .HasColumnType("datetime2");
 
-                b.HasKey("ID");
+                    b.Property<DateTime>("TeamRegistrationBegin")
+                        .HasColumnType("datetime2");
 
-                b.HasIndex("UrlString")
-                    .IsUnique()
-                    .HasFilter("[UrlString] IS NOT NULL");
+                    b.Property<DateTime>("TeamRegistrationEnd")
+                        .HasColumnType("datetime2");
 
-                b.ToTable("Events");
-            });
+                    b.Property<string>("TermForGroup")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UrlString")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("UrlString")
+                        .IsUnique()
+                        .HasFilter("[UrlString] IS NOT NULL");
+
+                    b.ToTable("Events");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.EventAdmins", b =>
-            {
-                b.Property<int>("ID")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("int");
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                b.Property<int>("AdminID")
-                    .HasColumnType("int");
+                    b.Property<int>("AdminID")
+                        .HasColumnType("int");
 
-                b.Property<int>("EventID")
-                    .HasColumnType("int");
+                    b.Property<int>("EventID")
+                        .HasColumnType("int");
 
-                b.HasKey("ID");
+                    b.HasKey("ID");
 
-                b.HasIndex("AdminID");
+                    b.HasIndex("AdminID");
 
-                b.HasIndex("EventID");
+                    b.HasIndex("EventID");
 
-                b.ToTable("EventAdmins");
-            });
+                    b.ToTable("EventAdmins");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.EventAuthors", b =>
-            {
-                b.Property<int>("ID")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("int");
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                b.Property<int>("AuthorID")
-                    .HasColumnType("int");
+                    b.Property<int>("AuthorID")
+                        .HasColumnType("int");
 
-                b.Property<int>("EventID")
-                    .HasColumnType("int");
+                    b.Property<int>("EventID")
+                        .HasColumnType("int");
 
-                b.HasKey("ID");
+                    b.HasKey("ID");
 
-                b.HasIndex("AuthorID");
+                    b.HasIndex("AuthorID");
 
-                b.HasIndex("EventID");
+                    b.HasIndex("EventID");
 
-                b.ToTable("EventAuthors");
-            });
+                    b.ToTable("EventAuthors");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.Feedback", b =>
-            {
-                b.Property<int>("ID")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("int");
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                b.Property<int>("Difficulty")
-                    .HasColumnType("int");
+                    b.Property<int>("Difficulty")
+                        .HasColumnType("int");
 
-                b.Property<int>("Fun")
-                    .HasColumnType("int");
+                    b.Property<int>("Fun")
+                        .HasColumnType("int");
 
-                b.Property<int>("PuzzleID")
-                    .HasColumnType("int");
+                    b.Property<int>("PuzzleID")
+                        .HasColumnType("int");
 
-                b.Property<DateTime>("SubmissionTime")
-                    .HasColumnType("datetime2");
+                    b.Property<DateTime>("SubmissionTime")
+                        .HasColumnType("datetime2");
 
-                b.Property<int>("SubmitterID")
-                    .HasColumnType("int");
+                    b.Property<int>("SubmitterID")
+                        .HasColumnType("int");
 
-                b.Property<string>("WrittenFeedback")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("WrittenFeedback")
+                        .HasColumnType("nvarchar(max)");
 
-                b.HasKey("ID");
+                    b.HasKey("ID");
 
-                b.HasIndex("PuzzleID");
+                    b.HasIndex("PuzzleID");
 
-                b.HasIndex("SubmitterID");
+                    b.HasIndex("SubmitterID");
 
-                b.ToTable("Feedback");
-            });
+                    b.ToTable("Feedback");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.Hint", b =>
-            {
-                b.Property<int>("Id")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("int");
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                b.Property<string>("Content")
-                    .IsRequired()
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<int>("Cost")
-                    .HasColumnType("int");
+                    b.Property<int>("Cost")
+                        .HasColumnType("int");
 
-                b.Property<string>("Description")
-                    .IsRequired()
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<int>("DisplayOrder")
-                    .HasColumnType("int");
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("int");
 
-                b.Property<int>("PuzzleID")
-                    .HasColumnType("int");
+                    b.Property<int>("PuzzleID")
+                        .HasColumnType("int");
 
-                b.HasKey("Id");
+                    b.HasKey("Id");
 
-                b.HasIndex("PuzzleID");
+                    b.HasIndex("PuzzleID");
 
-                b.ToTable("Hints");
-            });
+                    b.ToTable("Hints");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.HintStatePerTeam", b =>
-            {
-                b.Property<int>("TeamID")
-                    .HasColumnType("int");
+                {
+                    b.Property<int>("TeamID")
+                        .HasColumnType("int");
 
-                b.Property<int>("HintID")
-                    .HasColumnType("int");
+                    b.Property<int>("HintID")
+                        .HasColumnType("int");
 
-                b.Property<DateTime?>("UnlockTime")
-                    .HasColumnType("datetime2");
+                    b.Property<DateTime?>("UnlockTime")
+                        .HasColumnType("datetime2");
 
-                b.HasKey("TeamID", "HintID");
+                    b.HasKey("TeamID", "HintID");
 
-                b.HasIndex("HintID");
+                    b.HasIndex("HintID");
 
-                b.ToTable("HintStatePerTeam");
-            });
+                    b.ToTable("HintStatePerTeam");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.Invitation", b =>
-            {
-                b.Property<int>("ID")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("int");
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                b.Property<string>("EmailAddress")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("EmailAddress")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<DateTime>("Expiration")
-                    .HasColumnType("datetime2");
+                    b.Property<DateTime>("Expiration")
+                        .HasColumnType("datetime2");
 
-                b.Property<Guid>("InvitationCode")
-                    .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("InvitationCode")
+                        .HasColumnType("uniqueidentifier");
 
-                b.Property<string>("InvitationType")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("InvitationType")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<int?>("TeamID")
-                    .HasColumnType("int");
+                    b.Property<int?>("TeamID")
+                        .HasColumnType("int");
 
-                b.HasKey("ID");
+                    b.HasKey("ID");
 
-                b.HasIndex("TeamID");
+                    b.HasIndex("TeamID");
 
-                b.ToTable("Invitations");
-            });
+                    b.ToTable("Invitations");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.Piece", b =>
-            {
-                b.Property<int>("ID")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("int");
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                b.Property<string>("Contents")
-                    .IsRequired()
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("Contents")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<int>("ProgressLevel")
-                    .HasColumnType("int");
+                    b.Property<int>("ProgressLevel")
+                        .HasColumnType("int");
 
-                b.Property<int>("PuzzleID")
-                    .HasColumnType("int");
+                    b.Property<int>("PuzzleID")
+                        .HasColumnType("int");
 
-                b.HasKey("ID");
+                    b.HasKey("ID");
 
-                b.HasIndex("ProgressLevel");
+                    b.HasIndex("ProgressLevel");
 
-                b.HasIndex("PuzzleID");
+                    b.HasIndex("PuzzleID");
 
-                b.ToTable("Pieces");
-            });
+                    b.ToTable("Pieces");
+                });
+
+            modelBuilder.Entity("ServerCore.DataModel.PlayerInEvent", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<int>("EventId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsRemote")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Lunch")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LunchModifications")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PlayerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ShirtSize")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("PlayerId");
+
+                    b.ToTable("Swag");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.Prerequisites", b =>
-            {
-                b.Property<int>("ID")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("int");
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                b.Property<int>("PrerequisiteID")
-                    .HasColumnType("int");
+                    b.Property<int>("PrerequisiteID")
+                        .HasColumnType("int");
 
-                b.Property<int>("PuzzleID")
-                    .HasColumnType("int");
+                    b.Property<int>("PuzzleID")
+                        .HasColumnType("int");
 
-                b.HasKey("ID");
+                    b.HasKey("ID");
 
-                b.HasIndex("PrerequisiteID");
+                    b.HasIndex("PrerequisiteID");
 
-                b.HasIndex("PuzzleID");
+                    b.HasIndex("PuzzleID");
 
-                b.ToTable("Prerequisites");
-            });
+                    b.ToTable("Prerequisites");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.Puzzle", b =>
-            {
-                b.Property<int>("ID")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("int");
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                b.Property<string>("CustomSolutionURL")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("CustomSolutionURL")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<string>("CustomURL")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("CustomURL")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<string>("Description")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<string>("Errata")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("Errata")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<int>("EventID")
-                    .HasColumnType("int");
+                    b.Property<int>("EventID")
+                        .HasColumnType("int");
 
-                b.Property<string>("Group")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("Group")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<bool>("HasDataConfirmation")
-                    .HasColumnType("bit");
+                    b.Property<bool>("HasDataConfirmation")
+                        .HasColumnType("bit");
 
-                b.Property<int>("HintCoinsForSolve")
-                    .HasColumnType("int");
+                    b.Property<int>("HintCoinsForSolve")
+                        .HasColumnType("int");
 
-                b.Property<bool>("HintsAreCumulative")
-                    .HasColumnType("bit");
+                    b.Property<bool>("HintsAreCumulative")
+                        .HasColumnType("bit");
 
-                b.Property<bool>("IsCheatCode")
-                    .HasColumnType("bit");
+                    b.Property<bool>("IsCheatCode")
+                        .HasColumnType("bit");
 
-                b.Property<bool>("IsFinalPuzzle")
-                    .HasColumnType("bit");
+                    b.Property<bool>("IsFinalPuzzle")
+                        .HasColumnType("bit");
 
-                b.Property<bool>("IsForSinglePlayer")
-                    .HasColumnType("bit");
+                    b.Property<bool>("IsForSinglePlayer")
+                        .HasColumnType("bit");
 
-                b.Property<bool>("IsFreeform")
-                    .HasColumnType("bit");
+                    b.Property<bool>("IsFreeform")
+                        .HasColumnType("bit");
 
-                b.Property<bool>("IsGloballyVisiblePrerequisite")
-                    .HasColumnType("bit");
+                    b.Property<bool>("IsGloballyVisiblePrerequisite")
+                        .HasColumnType("bit");
 
-                b.Property<bool>("IsMetaPuzzle")
-                    .HasColumnType("bit");
+                    b.Property<bool>("IsMetaPuzzle")
+                        .HasColumnType("bit");
 
-                b.Property<bool>("IsPuzzle")
-                    .HasColumnType("bit");
+                    b.Property<bool>("IsPuzzle")
+                        .HasColumnType("bit");
 
-                b.Property<int>("MaxAnnotationKey")
-                    .HasColumnType("int");
+                    b.Property<int>("MaxAnnotationKey")
+                        .HasColumnType("int");
 
-                b.Property<int>("MinPrerequisiteCount")
-                    .HasColumnType("int");
+                    b.Property<int>("MinPrerequisiteCount")
+                        .HasColumnType("int");
 
-                b.Property<int>("MinutesOfEventLockout")
-                    .HasColumnType("int");
+                    b.Property<int>("MinutesOfEventLockout")
+                        .HasColumnType("int");
 
-                b.Property<int?>("MinutesToAutomaticallySolve")
-                    .HasColumnType("int");
+                    b.Property<int?>("MinutesToAutomaticallySolve")
+                        .HasColumnType("int");
 
-                b.Property<string>("Name")
-                    .IsRequired()
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<int>("OrderInGroup")
-                    .HasColumnType("int");
+                    b.Property<int>("OrderInGroup")
+                        .HasColumnType("int");
 
-                b.Property<string>("PieceMetaTagFilter")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("PieceMetaTagFilter")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<int>("PieceMetaUsage")
-                    .HasColumnType("int");
+                    b.Property<int>("PieceMetaUsage")
+                        .HasColumnType("int");
 
-                b.Property<string>("PieceTag")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("PieceTag")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<int?>("PieceWeight")
-                    .HasColumnType("int");
+                    b.Property<int?>("PieceWeight")
+                        .HasColumnType("int");
 
-                b.Property<int?>("PrerequisiteWeight")
-                    .HasColumnType("int");
+                    b.Property<int?>("PrerequisiteWeight")
+                        .HasColumnType("int");
 
-                b.Property<int>("PuzzleVersion")
-                    .HasColumnType("int");
+                    b.Property<int>("PuzzleVersion")
+                        .HasColumnType("int");
 
-                b.Property<int>("SolveValue")
-                    .HasColumnType("int");
+                    b.Property<int>("SolveValue")
+                        .HasColumnType("int");
 
-                b.Property<string>("SupportEmailAlias")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("SupportEmailAlias")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<string>("Token")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("Token")
+                        .HasColumnType("nvarchar(max)");
 
-                b.HasKey("ID");
+                    b.HasKey("ID");
 
-                b.HasIndex("EventID");
+                    b.HasIndex("EventID");
 
-                b.ToTable("Puzzles");
-            });
+                    b.ToTable("Puzzles");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.PuzzleAuthors", b =>
-            {
-                b.Property<int>("ID")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("int");
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                b.Property<int>("AuthorID")
-                    .HasColumnType("int");
+                    b.Property<int>("AuthorID")
+                        .HasColumnType("int");
 
-                b.Property<int>("PuzzleID")
-                    .HasColumnType("int");
+                    b.Property<int>("PuzzleID")
+                        .HasColumnType("int");
 
-                b.HasKey("ID");
+                    b.HasKey("ID");
 
-                b.HasIndex("AuthorID");
+                    b.HasIndex("AuthorID");
 
-                b.HasIndex("PuzzleID");
+                    b.HasIndex("PuzzleID");
 
-                b.ToTable("PuzzleAuthors");
-            });
+                    b.ToTable("PuzzleAuthors");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.PuzzleStatePerTeam", b =>
-            {
-                b.Property<int>("PuzzleID")
-                    .HasColumnType("int");
+                {
+                    b.Property<int>("PuzzleID")
+                        .HasColumnType("int");
 
-                b.Property<int>("TeamID")
-                    .HasColumnType("int");
+                    b.Property<int>("TeamID")
+                        .HasColumnType("int");
 
-                b.Property<bool>("IsEmailOnlyMode")
-                    .HasColumnType("bit");
+                    b.Property<bool>("IsEmailOnlyMode")
+                        .HasColumnType("bit");
 
-                b.Property<DateTime?>("LockoutExpiryTime")
-                    .HasColumnType("datetime2");
+                    b.Property<DateTime?>("LockoutExpiryTime")
+                        .HasColumnType("datetime2");
 
-                b.Property<string>("Notes")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<bool>("Printed")
-                    .HasColumnType("bit");
+                    b.Property<bool>("Printed")
+                        .HasColumnType("bit");
 
-                b.Property<DateTime?>("SolvedTime")
-                    .HasColumnType("datetime2");
+                    b.Property<DateTime?>("SolvedTime")
+                        .HasColumnType("datetime2");
 
-                b.Property<DateTime?>("UnlockedTime")
-                    .HasColumnType("datetime2");
+                    b.Property<DateTime?>("UnlockedTime")
+                        .HasColumnType("datetime2");
 
-                b.Property<long>("WrongSubmissionCountBuffer")
-                    .HasColumnType("bigint");
+                    b.Property<long>("WrongSubmissionCountBuffer")
+                        .HasColumnType("bigint");
 
-                b.HasKey("PuzzleID", "TeamID");
+                    b.HasKey("PuzzleID", "TeamID");
 
-                b.HasIndex("TeamID");
+                    b.HasIndex("TeamID");
 
-                b.HasIndex("TeamID", "SolvedTime");
+                    b.HasIndex("TeamID", "SolvedTime");
 
-                b.ToTable("PuzzleStatePerTeam");
-            });
+                    b.ToTable("PuzzleStatePerTeam");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.PuzzleUser", b =>
-            {
-                b.Property<int>("ID")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("int");
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                b.Property<string>("Email")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<string>("EmployeeAlias")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("EmployeeAlias")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<string>("IdentityUserId")
-                    .IsRequired()
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("IdentityUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<bool>("IsGlobalAdmin")
-                    .HasColumnType("bit");
+                    b.Property<bool>("IsGlobalAdmin")
+                        .HasColumnType("bit");
 
-                b.Property<bool>("MayBeAdminOrAuthor")
-                    .HasColumnType("bit");
+                    b.Property<bool>("MayBeAdminOrAuthor")
+                        .HasColumnType("bit");
 
-                b.Property<string>("Name")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<string>("PhoneNumber")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<string>("TShirtSize")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("TShirtSize")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<bool>("VisibleToOthers")
-                    .HasColumnType("bit");
+                    b.Property<bool>("VisibleToOthers")
+                        .HasColumnType("bit");
 
-                b.HasKey("ID");
+                    b.HasKey("ID");
 
-                b.ToTable("PuzzleUsers");
-            });
+                    b.ToTable("PuzzleUsers");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.Response", b =>
-            {
-                b.Property<int>("ID")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("int");
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                b.Property<bool>("IsSolution")
-                    .HasColumnType("bit");
+                    b.Property<bool>("IsSolution")
+                        .HasColumnType("bit");
 
-                b.Property<string>("Note")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<int>("PuzzleID")
-                    .HasColumnType("int");
+                    b.Property<int>("PuzzleID")
+                        .HasColumnType("int");
 
-                b.Property<string>("ResponseText")
-                    .IsRequired()
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("ResponseText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<string>("SubmittedText")
-                    .IsRequired()
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("SubmittedText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                b.HasKey("ID");
+                    b.HasKey("ID");
 
-                b.HasIndex("PuzzleID");
+                    b.HasIndex("PuzzleID");
 
-                b.ToTable("Responses");
-            });
+                    b.ToTable("Responses");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.SinglePlayerPuzzleHintStatePerPlayer", b =>
-            {
-                b.Property<int>("PlayerID")
-                    .HasColumnType("int");
+                {
+                    b.Property<int>("PlayerID")
+                        .HasColumnType("int");
 
-                b.Property<int>("HintID")
-                    .HasColumnType("int");
+                    b.Property<int>("HintID")
+                        .HasColumnType("int");
 
-                b.Property<DateTime?>("UnlockTime")
-                    .HasColumnType("datetime2");
+                    b.Property<DateTime?>("UnlockTime")
+                        .HasColumnType("datetime2");
 
-                b.HasKey("PlayerID", "HintID");
+                    b.HasKey("PlayerID", "HintID");
 
-                b.HasIndex("HintID");
+                    b.HasIndex("HintID");
 
-                b.ToTable("SinglePlayerPuzzleHintStatePerPlayer");
-            });
+                    b.ToTable("SinglePlayerPuzzleHintStatePerPlayer");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.SinglePlayerPuzzleStatePerPlayer", b =>
-            {
-                b.Property<int>("PuzzleID")
-                    .HasColumnType("int");
+                {
+                    b.Property<int>("PuzzleID")
+                        .HasColumnType("int");
 
-                b.Property<int>("PlayerID")
-                    .HasColumnType("int");
+                    b.Property<int>("PlayerID")
+                        .HasColumnType("int");
 
-                b.Property<bool>("IsEmailOnlyMode")
-                    .HasColumnType("bit");
+                    b.Property<bool>("IsEmailOnlyMode")
+                        .HasColumnType("bit");
 
-                b.Property<DateTime?>("LockoutExpiryTime")
-                    .HasColumnType("datetime2");
+                    b.Property<DateTime?>("LockoutExpiryTime")
+                        .HasColumnType("datetime2");
 
-                b.Property<string>("Notes")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<bool>("Printed")
-                    .HasColumnType("bit");
+                    b.Property<bool>("Printed")
+                        .HasColumnType("bit");
 
-                b.Property<DateTime?>("SolvedTime")
-                    .HasColumnType("datetime2");
+                    b.Property<DateTime?>("SolvedTime")
+                        .HasColumnType("datetime2");
 
-                b.Property<DateTime?>("UnlockedTime")
-                    .HasColumnType("datetime2");
+                    b.Property<DateTime?>("UnlockedTime")
+                        .HasColumnType("datetime2");
 
-                b.Property<long>("WrongSubmissionCountBuffer")
-                    .HasColumnType("bigint");
+                    b.Property<long>("WrongSubmissionCountBuffer")
+                        .HasColumnType("bigint");
 
-                b.HasKey("PuzzleID", "PlayerID");
+                    b.HasKey("PuzzleID", "PlayerID");
 
-                b.HasIndex("PlayerID");
+                    b.HasIndex("PlayerID");
 
-                b.HasIndex("PlayerID", "SolvedTime");
+                    b.HasIndex("PlayerID", "SolvedTime");
 
-                b.ToTable("SinglePlayerPuzzleStatePerPlayer");
-            });
+                    b.ToTable("SinglePlayerPuzzleStatePerPlayer");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.SinglePlayerPuzzleSubmission", b =>
-            {
-                b.Property<int>("ID")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("int");
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                b.Property<bool>("AllowFreeformSharing")
-                    .HasColumnType("bit");
+                    b.Property<bool>("AllowFreeformSharing")
+                        .HasColumnType("bit");
 
-                b.Property<bool?>("FreeformAccepted")
-                    .HasColumnType("bit");
+                    b.Property<bool?>("FreeformAccepted")
+                        .HasColumnType("bit");
 
-                b.Property<bool>("FreeformFavorited")
-                    .HasColumnType("bit");
+                    b.Property<bool>("FreeformFavorited")
+                        .HasColumnType("bit");
 
-                b.Property<int?>("FreeformJudgeID")
-                    .HasColumnType("int");
+                    b.Property<int?>("FreeformJudgeID")
+                        .HasColumnType("int");
 
-                b.Property<string>("FreeformResponse")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("FreeformResponse")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<int>("PuzzleID")
-                    .HasColumnType("int");
+                    b.Property<int>("PuzzleID")
+                        .HasColumnType("int");
 
-                b.Property<int?>("ResponseID")
-                    .HasColumnType("int");
+                    b.Property<int?>("ResponseID")
+                        .HasColumnType("int");
 
-                b.Property<string>("SubmissionText")
-                    .IsRequired()
-                    .HasColumnType("nvarchar(450)");
+                    b.Property<string>("SubmissionText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
-                b.Property<int>("SubmitterID")
-                    .HasColumnType("int");
+                    b.Property<int>("SubmitterID")
+                        .HasColumnType("int");
 
-                b.Property<DateTime>("TimeSubmitted")
-                    .HasColumnType("datetime2");
+                    b.Property<DateTime>("TimeSubmitted")
+                        .HasColumnType("datetime2");
 
-                b.HasKey("ID");
+                    b.HasKey("ID");
 
-                b.HasIndex("FreeformJudgeID");
+                    b.HasIndex("FreeformJudgeID");
 
-                b.HasIndex("PuzzleID");
+                    b.HasIndex("PuzzleID");
 
-                b.HasIndex("ResponseID");
+                    b.HasIndex("ResponseID");
 
-                b.HasIndex("SubmitterID", "PuzzleID", "SubmissionText")
-                    .IsUnique();
+                    b.HasIndex("SubmitterID", "PuzzleID", "SubmissionText")
+                        .IsUnique();
 
-                b.ToTable("SinglePlayerPuzzleSubmissions");
-            });
+                    b.ToTable("SinglePlayerPuzzleSubmissions");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.SinglePlayerPuzzleUnlockState", b =>
-            {
-                b.Property<int>("PuzzleID")
-                    .HasColumnType("int");
+                {
+                    b.Property<int>("PuzzleID")
+                        .HasColumnType("int");
 
-                b.Property<DateTime?>("UnlockedTime")
-                    .HasColumnType("datetime2");
+                    b.Property<DateTime?>("UnlockedTime")
+                        .HasColumnType("datetime2");
 
-                b.HasKey("PuzzleID");
+                    b.HasKey("PuzzleID");
 
-                b.ToTable("SinglePlayerPuzzleUnlockStates");
-            });
+                    b.ToTable("SinglePlayerPuzzleUnlockStates");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.Submission", b =>
-            {
-                b.Property<int>("ID")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("int");
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                b.Property<bool>("AllowFreeformSharing")
-                    .HasColumnType("bit");
+                    b.Property<bool>("AllowFreeformSharing")
+                        .HasColumnType("bit");
 
-                b.Property<bool?>("FreeformAccepted")
-                    .HasColumnType("bit");
+                    b.Property<bool?>("FreeformAccepted")
+                        .HasColumnType("bit");
 
-                b.Property<bool>("FreeformFavorited")
-                    .HasColumnType("bit");
+                    b.Property<bool>("FreeformFavorited")
+                        .HasColumnType("bit");
 
-                b.Property<int?>("FreeformJudgeID")
-                    .HasColumnType("int");
+                    b.Property<int?>("FreeformJudgeID")
+                        .HasColumnType("int");
 
-                b.Property<string>("FreeformResponse")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("FreeformResponse")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<int>("PuzzleID")
-                    .HasColumnType("int");
+                    b.Property<int>("PuzzleID")
+                        .HasColumnType("int");
 
-                b.Property<int?>("ResponseID")
-                    .HasColumnType("int");
+                    b.Property<int?>("ResponseID")
+                        .HasColumnType("int");
 
-                b.Property<string>("SubmissionText")
-                    .IsRequired()
-                    .HasColumnType("nvarchar(450)");
+                    b.Property<string>("SubmissionText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
-                b.Property<int>("SubmitterID")
-                    .HasColumnType("int");
+                    b.Property<int>("SubmitterID")
+                        .HasColumnType("int");
 
-                b.Property<int>("TeamID")
-                    .HasColumnType("int");
+                    b.Property<int>("TeamID")
+                        .HasColumnType("int");
 
-                b.Property<int?>("TeamID1")
-                    .HasColumnType("int");
+                    b.Property<int?>("TeamID1")
+                        .HasColumnType("int");
 
-                b.Property<DateTime>("TimeSubmitted")
-                    .HasColumnType("datetime2");
+                    b.Property<DateTime>("TimeSubmitted")
+                        .HasColumnType("datetime2");
 
-                b.HasKey("ID");
+                    b.HasKey("ID");
 
-                b.HasIndex("FreeformJudgeID");
+                    b.HasIndex("FreeformJudgeID");
 
-                b.HasIndex("PuzzleID");
+                    b.HasIndex("PuzzleID");
 
-                b.HasIndex("ResponseID");
+                    b.HasIndex("ResponseID");
 
-                b.HasIndex("SubmitterID");
+                    b.HasIndex("SubmitterID");
 
-                b.HasIndex("TeamID1");
+                    b.HasIndex("TeamID1");
 
-                b.HasIndex("TeamID", "PuzzleID", "SubmissionText")
-                    .IsUnique();
+                    b.HasIndex("TeamID", "PuzzleID", "SubmissionText")
+                        .IsUnique();
 
-                b.ToTable("Submissions");
-            });
-
-            modelBuilder.Entity("ServerCore.DataModel.Swag", b =>
-            {
-                b.Property<int>("ID")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("int");
-
-                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
-
-                b.Property<int>("EventId")
-                    .HasColumnType("int");
-
-                b.Property<string>("Lunch")
-                    .HasColumnType("nvarchar(max)");
-
-                b.Property<string>("LunchModifications")
-                    .HasColumnType("nvarchar(max)");
-
-                b.Property<int>("PlayerId")
-                    .HasColumnType("int");
-
-                b.Property<string>("ShirtSize")
-                    .HasColumnType("nvarchar(max)");
-
-                b.HasKey("ID");
-
-                b.HasIndex("EventId");
-
-                b.HasIndex("PlayerId");
-
-                b.ToTable("Swag");
-            });
+                    b.ToTable("Submissions");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.Team", b =>
-            {
-                b.Property<int>("ID")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("int");
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                b.Property<string>("Bio")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("Bio")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<string>("CustomRoom")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("CustomRoom")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<int>("EventID")
-                    .HasColumnType("int");
+                    b.Property<int>("EventID")
+                        .HasColumnType("int");
 
-                b.Property<int>("HintCoinCount")
-                    .HasColumnType("int");
+                    b.Property<int>("HintCoinCount")
+                        .HasColumnType("int");
 
-                b.Property<int>("HintCoinsUsed")
-                    .HasColumnType("int");
+                    b.Property<int>("HintCoinsUsed")
+                        .HasColumnType("int");
 
-                b.Property<bool>("IsDisqualified")
-                    .HasColumnType("bit");
+                    b.Property<bool>("IsDisqualified")
+                        .HasColumnType("bit");
 
-                b.Property<bool>("IsLookingForTeammates")
-                    .HasColumnType("bit");
+                    b.Property<bool>("IsLookingForTeammates")
+                        .HasColumnType("bit");
 
-                b.Property<string>("Name")
-                    .IsRequired()
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<string>("Password")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("Password")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<string>("PrimaryContactEmail")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("PrimaryContactEmail")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<string>("PrimaryPhoneNumber")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("PrimaryPhoneNumber")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<int?>("RoomID")
-                    .HasColumnType("int");
+                    b.Property<int?>("RoomID")
+                        .HasColumnType("int");
 
-                b.Property<string>("SecondaryPhoneNumber")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("SecondaryPhoneNumber")
+                        .HasColumnType("nvarchar(max)");
 
-                b.HasKey("ID");
+                    b.HasKey("ID");
 
-                b.HasIndex("EventID");
+                    b.HasIndex("EventID");
 
-                b.ToTable("Teams");
-            });
+                    b.ToTable("Teams");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.TeamApplication", b =>
-            {
-                b.Property<int>("ID")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("int");
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                b.Property<int>("PlayerID")
-                    .HasColumnType("int");
+                    b.Property<int>("PlayerID")
+                        .HasColumnType("int");
 
-                b.Property<int>("TeamID")
-                    .HasColumnType("int");
+                    b.Property<int>("TeamID")
+                        .HasColumnType("int");
 
-                b.HasKey("ID");
+                    b.HasKey("ID");
 
-                b.HasIndex("PlayerID");
+                    b.HasIndex("PlayerID");
 
-                b.HasIndex("TeamID");
+                    b.HasIndex("TeamID");
 
-                b.ToTable("TeamApplications");
-            });
+                    b.ToTable("TeamApplications");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.TeamMembers", b =>
-            {
-                b.Property<int>("ID")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("int");
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                b.Property<int>("Team.ID")
-                    .HasColumnType("int");
+                    b.Property<int>("Team.ID")
+                        .HasColumnType("int");
 
-                b.Property<int>("User.ID")
-                    .HasColumnType("int");
+                    b.Property<int>("User.ID")
+                        .HasColumnType("int");
 
-                b.HasKey("ID");
+                    b.HasKey("ID");
 
-                b.HasIndex("Team.ID");
+                    b.HasIndex("Team.ID");
 
-                b.HasIndex("User.ID");
+                    b.HasIndex("User.ID");
 
-                b.ToTable("TeamMembers");
-            });
+                    b.ToTable("TeamMembers");
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
-            {
-                b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
-                    .WithMany()
-                    .HasForeignKey("RoleId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
-            });
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
-            {
-                b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
-                    .WithMany()
-                    .HasForeignKey("UserId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
-            });
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
-            {
-                b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
-                    .WithMany()
-                    .HasForeignKey("UserId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
-            });
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-            {
-                b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
-                    .WithMany()
-                    .HasForeignKey("RoleId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
-                    .WithMany()
-                    .HasForeignKey("UserId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
-            });
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
-            {
-                b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
-                    .WithMany()
-                    .HasForeignKey("UserId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
-            });
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.Annotation", b =>
-            {
-                b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
-                    .WithMany()
-                    .HasForeignKey("PuzzleID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                {
+                    b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
+                        .WithMany()
+                        .HasForeignKey("PuzzleID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.HasOne("ServerCore.DataModel.Team", "Team")
-                    .WithMany()
-                    .HasForeignKey("TeamID")
-                    .OnDelete(DeleteBehavior.Restrict)
-                    .IsRequired();
+                    b.HasOne("ServerCore.DataModel.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                b.Navigation("Puzzle");
+                    b.Navigation("Puzzle");
 
-                b.Navigation("Team");
-            });
+                    b.Navigation("Team");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.ContentFile", b =>
-            {
-                b.HasOne("ServerCore.DataModel.Event", "Event")
-                    .WithMany()
-                    .HasForeignKey("EventID")
-                    .OnDelete(DeleteBehavior.Restrict)
-                    .IsRequired();
+                {
+                    b.HasOne("ServerCore.DataModel.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
-                    .WithMany("Contents")
-                    .HasForeignKey("PuzzleID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                    b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
+                        .WithMany("Contents")
+                        .HasForeignKey("PuzzleID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.Navigation("Event");
+                    b.Navigation("Event");
 
-                b.Navigation("Puzzle");
-            });
+                    b.Navigation("Puzzle");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.EventAdmins", b =>
-            {
-                b.HasOne("ServerCore.DataModel.PuzzleUser", "Admin")
-                    .WithMany()
-                    .HasForeignKey("AdminID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                {
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Admin")
+                        .WithMany()
+                        .HasForeignKey("AdminID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.HasOne("ServerCore.DataModel.Event", "Event")
-                    .WithMany()
-                    .HasForeignKey("EventID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                    b.HasOne("ServerCore.DataModel.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.Navigation("Admin");
+                    b.Navigation("Admin");
 
-                b.Navigation("Event");
-            });
+                    b.Navigation("Event");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.EventAuthors", b =>
-            {
-                b.HasOne("ServerCore.DataModel.PuzzleUser", "Author")
-                    .WithMany()
-                    .HasForeignKey("AuthorID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                {
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.HasOne("ServerCore.DataModel.Event", "Event")
-                    .WithMany()
-                    .HasForeignKey("EventID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                    b.HasOne("ServerCore.DataModel.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.Navigation("Author");
+                    b.Navigation("Author");
 
-                b.Navigation("Event");
-            });
+                    b.Navigation("Event");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.Feedback", b =>
-            {
-                b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
-                    .WithMany()
-                    .HasForeignKey("PuzzleID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                {
+                    b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
+                        .WithMany()
+                        .HasForeignKey("PuzzleID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.HasOne("ServerCore.DataModel.PuzzleUser", "Submitter")
-                    .WithMany()
-                    .HasForeignKey("SubmitterID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Submitter")
+                        .WithMany()
+                        .HasForeignKey("SubmitterID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.Navigation("Puzzle");
+                    b.Navigation("Puzzle");
 
-                b.Navigation("Submitter");
-            });
+                    b.Navigation("Submitter");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.Hint", b =>
-            {
-                b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
-                    .WithMany()
-                    .HasForeignKey("PuzzleID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                {
+                    b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
+                        .WithMany()
+                        .HasForeignKey("PuzzleID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.Navigation("Puzzle");
-            });
+                    b.Navigation("Puzzle");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.HintStatePerTeam", b =>
-            {
-                b.HasOne("ServerCore.DataModel.Hint", "Hint")
-                    .WithMany()
-                    .HasForeignKey("HintID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                {
+                    b.HasOne("ServerCore.DataModel.Hint", "Hint")
+                        .WithMany()
+                        .HasForeignKey("HintID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.HasOne("ServerCore.DataModel.Team", "Team")
-                    .WithMany()
-                    .HasForeignKey("TeamID")
-                    .OnDelete(DeleteBehavior.Restrict)
-                    .IsRequired();
+                    b.HasOne("ServerCore.DataModel.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                b.Navigation("Hint");
+                    b.Navigation("Hint");
 
-                b.Navigation("Team");
-            });
+                    b.Navigation("Team");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.Invitation", b =>
-            {
-                b.HasOne("ServerCore.DataModel.Team", null)
-                    .WithMany("Invitations")
-                    .HasForeignKey("TeamID");
-            });
+                {
+                    b.HasOne("ServerCore.DataModel.Team", null)
+                        .WithMany("Invitations")
+                        .HasForeignKey("TeamID");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.Piece", b =>
-            {
-                b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
-                    .WithMany()
-                    .HasForeignKey("PuzzleID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                {
+                    b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
+                        .WithMany()
+                        .HasForeignKey("PuzzleID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.Navigation("Puzzle");
-            });
+                    b.Navigation("Puzzle");
+                });
+
+            modelBuilder.Entity("ServerCore.DataModel.PlayerInEvent", b =>
+                {
+                    b.HasOne("ServerCore.DataModel.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Player")
+                        .WithMany()
+                        .HasForeignKey("PlayerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
+
+                    b.Navigation("Player");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.Prerequisites", b =>
-            {
-                b.HasOne("ServerCore.DataModel.Puzzle", "Prerequisite")
-                    .WithMany()
-                    .HasForeignKey("PrerequisiteID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                {
+                    b.HasOne("ServerCore.DataModel.Puzzle", "Prerequisite")
+                        .WithMany()
+                        .HasForeignKey("PrerequisiteID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
-                    .WithMany()
-                    .HasForeignKey("PuzzleID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                    b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
+                        .WithMany()
+                        .HasForeignKey("PuzzleID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.Navigation("Prerequisite");
+                    b.Navigation("Prerequisite");
 
-                b.Navigation("Puzzle");
-            });
+                    b.Navigation("Puzzle");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.Puzzle", b =>
-            {
-                b.HasOne("ServerCore.DataModel.Event", "Event")
-                    .WithMany()
-                    .HasForeignKey("EventID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                {
+                    b.HasOne("ServerCore.DataModel.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.Navigation("Event");
-            });
+                    b.Navigation("Event");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.PuzzleAuthors", b =>
-            {
-                b.HasOne("ServerCore.DataModel.PuzzleUser", "Author")
-                    .WithMany()
-                    .HasForeignKey("AuthorID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                {
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
-                    .WithMany()
-                    .HasForeignKey("PuzzleID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                    b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
+                        .WithMany()
+                        .HasForeignKey("PuzzleID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.Navigation("Author");
+                    b.Navigation("Author");
 
-                b.Navigation("Puzzle");
-            });
+                    b.Navigation("Puzzle");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.PuzzleStatePerTeam", b =>
-            {
-                b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
-                    .WithMany()
-                    .HasForeignKey("PuzzleID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                {
+                    b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
+                        .WithMany()
+                        .HasForeignKey("PuzzleID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.HasOne("ServerCore.DataModel.Team", "Team")
-                    .WithMany()
-                    .HasForeignKey("TeamID")
-                    .OnDelete(DeleteBehavior.Restrict)
-                    .IsRequired();
+                    b.HasOne("ServerCore.DataModel.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                b.Navigation("Puzzle");
+                    b.Navigation("Puzzle");
 
-                b.Navigation("Team");
-            });
+                    b.Navigation("Team");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.Response", b =>
-            {
-                b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
-                    .WithMany()
-                    .HasForeignKey("PuzzleID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                {
+                    b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
+                        .WithMany()
+                        .HasForeignKey("PuzzleID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.Navigation("Puzzle");
-            });
+                    b.Navigation("Puzzle");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.SinglePlayerPuzzleHintStatePerPlayer", b =>
-            {
-                b.HasOne("ServerCore.DataModel.Hint", "Hint")
-                    .WithMany()
-                    .HasForeignKey("HintID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                {
+                    b.HasOne("ServerCore.DataModel.Hint", "Hint")
+                        .WithMany()
+                        .HasForeignKey("HintID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.HasOne("ServerCore.DataModel.PuzzleUser", "Player")
-                    .WithMany()
-                    .HasForeignKey("PlayerID")
-                    .OnDelete(DeleteBehavior.Restrict)
-                    .IsRequired();
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Player")
+                        .WithMany()
+                        .HasForeignKey("PlayerID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                b.Navigation("Hint");
+                    b.Navigation("Hint");
 
-                b.Navigation("Player");
-            });
+                    b.Navigation("Player");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.SinglePlayerPuzzleStatePerPlayer", b =>
-            {
-                b.HasOne("ServerCore.DataModel.PuzzleUser", "Player")
-                    .WithMany()
-                    .HasForeignKey("PlayerID")
-                    .OnDelete(DeleteBehavior.Restrict)
-                    .IsRequired();
+                {
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Player")
+                        .WithMany()
+                        .HasForeignKey("PlayerID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
-                    .WithMany()
-                    .HasForeignKey("PuzzleID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                    b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
+                        .WithMany()
+                        .HasForeignKey("PuzzleID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.Navigation("Player");
+                    b.Navigation("Player");
 
-                b.Navigation("Puzzle");
-            });
+                    b.Navigation("Puzzle");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.SinglePlayerPuzzleSubmission", b =>
-            {
-                b.HasOne("ServerCore.DataModel.PuzzleUser", "FreeformJudge")
-                    .WithMany()
-                    .HasForeignKey("FreeformJudgeID");
+                {
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "FreeformJudge")
+                        .WithMany()
+                        .HasForeignKey("FreeformJudgeID");
 
-                b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
-                    .WithMany("SinglePlayerPuzzleSubmissions")
-                    .HasForeignKey("PuzzleID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                    b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
+                        .WithMany("SinglePlayerPuzzleSubmissions")
+                        .HasForeignKey("PuzzleID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.HasOne("ServerCore.DataModel.Response", "Response")
-                    .WithMany()
-                    .HasForeignKey("ResponseID");
+                    b.HasOne("ServerCore.DataModel.Response", "Response")
+                        .WithMany()
+                        .HasForeignKey("ResponseID");
 
-                b.HasOne("ServerCore.DataModel.PuzzleUser", "Submitter")
-                    .WithMany()
-                    .HasForeignKey("SubmitterID")
-                    .OnDelete(DeleteBehavior.Restrict)
-                    .IsRequired();
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Submitter")
+                        .WithMany()
+                        .HasForeignKey("SubmitterID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                b.Navigation("FreeformJudge");
+                    b.Navigation("FreeformJudge");
 
-                b.Navigation("Puzzle");
+                    b.Navigation("Puzzle");
 
-                b.Navigation("Response");
+                    b.Navigation("Response");
 
-                b.Navigation("Submitter");
-            });
+                    b.Navigation("Submitter");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.SinglePlayerPuzzleUnlockState", b =>
-            {
-                b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
-                    .WithMany()
-                    .HasForeignKey("PuzzleID")
-                    .OnDelete(DeleteBehavior.Restrict)
-                    .IsRequired();
+                {
+                    b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
+                        .WithMany()
+                        .HasForeignKey("PuzzleID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                b.Navigation("Puzzle");
-            });
+                    b.Navigation("Puzzle");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.Submission", b =>
-            {
-                b.HasOne("ServerCore.DataModel.PuzzleUser", "FreeformJudge")
-                    .WithMany()
-                    .HasForeignKey("FreeformJudgeID");
+                {
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "FreeformJudge")
+                        .WithMany()
+                        .HasForeignKey("FreeformJudgeID");
 
-                b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
-                    .WithMany("Submissions")
-                    .HasForeignKey("PuzzleID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                    b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
+                        .WithMany("Submissions")
+                        .HasForeignKey("PuzzleID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.HasOne("ServerCore.DataModel.Response", "Response")
-                    .WithMany()
-                    .HasForeignKey("ResponseID");
+                    b.HasOne("ServerCore.DataModel.Response", "Response")
+                        .WithMany()
+                        .HasForeignKey("ResponseID");
 
-                b.HasOne("ServerCore.DataModel.PuzzleUser", "Submitter")
-                    .WithMany()
-                    .HasForeignKey("SubmitterID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Submitter")
+                        .WithMany()
+                        .HasForeignKey("SubmitterID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.HasOne("ServerCore.DataModel.Team", "Team")
-                    .WithMany()
-                    .HasForeignKey("TeamID")
-                    .OnDelete(DeleteBehavior.Restrict)
-                    .IsRequired();
+                    b.HasOne("ServerCore.DataModel.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                b.HasOne("ServerCore.DataModel.Team", null)
-                    .WithMany("Submissions")
-                    .HasForeignKey("TeamID1");
+                    b.HasOne("ServerCore.DataModel.Team", null)
+                        .WithMany("Submissions")
+                        .HasForeignKey("TeamID1");
 
-                b.Navigation("FreeformJudge");
+                    b.Navigation("FreeformJudge");
 
-                b.Navigation("Puzzle");
+                    b.Navigation("Puzzle");
 
-                b.Navigation("Response");
+                    b.Navigation("Response");
 
-                b.Navigation("Submitter");
+                    b.Navigation("Submitter");
 
-                b.Navigation("Team");
-            });
-
-            modelBuilder.Entity("ServerCore.DataModel.Swag", b =>
-            {
-                b.HasOne("ServerCore.DataModel.Event", "Event")
-                    .WithMany()
-                    .HasForeignKey("EventId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
-
-                b.HasOne("ServerCore.DataModel.PuzzleUser", "Player")
-                    .WithMany()
-                    .HasForeignKey("PlayerId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
-
-                b.Navigation("Event");
-
-                b.Navigation("Player");
-            });
+                    b.Navigation("Team");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.Team", b =>
-            {
-                b.HasOne("ServerCore.DataModel.Event", "Event")
-                    .WithMany()
-                    .HasForeignKey("EventID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                {
+                    b.HasOne("ServerCore.DataModel.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.Navigation("Event");
-            });
+                    b.Navigation("Event");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.TeamApplication", b =>
-            {
-                b.HasOne("ServerCore.DataModel.PuzzleUser", "Player")
-                    .WithMany()
-                    .HasForeignKey("PlayerID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                {
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Player")
+                        .WithMany()
+                        .HasForeignKey("PlayerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.HasOne("ServerCore.DataModel.Team", "Team")
-                    .WithMany()
-                    .HasForeignKey("TeamID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                    b.HasOne("ServerCore.DataModel.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.Navigation("Player");
+                    b.Navigation("Player");
 
-                b.Navigation("Team");
-            });
+                    b.Navigation("Team");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.TeamMembers", b =>
-            {
-                b.HasOne("ServerCore.DataModel.Team", "Team")
-                    .WithMany()
-                    .HasForeignKey("Team.ID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                {
+                    b.HasOne("ServerCore.DataModel.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("Team.ID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.HasOne("ServerCore.DataModel.PuzzleUser", "Member")
-                    .WithMany()
-                    .HasForeignKey("User.ID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Member")
+                        .WithMany()
+                        .HasForeignKey("User.ID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.Navigation("Member");
+                    b.Navigation("Member");
 
-                b.Navigation("Team");
-            });
+                    b.Navigation("Team");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.Puzzle", b =>
-            {
-                b.Navigation("Contents");
+                {
+                    b.Navigation("Contents");
 
-                b.Navigation("SinglePlayerPuzzleSubmissions");
+                    b.Navigation("SinglePlayerPuzzleSubmissions");
 
-                b.Navigation("Submissions");
-            });
+                    b.Navigation("Submissions");
+                });
 
             modelBuilder.Entity("ServerCore.DataModel.Team", b =>
-            {
-                b.Navigation("Invitations");
+                {
+                    b.Navigation("Invitations");
 
-                b.Navigation("Submissions");
-            });
+                    b.Navigation("Submissions");
+                });
 #pragma warning restore 612, 618
         }
     }
