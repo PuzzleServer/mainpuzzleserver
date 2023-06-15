@@ -207,7 +207,6 @@
                         <li><a style="color:yellow" asp-page="/Teams/List"> Join or Create a Team!</a></li>
                     }
                     <li><a asp-page="/Teams/Play" asp-route-teamId="@teamId">Puzzles</a></li>
-                    <!-- todo morganb: figure out what to do here for team swag and what the TeamMiscDataChangeEnd check below is trying to do -->
                     @if (Event.HasSwag)
                     {
                         if (DateTime.UtcNow > Event.TeamMiscDataChangeEnd || await Model.HasSwag())
