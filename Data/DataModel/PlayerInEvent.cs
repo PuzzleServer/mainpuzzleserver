@@ -22,6 +22,6 @@ namespace ServerCore.DataModel
 
         public string ShirtSize { get; set; }
 
-        public string IsRemote { get; set; }
+        public bool IsRemote { get; set; }
     }
 }

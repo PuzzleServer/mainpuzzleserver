@@ -615,8 +615,8 @@ namespace Data.Migrations
                     b.Property<int>("EventId")
                         .HasColumnType("int");
 
-                    b.Property<string>("IsRemote")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("IsRemote")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Lunch")
                         .HasColumnType("nvarchar(max)");

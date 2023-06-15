@@ -58,10 +58,23 @@ namespace ServerCore.ModelBases
 
             if (isRegisteredUser == null)
             {
-                isRegisteredUser = await LoggedInUser.IsPlayerInEvent(_context, Event);
+                isRegisteredUser = await LoggedInUser.IsRegisteredForEvent(_context, Event);
             }
 
             return isRegisteredUser.Value;
+        }
+
+        private bool? playerIsOnTeam;
+        public async Task<bool> PlayerHasTeamForEvent()
+        {
+            if(LoggedInUser == null) { return false; }
+            
+            if(playerIsOnTeam == null) 
+            {
+                playerIsOnTeam = await LoggedInUser.IsPlayerOnTeam(_context, Event);
+            }
+
+            return playerIsOnTeam.Value;
         }
 
         /// <summary>
@@ -106,13 +119,13 @@ namespace ServerCore.ModelBases
 
             return isEventAdmin.Value;
         }
-        
+
         /// <summary>
         ///  Whether or not the individual has filled out their swag request
         /// </summary>
         public async Task<bool> HasSwag()
         {
-            return Event.EventHasSwag && await _context.PlayerInEvent.Where(m => m.Event == Event && m.Player == LoggedInUser).AnyAsync();
+            return Event.HasSwag && await _context.PlayerInEvent.Where(m => m.Event == Event && m.Player == LoggedInUser).AnyAsync();
         }
 
         /// <summary>
@@ -120,7 +133,7 @@ namespace ServerCore.ModelBases
         /// </summary>
         public bool EventHasSwag()
         {
-            return Event.EventHasSwag;
+            return Event.HasSwag;
         }
 
         public async Task<int> GetTeamId()
@@ -134,6 +147,16 @@ namespace ServerCore.ModelBases
             {
                 return -1;
             }
+        }
+
+        public async Task<int> GetPlayerEventId()
+        {
+            if (EventRole == EventRole.play)
+            {
+                PlayerInEvent player = await UserEventHelper.GetPlayerInEvent(_context, Event, LoggedInUser);
+                return player != null ? player.ID : -1;
+            }
+            return -1;
         }
 
         public string LocalTime(DateTime? date)

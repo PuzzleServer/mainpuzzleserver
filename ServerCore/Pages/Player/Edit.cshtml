@@ -1,0 +1,70 @@
+﻿@page "/{eventId}/{eventRole}/Player/Edit"
+@model ServerCore.Pages.Player.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h2>Edit</h2>
+
+<div>
+    <a asp-page="./Details" asp-route-teamId="@Model.PlayerInEvent.ID">Cancel</a>
+</div>
+
+<h4>Event Registration</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="PlayerInEvent.ID" />
+            <input type="hidden" asp-for="PlayerInEvent.EventId" />
+            <input type="hidden" asp-for="PlayerInEvent.PlayerId" />
+
+            @if (Model.Event.AllowsRemote)
+            {
+                <div class="form-group">
+                    <div class="checkbox">
+                        <label>
+                            <input asp-for="PlayerInEvent.IsRemote" /> I'm playing remotely
+                        </label>
+                    </div>
+                </div>
+            }
+
+            @if (Model.Event.HasIndividualLunch)
+            {
+                <div class="form-group">
+                    <label asp-for="PlayerInEvent.Lunch" class="control-label"></label>
+                    <input asp-for="PlayerInEvent.Lunch" class="form-control" />
+                    <span asp-validation-for="PlayerInEvent.Lunch" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="PlayerInEvent.LunchModifications" class="control-label"></label>
+                    <input asp-for="PlayerInEvent.LunchModifications" class="form-control" />
+                    <span asp-validation-for="PlayerInEvent.LunchModifications" class="text-danger"></span>
+                </div>
+            }
+
+            @if (Model.Event.HasTShirts)
+            {
+                <div class="form-group">
+                    <label asp-for="PlayerInEvent.ShirtSize" class="control-label"></label>
+                    <input asp-for="PlayerInEvent.ShirtSize" class="form-control" />
+                    <span asp-validation-for="PlayerInEvent.ShirtSize" class="text-danger"></span>
+                </div>
+            }
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
