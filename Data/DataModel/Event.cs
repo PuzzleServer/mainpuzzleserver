@@ -114,6 +114,18 @@ namespace ServerCore.DataModel
         public DateTime LunchReportDate { get; set; }
 
         /// <summary>
+        /// True if the current date is before the lunch report cutoff
+        /// </summary>
+        [NotMapped]
+        public bool CanChangeLunch
+        {
+            get
+            {
+                return DateTime.UtcNow <= LunchReportDate;
+            }
+        }
+
+        /// <summary>
         /// Returns whether or not the event has started. Does not necessarily indicate the event
         /// is currently active.
         /// </summary>
@@ -246,7 +258,7 @@ namespace ServerCore.DataModel
         /// For example, if this is 3, then 1-3 player teams get 1 lunch order,
         /// 4-6 player teams get 2 lunch orders etc
         /// </summary>
-        public int PlayersPerLunch { get; set; }
+        public int? PlayersPerLunch { get; set; }
 
         /// <summary>
         /// If no lunch is chosen, what to fill in with

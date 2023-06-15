@@ -39,6 +39,7 @@ namespace ServerCore.DataModel
         public DbSet<Annotation> Annotations { get; set; }
         public DbSet<Piece> Pieces { get; set; }
         public DbSet<PlayerInEvent> PlayerInEvent { get; set; }
+        public DbSet<TeamLunch> TeamLunch { get; set; }
 
         public static void UpdateDatabase(IApplicationBuilder app)
         {
