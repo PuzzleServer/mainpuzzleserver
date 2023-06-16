@@ -42,14 +42,7 @@ else
              </div> -->
             @if (!Model.Event.IsRemote)
             {
-                @if (Model.Event.IsInternEvent && Model.EventRole == ModelBases.EventRole.play)
-                {
-                    <div class="form-group">
-                        <label asp-for="Team.CustomRoom" class="control-label">Team room (selected by organizers)</label>
-                        <p>@(Model.Team.CustomRoom)</p>
-                    </div>
-                }
-                else
+                @if (!(Model.Event.IsInternEvent && Model.EventRole == ModelBases.EventRole.play))
                 {
                     <div class="form-group">
                         <label asp-for="Team.CustomRoom" class="control-label">Team room</label>
