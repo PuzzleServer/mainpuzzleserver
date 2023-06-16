@@ -202,22 +202,25 @@
                             <li><a asp-page="/Player/Details" asp-route-id="@playerEventId">My registration</a></li>
                         </ul>
                     </li>
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                            Puzzles
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a asp-page="/Teams/Play" asp-route-teamId="@teamId">Team Puzzles</a></li>
-                            <li class="divider"></li>
-                            <li><a asp-page="/Puzzles/SinglePlayerPuzzles">Puzzles for you</a></li>
-                        </ul>
-                    </li>
                     @if(!isOnTeam)
                     {
+                        <li><a asp-page="/Puzzles/SinglePlayerPuzzles">Puzzles</a></li>
                         <li><a style="color:yellow" asp-page="/Teams/List"> Join or Create a Team!</a></li>
                     }
-                    <li><a asp-page="/Teams/Play" asp-route-teamId="@teamId">Puzzles</a></li>
+                    else
+                    {
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                Puzzles
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a asp-page="/Teams/Play" asp-route-teamId="@teamId">Team Puzzles</a></li>
+                                <li class="divider"></li>
+                                <li><a asp-page="/Puzzles/SinglePlayerPuzzles">Puzzles for you</a></li>
+                            </ul>
+                        </li>
+                    }
                     @if (Event.HasSwag)
                     {
                         if (DateTime.UtcNow > Event.TeamMiscDataChangeEnd || await Model.HasSwag())
