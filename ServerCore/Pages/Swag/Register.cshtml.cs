@@ -17,20 +17,20 @@ namespace ServerCore.Pages.Swag
         }
 
         [BindProperty]
-        public ServerCore.DataModel.Swag Swag { get; set; }
+        public PlayerInEvent PlayerInEvent { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
-            if (!Event.EventHasSwag)
+            if (!Event.HasIndividualLunch)
             {
-                return Forbid("This page is only available for events that have swag.");
+                return Forbid("This page is only available for events that have individual lunch orders.");
             }
 
-            Swag = await _context.Swag.Where(m => m.Event == Event && m.Player == LoggedInUser).FirstOrDefaultAsync();
+            PlayerInEvent = await _context.PlayerInEvent.Where(m => m.Event == Event && m.Player == LoggedInUser).FirstOrDefaultAsync();
 
-            if (Swag == null)
+            if (PlayerInEvent == null)
             {
-                Swag = new ServerCore.DataModel.Swag();
+                PlayerInEvent = new PlayerInEvent();
             }
 
             return Page();
@@ -45,18 +45,18 @@ namespace ServerCore.Pages.Swag
                 return Page();
             }
 
-            ServerCore.DataModel.Swag editableSwag = await _context.Swag.Where(m => m.Event == Event && m.Player == LoggedInUser).FirstOrDefaultAsync();
+            PlayerInEvent editableSwag = await _context.PlayerInEvent.Where(m => m.Event == Event && m.Player == LoggedInUser).FirstOrDefaultAsync();
 
             if (editableSwag == null)
             {
-                Swag.Player = LoggedInUser;
-                Swag.Event = Event;
-                _context.Swag.Add(Swag);
+                PlayerInEvent.Player = LoggedInUser;
+                PlayerInEvent.Event = Event;
+                _context.PlayerInEvent.Add(PlayerInEvent);
             }
             else
             {
-                editableSwag.Lunch = Swag.Lunch;
-                editableSwag.LunchModifications = Swag.LunchModifications;
+                editableSwag.Lunch = PlayerInEvent.Lunch;
+                editableSwag.LunchModifications = PlayerInEvent.LunchModifications;
                 editableSwag.Player = LoggedInUser;
                 editableSwag.Event = Event;
 

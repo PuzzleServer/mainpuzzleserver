@@ -10,6 +10,7 @@
 }
 @using Microsoft.AspNetCore.Http.Extensions @* for GetEncodedUrl *@
 @using System.Text @* for StringBuilder *@
+@using ServerCore.DataModel;
 
 @{
     var mailtoUrl = new StringBuilder("mailto:");
@@ -97,6 +98,7 @@
 
     <div class="row">
         <div class="column">
+            <div class="row">
             <h3>Team details</h3>
             <dl>
                 <!-- class="dl-horizontal"> -->
@@ -202,6 +204,53 @@
                     }
                 </dd>
             </dl>
+            </div>
+            @if (Model.Event.EventHasTeamSwag)
+            {
+                <div class="row">
+                    <h2>Pizza</h2>
+                    <p>
+                        Your team can currently have @Model.EditableLunches pizza(s). Don&apos;t want a pizza? Pick &quot;No Pizza&quot;.
+                        @if (Model.EditableLunches < Model.MaxLunches && Model.Event.CanChangeLunch)
+                        {
+                            <span>
+                                Recruit @(Model.Event.PlayersPerLunch - Model.Members.Count % Model.Event.PlayersPerLunch + 1) more player(s) to get another pizza, up to @Model.MaxLunches pizzas total!
+                            </span>
+                        }
+                    </p>
+                    @if (Model.Lunches.Count < Model.EditableLunches && Model.Event.CanChangeLunch)
+                    {
+                        <h3>Add a pizza</h3>
+                        <form method="post">
+                            <select asp-for="NewLunch">
+                                <option value="">Select a topping</option>
+                                <option value="No Pizza">No Pizza</option>
+                                @foreach (var topping in DetailsModel.PizzaOptions)
+                                {
+                                    <option value="@topping">@topping</option>
+                                }
+                            </select>
+                            <button type="submit" asp-page-handler="AddLunch" asp-route-teamId="@Model.Team.ID" asp-route-newLunch="@Model.NewLunch">Add</button>
+                        </form>
+                    }
+                    <h3>Order:</h3>
+                    @foreach (TeamLunch lunch in Model.Lunches)
+                    {
+                        <p>
+                            <span>@lunch.Lunch
+                                @if (Model.Event.CanChangeLunch)
+                                {
+                                    <a asp-page-handler="RemoveLunch" asp-route-teamId="@Model.Team.ID" asp-route-lunchId="@lunch.ID">Remove</a>
+                                }
+                            </span>
+                        </p>
+                    }
+                    @if(Model.Lunches.Count < Model.EditableLunches)
+                    {
+                        <div>You have not chosen @(Model.EditableLunches - Model.Lunches.Count) pizza(s) yet. If you do not choose, you will get @Model.Event.DefaultLunch.</div>
+                    }
+                </div>
+            }
         </div>
         <div class="column">
             <div>

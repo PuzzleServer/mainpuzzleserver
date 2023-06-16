@@ -38,7 +38,7 @@ namespace ServerCore.Pages.Swag
         public async Task<IActionResult> OnGetAsync(int? puzzleId)
         {
             SwagViews = await (from t in _context.TeamMembers
-                               join s in _context.Swag on t.Member.ID equals s.PlayerId into tmp
+                               join s in _context.PlayerInEvent on t.Member.ID equals s.PlayerId into tmp
                                from swagState in tmp.DefaultIfEmpty()
                                where (swagState == null || swagState.Event == Event) && t.Team.Event == Event
                                orderby t.Team.Name, swagState.ShirtSize

@@ -144,7 +144,7 @@ namespace ServerCore.Areas.Identity
             PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
             Event thisEvent = await GetEventFromRoute();
 
-            if (thisEvent != null && await puzzleUser.IsPlayerInEvent(dbContext, thisEvent))
+            if (thisEvent != null && await puzzleUser.IsPlayerOnTeam(dbContext, thisEvent))
             {
                 authContext.Succeed(requirement);
             }

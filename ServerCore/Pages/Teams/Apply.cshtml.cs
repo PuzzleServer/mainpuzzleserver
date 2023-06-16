@@ -65,6 +65,10 @@ namespace ServerCore.Pages.Teams
                 Tuple<bool, string> result = await TeamHelper.AddMemberAsync(_context, Event, EventRole, teamID, LoggedInUser.ID);
                 if (result.Item1)
                 {
+                    if(!(await LoggedInUser.IsRegisteredForEvent(_context, Event)))
+                    {
+                        return RedirectToPage("/Player/Create");
+                    }
                     return RedirectToPage("./Details", new { teamId = teamID });
                 }
                 return NotFound(result.Item2);

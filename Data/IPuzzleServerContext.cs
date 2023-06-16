@@ -23,6 +23,7 @@ namespace ServerCore.DataModel
         DbSet<TeamMembers> TeamMembers { get; set; }
         DbSet<Team> Teams { get; set; }
         DbSet<PuzzleUser> PuzzleUsers { get; set; }
-        DbSet<Swag> Swag { get; set; }
+        DbSet<PlayerInEvent> PlayerInEvent { get; set; }
+        DbSet<TeamLunch> TeamLunch { get; set; }
     }
 }

@@ -61,5 +61,21 @@ namespace ServerCore.Helpers
             PuzzleUser pUser = await PuzzleUser.GetPuzzleUserForCurrentUser(puzzleServerContext, user, userManager);
             return await GetTeamForPlayer(puzzleServerContext, thisEvent, pUser);
         }
+
+        /// <summary>
+        /// Returns the registration details for the given player in the given event
+        /// </summary>
+        /// <param name="dbContext">Current PuzzleServerContext</param>
+        /// <param name="thisEvent">The event that's being checked</param>
+        /// <param name="user">The user being checked</param>
+        /// <returns>The user's registration details for this event</returns>
+        public static async Task<PlayerInEvent> GetPlayerInEvent(PuzzleServerContext dbContext, Event thisEvent, PuzzleUser user)
+        {
+            if (user == null)
+            {
+                return null;
+            }
+            return await dbContext.PlayerInEvent.Where(p => p.PlayerId == user.ID && p.EventId == thisEvent.ID).FirstOrDefaultAsync();
+        }
     }
 }

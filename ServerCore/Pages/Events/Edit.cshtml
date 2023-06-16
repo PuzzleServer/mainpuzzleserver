@@ -58,6 +58,20 @@
             <div class="form-group">
                 <div class="checkbox">
                     <label>
+                        <input asp-for="EditableEvent.IsRemote" /> IsRemote
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="EditableEvent.AllowsRemote" /> AllowsRemote
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
                         <input asp-for="EditableEvent.IsInternEvent" /> IsInternEvent
                     </label>
                 </div>
@@ -65,7 +79,38 @@
             <div class="form-group">
                 <div class="checkbox">
                     <label>
-                        <input asp-for="EditableEvent.EventHasSwag" /> EventHasSwag
+                        <input asp-for="EditableEvent.HasSwag" /> HasSwag
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="EditableEvent.HasTShirts" /> HasTShirts
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="EditableEvent.HasIndividualLunch" /> HasIndividualLunch
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="EditableEvent.PlayersPerLunch" class="control-label"></label>
+                <input asp-for="EditableEvent.PlayersPerLunch" class="form-control" />
+                <span asp-validation-for="EditableEvent.PlayersPerLunch" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EditableEvent.DefaultLunch" class="control-label"></label>
+                <input asp-for="EditableEvent.DefaultLunch" class="form-control" />
+                <span asp-validation-for="EditableEvent.DefaultLunch" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="EditableEvent.EventHasTeamSwag" /> EventHasTeamSwag
                     </label>
                 </div>
             </div>
@@ -100,6 +145,11 @@
                 <label asp-for="EditableEvent.TeamMiscDataChangeEnd" class="control-label"></label>
                 <input asp-for="EditableEvent.TeamMiscDataChangeEnd" class="form-control" />
                 <span asp-validation-for="EditableEvent.TeamMiscDataChangeEnd" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EditableEvent.LunchReportDate" class="control-label"></label>
+                <input asp-for="EditableEvent.LunchReportDate" class="form-control" />
+                <span asp-validation-for="EditableEvent.LunchReportDate" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="EditableEvent.TeamDeleteEnd" class="control-label"></label>
