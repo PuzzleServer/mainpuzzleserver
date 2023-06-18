@@ -48,7 +48,8 @@
 </p>
 <p>
     Support:
-    <a asp-page="/Submissions/AuthorIndex">View all submissions</a> |
+    <a asp-page="/Submissions/AuthorIndex">View all team submissions</a> |
+    <a asp-page="/Submissions/SinglePlayerPuzzleAuthorIndex">View all single player puzzle submissions</a> |
     <a asp-page="/Puzzles/Feedback">View all feedback</a> |
     @if (!Model.Event.HideHints)
     {
@@ -182,6 +183,7 @@
                              @if (item.Puzzle.IsForSinglePlayer)
                             {
                                 <a asp-page="/Puzzles/SinglePlayerPuzzleStatus" asp-route-puzzleid=@item.Puzzle.ID>Status</a><br />
+                                <a asp-page="/Submissions/SinglePlayerPuzzleAuthorIndex" asp-route-puzzleid=@item.Puzzle.ID>Submissions</a><br />
                             }
                             else
                             {

@@ -204,7 +204,7 @@
                     </li>
                     @if(!isOnTeam)
                     {
-                        <li><a asp-page="/Puzzles/SinglePlayerPuzzles">Puzzles</a></li>
+                        <li><a asp-page="/Puzzles/SinglePlayerPuzzles">Pre-game puzzles</a></li>
                         <li><a style="color:yellow" asp-page="/Teams/List"> Join or Create a Team!</a></li>
                     }
                     else
@@ -217,7 +217,7 @@
                             <ul class="dropdown-menu">
                                 <li><a asp-page="/Teams/Play" asp-route-teamId="@teamId">Team Puzzles</a></li>
                                 <li class="divider"></li>
-                                <li><a asp-page="/Puzzles/SinglePlayerPuzzles">Puzzles for you</a></li>
+                                <li><a asp-page="/Puzzles/SinglePlayerPuzzles">Pre-game puzzles</a></li>
                             </ul>
                         </li>
                     }
@@ -315,7 +315,7 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li><a asp-page="/EventSpecific/Index">Event</a></li>
-                    <li><a asp-page="/Puzzles/SinglePlayerPuzzles">Puzzles</a></li>
+                    <li><a asp-page="/Puzzles/SinglePlayerPuzzles">Pre-game puzzles</a></li>
                     @if(isOnTeam && Event.IsTeamMembershipChangeActive && !Event.EventHasStarted) // Exclude previous events from this registration prompt
                     {
                         <li><a style="color:yellow" asp-page="/Player/Create">Complete Your Registration</a></li>

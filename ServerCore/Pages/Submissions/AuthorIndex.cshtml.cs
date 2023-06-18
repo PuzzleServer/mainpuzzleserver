@@ -83,6 +83,10 @@ namespace ServerCore.Pages.Submissions
             else
             {
                 Puzzle = await _context.Puzzles.Where(m => m.ID == puzzleId).FirstOrDefaultAsync();
+                if (Puzzle.IsForSinglePlayer)
+                {
+                    return RedirectToPage("/Submissions/SinglePlayerPuzzleAuthorIndex", new { puzzleId = puzzleId });
+                }
 
                 if (EventRole == EventRole.author && !await UserEventHelper.IsAuthorOfPuzzle(_context, Puzzle, LoggedInUser))
                 {
