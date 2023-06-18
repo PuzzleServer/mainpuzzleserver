@@ -82,6 +82,13 @@
                                 </div>
                             </div>
                             <div class="form-group">
+                                <div class="checkbox">
+                                    <label>
+                                        <input asp-for="Puzzle.IsForSinglePlayer" /> IsForSinglePlayer
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
                                 <label asp-for="Puzzle.SolveValue" class="control-label"></label>
                                 <input asp-for="Puzzle.SolveValue" class="form-control" />
                                 <span asp-validation-for="Puzzle.SolveValue" class="text-danger"></span>

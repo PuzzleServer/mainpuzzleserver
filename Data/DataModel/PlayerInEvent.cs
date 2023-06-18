@@ -1,8 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ServerCore.DataModel
 {
-    public class Swag
+    [Table("Swag")]
+    public class PlayerInEvent
     {
         public int ID { get; set; }
 
@@ -21,5 +23,7 @@ namespace ServerCore.DataModel
         public string LunchModifications { get; set; }
 
         public string ShirtSize { get; set; }
+
+        public bool IsRemote { get; set; }
     }
 }

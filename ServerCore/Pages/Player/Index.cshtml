@@ -1,0 +1,92 @@
+﻿@page "/{eventId}/{eventRole}/Player"
+@model ServerCore.Pages.Player.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    ViewData["AdminRoute"] = "/Player/Index";
+    ViewData["AuthorRoute"] = "/Player/Index";
+    ViewData["PlayRoute"] = "/Player/Details";
+}
+
+<h2>Index</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.PlayerInEvent[0].Event)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PlayerInEvent[0].Player)
+            </th>
+
+            @if (Model.Event.AllowsRemote)
+            {
+                <th>
+                    @Html.DisplayNameFor(model => model.PlayerInEvent[0].IsRemote)
+                </th>
+            }
+
+            @if (Model.Event.HasIndividualLunch)
+            {
+                <th>
+                    @Html.DisplayNameFor(model => model.PlayerInEvent[0].Lunch)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.PlayerInEvent[0].LunchModifications)
+                </th>
+            }
+
+            @if (Model.Event.HasTShirts)
+            {
+                <th>
+                    @Html.DisplayNameFor(model => model.PlayerInEvent[0].ShirtSize)
+                </th>
+            }
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.PlayerInEvent)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Player.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Player.Email)
+                </td>
+
+                @if (Model.Event.AllowsRemote)
+                {
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IsRemote)
+                    </td>
+                }
+
+                @if (Model.Event.HasIndividualLunch)
+                {
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Lunch)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.LunchModifications)
+                    </td>
+                }
+
+                @if (Model.Event.HasTShirts)
+                {
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ShirtSize)
+                    </td>
+                }
+
+                <td>
+                    <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |
+                    <a asp-page="./Details" asp-route-id="@item.ID">Details</a> |
+                    <a asp-page="./Delete" asp-route-id="@item.ID">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

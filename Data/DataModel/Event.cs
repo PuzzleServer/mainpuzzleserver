@@ -40,7 +40,23 @@ namespace ServerCore.DataModel
         public int MaxTeamSize { get; set; }
         public int MaxExternalsPerTeam { get; set; }
         public bool IsInternEvent { get; set; }
-        public bool EventHasSwag { get; set; }
+
+        public bool HasIndividualLunch { get; set; }
+        public bool HasTShirts { get; set; }
+        public bool AllowsRemote { get; set; }
+        public bool IsRemote { get; set; }
+
+        /// <summary>
+        /// True if the event has individual swag
+        /// </summary>
+        [Column("EventHasSwag")]
+        public bool HasSwag { get; set; }
+
+        /// <summary>
+        /// True if teams can sign up for collective swag
+        /// </summary>
+        public bool EventHasTeamSwag { get; set; }
+
         public DateTime TeamRegistrationBegin { get; set; }
         public DateTime TeamRegistrationEnd { get; set; }
 
@@ -91,6 +107,23 @@ namespace ServerCore.DataModel
         public DateTime TeamMiscDataChangeEnd { get; set; }
         public DateTime TeamDeleteEnd { get; set; }
         public DateTime EventBegin { get; set; }
+
+        /// <summary>
+        /// Time when lunches can no longer change (whether by users or automatically) so the reports produce a consistent result
+        /// </summary>
+        public DateTime LunchReportDate { get; set; }
+
+        /// <summary>
+        /// True if the current date is before the lunch report cutoff
+        /// </summary>
+        [NotMapped]
+        public bool CanChangeLunch
+        {
+            get
+            {
+                return DateTime.UtcNow <= LunchReportDate;
+            }
+        }
 
         /// <summary>
         /// Returns whether or not the event has started. Does not necessarily indicate the event
@@ -219,5 +252,17 @@ namespace ServerCore.DataModel
         /// Publicly-visible term for "group"
         /// </summary>
         public string TermForGroup { get; set; }
+
+        /// <summary>
+        /// How many players share a lunch order, with rounding up
+        /// For example, if this is 3, then 1-3 player teams get 1 lunch order,
+        /// 4-6 player teams get 2 lunch orders etc
+        /// </summary>
+        public int? PlayersPerLunch { get; set; }
+
+        /// <summary>
+        /// If no lunch is chosen, what to fill in with
+        /// </summary>
+        public string DefaultLunch { get; set; }
     }
 }

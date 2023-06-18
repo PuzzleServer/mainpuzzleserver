@@ -27,6 +27,29 @@ namespace ServerCore.Helpers
                 context.Prerequisites.Remove(thisPrerequisite);
             }
 
+            if (puzzle.IsForSinglePlayer)
+            {
+                var unlockStates = from unlockState in context.SinglePlayerPuzzleUnlockStates
+                                  where unlockState.PuzzleID == puzzle.ID
+                                  select unlockState;
+                context.SinglePlayerPuzzleUnlockStates.RemoveRange(unlockStates);
+
+                var puzzleStates = from puzzleState in context.SinglePlayerPuzzleStatePerPlayer
+                                   where puzzleState.PuzzleID == puzzle.ID
+                                   select puzzleState;
+                context.SinglePlayerPuzzleStatePerPlayer.RemoveRange(puzzleStates);
+
+                var hintStates = from hintState in context.SinglePlayerPuzzleHintStatePerPlayer
+                                 where hintState.Hint.PuzzleID == puzzle.ID
+                                 select hintState;
+                context.SinglePlayerPuzzleHintStatePerPlayer.RemoveRange(hintStates);
+
+                var submissions = from submission in context.SinglePlayerPuzzleSubmissions
+                                  where submission.PuzzleID == puzzle.ID
+                                  select submission;
+                context.SinglePlayerPuzzleSubmissions.RemoveRange(submissions);
+            }
+
             context.Puzzles.Remove(puzzle);
             await context.SaveChangesAsync();
         }
