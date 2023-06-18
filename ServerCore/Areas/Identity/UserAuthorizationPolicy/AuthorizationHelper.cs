@@ -181,15 +181,31 @@ namespace ServerCore.Areas.Identity
 
             if (thisEvent != null && puzzle != null)
             {
-                Team team = await UserEventHelper.GetTeamForPlayer(dbContext, thisEvent, puzzleUser);
-
-                if (team != null)
+                if (thisEvent.AreAnswersAvailableNow)
                 {
-                    IQueryable<PuzzleStatePerTeam> statesQ = PuzzleStateHelper.GetFullReadOnlyQuery(dbContext, thisEvent, puzzle, team);
-
-                    if (statesQ.FirstOrDefault().UnlockedTime != null || thisEvent.AreAnswersAvailableNow)
+                    authContext.Succeed(requirement);
+                }
+                else if (puzzle.IsForSinglePlayer)
+                {
+                    IQueryable<SinglePlayerPuzzleUnlockState> statesQ = SinglePlayerPuzzleUnlockStateHelper.GetFullReadOnlyQuery(dbContext, thisEvent, puzzle.ID);
+                    
+                    if (statesQ.FirstOrDefault().UnlockedTime != null)
                     {
                         authContext.Succeed(requirement);
+                    }
+                }
+                else
+                {
+                    Team team = await UserEventHelper.GetTeamForPlayer(dbContext, thisEvent, puzzleUser);
+
+                    if (team != null)
+                    {
+                        IQueryable<PuzzleStatePerTeam> statesQ = PuzzleStateHelper.GetFullReadOnlyQuery(dbContext, thisEvent, puzzle, team);
+
+                        if (statesQ.FirstOrDefault().UnlockedTime != null)
+                        {
+                            authContext.Succeed(requirement);
+                        }
                     }
                 }
             }

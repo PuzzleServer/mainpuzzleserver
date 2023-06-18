@@ -179,8 +179,15 @@
                             }
                             <a asp-page="/Pieces/Index" asp-route-puzzleid=@item.Puzzle.ID>Pieces</a><br />
                             ------<br />
-                            <a asp-page="./Status" asp-route-puzzleid=@item.Puzzle.ID>Status</a><br />
-                            <a asp-page="/Submissions/AuthorIndex" asp-route-puzzleid=@item.Puzzle.ID>Submissions</a><br />
+                             @if (item.Puzzle.IsForSinglePlayer)
+                            {
+                                <a asp-page="/Puzzles/SinglePlayerPuzzleStatus" asp-route-puzzleid=@item.Puzzle.ID>Status</a><br />
+                            }
+                            else
+                            {
+                                <a asp-page="./Status" asp-route-puzzleid=@item.Puzzle.ID>Status</a><br />
+                                <a asp-page="/Submissions/AuthorIndex" asp-route-puzzleid=@item.Puzzle.ID>Submissions</a><br />
+                            }
                             <a asp-page="/Submissions/FreeformQueue" asp-route-puzzleid=@item.Puzzle.ID>Freeform Queue</a><br />
                             @if (!Model.Event.HideHints)
                             {
