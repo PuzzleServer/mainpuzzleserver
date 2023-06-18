@@ -33,7 +33,7 @@ namespace ServerCore.DataModel
         [PersonalData]
         public string Email { get; set; }
         public bool IsGlobalAdmin { get; set; }
-        
+
         [PersonalData]
         public string PhoneNumber { get; set; }
         [PersonalData]

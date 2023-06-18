@@ -114,7 +114,7 @@ namespace ServerCore.Pages.Submissions
             Submissions = await submissionQuery.Take(50).ToListAsync();
 
             FullQueueSize = await submissionQuery.CountAsync();
-            
+
             foreach(SubmissionView submission in Submissions)
             {
                 if(submission.SubmissionText.StartsWith("http"))

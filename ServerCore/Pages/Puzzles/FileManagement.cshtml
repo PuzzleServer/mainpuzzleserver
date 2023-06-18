@@ -80,7 +80,7 @@
             <label class="control-label">Solve Token Files</label>
             @foreach (var solveFile in Model.Puzzle.SolveTokenFiles.OrderBy(file => file.ShortName))
             {
-                <p>                    
+                <p>
                     <input type="checkbox" asp-route-id="@Model.Puzzle.ID" name="SelectedFiles" value="@solveFile.ID" />
                     @Html.ActionLink(solveFile.ShortName, "Index", "Files", new { eventId = Model.Event.ID, filename = solveFile.ShortName })
                     <a href="@solveFile.UrlString">[Raw]</a>

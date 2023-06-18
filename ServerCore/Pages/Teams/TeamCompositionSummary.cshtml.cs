@@ -38,8 +38,8 @@ namespace ServerCore.Pages.Teams
         }
 
         public TeamCompositionSummaryModel(
-            PuzzleServerContext serverContext, 
-            UserManager<IdentityUser> userManager) 
+            PuzzleServerContext serverContext,
+            UserManager<IdentityUser> userManager)
             : base(serverContext, userManager)
         {
         }
@@ -101,7 +101,7 @@ namespace ServerCore.Pages.Teams
         public IActionResult OnPost(SortEnum sortBy, SortDirectionEnum sortDirection)
         {
             return RedirectToPage(
-                "./TeamCompositionSummary", 
+                "./TeamCompositionSummary",
                 new {
                     sortBy = sortBy,
                     sortDirection = sortDirection

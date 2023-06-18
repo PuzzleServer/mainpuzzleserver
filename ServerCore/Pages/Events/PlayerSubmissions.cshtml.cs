@@ -65,7 +65,7 @@ namespace ServerCore.Pages.Events
                 puzzleQuery = from puzzle in puzzleQuery
                               join puzzleAuthor in _context.PuzzleAuthors on puzzle.ID equals puzzleAuthor.PuzzleID
                               where puzzleAuthor.AuthorID == LoggedInUser.ID
-                              select puzzle;                              
+                              select puzzle;
             }
 
             FreeformPuzzles = await (puzzleQuery.Select(puzzle => new SelectListItem()

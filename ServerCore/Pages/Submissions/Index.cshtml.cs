@@ -75,7 +75,7 @@ namespace ServerCore.Pages.Submissions
             {
                 return Page();
             }
-            
+
             // Don't allow submissions if the team is locked out.
             if (PuzzleState.IsLockedOut)
             {
@@ -335,7 +335,7 @@ namespace ServerCore.Pages.Submissions
             /**
              * The lockout duration is determined by the difference between the
              * count of wrong submissions in the lockout period and the lockout
-             * limit. That difference is multiplied by the event's 
+             * limit. That difference is multiplied by the event's
              * LockoutDurationMultiplier to determine the lockout time in
              * minutes.
              */

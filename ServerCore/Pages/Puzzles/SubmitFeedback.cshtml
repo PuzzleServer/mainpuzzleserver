@@ -10,7 +10,7 @@
     var id = ViewContext.RouteData.Values["puzzleId"];
 }
 
-<h2>Submit feedback for @(Model.Puzzle.Name)</h2> 
+<h2>Submit feedback for @(Model.Puzzle.Name)</h2>
 <div>
     <a asp-page="/Teams/Play" asp-route-teamId="@Model.GetTeamId().Result">Back to puzzle list</a>
 </div>

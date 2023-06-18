@@ -127,7 +127,7 @@ namespace ServerCore
 
             for (int i = 0; i < states.Count; i++)
             {
-                // Only allow unlock time to be modified if we were relocking it (setting it to null) or unlocking it for the first time 
+                // Only allow unlock time to be modified if we were relocking it (setting it to null) or unlocking it for the first time
                 if (value == null || states[i].UnlockedTime == null)
                 {
                     states[i].UnlockedTime = value;
@@ -176,7 +176,7 @@ namespace ServerCore
                         states[i].UnlockedTime = value;
                     }
 
-                    states[i].SolvedTime = value;                    
+                    states[i].SolvedTime = value;
                 }
             }
 
@@ -295,7 +295,7 @@ namespace ServerCore
         }
 
         /// <summary>
-        /// Get the solved status of a single puzzle. 
+        /// Get the solved status of a single puzzle.
         /// Do not use if you want to get status of many puzzles as it will be very inefficient.
         /// </summary>
         /// <returns></returns>
@@ -367,8 +367,8 @@ namespace ServerCore
         }
 
         public static IQueryable<Puzzle> PuzzlesCausingGlobalLockout(
-            PuzzleServerContext context, 
-            Event eventObj, 
+            PuzzleServerContext context,
+            Event eventObj,
             Team team)
         {
             DateTime now = DateTime.UtcNow;

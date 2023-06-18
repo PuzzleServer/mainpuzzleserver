@@ -22,7 +22,7 @@ namespace ServerCore.Pages.Pieces
         public IList<Piece> EarnedPieces { get; set; }
 
         public Puzzle Puzzle { get; set; }
-        
+
         public async Task<IActionResult> OnGetAsync(int puzzleId)
         {
             Puzzle = await _context.Puzzles.Where(p => p.ID == puzzleId).FirstOrDefaultAsync();

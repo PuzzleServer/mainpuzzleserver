@@ -68,8 +68,8 @@ namespace ServerCore.ModelBases
         public async Task<bool> PlayerHasTeamForEvent()
         {
             if(LoggedInUser == null) { return false; }
-            
-            if(playerIsOnTeam == null) 
+
+            if(playerIsOnTeam == null)
             {
                 playerIsOnTeam = await LoggedInUser.IsPlayerOnTeam(_context, Event);
             }

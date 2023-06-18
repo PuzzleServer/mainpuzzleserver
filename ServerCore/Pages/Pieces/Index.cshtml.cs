@@ -20,7 +20,7 @@ namespace ServerCore.Pages.Pieces
         }
 
         public IList<Piece> Pieces { get;set; }
-        
+
         public int PuzzleId { get; set; }
 
         public Puzzle Puzzle { get; set; }

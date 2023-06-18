@@ -76,7 +76,7 @@ namespace ServerCore.Areas.Identity
         }
 
         public async Task IsEventAdminCheck(AuthorizationHandlerContext authContext, IAuthorizationRequirement requirement)
-        {            
+        {
             EventRole role = GetEventRoleFromRoute();
             if (role != EventRole.admin)
             {

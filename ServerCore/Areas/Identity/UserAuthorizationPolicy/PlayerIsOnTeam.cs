@@ -30,4 +30,3 @@ namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
         }
     }
 }
-   
