@@ -40,6 +40,8 @@ namespace ServerCore.Pages.Player
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
+            ModelState.Remove("EventId");
+
             if (!ModelState.IsValid)
             {
                 return Page();
