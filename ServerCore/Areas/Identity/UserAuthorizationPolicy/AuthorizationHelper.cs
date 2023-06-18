@@ -188,7 +188,7 @@ namespace ServerCore.Areas.Identity
                 else if (puzzle.IsForSinglePlayer)
                 {
                     IQueryable<SinglePlayerPuzzleUnlockState> statesQ = SinglePlayerPuzzleUnlockStateHelper.GetFullReadOnlyQuery(dbContext, thisEvent, puzzle.ID);
-                    
+
                     if (statesQ.FirstOrDefault().UnlockedTime != null)
                     {
                         authContext.Succeed(requirement);
