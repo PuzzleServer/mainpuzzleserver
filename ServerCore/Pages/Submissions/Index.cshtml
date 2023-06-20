@@ -123,6 +123,13 @@
                 <span>You're in global lockout until time expires on <a href="./@Model.PuzzlesCausingGlobalLockout[0].ID" target="_blank">@Model.PuzzlesCausingGlobalLockout[0].Name</a>, or it is solved. @(Model.IsPuzzleForSinglePlayer ? "" : "Go help your teammates with that puzzle!")</span>
             </div>
         }
+        else if (Model.PuzzleState.UnlockedTime == null)
+        {
+            <div class="alert alert-danger" role="alert">
+                <h4>Answer Submission Locked</h4>
+                <span>This puzzle is currently locked! Please <a href="@mailtoUrl">use this link to email us if you think this is a mistake</a>.</span>
+            </div>
+        }
         else
         {
             if (DateTime.UtcNow > @Model.Event.AnswerSubmissionEnd)

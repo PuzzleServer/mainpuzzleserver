@@ -4,8 +4,6 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Numerics;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace ServerCore
 {
@@ -92,7 +90,7 @@ namespace ServerCore
             if (puzzleId.HasValue)
             {
                 return from state in context.SinglePlayerPuzzleStatePerPlayer
-                       where state.PlayerID == playerId
+                       where state.PuzzleID == puzzleId
                        select state;
             }
 
@@ -330,23 +328,64 @@ namespace ServerCore
 
             await context.SaveChangesAsync();
         }
-        public static async Task AddStateIfNotThere(
+
+        public static async Task<SinglePlayerPuzzleStatePerPlayer> GetOrAddStateIfNotThere(
             PuzzleServerContext context,
             Event eventObj,
-            int puzzleId,
+            Puzzle puzzle,
             int playerId)
         {
             IQueryable<SinglePlayerPuzzleStatePerPlayer> statesQ = SinglePlayerPuzzleStateHelper
-                .GetFullReadWriteQuery(context, eventObj, puzzleId, playerId, author: null);
+                .GetFullReadWriteQuery(context, eventObj, puzzle.ID, playerId, author: null);
             SinglePlayerPuzzleStatePerPlayer state = statesQ.FirstOrDefault();
             if (state == null)
             {
                 SinglePlayerPuzzleUnlockState unlockState = context.SinglePlayerPuzzleUnlockStates
-                    .Where(state => state.PuzzleID == puzzleId)
+                    .Where(state => state.Puzzle == puzzle)
                     .FirstOrDefault();
-                context.SinglePlayerPuzzleStatePerPlayer.Add(new SinglePlayerPuzzleStatePerPlayer { PuzzleID = puzzleId, PlayerID = playerId, UnlockedTime = unlockState?.UnlockedTime });
+
+                state = new SinglePlayerPuzzleStatePerPlayer { Puzzle = puzzle, PlayerID = playerId, UnlockedTime = unlockState?.UnlockedTime };
+                context.SinglePlayerPuzzleStatePerPlayer.Add(state);
                 await context.SaveChangesAsync();
             }
+
+            return state;
+        }
+
+        /// <summary>
+        /// Set the unlock state of some puzzle state records.
+        /// </summary>
+        /// <param name="context">The puzzle DB context</param>
+        /// <param name="eventObj">The event we are querying from</param>
+        /// <param name="puzzleId">The puzzle id; if null, get all puzzles in the event.</param>
+        /// <param name="player">The team; if null, get all the players in the event.</param>
+        /// <param name="value">The unlock time (null if relocking)</param>
+        /// <returns>A task that can be awaited for the unlock/lock operation</returns>
+        public static async Task SetUnlockStateAsync(PuzzleServerContext context, Event eventObj, int? puzzleId, int? playerId, DateTime? value, PuzzleUser author = null)
+        {
+            // If no player id is given, it implies that this is an unlock for all players
+            if (!playerId.HasValue)
+            {
+                SinglePlayerPuzzleUnlockState unlockState = (await SinglePlayerPuzzleUnlockStateHelper.GetFullReadOnlyQuery(context, eventObj, puzzleId).ToListAsync()).Single();
+                // Only allow unlock time to be modified if we were relocking it (setting it to null) or unlocking it for the first time 
+                if (value == null || unlockState.UnlockedTime == null)
+                {
+                    unlockState.UnlockedTime = value;
+                }
+            }
+
+            IQueryable<SinglePlayerPuzzleStatePerPlayer> statesQ = SinglePlayerPuzzleStateHelper.GetFullReadWriteQuery(context, eventObj, puzzleId, playerId, author);
+            List<SinglePlayerPuzzleStatePerPlayer> states = await statesQ.ToListAsync();
+
+            for (int i = 0; i < states.Count; i++)
+            {
+                // Only allow unlock time to be modified if we were relocking it (setting it to null) or unlocking it for the first time 
+                if (value == null || states[i].UnlockedTime == null)
+                {
+                    states[i].UnlockedTime = value;
+                }
+            }
+            await context.SaveChangesAsync();
         }
     }
 }

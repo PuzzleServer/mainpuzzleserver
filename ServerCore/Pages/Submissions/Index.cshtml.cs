@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -285,22 +284,14 @@ namespace ServerCore.Pages.Submissions
             Puzzle = await _context.Puzzles.Where(
                 (p) => p.ID == puzzleId).FirstOrDefaultAsync();
 
-            await SinglePlayerPuzzleStateHelper.AddStateIfNotThere(_context,
-                Event,
-                puzzleId,
-                LoggedInUser.ID);
-
             IsPuzzleForSinglePlayer = Puzzle.IsForSinglePlayer;
             List<SubmissionView> submissionViews = new List<SubmissionView>();
             if (Puzzle.IsForSinglePlayer)
             {
-                PuzzleState = await (SinglePlayerPuzzleStateHelper
-                    .GetFullReadOnlyQuery(
-                        _context,
-                        Event,
-                        Puzzle.ID,
-                        LoggedInUser.ID))
-                    .FirstAsync();
+                PuzzleState = await SinglePlayerPuzzleStateHelper.GetOrAddStateIfNotThere(_context,
+                    Event,
+                    Puzzle,
+                    LoggedInUser.ID);
 
                 SubmissionViews = await (from submission in _context.SinglePlayerPuzzleSubmissions
                                          join user in _context.PuzzleUsers on submission.Submitter equals user

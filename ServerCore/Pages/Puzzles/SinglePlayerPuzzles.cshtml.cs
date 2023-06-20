@@ -62,6 +62,7 @@ namespace ServerCore.Pages.Puzzles
             foreach (SinglePlayerPuzzleStatePerPlayer statePerPlayer in puzzleStatePerPlayer)
             {
                 puzzleViewDict[statePerPlayer.PuzzleID].SolvedTime = statePerPlayer.SolvedTime;
+                puzzleViewDict[statePerPlayer.PuzzleID].UnlockedTime = statePerPlayer.UnlockedTime;
             }
 
             var visiblePuzzlesQ = puzzleViewDict.Values.AsEnumerable().Where(puzzleView => ShowAnswers || puzzleView.UnlockedTime != null);
