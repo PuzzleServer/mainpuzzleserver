@@ -400,7 +400,7 @@ namespace ServerCore.Pages.Submissions
              */
             DateTime incorrectGuessStartTime = DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(ev.LockoutIncorrectGuessPeriod));
 
-            foreach (Submission s in submissions)
+            foreach (SubmissionBase s in submissions)
             {
                 // if the guess is before the incorrect window, ignore it
                 if (s.TimeSubmitted < incorrectGuessStartTime)
@@ -441,12 +441,12 @@ namespace ServerCore.Pages.Submissions
 
         private static bool IsPuzzleSubmissionLimitReached(
             Event ev,
-            IList<Submission> submissions,
-            PuzzleStatePerTeam puzzleState)
+            IList<SubmissionBase> submissions,
+            PuzzleStateBase puzzleState)
         {
             uint wrongSubmissions = 0;
 
-            foreach (Submission s in submissions)
+            foreach (SubmissionBase s in submissions)
             {
                 if (s.Response == null)
                 {
