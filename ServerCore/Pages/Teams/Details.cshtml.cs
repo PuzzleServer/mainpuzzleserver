@@ -30,8 +30,25 @@ namespace ServerCore.Pages.Teams
         public IList<Tuple<PuzzleUser, int>> Users { get; set; }
 
         public int PlayersPerLunch { get; set; }
-        public int MaxLunches { get; set; }
+        /// <summary>
+        /// The most lunches any team can have
+        /// </summary>
+        public int GlobalMaxLunches { get; set; }
+
+        /// <summary>
+        /// The most lunches this team could have given the current number of remote members
+        /// </summary>
+        public int SoftMaxLunches { get; set; }
+
+        /// <summary>
+        /// The number of lunches this team can order given the current number of local members
+        /// </summary>
         public int EditableLunches { get; set; }
+
+        /// <summary>
+        /// Number of team members that can have lunch
+        /// </summary>
+        public int EligibleForLunch { get; set; }
         public IList<TeamLunch> Lunches { get; set; }
         public string NewLunch { get; set; }
         public static readonly string[] PizzaOptions = { "Cheese", "Pepperoni", "Philly Steak", "Salami", "Meatballs", "Grilled Chicken", "Canadian Bacon", "Beef", "Sausage", "Spicy Italian Sausage", "Bacon", "Pineapple", "Green Peppers", "Spinach", "Jalapeños", "Olives", "Mushrooms", "Artichoke Hearts", "Banana Peppers", "Tomatoes", "Garlic", "Onions" };
@@ -109,13 +126,24 @@ namespace ServerCore.Pages.Teams
                     PlayersPerLunch = Event.PlayersPerLunch.Value;
                 }
 
-                MaxLunches = (int)Math.Ceiling((double)Event.MaxTeamSize / (double)PlayersPerLunch);
-                EditableLunches = (int)Math.Ceiling((double)Members.Count / (double)PlayersPerLunch);
+                GlobalMaxLunches = (int)Math.Ceiling((double)Event.MaxTeamSize / (double)PlayersPerLunch);
+                int totalMembers = Members.Count;
+                int remoteMembers = await (from player in _context.PlayerInEvent
+                                           join member in _context.TeamMembers on player.PlayerId equals member.Member.ID
+                                           where member.Team.ID == Team.ID &&
+                                           player.IsRemote
+                                           select player).CountAsync();
+                EligibleForLunch = totalMembers - remoteMembers;
+
+                EditableLunches = (int)Math.Ceiling((double)EligibleForLunch / (double)PlayersPerLunch);
 
                 Lunches = await (from lunch in _context.TeamLunch
                                  where lunch.TeamId == teamId
                                  orderby lunch.ID
                                  select lunch).ToListAsync();
+
+                double possibleInPersonMembers = Event.MaxTeamSize - remoteMembers;
+                SoftMaxLunches = (int)Math.Ceiling(possibleInPersonMembers / (double)PlayersPerLunch);
             }
 
             return Page();
