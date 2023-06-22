@@ -1,0 +1,62 @@
+﻿@page "/{eventId}/{eventRole}/Swag/TeamReport"
+@model ServerCore.Pages.Swag.TeamReportModel
+@{
+    ViewData["Title"] = "Team Lunch Report";
+    ViewData["AdminRoute"] = "../Swag/TeamReport";
+}
+
+<a asp-page="/Teams/Index">Back to team list</a>
+<br />
+<h2>Team Lunch Report</h2>
+
+<h3>Summary</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Lunch</th>
+            <th>Count</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Summary)
+        {
+            <tr>
+                <td>@item.Lunch</td>
+                <td>@item.Count</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h3>Team Orders</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                TeamName
+            </th>
+            <th>
+                Contact Email
+            </th>
+            <th>
+                Lunch Selection
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.SwagViews)
+        {
+            <tr>
+                <td>
+                    @item.TeamName
+                </td>
+                <td>
+                    @item.ContactEmail
+                </td>
+                <td>
+                    @item.Lunch
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
