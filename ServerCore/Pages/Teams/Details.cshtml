@@ -215,7 +215,7 @@
                         @if (Model.EditableLunches < Model.SoftMaxLunches && Model.Event.CanChangeLunch)
                         {
                             <span>
-                                Recruit @(Model.Event.PlayersPerLunch - ((Model.ElligibleForLunch - 1) % Model.Event.PlayersPerLunch)) more in-person player(s) to get another pizza, up to @Model.GlobalMaxLunches pizzas total!
+                                Recruit @(Model.Event.PlayersPerLunch - ((Model.EligibleForLunch - 1) % Model.Event.PlayersPerLunch)) more in-person player(s) to get another pizza, up to @Model.GlobalMaxLunches pizzas total!
                             </span>
                         }
                     </p>

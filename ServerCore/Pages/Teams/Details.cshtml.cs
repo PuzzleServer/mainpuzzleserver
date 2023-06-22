@@ -48,7 +48,7 @@ namespace ServerCore.Pages.Teams
         /// <summary>
         /// Number of team members that can have lunch
         /// </summary>
-        public int ElligibleForLunch { get; set; }
+        public int EligibleForLunch { get; set; }
         public IList<TeamLunch> Lunches { get; set; }
         public string NewLunch { get; set; }
         public static readonly string[] PizzaOptions = { "Cheese", "Pepperoni", "Philly Steak", "Salami", "Meatballs", "Grilled Chicken", "Canadian Bacon", "Beef", "Sausage", "Spicy Italian Sausage", "Bacon", "Pineapple", "Green Peppers", "Spinach", "Jalapeños", "Olives", "Mushrooms", "Artichoke Hearts", "Banana Peppers", "Tomatoes", "Garlic", "Onions" };
@@ -133,9 +133,9 @@ namespace ServerCore.Pages.Teams
                                            where member.Team.ID == Team.ID &&
                                            player.IsRemote
                                            select player).CountAsync();
-                ElligibleForLunch = totalMembers - remoteMembers;
+                EligibleForLunch = totalMembers - remoteMembers;
 
-                EditableLunches = (int)Math.Ceiling((double)ElligibleForLunch / (double)PlayersPerLunch);
+                EditableLunches = (int)Math.Ceiling((double)EligibleForLunch / (double)PlayersPerLunch);
 
                 Lunches = await (from lunch in _context.TeamLunch
                                  where lunch.TeamId == teamId
