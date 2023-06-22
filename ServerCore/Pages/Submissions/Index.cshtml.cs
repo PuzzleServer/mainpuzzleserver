@@ -212,7 +212,7 @@ namespace ServerCore.Pages.Submissions
                     var authors = await _context.PuzzleAuthors.Where((pa) => pa.Puzzle == submission.Puzzle).Select((pa) => pa.Author.Email).ToListAsync();
                     string affectedEntity = IsPuzzleForSinglePlayer ? $"User {LoggedInUser.Name ?? LoggedInUser.Email}" : $"Team {Team.Name}";
                     MailHelper.Singleton.SendPlaintextBcc(authors,
-                        $"{Event.Name}: Team {affectedEntity} is in email mode for {submission.Puzzle.Name}",
+                        $"{Event.Name}: {affectedEntity} is in email mode for {submission.Puzzle.Name}",
                         "");
                 }
                 else
@@ -294,16 +294,16 @@ namespace ServerCore.Pages.Submissions
                     LoggedInUser.ID);
 
                 SubmissionViews = await (from submission in _context.SinglePlayerPuzzleSubmissions
-                                         join user in _context.PuzzleUsers on submission.Submitter equals user
+                                         where submission.Puzzle == Puzzle
+                                            && submission.Submitter.ID == LoggedInUser.ID
                                          join r in _context.Responses on submission.Response equals r into responses
                                          from response in responses.DefaultIfEmpty()
-                                         where submission.Puzzle == Puzzle
                                          orderby submission.TimeSubmitted
                                          select new SubmissionView()
                                          {
                                              Submission = submission,
                                              Response = response,
-                                             SubmitterName = user.Name,
+                                             SubmitterName = LoggedInUser.Name,
                                              FreeformReponse = submission.FreeformResponse,
                                              IsFreeform = Puzzle.IsFreeform
                                          }).ToListAsync();
@@ -323,17 +323,17 @@ namespace ServerCore.Pages.Submissions
                     .FirstAsync();
 
                 SubmissionViews = await (from submission in _context.Submissions
-                                         join user in _context.PuzzleUsers on submission.Submitter equals user
+                                         where submission.Team == Team
+                                            && submission.Puzzle == Puzzle
+                                            && submission.Submitter.ID == LoggedInUser.ID
                                          join r in _context.Responses on submission.Response equals r into responses
                                          from response in responses.DefaultIfEmpty()
-                                         where submission.Team == Team &&
-                                         submission.Puzzle == Puzzle
                                          orderby submission.TimeSubmitted
                                          select new SubmissionView()
                                          {
                                              Submission = submission,
                                              Response = response,
-                                             SubmitterName = user.Name,
+                                             SubmitterName = LoggedInUser.Name,
                                              FreeformReponse = submission.FreeformResponse,
                                              IsFreeform = Puzzle.IsFreeform
                                          }).ToListAsync();
