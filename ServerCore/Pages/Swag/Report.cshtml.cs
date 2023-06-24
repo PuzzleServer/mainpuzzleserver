@@ -13,8 +13,7 @@ using System.ComponentModel.DataAnnotations;
 namespace ServerCore.Pages.Swag
 {
     /// <summary>
-    /// Model for the author/admin's view of the feedback items for a specific puzzle
-    /// /used for viewing and aggregating feedback for a specific puzzle
+    /// Model for the admin's view of the swag items for a player
     /// </summary>
     [Authorize(Policy = "IsEventAdmin")]
     public class SwagReportModel : EventSpecificPageModel
