@@ -167,7 +167,7 @@ namespace ServerCore.Pages.Puzzles
                 }
                 else // If switch from single player puzzle to team puzzle
                 {
-                    
+                    await this.UpdateSinglePlayerPuzzleToTeamPuzzle(oldPuzzleView);
                 }
             }
             await _context.SaveChangesAsync();
@@ -327,7 +327,7 @@ namespace ServerCore.Pages.Puzzles
                                         select submission).ToListAsync();
             foreach (Submission teamSubmission in teamSubmissions)
             {
-                if (teamSubmission.Response.IsSolution)
+                if (teamSubmission.Response != null && teamSubmission.Response.IsSolution)
                 {
                     _context.SinglePlayerPuzzleStatePerPlayer.Add(
                         new SinglePlayerPuzzleStatePerPlayer
@@ -368,7 +368,9 @@ namespace ServerCore.Pages.Puzzles
             List<SinglePlayerPuzzleSubmission> singlePlayerPuzzleSubmissions = await (from submission in _context.SinglePlayerPuzzleSubmissions
                                          where submission.PuzzleID == oldPuzzleView.ID
                                          select submission).ToListAsync();
-            Dictionary<int, int> memberToTeamIdDict = _context.TeamMembers.ToDictionary(member => member.ID, member => member.Team.ID);
+            Dictionary<int, int> memberToTeamIdDict = _context.TeamMembers
+                .Where(member => member.Team.EventID == Event.ID)
+                .ToDictionary(member => member.Member.ID, member => member.Team.ID);
             var teamIdToSolveTimeDict = new Dictionary<int,DateTime>();
             foreach (SinglePlayerPuzzleSubmission submission in singlePlayerPuzzleSubmissions)
             {
@@ -396,7 +398,9 @@ namespace ServerCore.Pages.Puzzles
                         TeamID = submitterTeamId
                     });
 
-                if (!teamIdToSolveTimeDict.ContainsKey(submitterTeamId) && submission.Response.IsSolution)
+                if (!teamIdToSolveTimeDict.ContainsKey(submitterTeamId)
+                    && submission.Response != null
+                    && submission.Response.IsSolution)
                 {
                     teamIdToSolveTimeDict.Add(submitterTeamId, submission.TimeSubmitted);
                 }

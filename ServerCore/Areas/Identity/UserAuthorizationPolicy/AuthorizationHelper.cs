@@ -202,7 +202,7 @@ namespace ServerCore.Areas.Identity
                     {
                         IQueryable<PuzzleStatePerTeam> statesQ = PuzzleStateHelper.GetFullReadOnlyQuery(dbContext, thisEvent, puzzle, team);
 
-                        if (statesQ.FirstOrDefault().UnlockedTime != null)
+                        if (statesQ.FirstOrDefault()?.UnlockedTime != null)
                         {
                             authContext.Succeed(requirement);
                         }
