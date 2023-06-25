@@ -35,7 +35,7 @@ namespace ServerCore.Pages.Swag
 
             return Page();
         }
-        
+
         public async Task<IActionResult> OnPostAsync(int puzzleId)
         {
             ModelState.Remove("Swag.Event");

@@ -37,12 +37,12 @@
     border: 1px dashed #B2A171;
     border-radius: 0 2rem;
 }
-    
+
 .pd2019-container-card > h3 {
     margin: 0 0 1rem 0;
     font-size: 2.4rem;
 }
-    
+
 /* pd2019 overrides */
 body {
     font-family: 'Montserrat';

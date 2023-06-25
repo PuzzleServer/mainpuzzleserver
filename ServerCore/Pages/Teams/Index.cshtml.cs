@@ -6,7 +6,7 @@ using ServerCore.DataModel;
 
 namespace ServerCore.Pages.Teams
 {
-    [Authorize(Policy = "IsEventAdminOrEventAuthor")]    
+    [Authorize(Policy = "IsEventAdminOrEventAuthor")]
     public class IndexModel : TeamListBase
     {
         [BindProperty]

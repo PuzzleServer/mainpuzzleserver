@@ -19,7 +19,7 @@
     // to: Add the proper support agent as recipient
     mailtoUrl.Append(Model.PuzzleState?.Puzzle.SupportEmailAlias ?? (Model.Event?.ContactEmail ?? "puzzhunt@microsoft.com"));
     // CC the team's email address in case the account sending the e-mail is a personal one that's not associated with the event
-    if (Model.Team.PrimaryContactEmail != null)
+    if (Model.Team?.PrimaryContactEmail != null)
     {
         mailtoUrl.Append("?cc=");
         mailtoUrl.Append(Uri.EscapeDataString(Model.Team.PrimaryContactEmail));
@@ -28,8 +28,12 @@
     // subject: Make this be about this puzzle
     mailtoUrl.Append("&subject=");
     mailtoUrl.Append(Uri.EscapeDataString("[" + Model.Puzzle.PlaintextName + "]"));
-    // subject: Make this be from this team
-    mailtoUrl.Append(Uri.EscapeDataString(" [" + Model.Team.Name + "]"));
+
+    if (Model.Team != null)
+    {
+        // subject: Make this be from this team
+        mailtoUrl.Append(Uri.EscapeDataString(" [" + Model.Team.Name + "]"));
+    }
 
     if (Model.PuzzleState.IsEmailOnlyMode)
     {
@@ -54,7 +58,14 @@
 <h2>Submissions for @RawHtmlHelper.Display(Model.Puzzle.Name, Model.Event.ID, Html)</h2>
 <hr />
 <div>
-    <a asp-page="/Teams/Play" asp-route-teamId="@Model.Team.ID">Back to puzzle list</a>
+    @if (Model.IsPuzzleForSinglePlayer == true)
+    {
+        <a asp-page="/Puzzles/SinglePlayerPuzzles">Back to puzzle list</a>
+    }
+    else
+    {
+        <a asp-page="/Teams/Play" asp-route-teamId="@Model.Team.ID">Back to puzzle list</a>
+    }
 </div>
 <br />
 @if (!string.IsNullOrEmpty(Model.Puzzle.Errata))
@@ -79,7 +90,7 @@
             </div>
 
             @if (Model.PuzzleState.SolvedTime > Model.Event.AnswerSubmissionEnd)
-            { 
+            {
                 <div class="alert alert-warning" role="alert">
                     <span>You solved this after the event ended and it did not count toward your ranking.</span>
                 </div>
@@ -109,7 +120,14 @@
         {
             <div class="alert alert-danger" role="alert">
                 <h4>Answer Submission Locked</h4>
-                <span>You're in global lockout until time expires on <a href="./@Model.PuzzlesCausingGlobalLockout[0].ID" target="_blank">@Model.PuzzlesCausingGlobalLockout[0].Name</a>, or it is solved. Go help your teammates with that puzzle!</span>
+                <span>You're in global lockout until time expires on <a href="./@Model.PuzzlesCausingGlobalLockout[0].ID" target="_blank">@Model.PuzzlesCausingGlobalLockout[0].Name</a>, or it is solved. @(Model.IsPuzzleForSinglePlayer ? "" : "Go help your teammates with that puzzle!")</span>
+            </div>
+        }
+        else if (Model.PuzzleState.UnlockedTime == null)
+        {
+            <div class="alert alert-danger" role="alert">
+                <h4>Answer Submission Locked</h4>
+                <span>This puzzle is currently locked! Please <a href="@mailtoUrl">use this link to email us if you think this is a mistake</a>.</span>
             </div>
         }
         else
@@ -235,13 +253,13 @@
 }
 
 @if (!Model.PuzzleState.IsEmailOnlyMode)
-{ 
+{
     <h3>Need some help?</h3>
     <p>While solving this puzzle, if you've run into a bug, think there's an error, or are not having fun anymore, <a href="@mailtoUrl">use this link to contact the author for @Model.Puzzle.PlaintextName</a>!</p>
     <p>A pre-populated email form will appear and you should add details to the message body. Remember: the author may only know specifics about this puzzle and not others in the event.</p>
 }
 
-@if (Model.Event.AllowFeedback) 
+@if (Model.Event.AllowFeedback)
 {
     <h3>Have any feedback?</h3>
     <p><a asp-Page="/Puzzles/SubmitFeedback" asp-route-puzzleid="@Model.Puzzle.ID">Click this link</a> to submit feedback.</p>

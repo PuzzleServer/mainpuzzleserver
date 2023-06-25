@@ -22,24 +22,24 @@
 <a asp-page="/Puzzles/Index">Back to puzzle list</a> | <a asp-page="/Submissions/SubmissionsWithoutResponses" asp-route-puzzleId="@Model.Puzzle?.ID">Submissions without responses</a>
 <div>
     @if(Model.Puzzle != null) { <a asp-page="./AuthorIndex" asp-route-puzzleId="" asp-route-teamId="@Model.Team?.ID" asp-route-hideFreeform="@Model.HideFreeform" asp-route-favoritesOnly="@Model.FavoritesOnly">Clear Puzzle Filter</a> }
-    @if(Model.Puzzle != null && Model.Team != null) { <text>|</text> }  
-    @if(Model.Team != null) { <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="" asp-route-hideFreeform="@Model.HideFreeform" asp-route-favoritesOnly="@Model.FavoritesOnly">Clear Team Filter</a> }  
-    @if(Model.Puzzle != null && Model.Team != null) { <text>|</text> <a asp-page="./AuthorIndex" asp-route-puzzleId="" asp-route-teamId="" asp-route-hideFreeform="@Model.HideFreeform" asp-route-favoritesOnly="false">Clear All Filters</a> }  
+    @if(Model.Puzzle != null && Model.Team != null) { <text>|</text> }
+    @if(Model.Team != null) { <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="" asp-route-hideFreeform="@Model.HideFreeform" asp-route-favoritesOnly="@Model.FavoritesOnly">Clear Team Filter</a> }
+    @if(Model.Puzzle != null && Model.Team != null) { <text>|</text> <a asp-page="./AuthorIndex" asp-route-puzzleId="" asp-route-teamId="" asp-route-hideFreeform="@Model.HideFreeform" asp-route-favoritesOnly="false">Clear All Filters</a> }
     <text>|</text>
     @if (Model.HideFreeform)
     {
-        <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-hideFreeform="false" asp-route-sort="@Model.Sort" asp-route-favoritesOnly="@Model.FavoritesOnly">Show Freeform</a> 
+        <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-hideFreeform="false" asp-route-sort="@Model.Sort" asp-route-favoritesOnly="@Model.FavoritesOnly">Show Freeform</a>
     }
     else
-    {        
-        <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-hideFreeform="true" asp-route-sort="@Model.Sort" asp-route-favoritesOnly="@Model.FavoritesOnly">Hide Freeform</a> 
+    {
+        <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-hideFreeform="true" asp-route-sort="@Model.Sort" asp-route-favoritesOnly="@Model.FavoritesOnly">Hide Freeform</a>
     }
     @if (!Model.FavoritesOnly)
     {
         <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-hideFreeform="@Model.HideFreeform" asp-route-favoritesOnly="true" asp-route-sort="@Model.Sort">| Favorites Only</a>
     }
     else
-    { 
+    {
         <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-hideFreeform="@Model.HideFreeform" asp-route-favoritesOnly="false" asp-route-sort="@Model.Sort">| Clear Favorite Filter</a>
     }
 </div>

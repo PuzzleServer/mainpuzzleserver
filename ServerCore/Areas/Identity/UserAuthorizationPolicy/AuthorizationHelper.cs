@@ -76,7 +76,7 @@ namespace ServerCore.Areas.Identity
         }
 
         public async Task IsEventAdminCheck(AuthorizationHandlerContext authContext, IAuthorizationRequirement requirement)
-        {            
+        {
             EventRole role = GetEventRoleFromRoute();
             if (role != EventRole.admin)
             {
@@ -188,7 +188,7 @@ namespace ServerCore.Areas.Identity
                 else if (puzzle.IsForSinglePlayer)
                 {
                     IQueryable<SinglePlayerPuzzleUnlockState> statesQ = SinglePlayerPuzzleUnlockStateHelper.GetFullReadOnlyQuery(dbContext, thisEvent, puzzle.ID);
-                    
+
                     if (statesQ.FirstOrDefault().UnlockedTime != null)
                     {
                         authContext.Succeed(requirement);

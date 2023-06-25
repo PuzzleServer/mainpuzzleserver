@@ -143,7 +143,7 @@ namespace ServerCore
         private static CloudStorageAccount StorageAccount
         {
             get
-            { 
+            {
                 return CloudStorageAccount.Parse(ConnectionString);
             }
         }
@@ -159,7 +159,7 @@ namespace ServerCore
         public BackgroundFileUploader(IServiceProvider serviceProvider)
         {
             IServiceScope newScope = serviceProvider.CreateScope();
-            _context = newScope.ServiceProvider.GetService<PuzzleServerContext>();            
+            _context = newScope.ServiceProvider.GetService<PuzzleServerContext>();
         }
 
         public void CloneInBackground(ContentFile newFile, string fileName, int eventId, Uri sourceUri)

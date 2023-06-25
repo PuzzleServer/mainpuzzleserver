@@ -70,7 +70,7 @@ namespace ServerCore.Helpers
         /// A tuple where the first element is a boolean that indicates whether the player was successfully
         /// added to the team and the second element is a message to display that explains the error in the
         /// case where the user was not successfully added to the team
-        /// </returns>        
+        /// </returns>
         public static async Task<Tuple<bool, string>> AddMemberAsync(PuzzleServerContext context, Event Event, EventRole EventRole, int teamId, int userId)
         {
             Team team = await context.Teams.FirstOrDefaultAsync(m => m.ID == teamId);
