@@ -84,7 +84,7 @@ namespace ServerCore.Pages.Puzzles
 
                 int totalHintCostThisPuzzle = 0;
                 int hintsCountThisPuzzle = 0;
-                
+
                 if (puzzleHints.Contains(puzzle.ID))
                 {
                     IEnumerable<int> hints = puzzleHints[puzzle.ID];

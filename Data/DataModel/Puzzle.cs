@@ -17,7 +17,7 @@ namespace ServerCore.DataModel
     /// <summary>
     /// A Puzzle is the record of a solvable puzzle in the database
     /// Sometimes a Puzzle is used as a workaround for things like time prerequisites
-    /// </summary>    
+    /// </summary>
     public class Puzzle
     {
         public Puzzle()
@@ -331,7 +331,7 @@ namespace ServerCore.DataModel
                        where contentFile.FileType == ContentFileType.SolveToken
                        select contentFile;
             }
-        }        
+        }
 
         public virtual List<Submission> Submissions { get; set; }
 

@@ -68,8 +68,8 @@
         }
     </div>
     <br />
-    <a asp-page="/Events/Mailer" asp-route-group="PrimaryContacts">Email all team primary contacts from the bulk mailer</a> @("|") 
-    <form>        
+    <a asp-page="/Events/Mailer" asp-route-group="PrimaryContacts">Email all team primary contacts from the bulk mailer</a> @("|")
+    <form>
         <label>Small team threshold: </label><input type="number" min="0" max="99" asp-for="SmallTeamThreshold" />
         <input type="submit" asp-page="/Events/Mailer" asp-route-group="SmallTeams" asp-route-smallTeamThreshold="@Model.SmallTeamThreshold" value="Email small teams" />
     </form>

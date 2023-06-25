@@ -193,11 +193,11 @@ namespace ServerCore.Pages.Teams
                 if (newLunchesAllowed < curLunches.Count)
                 {
                     _context.TeamLunch.Remove(curLunches[0]);
-                }    
+                }
             }
 
             await _context.SaveChangesAsync();
-            
+
             if (EventRole == EventRole.play && member.Member == LoggedInUser)
             {
                 return RedirectToPage("./List");

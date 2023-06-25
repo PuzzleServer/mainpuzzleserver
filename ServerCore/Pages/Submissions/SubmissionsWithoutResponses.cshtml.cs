@@ -72,7 +72,7 @@ namespace ServerCore.Pages.Submissions
                                              PuzzleName = submissionCounts.Key.Name,
                                              SubmissionText = submissionCounts.Key.SubmissionText,
                                              NumberOfTimesSubmitted = submissionCounts.Count()
-                                         }                                         
+                                         }
                                          ).ToListAsync();
             return Page();
         }

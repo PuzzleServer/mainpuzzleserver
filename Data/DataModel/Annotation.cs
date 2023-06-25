@@ -29,7 +29,7 @@ namespace ServerCore.DataModel
     /// to n, where n is the MaxAnnotationKey field of the associated
     /// puzzle.
     /// </summary>
-    
+
     public class Annotation
     {
         /// <summary>

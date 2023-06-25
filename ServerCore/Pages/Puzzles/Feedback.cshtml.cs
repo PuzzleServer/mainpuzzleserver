@@ -105,7 +105,7 @@ namespace ServerCore.Pages.Puzzles
             }
 
             Feedbacks = await feedbackRows.ToListAsync();
-            
+
             FunScore = 0.0;
             DiffScore = 0.0;
             var count = 0;

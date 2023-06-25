@@ -18,7 +18,7 @@ namespace ServerCore.Pages.Responses
         }
 
         public IList<Response> Responses { get;set; }
-        
+
         public int PuzzleId { get; set; }
 
         public Puzzle Puzzle { get; set; }

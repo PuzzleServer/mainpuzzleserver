@@ -39,9 +39,9 @@
 </div>
 <br/>
 <div>
-    <a asp-page="./Play" 
-       asp-route-teamId="@Model.TeamID" 
-       asp-route-sort="@Model.Sort" 
+    <a asp-page="./Play"
+       asp-route-teamId="@Model.TeamID"
+       asp-route-sort="@Model.Sort"
        asp-route-stateFilter=@(unsolvedFilter ? PlayModel.PuzzleStateFilter.All : PlayModel.PuzzleStateFilter.Unsolved)>
         Show @(unsolvedFilter ? "All" : "Unsolved") Puzzles
     </a>

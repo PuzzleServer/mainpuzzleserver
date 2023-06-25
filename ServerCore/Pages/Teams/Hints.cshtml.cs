@@ -144,7 +144,7 @@ namespace ServerCore.Pages.Teams
             }
 
             await PopulateUI(puzzleId, teamId);
-            
+
             return RedirectToPage(new { puzzleId, teamId });
         }
     }

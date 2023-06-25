@@ -24,9 +24,9 @@
 <br />
 <div>
     @if(Model.Puzzle != null) { <a asp-page="./AuthorIndex" asp-route-puzzleId="" asp-route-teamId="@Model.Team?.ID">Clear Puzzle Filter</a> }
-    @if(Model.Puzzle != null && Model.Team != null) { <text>|</text> }  
-    @if(Model.Team != null) { <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="">Clear Team Filter</a> }  
-    @if(Model.Puzzle != null && Model.Team != null) { <text>|</text> <a asp-page="./AuthorIndex" asp-route-puzzleId="" asp-route-teamId="">Clear All Filters</a> }  
+    @if(Model.Puzzle != null && Model.Team != null) { <text>|</text> }
+    @if(Model.Team != null) { <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="">Clear Team Filter</a> }
+    @if(Model.Puzzle != null && Model.Team != null) { <text>|</text> <a asp-page="./AuthorIndex" asp-route-puzzleId="" asp-route-teamId="">Clear All Filters</a> }
 </div>
 
 <br />

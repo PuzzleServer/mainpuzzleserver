@@ -12,7 +12,7 @@ namespace ServerCore.DataModel
         public int ID { get; set; }
 
         /// <summary>
-        /// Foreign Key - Team table 
+        /// Foreign Key - Team table
         /// </summary>
         [ForeignKey("Team.ID")]
         public Team Team { get; set; }
