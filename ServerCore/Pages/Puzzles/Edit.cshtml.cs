@@ -163,11 +163,33 @@ namespace ServerCore.Pages.Puzzles
             {
                 if (Puzzle.IsForSinglePlayer) // If switch from team puzzle to single player puzzle
                 {
-                    await this.UpdateTeamPuzzleToSinglePlayerPuzzle(oldPuzzleView);
+                    if (!_context.SinglePlayerPuzzleUnlockStates.Where(unlockState => unlockState.PuzzleID == oldPuzzleView.ID).Any())
+                    {
+                        _context.SinglePlayerPuzzleUnlockStates.Add(new SinglePlayerPuzzleUnlockState() { PuzzleID = oldPuzzleView.ID });
+                    }
+
+                    List<PuzzleStatePerTeam> allPsptsToDelete = await (from pspt in _context.PuzzleStatePerTeam
+                                          where pspt.Puzzle.EventID == Puzzle.EventID && pspt.Puzzle.ID == Puzzle.ID
+                                          select pspt).ToListAsync();
+
+                    foreach(PuzzleStatePerTeam toDelete in allPsptsToDelete)
+                    {
+                        _context.PuzzleStatePerTeam.Remove(toDelete);
+                    }
                 }
                 else // If switch from single player puzzle to team puzzle
                 {
-                    await this.UpdateSinglePlayerPuzzleToTeamPuzzle(oldPuzzleView);
+                    List<PuzzleStatePerTeam> missingPuzzleStates = await this.GetMissingPuzzleStatesPerTeam(_context, Puzzle.EventID, oldPuzzleView.ID);
+                    foreach (PuzzleStatePerTeam missingPuzzleState in missingPuzzleStates)
+                    {
+                        _context.PuzzleStatePerTeam.Add(missingPuzzleState);
+                    }
+
+                    SinglePlayerPuzzleUnlockState unlockStateToDelete = _context.SinglePlayerPuzzleUnlockStates.Where(unlockState => unlockState.PuzzleID == oldPuzzleView.ID).FirstOrDefault();
+                    if (unlockStateToDelete != null)
+                    {
+                        _context.SinglePlayerPuzzleUnlockStates.Remove(unlockStateToDelete);
+                    }
                 }
             }
             await _context.SaveChangesAsync();
@@ -303,133 +325,6 @@ namespace ServerCore.Pages.Puzzles
             }
 
             return newPspts;
-        }
-
-        private async Task UpdateTeamPuzzleToSinglePlayerPuzzle(OldPuzzleView oldPuzzleView)
-        {
-            // Add unlock state
-            _context.SinglePlayerPuzzleUnlockStates.Add(new SinglePlayerPuzzleUnlockState() { PuzzleID = oldPuzzleView.ID });
-
-            // Remove team puzzle state per team
-            List<PuzzleStatePerTeam> allPsptsToDelete = await(from pspt in _context.PuzzleStatePerTeam
-                                                              where pspt.Puzzle.EventID == Puzzle.EventID && pspt.Puzzle.ID == Puzzle.ID
-                                                              select pspt).ToListAsync();
-
-            foreach (PuzzleStatePerTeam toDelete in allPsptsToDelete)
-            {
-                _context.PuzzleStatePerTeam.Remove(toDelete);
-            }
-
-            // Move Submission to SinglePlayerPuzzleSubmissions
-            // and create new player states for ones that have solved the puzzle
-            var teamSubmissions = await(from submission in _context.Submissions
-                                        where submission.PuzzleID == oldPuzzleView.ID
-                                        select submission).ToListAsync();
-            foreach (Submission teamSubmission in teamSubmissions)
-            {
-                if (teamSubmission.Response != null && teamSubmission.Response.IsSolution)
-                {
-                    _context.SinglePlayerPuzzleStatePerPlayer.Add(
-                        new SinglePlayerPuzzleStatePerPlayer
-                        {
-                            PuzzleID = oldPuzzleView.ID,
-                            PlayerID = teamSubmission.SubmitterID,
-                            SolvedTime = teamSubmission.TimeSubmitted
-                        });
-                }
-
-                _context.SinglePlayerPuzzleSubmissions.Add(
-                    new SinglePlayerPuzzleSubmission
-                    {
-                        TimeSubmitted = DateTime.UtcNow,
-                        SubmissionText = teamSubmission.SubmissionText,
-                        Puzzle = teamSubmission.Puzzle,
-                        Submitter = teamSubmission.Submitter,
-                        AllowFreeformSharing = teamSubmission.AllowFreeformSharing,
-                        Response = teamSubmission.Response,
-                        FreeformResponse = teamSubmission.FreeformResponse,
-                        FreeformAccepted = teamSubmission.FreeformAccepted,
-                        FreeformJudge = teamSubmission.FreeformJudge,
-                        FreeformFavorited = teamSubmission.FreeformFavorited,
-                        UnformattedSubmissionText = teamSubmission.UnformattedSubmissionText
-                    });
-
-                _context.Submissions.Remove(teamSubmission);
-            }
-        }
-
-        private async Task UpdateSinglePlayerPuzzleToTeamPuzzle(OldPuzzleView oldPuzzleView)
-        {
-            // Remove unlock state
-            SinglePlayerPuzzleUnlockState unlockStateToDelete = _context.SinglePlayerPuzzleUnlockStates.Where(unlockState => unlockState.PuzzleID == oldPuzzleView.ID).FirstOrDefault();
-            _context.SinglePlayerPuzzleUnlockStates.Remove(unlockStateToDelete);
-
-            // Move SinglePlayerPuzzleSubmissions to Submissions
-            List<SinglePlayerPuzzleSubmission> singlePlayerPuzzleSubmissions = await (from submission in _context.SinglePlayerPuzzleSubmissions
-                                         where submission.PuzzleID == oldPuzzleView.ID
-                                         select submission).ToListAsync();
-            Dictionary<int, int> memberToTeamIdDict = _context.TeamMembers
-                .Where(member => member.Team.EventID == Event.ID)
-                .ToDictionary(member => member.Member.ID, member => member.Team.ID);
-            var teamIdToSolveTimeDict = new Dictionary<int,DateTime>();
-            foreach (SinglePlayerPuzzleSubmission submission in singlePlayerPuzzleSubmissions)
-            {
-                _context.SinglePlayerPuzzleSubmissions.Remove(submission);
-                if (!memberToTeamIdDict.ContainsKey(submission.SubmitterID))
-                {
-                    continue;
-                }
-
-                int submitterTeamId = memberToTeamIdDict[submission.SubmitterID];
-                _context.Submissions.Add(
-                    new Submission
-                    {
-                        TimeSubmitted = DateTime.UtcNow,
-                        SubmissionText = submission.SubmissionText,
-                        Puzzle = submission.Puzzle,
-                        Submitter = submission.Submitter,
-                        AllowFreeformSharing = submission.AllowFreeformSharing,
-                        Response = submission.Response,
-                        FreeformResponse = submission.FreeformResponse,
-                        FreeformAccepted = submission.FreeformAccepted,
-                        FreeformJudge = submission.FreeformJudge,
-                        FreeformFavorited = submission.FreeformFavorited,
-                        UnformattedSubmissionText = submission.UnformattedSubmissionText,
-                        TeamID = submitterTeamId
-                    });
-
-                if (!teamIdToSolveTimeDict.ContainsKey(submitterTeamId)
-                    && submission.Response != null
-                    && submission.Response.IsSolution)
-                {
-                    teamIdToSolveTimeDict.Add(submitterTeamId, submission.TimeSubmitted);
-                }
-            }
-
-            // Remove puzzle states per player
-            List<SinglePlayerPuzzleStatePerPlayer> puzzleStates = await _context.SinglePlayerPuzzleStatePerPlayer.ToListAsync();
-            foreach (SinglePlayerPuzzleStatePerPlayer puzzleState in puzzleStates)
-            {
-                _context.Remove(puzzleState);
-            }
-
-            // Add team puzzle state per team
-            List<Team> allTeams = await (from team in _context.Teams
-                                         where team.EventID == Puzzle.EventID
-                                         select team).ToListAsync();
-
-            foreach (Team team in allTeams)
-            {
-                if (teamIdToSolveTimeDict.ContainsKey(team.ID) )
-                {
-                    _context.PuzzleStatePerTeam.Add(new PuzzleStatePerTeam { Puzzle = Puzzle, Team = team, SolvedTime = teamIdToSolveTimeDict[team.ID] });
-                }
-                else
-                {
-                    _context.PuzzleStatePerTeam.Add(new PuzzleStatePerTeam { Puzzle = Puzzle, Team = team });
-                }
-            }
-
         }
 
         private class OldPuzzleView
