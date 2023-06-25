@@ -315,25 +315,25 @@ namespace ServerCore.Pages.Submissions
                 Team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
 
                 PuzzleState = await (PuzzleStateHelper
-                    .GetFullReadOnlyQuery(
-                        _context,
-                        Event,
-                        Puzzle,
-                        Team))
-                    .FirstAsync();
+                .GetFullReadOnlyQuery(
+                    _context,
+                    Event,
+                    Puzzle,
+                    Team))
+                .FirstAsync();
 
                 SubmissionViews = await (from submission in _context.Submissions
-                                         where submission.Team == Team
-                                            && submission.Puzzle == Puzzle
-                                            && submission.Submitter.ID == LoggedInUser.ID
+                                         join user in _context.PuzzleUsers on submission.Submitter equals user
                                          join r in _context.Responses on submission.Response equals r into responses
                                          from response in responses.DefaultIfEmpty()
+                                         where submission.Team == Team &&
+                                         submission.Puzzle == Puzzle
                                          orderby submission.TimeSubmitted
                                          select new SubmissionView()
                                          {
                                              Submission = submission,
                                              Response = response,
-                                             SubmitterName = LoggedInUser.Name,
+                                             SubmitterName = user.Name,
                                              FreeformReponse = submission.FreeformResponse,
                                              IsFreeform = Puzzle.IsFreeform
                                          }).ToListAsync();
