@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,15 +13,13 @@ using ServerCore.ModelBases;
 namespace ServerCore.Pages.Submissions
 {
     [Authorize(Policy = "IsEventAdminOrEventAuthor")]
-    public class AuthorIndexModel : EventSpecificPageModel
+    public class SinglePlayerPuzzleAuthorIndexModel : EventSpecificPageModel
     {
         public class SubmissionView
         {
             public string SubmitterName;
             public int PuzzleID;
             public string PuzzleName;
-            public int TeamID;
-            public string TeamName;
             public string ResponseText;
             public string SubmissionText;
             public DateTime TimeSubmitted;
@@ -29,7 +27,7 @@ namespace ServerCore.Pages.Submissions
             public bool Linkify;
         }
 
-        public AuthorIndexModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
+        public SinglePlayerPuzzleAuthorIndexModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
         }
 
@@ -37,7 +35,9 @@ namespace ServerCore.Pages.Submissions
 
         public Puzzle Puzzle { get; set; }
 
-        public Team  Team { get; set; }
+        public string PlayerName { get; set; }
+
+        public int? PlayerId { get; set; }
 
         public SortOrder? Sort { get; set; }
 
@@ -47,59 +47,62 @@ namespace ServerCore.Pages.Submissions
 
         public bool FavoritesOnly { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int? puzzleId, int? teamId, SortOrder? sort, bool? hideFreeform, bool? favoritesOnly)
+        public async Task<IActionResult> OnGetAsync(int? puzzleId, int? playerId, SortOrder? sort, bool? hideFreeform, bool? favoritesOnly)
         {
             Sort = sort;
+            PlayerId = playerId;
+            if (playerId.HasValue)
+            {
+                PuzzleUser user = await _context.PuzzleUsers.Where(m => m.ID == playerId).FirstOrDefaultAsync();
+                PlayerName = user?.Name ?? user?.Email;
+            }
 
-            IQueryable<Submission> submissionsQ = null;
+            IQueryable<SinglePlayerPuzzleSubmission> submissionsQ = null;
 
             if (puzzleId == null)
             {
                 if (EventRole == EventRole.admin)
                 {
-                    if (teamId == null)
+                    if (puzzleId == null)
                     {
-                        submissionsQ = _context.Submissions.Where((s) => s.Puzzle.Event == Event);
+                        submissionsQ = _context.SinglePlayerPuzzleSubmissions.Where((s) => s.Puzzle.Event == Event);
                     }
                     else
                     {
-                        submissionsQ = _context.Submissions.Where((s) => s.Team.ID == teamId);
+                        submissionsQ = _context.SinglePlayerPuzzleSubmissions.Where((s) => s.SubmitterID == playerId);
                     }
                 }
                 else
                 {
-                    if (teamId == null)
+                    if (playerId == null)
                     {
                         submissionsQ = UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser)
-                            .SelectMany((p) => p.Submissions);
+                            .SelectMany((p) => p.SinglePlayerPuzzleSubmissions);
                     }
                     else
                     {
                         submissionsQ = UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser)
-                            .SelectMany((p) => p.Submissions.Where((s) => s.Team.ID == teamId));
+                            .Where((p) => p.IsForSinglePlayer)
+                            .SelectMany((p) => p.SinglePlayerPuzzleSubmissions.Where((s) => s.SubmitterID == playerId));
                     }
                 }
             }
             else
             {
                 Puzzle = await _context.Puzzles.Where(m => m.ID == puzzleId).FirstOrDefaultAsync();
-                if (Puzzle.IsForSinglePlayer)
-                {
-                    return RedirectToPage("/Submissions/SinglePlayerPuzzleAuthorIndex", new { puzzleId = puzzleId });
-                }
 
                 if (EventRole == EventRole.author && !await UserEventHelper.IsAuthorOfPuzzle(_context, Puzzle, LoggedInUser))
                 {
                     return Forbid();
                 }
 
-                if (teamId == null)
+                if (playerId == null)
                 {
-                    submissionsQ = _context.Submissions.Where((s) => s.Puzzle != null && s.Puzzle.ID == puzzleId);
+                    submissionsQ = _context.SinglePlayerPuzzleSubmissions.Where((s) => s.Puzzle != null && s.Puzzle.ID == puzzleId);
                 }
                 else
                 {
-                    submissionsQ = _context.Submissions.Where((s) => s.Puzzle != null && s.Puzzle.ID == puzzleId && s.Team.ID == teamId);
+                    submissionsQ = _context.SinglePlayerPuzzleSubmissions.Where((s) => s.Puzzle != null && s.Puzzle.ID == puzzleId && s.SubmitterID == playerId);
                 }
             }
 
@@ -119,11 +122,6 @@ namespace ServerCore.Pages.Submissions
                 submissionsQ = submissionsQ.Where(s => s.FreeformFavorited);
             }
 
-            if (teamId != null)
-            {
-                Team = await _context.Teams.Where(m => m.ID == teamId).FirstOrDefaultAsync();
-            }
-
             switch (sort ?? DefaultSort)
             {
                 case SortOrder.PlayerAscending:
@@ -131,12 +129,6 @@ namespace ServerCore.Pages.Submissions
                     break;
                 case SortOrder.PlayerDescending:
                     submissionsQ = submissionsQ.OrderByDescending(submission => submission.Submitter.Name);
-                    break;
-                case SortOrder.TeamAscending:
-                    submissionsQ = submissionsQ.OrderBy(submission => submission.Team.Name);
-                    break;
-                case SortOrder.TeamDescending:
-                    submissionsQ = submissionsQ.OrderByDescending(submission => submission.Team.Name);
                     break;
                 case SortOrder.PuzzleAscending:
                     submissionsQ = submissionsQ.OrderBy(submission => submission.Puzzle.Name);
@@ -170,8 +162,6 @@ namespace ServerCore.Pages.Submissions
                     SubmitterName = s.Submitter.Name,
                     PuzzleID = s.Puzzle.ID,
                     PuzzleName = s.Puzzle.Name,
-                    TeamID = s.Team.ID,
-                    TeamName = s.Team.Name,
                     IsFreeform = s.Puzzle.IsFreeform,
                     SubmissionText = s.Puzzle.IsFreeform ? s.UnformattedSubmissionText : s.SubmissionText,
                     ResponseText = s.Response == null ? null : s.Response.ResponseText,
@@ -218,8 +208,6 @@ namespace ServerCore.Pages.Submissions
         {
             PlayerAscending,
             PlayerDescending,
-            TeamAscending,
-            TeamDescending,
             PuzzleAscending,
             PuzzleDescending,
             ResponseAscending,

@@ -211,8 +211,7 @@ namespace ServerCore.Helpers
                     // we will do the lockout computations now.
                     DateTime? lockoutExpiryTime = ComputeLockoutExpiryTime(
                         thisEvent,
-                        submissions,
-                        puzzleState);
+                        submissions);
 
                     if (lockoutExpiryTime != null)
                     {
@@ -268,8 +267,7 @@ namespace ServerCore.Helpers
         /// </returns>
         private static DateTime? ComputeLockoutExpiryTime(
             Event ev,
-            IList<Submission> submissions,
-            PuzzleStatePerTeam puzzleState)
+            IEnumerable<SubmissionBase> submissions)
         {
             int consecutiveWrongSubmissions = 0;
 
@@ -281,7 +279,7 @@ namespace ServerCore.Helpers
              */
             DateTime incorrectGuessStartTime = DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(ev.LockoutIncorrectGuessPeriod));
 
-            foreach (Submission s in submissions)
+            foreach (SubmissionBase s in submissions)
             {
                 // if the guess is before the incorrect window, ignore it
                 if (s.TimeSubmitted < incorrectGuessStartTime)

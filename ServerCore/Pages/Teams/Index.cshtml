@@ -62,6 +62,10 @@
         {
             <a asp-page="/Swag/Report">Intern T-shirts and Lunch</a> @("|")
         }
+        @if (Model.Event.EventHasTeamSwag)
+        {
+            <a asp-page="/Swag/TeamReport">Intern Team Lunch</a> @("|")
+        }
     </div>
     <br />
     <a asp-page="/Events/Mailer" asp-route-group="PrimaryContacts">Email all team primary contacts from the bulk mailer</a> @("|") 
