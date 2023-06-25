@@ -13,13 +13,15 @@
 <h2>@Model.Puzzle.Name: Status</h2>
 @if (Model.UnlockedTime != null)
 {
-    <h4 style="color:green">Puzzle was unlocked at @Html.Raw(Model.LocalTime(Model.UnlockedTime))</h4>
+    <h4 style="color:green">Puzzle was unlocked for all players at @Html.Raw(Model.LocalTime(Model.UnlockedTime))</h4>
 }
 else
 {
-    <h4 style="color:red">Puzzle is currently locked</h4>
+    <h4 style="color:red">Puzzle is currently locked for all players</h4>
 }
-
+<div>
+    Note: Puzzles can still be unlocked manually for each individual player.
+</div>
 <table class="table">
     <thead>
         <tr>
