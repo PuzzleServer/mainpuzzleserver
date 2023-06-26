@@ -295,3 +295,54 @@
         </script>
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style>
+    #puzzle-frame {
+        width: 100%;
+        height: calc(100vh - 265px);
+    }
+
+    #pdf-frame {
+        width: 100%;
+        height: calc(100vh - 285px);
+    }
+</style>
+@if (Model.Puzzle.CustomURL != null)
+{
+    <iframe id="puzzle-frame" title="@Model.Puzzle.Name" sandbox="allow-same-origin allow-scripts" src="@PuzzleHelper.GetFormattedUrl(Model.Puzzle, Model.Event.ID)"></iframe>
+    <div>Want a printable version? <a href="@PuzzleHelper.GetFormattedUrl(Model.Puzzle, Model.Event.ID)" target="blank">Click here</a> to open it!</div>
+}
+else if (Model.Puzzle.PuzzleFile != null)
+{
+    <object id="pdf-frame" title="@Model.Puzzle.Name" data="@Model.Puzzle.PuzzleFile.Url.AbsoluteUri" type="application/pdf">
+        <embed src="@Model.Puzzle.PuzzleFile.Url.AbsoluteUri" type="application/pdf" />
+    </object>
+    <div>Trouble viewing the PDF? <a download href="@Model.Puzzle.PuzzleFile.Url.AbsoluteUri">Click here</a> to download it!</div>
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
