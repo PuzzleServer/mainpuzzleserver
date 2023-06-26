@@ -53,35 +53,382 @@
     }
 }
 
+<style>
+    .flexwrapper {
+        display: flex;
+        align-self: flex-end;
+    }
+    .flexwrapper img {
+        margin-top: 15px;
+    }
+    .inlinewrapper {
+        display: inline;
+        text-align: right;
+    }
+    .gridwrapper {
+        display: grid;
+        grid-template-columns: 0.2fr 0.2fr 0.2fr 0.4fr;
+        gap: 5px;
+    }
+    .centerwrapper {
+        text-align: center;
+    }
+    .inlineblockwrapper {
+        display: inline-block;
+    }
+    .twocolumn {
+        display: grid;
+        grid-template-columns: 0.75fr 0.25fr;
+    }
+    .evencolumn {
+        display: grid;
+        grid-template-columns: 0.5fr 0.5fr;
+    }
+    .marginright {
+        margin-right: 6px;
+    }
+    .margintop {
+        margin-top: 6px;
+    }
+    input.checkboxfix {
+        margin-top: 0px;
+    }
+    .hideablepanel {
+        padding-left: 5px;
+        text-align: left;
+        width: 900px;
+        height: 25px;
+        perspective: 4px;
+        border: 1px solid;
+        border-color: rgb(51, 51, 51);
+        border-radius: 4px;
+        box-shadow: 4px 2px 8px 2px rgba(0,0,0,0.1);
+        cursor: pointer;
+    }
+    .panelcontents {
+        width: inherit;
+        display: none;
+        position: fixed;
+        top: 23px;
+        left: 0px;
+        z-index: 1060;
+        border: 1px solid;
+        border-color: rgb(51, 51, 51);
+        background-color: rgba(255,255,255,1);
+    }
+    .panelitem {
+        padding: 3px;
+        background-color: rgba(255,255,255,1);
+        z-index: 1090;
+    }
+    iframe {
+        border: 0px solid black;
+    }
+    #puzzle-frame {
+        width: 100%;
+        height: calc(100vh);
+    }
+    #pdf-frame {
+        width: 100%;
+        height: calc(100vh);
+    }
+</style>
 
-
-<h2>Submissions for @RawHtmlHelper.Display(Model.Puzzle.Name, Model.Event.ID, Html)</h2>
-<hr />
-<div>
-    @if (Model.IsPuzzleForSinglePlayer == true)
+@if (!Model.Event.EmbedPuzzles) {
+    <h2>Submissions for @RawHtmlHelper.Display(Model.Puzzle.Name, Model.Event.ID, Html)</h2>
+    <hr />
+    <div>
+        @if (Model.IsPuzzleForSinglePlayer == true)
+        {
+            <a asp-page="/Puzzles/SinglePlayerPuzzles">Back to puzzle list</a>
+        }
+        else
+        {
+            <a asp-page="/Teams/Play" asp-route-teamId="@Model.Team.ID">Back to puzzle list</a>
+        }
+    </div>
+    <br />
+    @if (!string.IsNullOrEmpty(Model.Puzzle.Errata))
     {
-        <a asp-page="/Puzzles/SinglePlayerPuzzles">Back to puzzle list</a>
+        <div style="font-size:16px;">
+            <span style="color: red; font-weight:600;">&#x26A0; Errata: </span>@Model.Puzzle.Errata
+        </div>
+        <br />
+    }
+
+    @if (Model.Puzzle.HasDataConfirmation)
+    {
+        <div style="font-style:italic;">
+            <img src="~/images/DataConfirmationIcon.png" width="20" height="20" style="margin-bottom:3px" /> Reminder: This puzzle supports data confirmation
+        </div>
+        <br />
+    }
+
+    @if (!string.IsNullOrEmpty(Model.AnswerToken))
+    {
+        <div class="alert alert-success" role="alert">
+            <h4>Correct</h4>
+            <span>Answer: @Model.AnswerToken</span>
+        </div>
+
+        @if (Model.PuzzleState.SolvedTime > Model.Event.AnswerSubmissionEnd)
+        {
+            <div class="alert alert-warning" role="alert">
+                <span>You solved this after the event ended and it did not count toward your ranking.</span>
+            </div>
+        }
+    }
+    else if (DateTime.UtcNow < Model.Event.EventBegin)
+    {
+        <div class="col-md-12" style="padding-bottom: 15px;">
+            <h3>This event is not yet in session. No submissions will be accepted at this time.</h3>
+        </div>
+    }
+    else if (Model.PuzzleState.IsEmailOnlyMode)
+    {
+        <div class="alert alert-danger" role="alert">
+            <h4>Answer Submission Locked Indefinitely</h4>
+            <span>You've submitted too many wrong responses. Please <a href="@mailtoUrl">use this link to email us your answer for @Model.Puzzle.PlaintextName or ask for help</a>.</span>
+        </div>
+    }
+    else if (Model.PuzzleState.IsLockedOut)
+    {
+        <div class="alert alert-danger" role="alert">
+            <h4>Answer Submission Locked</h4>
+            <span>You're locked out. Please wait <span id="LockoutTimer">@Model.PuzzleState.LockoutTimeRemaining.ToString(@"mm\:ss")</span> before attempting another submission.</span>
+        </div>
+    }
+    else if (Model.PuzzlesCausingGlobalLockout.Count != 0 && !Model.PuzzlesCausingGlobalLockout.Contains(Model.Puzzle))
+    {
+        <div class="alert alert-danger" role="alert">
+            <h4>Answer Submission Locked</h4>
+            <span>You're in global lockout until time expires on <a href="./@Model.PuzzlesCausingGlobalLockout[0].ID" target="_blank">@Model.PuzzlesCausingGlobalLockout[0].Name</a>, or it is solved. @(Model.IsPuzzleForSinglePlayer ? "" : "Go help your teammates with that puzzle!")</span>
+        </div>
+    }
+    else if (Model.PuzzleState.UnlockedTime == null)
+    {
+        <div class="alert alert-danger" role="alert">
+            <h4>Answer Submission Locked</h4>
+            <span>This puzzle is currently locked! Please <a href="@mailtoUrl">use this link to email us if you think this is a mistake</a>.</span>
+        </div>
     }
     else
     {
-        <a asp-page="/Teams/Play" asp-route-teamId="@Model.Team.ID">Back to puzzle list</a>
+        if (DateTime.UtcNow > @Model.Event.AnswerSubmissionEnd)
+        {
+            <div class="alert alert-warning" role="alert">
+                <h4>The event is over.</h4>
+                <span>You may check answers, but they will not count toward your ranking.</span>
+            </div>
+        }
+
+        if (!string.IsNullOrEmpty(Model.AnswerRedAlertMessage))
+        {
+            <div class="alert alert-danger" role="alert">
+                <h4>@Model.AnswerRedAlertMessage</h4>
+            </div>
+        }
+
+        if (!string.IsNullOrEmpty(Model.AnswerYellowAlertMessage))
+        {
+            <div class="alert alert-warning" role="alert">
+                <h4>@Model.AnswerYellowAlertMessage</h4>
+            </div>
+        }
+
+        <div class="row">
+            <div class="col-md-4">
+                <form method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group">
+                        <label class="control-label">Answer</label>
+                        <input name="submissionText" class="form-control" data-val="true" data-val-required="Your answer cannot be empty" />
+                        <span style="font-size:12px">Submitted answers will automatically be capitalized and stripped of non-alphanumeric characters</span><br />
+                        @Html.ValidationSummary(true)
+                        <span class="text-danger"><span class="field-validation-valid" data-valmsg-for="submissionText" data-valmsg-replace="true"></span></span>
+                        @if (Model.Puzzle.IsFreeform)
+                        {
+                            <div class="checkbox">
+                                <label class="control-label" for="allowFreeformSharing">
+                                    <input type="checkbox" name="allowFreeformSharing" asp-for="AllowFreeformSharing" />
+                                    Allow other players to see this after the event
+                                </label>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Submit" class="btn btn-default" />
+                    </div>
+                </form>
+            </div>
+        </div>
     }
-</div>
-<br />
-@if (!string.IsNullOrEmpty(Model.Puzzle.Errata))
+
+    @if (Model.SubmissionViews.Count > 0)
+    {
+        <h3>Submission history</h3>
+        <div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            Time Submitted
+                        </th>
+                        <th>
+                            Name
+                        </th>
+                        <th>
+                            Submission Text
+                        </th>
+                        <th>
+                            Response
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = Model.SubmissionViews.Count - 1; i >= 0; --i)
+                    {
+                        <tr>
+                            <td>
+                                @Html.Raw(Model.LocalTime(Model.SubmissionViews[i].Submission.TimeSubmitted))
+                            </td>
+                            <td>
+                                @(Model.SubmissionViews[i].SubmitterName)
+                            </td>
+                            <td>
+                                @(Model.SubmissionViews[i].Submission.SubmissionText)
+                            </td>
+                            <td>
+                                @{
+                                    var response = Model.SubmissionViews[i].Response;
+
+                                    if (response == null)
+                                    {
+                                        if (Model.SubmissionViews[i].IsFreeform)
+                                        {
+                                            if (Model.SubmissionViews[i].Submission.FreeformAccepted != null)
+                                            {
+                                                @(Model.SubmissionViews[i].FreeformReponse);
+                                            }
+                                            else if (Model.PuzzleState.SolvedTime == null)
+                                            {
+                                                <text>Pending...</text>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <text>@IndexModel.IncorrectResponseText</text>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        @ServerCore.Helpers.RawHtmlHelper.Display(response.ResponseText, Model.Event.ID, Html);
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    @if (!Model.PuzzleState.IsEmailOnlyMode)
+    {
+        <h3>Need some help?</h3>
+        <p>While solving this puzzle, if you've run into a bug, think there's an error, or are not having fun anymore, <a href="@mailtoUrl">use this link to contact the author for @Model.Puzzle.PlaintextName</a>!</p>
+        <p>A pre-populated email form will appear and you should add details to the message body. Remember: the author may only know specifics about this puzzle and not others in the event.</p>
+    }
+
+    @if (Model.Event.AllowFeedback)
+    {
+        <h3>Have any feedback?</h3>
+        <p><a asp-Page="/Puzzles/SubmitFeedback" asp-route-puzzleid="@Model.Puzzle.ID">Click this link</a> to submit feedback.</p>
+    }
+
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+        @if (@Model.PuzzleState.LockoutExpiryTime != null)
+        {
+            <script type="text/javascript">
+                var unlockTime = new Date(Date.UTC(
+                @Model.PuzzleState.LockoutExpiryTime.Value.Year,
+                @Model.PuzzleState.LockoutExpiryTime.Value.Month-1,
+                @Model.PuzzleState.LockoutExpiryTime.Value.Day,
+                @Model.PuzzleState.LockoutExpiryTime.Value.Hour,
+                @Model.PuzzleState.LockoutExpiryTime.Value.Minute,
+                @Model.PuzzleState.LockoutExpiryTime.Value.Second));
+
+                setInterval(function () {
+                    var timer = document.getElementById("LockoutTimer");
+                    if (timer === null) {
+                        return;
+                    }
+                    var timeDeltaSeconds = Math.floor((unlockTime - Date.now()) / 1000);
+                    if (timeDeltaSeconds <= 0) {
+                        window.location.href = window.location.href;
+                    }
+                    // Prevent negative time, also pad with zero
+                    var minutesLeft = "0" + Math.max(0, Math.floor(timeDeltaSeconds / 60));
+                    var secondsLeft = "0" + Math.max(0, timeDeltaSeconds % 60);
+                    timer.innerText = minutesLeft.substr(-2) + ":" + secondsLeft.substr(-2);
+                }, 1000);
+            </script>
+        }
+    }
+}
+else
 {
-    <div style="font-size:16px;">
-        <span style="color: red; font-weight:600;">&#x26A0; Errata: </span>@Model.Puzzle.Errata
+    <div class="twocolumn">
+        <div class="flexwrapper">
+            <div><h2>@RawHtmlHelper.Display(Model.Puzzle.Name, Model.Event.ID, Html)</h2></div>
+            @if (Model.Puzzle.HasDataConfirmation)
+            {
+                <img src="~/images/DataConfirmationIcon.png" width="20" height="20" style="margin-bottom:3px" title="Reminder: This puzzle supports data confirmation" />
+            }
+        </div>
+        <div class="inlinewrapper">
+            <br /><h4>by @RawHtmlHelper.Display(Model.PuzzleAuthor, Model.Event.ID, Html)</h4>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.Puzzle.Errata))
+    {
+        <div><span style="color: red; font-weight:600;">&#x26A0; Errata: </span>@Model.Puzzle.Errata</div>
+        <br />
+    }
+
+    <div class="evencolumn">
+        <div class="flexwrapper">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <label for="submissionText" class="marginright margintop">Answer:</label>
+            <input name="submissionText" id="submitBox" class="form-control marginright" data-val="true" data-val-required="Your answer cannot be empty" />
+            <input type="submit" id="submitButton" value="Submit" class="btn btn-default marginright" title="Submitted answers will automatically be capitalized and stripped of non-alphanumeric characters" />
+            @Html.ValidationSummary(true)
+            <span class="text-danger"><span class="field-validation-valid" data-valmsg-for="submissionText" data-valmsg-replace="true"></span></span>
+            @if (Model.Puzzle.IsFreeform)
+            {
+                <label for="allowFreeformSharing" class="marginright margintop">Sharing: </label>
+                <input class="checkboxfix" type="checkbox" name="allowFreeformSharing" asp-for="AllowFreeformSharing" title="Allow other players to see this after the event" />
+            }
+        </div>
+        <div class="inlinewrapper">
+            @if (!Model.PuzzleState.IsEmailOnlyMode)
+            {
+                <div><b>Need help?</b> <a href="@mailtoUrl">Click this link</a> to send an email to the author.</div>
+            }
+
+            @if (Model.Event.AllowFeedback)
+            {
+                <div><b>Have feedback?</b> <a asp-Page="/Puzzles/SubmitFeedback" asp-route-puzzleid="@Model.Puzzle.ID" target="_blank">Click this link</a> to open the feedback form.</div>
+            }
+        </div>
     </div>
     <br />
-}
-        @if (Model.Puzzle.HasDataConfirmation)
-        {
-            <div style="font-style:italic;">
-                <img src="~/images/DataConfirmationIcon.png" width="20" height="20" style="margin-bottom:3px" /> Reminder: This puzzle supports data confirmation
-            </div>
-            <br />
-        }
+    <div id="initialMessage">
         @if (!string.IsNullOrEmpty(Model.AnswerToken))
         {
             <div class="alert alert-success" role="alert">
@@ -132,7 +479,7 @@
         }
         else
         {
-            if (DateTime.UtcNow > @Model.Event.AnswerSubmissionEnd)
+            @if (DateTime.UtcNow > @Model.Event.AnswerSubmissionEnd)
             {
                 <div class="alert alert-warning" role="alert">
                     <h4>The event is over.</h4>
@@ -140,84 +487,39 @@
                 </div>
             }
 
-            if (!string.IsNullOrEmpty(Model.AnswerRedAlertMessage))
+            @if (!string.IsNullOrEmpty(Model.AnswerRedAlertMessage))
             {
                 <div class="alert alert-danger" role="alert">
                     <h4>@Model.AnswerRedAlertMessage</h4>
                 </div>
             }
 
-            if (!string.IsNullOrEmpty(Model.AnswerYellowAlertMessage))
+            @if (!string.IsNullOrEmpty(Model.AnswerYellowAlertMessage))
             {
                 <div class="alert alert-warning" role="alert">
                     <h4>@Model.AnswerYellowAlertMessage</h4>
                 </div>
             }
-
-            <div class="row">
-                <div class="col-md-4">
-                    <form method="post">
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                        <div class="form-group">
-                            <label class="control-label">Answer</label>
-                            <input name="submissionText" class="form-control" data-val="true" data-val-required="Your answer cannot be empty" />
-                            <span style="font-size:12px">Submitted answers will automatically be capitalized and stripped of non-alphanumeric characters</span><br />
-                            @Html.ValidationSummary(true)
-                            <span class="text-danger"><span class="field-validation-valid" data-valmsg-for="submissionText" data-valmsg-replace="true"></span></span>
-                            @if (Model.Puzzle.IsFreeform)
-                            {
-                                <div class="checkbox">
-                                    <label class="control-label" for="allowFreeformSharing">
-                                        <input type="checkbox" name="allowFreeformSharing" asp-for="AllowFreeformSharing" />
-                                        Allow other players to see this after the event
-                                    </label>
-                                </div>
-                            }
-                        </div>
-                        <div class="form-group">
-                            <input type="submit" value="Submit" class="btn btn-default" />
-                        </div>
-                    </form>
-                </div>
-            </div>
         }
-
-@if (Model.SubmissionViews.Count > 0)
-{
-    <h3>Submission history</h3>
-    <div>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>
-                        Time Submitted
-                    </th>
-                    <th>
-                        Name
-                    </th>
-                    <th>
-                        Submission Text
-                    </th>
-                    <th>
-                        Response
-                    </th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @for (int i = Model.SubmissionViews.Count - 1; i >= 0; --i)
-                {
-                    <tr>
-                        <td>
-                            @Html.Raw(Model.LocalTime(Model.SubmissionViews[i].Submission.TimeSubmitted))
-                        </td>
-                        <td>
-                            @(Model.SubmissionViews[i].SubmitterName)
-                        </td>
-                        <td>
-                            @(Model.SubmissionViews[i].Submission.SubmissionText)
-                        </td>
-                        <td>
+    </div>
+    <div id="ongoingMessage"></div>
+    <div class="centerwrapper">
+        <div class="inlineblockwrapper">
+            <div id="submissionHistory" class="hideablepanel">
+                Click here to view previous submissions:<span class="caret"></span>
+                <div class="panelcontents" style="display: none">
+                    <div class="gridwrapper">
+                        <div class="panelitem"><b>Time Submitted</b></div>
+                        <div class="panelitem"><b>Name</b></div>
+                        <div class="panelitem"><b>Submission Text</b></div>
+                        <div class="panelitem"><b>Response</b></div>
+                    </div>
+                    @for (int i = Model.SubmissionViews.Count - 1; i >= 0; --i)
+                    {
+                        <div class="gridwrapper">
+                            <div class="panelitem">@Html.Raw(Model.LocalTime(Model.SubmissionViews[i].Submission.TimeSubmitted))</div>
+                            <div class="panelitem">@(Model.SubmissionViews[i].SubmitterName)</div>
+                            <div class="panelitem">@(Model.SubmissionViews[i].Submission.SubmissionText)</div>
                             @{
                                 var response = Model.SubmissionViews[i].Response;
 
@@ -227,50 +529,52 @@
                                     {
                                         if (Model.SubmissionViews[i].Submission.FreeformAccepted != null)
                                         {
-                                            @(Model.SubmissionViews[i].FreeformReponse);
+                                            <div class="panelitem">@(Model.SubmissionViews[i].FreeformReponse)</div>
                                         }
                                         else if (Model.PuzzleState.SolvedTime == null)
                                         {
-                                            <text>Pending...</text>
+                                            <div class="panelitem">Pending...</div>
                                         }
                                     }
                                     else
                                     {
-                                        <text>@IndexModel.IncorrectResponseText</text>
+                                        <div class="panelitem">@IndexModel.IncorrectResponseText</div>
                                     }
                                 }
                                 else
                                 {
-                                    @ServerCore.Helpers.RawHtmlHelper.Display(response.ResponseText, Model.Event.ID, Html);
+                                    <div class="panelitem">@ServerCore.Helpers.RawHtmlHelper.Display(response.ResponseText, Model.Event.ID, Html)</div>
                                 }
                             }
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
     </div>
-}
+    <br />
 
-@if (!Model.PuzzleState.IsEmailOnlyMode)
-{
-    <h3>Need some help?</h3>
-    <p>While solving this puzzle, if you've run into a bug, think there's an error, or are not having fun anymore, <a href="@mailtoUrl">use this link to contact the author for @Model.Puzzle.PlaintextName</a>!</p>
-    <p>A pre-populated email form will appear and you should add details to the message body. Remember: the author may only know specifics about this puzzle and not others in the event.</p>
-}
-
-@if (Model.Event.AllowFeedback)
-{
-    <h3>Have any feedback?</h3>
-    <p><a asp-Page="/Puzzles/SubmitFeedback" asp-route-puzzleid="@Model.Puzzle.ID">Click this link</a> to submit feedback.</p>
-}
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    @if (@Model.PuzzleState.LockoutExpiryTime != null)
+    @if (Model.Puzzle.CustomURL != null)
     {
-        <script type="text/javascript">
-            var unlockTime = new Date(Date.UTC(
+        <iframe id="puzzle-frame" title="@Model.Puzzle.Name" sandbox="allow-same-origin allow-scripts" src="@PuzzleHelper.GetFormattedUrl(Model.Puzzle, Model.Event.ID)"></iframe>
+        <div>Want a printable version? <a href="@PuzzleHelper.GetFormattedUrl(Model.Puzzle, Model.Event.ID)" target="blank">Click here</a> to open it!</div>
+    }
+    else if (Model.Puzzle.PuzzleFile != null)
+    {
+        <object id="pdf-frame" title="@Model.Puzzle.Name" data="@Model.Puzzle.PuzzleFile.Url.AbsoluteUri" type="application/pdf">
+            <embed src="@Model.Puzzle.PuzzleFile.Url.AbsoluteUri" type="application/pdf" />
+        </object>
+        <div>Trouble viewing the PDF? <a download href="@Model.Puzzle.PuzzleFile.Url.AbsoluteUri">Click here</a> to download it!</div>
+    }
+
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+        @if (@Model.PuzzleState.LockoutExpiryTime != null)
+        {
+            <script type="text/javascript">
+                var unlockTime = new Date(Date.UTC(
                 @Model.PuzzleState.LockoutExpiryTime.Value.Year,
                 @Model.PuzzleState.LockoutExpiryTime.Value.Month-1,
                 @Model.PuzzleState.LockoutExpiryTime.Value.Day,
@@ -278,71 +582,95 @@
                 @Model.PuzzleState.LockoutExpiryTime.Value.Minute,
                 @Model.PuzzleState.LockoutExpiryTime.Value.Second));
 
-            setInterval(function () {
-                var timer = document.getElementById("LockoutTimer");
-                if (timer === null) {
-                    return;
+                setInterval(function () {
+                    var timer = document.getElementById("LockoutTimer");
+                    if (timer === null) {
+                        return;
+                    }
+                    var timeDeltaSeconds = Math.floor((unlockTime - Date.now()) / 1000);
+                    if (timeDeltaSeconds <= 0) {
+                        window.location.href = window.location.href;
+                    }
+                    // Prevent negative time, also pad with zero
+                    var minutesLeft = "0" + Math.max(0, Math.floor(timeDeltaSeconds / 60));
+                    var secondsLeft = "0" + Math.max(0, timeDeltaSeconds % 60);
+                    timer.innerText = minutesLeft.substr(-2) + ":" + secondsLeft.substr(-2);
+                }, 1000);
+            </script>
+        }
+        <script type="text/javascript">
+            window.addEventListener("load", () => {
+
+                // Make previous puzzle responses hideable
+                const headers = document.querySelectorAll(".hideablepanel");
+                for (const header of headers) {
+                    header.addEventListener("click", (e) => {
+                        let list = null;
+                        if (e.target.classList.contains("caret")) {
+                            list = e.target.nextElementSibling;
+                        }
+                        else if (e.target.classList.contains("hideablepanel")) {
+                            list = e.target.lastElementChild;
+                        }
+                        if (list !== null) {
+                            list.style.display = (list.style.display == "none") ? "block" : "none";
+                        }
+                    });
                 }
-                var timeDeltaSeconds = Math.floor((unlockTime - Date.now()) / 1000);
-                if (timeDeltaSeconds <= 0) {
-                    window.location.href = window.location.href;
+
+                // Add the Submit button click handler
+                // Submission conversion mirrors what takes place in DataModel\Response::FormatSubmission
+                // For local testing, set host to http://localhost:44319
+                // Note that AllowFreeformSharing uses string trickery due to C# returning a Boolean value instead of a boolean value
+                const submit = document.querySelector("#submitButton");
+                async function submitClickHandler (e) {
+                    const rawText = document.querySelector("#submitBox").value;
+                    let submission = {SubmissionText: rawText.normalize("NFKD").replace(/[^a-zA-Z\d]/gi, "").toUpperCase(),
+                        AllowFreeformSharing: @Model.Puzzle.IsFreeform.ToString().ToLower()};
+                    const response = await fetch("http://localhost:44319/api/puzzleapi/submitanswer/@Model.Event.ID/@Model.Puzzle.ID", {
+                        method: "POST", mode: "cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(submission), credentials: "include"});
+                    const responseData = await response.json();
+                    
+                    // When the response data is back, add it to the page and list of responses
+                    // Also clear the previous response from the page and make sure there's sufficient space around it
+                    rawText.value = "";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                 }
-                // Prevent negative time, also pad with zero
-                var minutesLeft = "0" + Math.max(0, Math.floor(timeDeltaSeconds / 60));
-                var secondsLeft = "0" + Math.max(0, timeDeltaSeconds % 60);
-                timer.innerText = minutesLeft.substr(-2) + ":" + secondsLeft.substr(-2);
-            }, 1000);
+                submit.addEventListener("click", submitClickHandler);
+
+                // Resize iframe so the frame has no scrollbars
+                // By the time the window has loaded, the iframe contents should have as well, thus no iframe load listener
+                // Note that when the puzzle receives the message, it should remove any extraneous wrapping before reporting its size
+                const iframe = document.querySelector("iframe");
+                if ((iframe !== null) && (iframe !== undefined)) {
+                    iframe.contentWindow.postMessage("", "*");
+                }
+            });
+
+            // When the iframe response comes, use it to set the iframe's size
+            // Removing the iframe's id removes the hard-coded css size
+            // The extra 20px added to the size undoes the widths of the scrollbars themselves
+            window.addEventListener("message", (e) => {
+                if ((e.data.width > 0) && (e.data.height > 0)) {
+                    const iframe = document.querySelector("iframe");
+                    iframe.id = ""; 
+                    iframe.width = e.data.width + 20;
+                    iframe.height = e.data.height + 20;
+                }
+            });
         </script>
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<style>
-    #puzzle-frame {
-        width: 100%;
-        height: calc(100vh - 265px);
-    }
-
-    #pdf-frame {
-        width: 100%;
-        height: calc(100vh - 285px);
-    }
-</style>
-@if (Model.Puzzle.CustomURL != null)
-{
-    <iframe id="puzzle-frame" title="@Model.Puzzle.Name" sandbox="allow-same-origin allow-scripts" src="@PuzzleHelper.GetFormattedUrl(Model.Puzzle, Model.Event.ID)"></iframe>
-    <div>Want a printable version? <a href="@PuzzleHelper.GetFormattedUrl(Model.Puzzle, Model.Event.ID)" target="blank">Click here</a> to open it!</div>
-}
-else if (Model.Puzzle.PuzzleFile != null)
-{
-    <object id="pdf-frame" title="@Model.Puzzle.Name" data="@Model.Puzzle.PuzzleFile.Url.AbsoluteUri" type="application/pdf">
-        <embed src="@Model.Puzzle.PuzzleFile.Url.AbsoluteUri" type="application/pdf" />
-    </object>
-    <div>Trouble viewing the PDF? <a download href="@Model.Puzzle.PuzzleFile.Url.AbsoluteUri">Click here</a> to download it!</div>
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-

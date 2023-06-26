@@ -31,7 +31,7 @@ namespace ServerCore.Helpers
     public class SubmissionResponse
     {
         public SubmissionResponseCode ResponseCode { get; set; }
-        public Response CompleteResponse { get; set; }
+        public string CompleteResponse { get; set; }
         public string FreeformResponse { get; set; }
     }
 
@@ -231,13 +231,13 @@ namespace ServerCore.Helpers
             // Correct response
             if (submission.Response != null && submission.Response.IsSolution)
             {
-                return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.Correct, CompleteResponse = submission.Response };
+                return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.Correct, CompleteResponse = submission.Response.ResponseText };
             }
 
             // Partial response
             if (submission.Response != null && !submission.Response.IsSolution)
             {
-                return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.Partial, CompleteResponse = submission.Response };
+                return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.Partial, CompleteResponse = submission.Response.ResponseText };
             }
 
             // Freeform response
