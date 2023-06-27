@@ -16,6 +16,10 @@
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
     </environment>
 
+    <base href="~/" />
+    <component type="typeof(Microsoft.AspNetCore.Components.Web.HeadOutlet)"
+               render-mode="ServerPrerendered" />
+
     <!-- TODO: Make this actually scalable and correct -->
     @{
         // Using ev here so that it isn't the same as Event that we bind in the <body>
@@ -125,6 +129,8 @@
         </script>
         <script src="~/js/site.min.js" asp-append-version="true"></script>
     </environment>
+
+    <script src="_framework/blazor.server.js"></script>
 
     @RenderSection("Scripts", required: false)
 </body>
