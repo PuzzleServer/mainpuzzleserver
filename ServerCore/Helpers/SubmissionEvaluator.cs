@@ -44,7 +44,7 @@ namespace ServerCore.Helpers
         public Response Response { get; set; }
         public string SubmitterName { get; set; }
         public bool IsFreeform { get; set; }
-        public string FreeformReponse { get; set; }
+        public string FreeformResponse { get; set; }
     }
 
     /// <summary>
@@ -128,7 +128,7 @@ namespace ServerCore.Helpers
                                                               Submission = sub,
                                                               Response = response,
                                                               SubmitterName = user.Name,
-                                                              FreeformReponse = sub.FreeformResponse,
+                                                              FreeformResponse = sub.FreeformResponse,
                                                               IsFreeform = puzzle.IsFreeform
                                                           }).ToListAsync();
 

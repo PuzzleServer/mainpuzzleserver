@@ -502,7 +502,7 @@ else
             }
         }
     </div>
-    <div id="ongoingMessage"></div>
+    <br />
     <div class="centerwrapper">
         <div class="inlineblockwrapper">
             <div id="submissionHistory" class="hideablepanel">
@@ -632,22 +632,53 @@ else
                     const responseData = await response.json();
                     
                     // When the response data is back, add it to the page and list of responses
-                    // Also clear the previous response from the page and make sure there's sufficient space around it
+                    // Also clear the previous response from the page
+                    // Response Code enum is in Helpers/SubmissionEvaluator
+                    const messageArea = document.querySelector("#initialMessage");
+                    messageArea.innerHTML = "";
+                    switch (responseData.ResponseCode) {
+                        case 0: // Correct
+                            messageArea.innerHTML = `<div class="alert alert-success" role="alert"><h4>Correct</h4><span>Answer: ` + rawText.value + `</span></div>`;
+                            messageArea.innerHTML += (Date.now() > Date.parse(@Model.Event.AnswerSubmissionEnd.ToString("YYYY-MM-DDTHH:mm:ss.sssZ")).valueOf()) ? `<div class="alert alert-warning" role="alert"><span>You solved this after the event ended and it did not count toward your ranking.</span></div>` : ``;
+                            break;
+                        case 1: // Incorrect
+                            messageArea.innerHTML = `<div class="panelitem">@IndexModel.IncorrectResponseText</div>`;
+                            break;
+                        case 2: // Freeform
+                            messageArea.innerHTML = `<div class="panelitem">` + responseData.FreeformResponse + `</div>`;
+                            break;
+                        case 3: // Partial
+                            messageArea.innerHTML = `<div class="panelitem">` + responseData.CompleteResponse + `</div>`;
+                            break;
+                        case 4: // Unauthorized
+                            messageArea.innerHTML = `<div class="panelitem">You don't appear to have access to this puzzle, so your answer has not been recorded.</div>`;
+                            break;
+                        case 5: // Puzzle not found
+                            messageArea.innerHTML = `<div class="panelitem">This puzzle can't be found in the system, so your answer has not been recorded.</div>`;
+                            break;
+                        case 6: // Puzzle Locked
+                            messageArea.innerHTML = `<div class="alert alert-danger" role="alert"><h4>Answer Submission Locked</h4><span>This puzzle is currently locked! Please <a href="@mailtoUrl">use this link to email us if you think this is a mistake</a>.</span></div>`;
+                            break;
+                        case 7: // Empty
+                            messageArea.innerHTML = `<div class="panelitem">No valid characters were found in this submission. Please try something else.</div>`;
+                            break;
+                        case 8: // Team locked out
+                            messageArea.innerHTML = `<div class="panelitem">You don't appear to have access to this puzzle, so your answer has not been recorded.</div>`;
+                            break;
+                    }
+
+
+
+
+
+
+
+
+
+
+
+
                     rawText.value = "";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                 }
                 submit.addEventListener("click", submitClickHandler);
 
