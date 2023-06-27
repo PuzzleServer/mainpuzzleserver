@@ -18,15 +18,18 @@
 
     // to: Add the proper support agent as recipient
     mailtoUrl.Append(Model.PuzzleState?.Puzzle.SupportEmailAlias ?? (Model.Event?.ContactEmail ?? "puzzhunt@microsoft.com"));
+    mailtoUrl.Append("?");
+
     // CC the team's email address in case the account sending the e-mail is a personal one that's not associated with the event
     if (Model.Team?.PrimaryContactEmail != null)
     {
-        mailtoUrl.Append("?cc=");
+        mailtoUrl.Append("cc=");
         mailtoUrl.Append(Uri.EscapeDataString(Model.Team.PrimaryContactEmail));
+        mailtoUrl.Append("&");
     }
 
     // subject: Make this be about this puzzle
-    mailtoUrl.Append("&subject=");
+    mailtoUrl.Append("subject=");
     mailtoUrl.Append(Uri.EscapeDataString("[" + Model.Puzzle.PlaintextName + "]"));
 
     if (Model.Team != null)
