@@ -631,7 +631,7 @@ else
                     const rawText = document.querySelector("#submitBox").value;
                     const cleanedText = rawText.normalize("NFKD").replace(/[^a-zA-Z\d]/gi, "").toUpperCase();
                     let submission = {SubmissionText: cleanedText, AllowFreeformSharing: @Model.Puzzle.IsFreeform.ToString().ToLower()};
-                    const response = await fetch("http://puzzlehunt.azurewebsites.net/api/puzzleapi/submitanswer/@Model.Event.ID/@Model.Puzzle.ID", {
+                    const response = await fetch("https://puzzlehunt.azurewebsites.net/api/puzzleapi/submitanswer/@Model.Event.ID/@Model.Puzzle.ID", {
                         method: "POST", mode: "cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(submission), credentials: "include"});
                     const responseData = await response.json();
                     
