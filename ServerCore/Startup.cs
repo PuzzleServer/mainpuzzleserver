@@ -12,6 +12,10 @@ using ServerCore.Areas.Identity.UserAuthorizationPolicy;
 using ServerCore.DataModel;
 using ServerCore.Areas.Identity;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Azure;
+using Azure.Storage.Queues;
+using Azure.Storage.Blobs;
+using Azure.Core.Extensions;
 
 namespace ServerCore
 {

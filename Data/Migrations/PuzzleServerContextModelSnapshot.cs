@@ -319,6 +319,9 @@ namespace Data.Migrations
                     b.Property<string>("DefaultLunch")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("EmbedPuzzles")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("EventBegin")
                         .HasColumnType("datetime2");
 

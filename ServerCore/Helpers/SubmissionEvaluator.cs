@@ -31,7 +31,7 @@ namespace ServerCore.Helpers
     public class SubmissionResponse
     {
         public SubmissionResponseCode ResponseCode { get; set; }
-        public Response CompleteResponse { get; set; }
+        public string CompleteResponse { get; set; }
         public string FreeformResponse { get; set; }
     }
 
@@ -44,7 +44,7 @@ namespace ServerCore.Helpers
         public Response Response { get; set; }
         public string SubmitterName { get; set; }
         public bool IsFreeform { get; set; }
-        public string FreeformReponse { get; set; }
+        public string FreeformResponse { get; set; }
     }
 
     /// <summary>
@@ -128,7 +128,7 @@ namespace ServerCore.Helpers
                                                               Submission = sub,
                                                               Response = response,
                                                               SubmitterName = user.Name,
-                                                              FreeformReponse = sub.FreeformResponse,
+                                                              FreeformResponse = sub.FreeformResponse,
                                                               IsFreeform = puzzle.IsFreeform
                                                           }).ToListAsync();
 
@@ -231,13 +231,13 @@ namespace ServerCore.Helpers
             // Correct response
             if (submission.Response != null && submission.Response.IsSolution)
             {
-                return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.Correct, CompleteResponse = submission.Response };
+                return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.Correct, CompleteResponse = submission.Response.ResponseText };
             }
 
             // Partial response
             if (submission.Response != null && !submission.Response.IsSolution)
             {
-                return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.Partial, CompleteResponse = submission.Response };
+                return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.Partial, CompleteResponse = submission.Response.ResponseText };
             }
 
             // Freeform response

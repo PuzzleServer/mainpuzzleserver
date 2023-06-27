@@ -108,13 +108,20 @@
                         <text>&#x26A0; </text>
                     }
 
-                    @if (item.CustomUrl != null)
+                    @if (!Model.Event.EmbedPuzzles)
                     {
-                    <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.CustomUrl, item.ID, Model.Event.ID, Model.TeamPassword)" target="_blank">@RawHtmlHelper.Display(item.Name, Model.Event.ID, Html)</a>
-                    }
-                    else if (item.Content != null)
-                    {
-                    <a asp-action="Index" asp-controller="Files" asp-route-eventId="@Model.Event.ID" asp-route-filename="@item.Content.ShortName" target="_blank">@RawHtmlHelper.Display(item.Name, Model.Event.ID, Html)</a>
+                        @if (item.CustomUrl != null)
+                        {
+                        <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.CustomUrl, item.ID, Model.Event.ID, Model.TeamPassword)" target="_blank">@RawHtmlHelper.Display(item.Name, Model.Event.ID, Html)</a>
+                        }
+                        else if (item.Content != null)
+                        {
+                        <a asp-action="Index" asp-controller="Files" asp-route-eventId="@Model.Event.ID" asp-route-filename="@item.Content.ShortName" target="_blank">@RawHtmlHelper.Display(item.Name, Model.Event.ID, Html)</a>
+                        }
+                        else
+                        {
+                            @RawHtmlHelper.Display(item.Name, Model.Event.ID, Html)
+                        }
                     }
                     else
                     {

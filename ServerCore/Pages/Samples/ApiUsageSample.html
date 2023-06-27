@@ -15,13 +15,11 @@
     function SubmitAnswer() {
         let submission =
         {
-            PuzzleId: 1,
-            EventId: "1",
             SubmissionText: "this is a test",
             AllowFreeformSharing: true
         };
 
-        document.getElementById("responseField").innerHTML = fetch('http://localhost:44319/api/puzzleapi/submitanswer', {
+        document.getElementById("responseField").innerHTML = fetch('http://localhost:44319/api/puzzleapi/submitanswer/1/1', {
             method: 'POST',
             mode: 'cors',
             headers: { "Content-Type": "application/json" },

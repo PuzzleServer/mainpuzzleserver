@@ -32,6 +32,8 @@ namespace ServerCore.Pages.Submissions
 
         public Puzzle Puzzle { get; set; }
 
+        public string PuzzleAuthor { get; set; }
+
         public Team Team { get; set; }
 
         public string AnswerToken { get; set; }
@@ -339,6 +341,14 @@ namespace ServerCore.Pages.Submissions
                                          }).ToListAsync();
 
                 PuzzlesCausingGlobalLockout = await PuzzleStateHelper.PuzzlesCausingGlobalLockout(_context, Event, Team).ToListAsync();
+            }
+
+            IQueryable<PuzzleUser> currentAuthorsQ = _context.PuzzleAuthors.Where(m => m.Puzzle == Puzzle).Select(m => m.Author);
+            List<PuzzleUser> CurrentAuthors = await currentAuthorsQ.OrderBy(p => p.Name).ToListAsync();
+            PuzzleAuthor = CurrentAuthors[0].Name;
+            for (int i = 1; i < CurrentAuthors.Count; i++) {
+                PuzzleAuthor += ", ";
+                PuzzleAuthor += CurrentAuthors[i].Name;
             }
 
             Submissions = new List<SubmissionBase>(SubmissionViews.Count);
