@@ -4,7 +4,10 @@ window.addEventListener("message", (e) => {
         contents.style.padding = "0px";
         contents.style.margin = "0px";
         contents.style.borderWidth = "0px";
-        contents.parentElement.removeChild(contents.parentElement.firstElementChild);
+        const header = document.querySelector(".header-div");
+        if ((header !== null) && (header !== undefined)) {
+            header.parentElement.removeChild(header);
+        }
         contents.parentElement.style.padding = "0px";
         contents.parentElement.style.margin = "0px";
         const windowSize = { width: document.body.scrollWidth, height: document.body.scrollHeight };

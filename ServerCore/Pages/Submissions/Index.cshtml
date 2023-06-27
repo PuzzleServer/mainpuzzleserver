@@ -127,11 +127,11 @@
     }
     #puzzle-frame {
         width: 100%;
-        height: calc(100vh);
+        height: 100vh;
     }
     #pdf-frame {
         width: 100%;
-        height: calc(100vh);
+        height: 100vh;
     }
 </style>
 
@@ -562,6 +562,9 @@ else
     }
     else if (Model.Puzzle.PuzzleFile != null)
     {
+        // TODO: https://github.com/PuzzleServer/mainpuzzleserver/pull/817
+        // Explicitly check for PDF file type before embedding using this PDF frame
+        // Also check for other file types and embed them appropriately (single html files, images, office docs, etc.)
         <object id="pdf-frame" title="@Model.Puzzle.Name" data="@Model.Puzzle.PuzzleFile.Url.AbsoluteUri" type="application/pdf">
             <embed src="@Model.Puzzle.PuzzleFile.Url.AbsoluteUri" type="application/pdf" />
         </object>
