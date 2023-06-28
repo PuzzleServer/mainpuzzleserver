@@ -40,7 +40,7 @@ namespace ServerCore.Helpers
     /// </summary>
     public class SubmissionView
     {
-        public Submission Submission { get; set; }
+        public SubmissionBase Submission { get; set; }
         public Response Response { get; set; }
         public string SubmitterName { get; set; }
         public bool IsFreeform { get; set; }
@@ -58,20 +58,45 @@ namespace ServerCore.Helpers
         public static async Task<SubmissionResponse> EvaluateSubmission(PuzzleServerContext context, PuzzleUser loggedInUser, Event thisEvent, int puzzleId, string submissionText, bool allowFreeformSharing)
         {
             //Query data needed to process submission
-            Team team = await UserEventHelper.GetTeamForPlayer(context, thisEvent, loggedInUser);
-
             Puzzle puzzle = await context.Puzzles.Where(
                 (p) => p.ID == puzzleId).FirstOrDefaultAsync();
 
-            PuzzleStatePerTeam puzzleState = await (PuzzleStateHelper
+            Team team = null;
+            if (!puzzle.IsForSinglePlayer) {
+                team = await UserEventHelper.GetTeamForPlayer(context, thisEvent, loggedInUser);
+            }
+
+            PuzzleStateBase puzzleState = null;
+            if (!puzzle.IsForSinglePlayer)
+            {
+                puzzleState = await (PuzzleStateHelper
                 .GetFullReadOnlyQuery(
                     context,
                     thisEvent,
                     puzzle,
                     team))
                 .FirstAsync();
+            }
+            else 
+            {
+                puzzleState = await (SinglePlayerPuzzleStateHelper
+                .GetFullReadOnlyQuery(
+                    context,
+                    thisEvent,
+                    puzzle.ID,
+                    loggedInUser.ID))
+                .FirstAsync();
+            }
 
-            List<Puzzle> puzzlesCausingGlobalLockout = await PuzzleStateHelper.PuzzlesCausingGlobalLockout(context, thisEvent, team).ToListAsync();
+            List<Puzzle> puzzlesCausingGlobalLockout = null;
+            if (!puzzle.IsForSinglePlayer)
+            {
+                puzzlesCausingGlobalLockout = await PuzzleStateHelper.PuzzlesCausingGlobalLockout(context, thisEvent, team).ToListAsync();
+            }
+            else 
+            {
+                puzzlesCausingGlobalLockout = await SinglePlayerPuzzleStateHelper.PuzzlesCausingGlobalLockout(context, thisEvent, loggedInUser.ID).ToListAsync();
+            }
 
             // Return early for cases when there's obviously nothing we can do with the submission
             // The submission text is empty
@@ -98,7 +123,7 @@ namespace ServerCore.Helpers
                 return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.Unauthorized };
             }
 
-            // The team is locked out
+            // The user or team is locked out
             if (puzzleState.IsLockedOut || puzzleState.IsEmailOnlyMode)
             {
                 return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.TeamLockedOut };
@@ -110,29 +135,50 @@ namespace ServerCore.Helpers
                 return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.AlreadySolved };
             }
 
-            // The team is under a global lockout
+            // The user or team is under a global lockout
             if (puzzlesCausingGlobalLockout.Count != 0 && !puzzlesCausingGlobalLockout.Contains(puzzle))
             {
                 return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.TeamLockedOut };
             }
 
-            List<SubmissionView> submissionViews = await (from sub in context.Submissions
-                                                          join user in context.PuzzleUsers on sub.Submitter equals user
-                                                          join r in context.Responses on sub.Response equals r into responses
-                                                          from response in responses.DefaultIfEmpty()
-                                                          where sub.Team == team &&
-                                                          sub.Puzzle == puzzle
-                                                          orderby sub.TimeSubmitted
-                                                          select new SubmissionView()
-                                                          {
-                                                              Submission = sub,
-                                                              Response = response,
-                                                              SubmitterName = user.Name,
-                                                              FreeformResponse = sub.FreeformResponse,
-                                                              IsFreeform = puzzle.IsFreeform
-                                                          }).ToListAsync();
+            List<SubmissionView> submissionViews = null;
+            if (!puzzle.IsForSinglePlayer)
+            {
+                submissionViews = await (from sub in context.Submissions
+                                         join user in context.PuzzleUsers on sub.Submitter equals user
+                                         join r in context.Responses on sub.Response equals r into responses
+                                         from response in responses.DefaultIfEmpty()
+                                         where sub.Team == team &&
+                                         sub.Puzzle == puzzle
+                                         orderby sub.TimeSubmitted
+                                         select new SubmissionView()
+                                         {
+                                             Submission = sub,
+                                             Response = response,
+                                             SubmitterName = user.Name,
+                                             FreeformResponse = sub.FreeformResponse,
+                                             IsFreeform = puzzle.IsFreeform
+                                         }).ToListAsync();
+            }
+            else
+            {
+                submissionViews = await (from sub in context.SinglePlayerPuzzleSubmissions
+                                         where sub.Puzzle == puzzle
+                                            && sub.Submitter.ID == loggedInUser.ID
+                                         join r in context.Responses on sub.Response equals r into responses
+                                         from response in responses.DefaultIfEmpty()
+                                         orderby sub.TimeSubmitted
+                                         select new SubmissionView()
+                                         {
+                                             Submission = sub,
+                                             Response = response,
+                                             SubmitterName = loggedInUser.Name,
+                                             FreeformResponse = sub.FreeformResponse,
+                                             IsFreeform = puzzle.IsFreeform
+                                         }).ToListAsync();
+            }
 
-            List<Submission> submissions = new List<Submission>(submissionViews.Count);
+            List<SubmissionBase> submissions = new List<SubmissionBase>(submissionViews.Count);
             foreach (SubmissionView submissionView in submissionViews)
             {
                 submissions.Add(submissionView.Submission);
@@ -149,14 +195,22 @@ namespace ServerCore.Helpers
             }
 
             // Create submission and add it to list
-            Submission submission = new Submission
-            {
-                TimeSubmitted = DateTime.UtcNow,
-                Puzzle = puzzleState.Puzzle,
-                Team = puzzleState.Team,
-                Submitter = loggedInUser,
-                AllowFreeformSharing = allowFreeformSharing
-            };
+            SubmissionBase submission = (!puzzle.IsForSinglePlayer)
+                ? new Submission
+                {
+                    TimeSubmitted = DateTime.UtcNow,
+                    Puzzle = puzzleState.Puzzle,
+                    Team = team,
+                    Submitter = loggedInUser,
+                    AllowFreeformSharing = allowFreeformSharing
+                }
+                : new SinglePlayerPuzzleSubmission
+                {
+                    TimeSubmitted = DateTime.UtcNow,
+                    Puzzle = puzzleState.Puzzle,
+                    Submitter = loggedInUser,
+                    AllowFreeformSharing = allowFreeformSharing
+                };
 
             string submissionTextToCheck = Response.FormatSubmission(submissionText);
 
@@ -179,11 +233,22 @@ namespace ServerCore.Helpers
             // Update puzzle state if submission was correct
             if (submission.Response != null && submission.Response.IsSolution)
             {
-                await PuzzleStateHelper.SetSolveStateAsync(context,
-                    thisEvent,
-                    submission.Puzzle,
-                    submission.Team,
-                    submission.TimeSubmitted);
+                if (!puzzle.IsForSinglePlayer)
+                {
+                    await PuzzleStateHelper.SetSolveStateAsync(context,
+                        thisEvent,
+                        submission.Puzzle,
+                        team,
+                        submission.TimeSubmitted);
+                }
+                else
+                {
+                    await SinglePlayerPuzzleStateHelper.SetSolveStateAsync(context,
+                        thisEvent,
+                        submission.Puzzle.ID,
+                        loggedInUser.ID,
+                        submission.TimeSubmitted);
+                }
             }
             else if (!puzzle.IsFreeform && submission.Response == null && thisEvent.IsAnswerSubmissionActive)
             {
@@ -193,16 +258,27 @@ namespace ServerCore.Helpers
                         submissions,
                         puzzleState))
                 {
-                    await PuzzleStateHelper.SetEmailOnlyModeAsync(context,
-                        thisEvent,
-                        submission.Puzzle,
-                        submission.Team,
-                        true);
+                    if (!puzzle.IsForSinglePlayer)
+                    {
+                        await PuzzleStateHelper.SetEmailOnlyModeAsync(context,
+                            thisEvent,
+                            submission.Puzzle,
+                            team,
+                            true);
+                    }
+                    else
+                    {
+                        await SinglePlayerPuzzleStateHelper.SetEmailOnlyModeAsync(context,
+                            thisEvent,
+                            submission.Puzzle.ID,
+                            submission.Submitter.ID,
+                            true);
+                    }
 
                     var authors = await context.PuzzleAuthors.Where((pa) => pa.Puzzle == submission.Puzzle).Select((pa) => pa.Author.Email).ToListAsync();
-
+                    string affectedEntity = (!puzzle.IsForSinglePlayer) ? $"Team {team.Name}" : $"User {loggedInUser.Name ?? loggedInUser.Email}";
                     MailHelper.Singleton.SendPlaintextBcc(authors,
-                        $"{thisEvent.Name}: Team {submission.Team.Name} is in email mode for {submission.Puzzle.Name}",
+                        $"{thisEvent.Name}: {affectedEntity} is in email mode for {submission.Puzzle.Name}",
                         "");
                 }
                 else
@@ -215,16 +291,35 @@ namespace ServerCore.Helpers
 
                     if (lockoutExpiryTime != null)
                     {
-                        await PuzzleStateHelper.SetLockoutExpiryTimeAsync(context,
-                            thisEvent,
-                            submission.Puzzle,
-                            submission.Team,
-                            lockoutExpiryTime);
+                        if (!puzzle.IsForSinglePlayer)
+                        {
+                            await PuzzleStateHelper.SetLockoutExpiryTimeAsync(context,
+                                thisEvent,
+                                submission.Puzzle,
+                                team,
+                                lockoutExpiryTime);
+                        }
+                        else
+                        {
+                            await SinglePlayerPuzzleStateHelper.SetLockoutExpiryTimeAsync(context,
+                                thisEvent,
+                                submission.Puzzle.ID,
+                                loggedInUser.ID,
+                                lockoutExpiryTime);
+                        }
                     }
                 }
             }
-
-            context.Submissions.Add(submission);
+            Submission teamSubmission = submission as Submission;
+            SinglePlayerPuzzleSubmission playerSubmission = submission as SinglePlayerPuzzleSubmission;
+            if (teamSubmission != null)
+            {
+                context.Submissions.Add(teamSubmission);
+            }
+            else if (playerSubmission != null) 
+            {
+                context.SinglePlayerPuzzleSubmissions.Add(playerSubmission);
+            }
             await context.SaveChangesAsync();
 
             // Send back responses for cases where the database has been updated
@@ -321,8 +416,8 @@ namespace ServerCore.Helpers
 
         private static bool IsPuzzleSubmissionLimitReached(
             Event ev,
-            IList<Submission> submissions,
-            PuzzleStatePerTeam puzzleState)
+            IList<SubmissionBase> submissions,
+            PuzzleStateBase puzzleState)
         {
             uint wrongSubmissions = 0;
 
