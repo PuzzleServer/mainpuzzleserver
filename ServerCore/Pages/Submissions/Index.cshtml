@@ -21,7 +21,7 @@
     mailtoUrl.Append("?");
 
     // CC the team's email address in case the account sending the e-mail is a personal one that's not associated with the event
-    if (Model.Team?.PrimaryContactEmail != null)
+    if (!Model.Puzzle.IsForSinglePlayer && Model.Team?.PrimaryContactEmail != null)
     {
         mailtoUrl.Append("cc=");
         mailtoUrl.Append(Uri.EscapeDataString(Model.Team.PrimaryContactEmail));
@@ -32,7 +32,7 @@
     mailtoUrl.Append("subject=");
     mailtoUrl.Append(Uri.EscapeDataString("[" + Model.Puzzle.PlaintextName + "]"));
 
-    if (Model.Team != null)
+    if (!Model.Puzzle.IsForSinglePlayer && Model.Team != null)
     {
         // subject: Make this be from this team
         mailtoUrl.Append(Uri.EscapeDataString(" [" + Model.Team.Name + "]"));
