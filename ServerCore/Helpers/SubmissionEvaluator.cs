@@ -112,7 +112,7 @@ namespace ServerCore.Helpers
             }
 
             // The user or team isn't known
-            if (loggedInUser == null || team == null)
+            if (loggedInUser == null || (!puzzle.IsForSinglePlayer && team == null))
             {
                 return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.Unauthorized };
             }
@@ -421,7 +421,7 @@ namespace ServerCore.Helpers
         {
             uint wrongSubmissions = 0;
 
-            foreach (Submission s in submissions)
+            foreach (SubmissionBase s in submissions)
             {
                 if (s.Response == null)
                 {
