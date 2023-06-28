@@ -436,6 +436,15 @@ else
             {
                 <div><b>Have feedback?</b> <a asp-Page="/Puzzles/SubmitFeedback" asp-route-puzzleid="@Model.Puzzle.ID" target="_blank">Click this link</a> to open the feedback form.</div>
             }
+
+            @if (Model.Puzzle.CustomURL != null)
+            {
+                <div><b>Want to print?</b> <a href="@PuzzleHelper.GetFormattedUrl(Model.Puzzle, Model.Event.ID)" target="_blank">Click this link</a> for a printable version.</div>
+            }
+            else if (Model.Puzzle.PuzzleFile != null)
+            {
+                <div><b>Want to print?</b> <a href="@Model.Puzzle.PuzzleFile.Url.AbsoluteUri" target="_blank">Click this link</a> for a printable version.</div>
+            }
         </div>
     </div>
     <br />
@@ -568,7 +577,6 @@ else
     @if (Model.Puzzle.CustomURL != null)
     {
         <iframe id="puzzle-frame" title="@Model.Puzzle.Name" sandbox="allow-same-origin allow-scripts" src="@PuzzleHelper.GetFormattedUrl(Model.Puzzle, Model.Event.ID)"></iframe>
-        <div>Want a printable version? <a href="@PuzzleHelper.GetFormattedUrl(Model.Puzzle, Model.Event.ID)" target="blank">Click here</a> to open it!</div>
     }
     else if (Model.Puzzle.PuzzleFile != null)
     {
