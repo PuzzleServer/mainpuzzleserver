@@ -61,6 +61,36 @@
         mailtoUrl.Append("&body=");
         mailtoUrl.Append(Uri.EscapeDataString("The more details you add here, the more helpful the responses you'll get will be! 😇" + Environment.NewLine + Environment.NewLine));
     }
+
+    string puzzleFilePath = "";
+    int embedType = 0; // Nothing
+    if (Model.Puzzle.CustomURL != null)
+    {
+        puzzleFilePath = @PuzzleHelper.GetFormattedUrl(Model.Puzzle, Model.Event.ID);
+    }
+    else if (Model.Puzzle.PuzzleFile != null)
+    {
+        puzzleFilePath = @Model.Puzzle.PuzzleFile.Url.AbsoluteUri;
+    }
+    if (puzzleFilePath.Length > 0)
+    {
+        if (puzzleFilePath.EndsWith(".pdf"))
+        {
+            embedType = 1;
+        }
+        else if ((puzzleFilePath.EndsWith(".htm")) || (puzzleFilePath.EndsWith(".html")))
+        {
+            embedType = 3;
+        }
+        else if ((puzzleFilePath.EndsWith(".jpg")) || (puzzleFilePath.EndsWith(".jpeg")) || (puzzleFilePath.EndsWith(".png")) || (puzzleFilePath.EndsWith(".bmp")) || (puzzleFilePath.EndsWith(".gif")))
+        {
+            embedType = 4;
+        }
+        else // Office files, etc.
+        {
+            embedType = 2;
+        }
+    }
 }
 
 <style>
@@ -69,7 +99,7 @@
         align-self: flex-end;
     }
     .flexwrapper img {
-        margin-top: 15px;
+        margin-top: 20px;
     }
     .inlinewrapper {
         display: inline;
@@ -118,10 +148,7 @@
     .panelcontents {
         width: inherit;
         display: none;
-        position: fixed;
-        top: 23px;
-        left: 0px;
-        z-index: 1060;
+        margin-left: -6px;
         border: 1px solid;
         border-color: rgb(51, 51, 51);
         background-color: rgba(255,255,255,1);
@@ -129,8 +156,7 @@
     .panelitem {
         padding: 3px;
         background-color: rgba(255,255,255,1);
-        z-index: 1090;
-        overflow: overlay;
+        overflow: auto;
     }
     iframe {
         border: 0px solid black;
@@ -142,6 +168,9 @@
     #pdf-frame {
         width: 100%;
         height: 100vh;
+    }
+    #img-frame {
+        width: 100%;
     }
 </style>
 
@@ -395,10 +424,10 @@ else
 {
     <div class="twocolumn">
         <div class="flexwrapper">
-            <div><h2>@RawHtmlHelper.Display(Model.Puzzle.Name, Model.Event.ID, Html)</h2></div>
+            <div><h2><b>@RawHtmlHelper.Display(Model.Puzzle.Name, Model.Event.ID, Html)</b></h2></div>&nbsp;&nbsp;
             @if (Model.Puzzle.HasDataConfirmation)
             {
-                <img src="~/images/DataConfirmationIcon.png" width="20" height="20" style="margin-bottom:3px" title="Reminder: This puzzle supports data confirmation" />
+                <img src="~/images/DataConfirmationIcon.png" width="30" height="30" style="margin-bottom:3px" title="Reminder: This puzzle supports data confirmation" />
             }
         </div>
         <div class="inlinewrapper">
@@ -437,13 +466,13 @@ else
                 <div><b>Have feedback?</b> <a asp-Page="/Puzzles/SubmitFeedback" asp-route-puzzleid="@Model.Puzzle.ID" target="_blank">Click this link</a> to open the feedback form.</div>
             }
 
-            @if (Model.Puzzle.CustomURL != null)
+            @if (embedType > 2) // HTML files or images
             {
-                <div><b>Want to print?</b> <a href="@PuzzleHelper.GetFormattedUrl(Model.Puzzle, Model.Event.ID)" target="_blank">Click this link</a> for a printable version.</div>
+                <div><b>Want to print?</b> <a href="@puzzleFilePath" target="_blank">Click this link</a> for a printable version.</div>
             }
-            else if (Model.Puzzle.PuzzleFile != null)
+            else if (embedType == 1) // PDFs
             {
-                <div><b>Want to print?</b> <a href="@Model.Puzzle.PuzzleFile.Url.AbsoluteUri" target="_blank">Click this link</a> for a printable version.</div>
+                <div><b>Want to print?</b> <a href="@puzzleFilePath" download>Click this link</a> to download the file.</div>
             }
         </div>
     </div>
@@ -522,7 +551,6 @@ else
             }
         }
     </div>
-    <br />
     <div class="centerwrapper">
         <div class="inlineblockwrapper">
             <div id="submissionHistory" style="display: @((Model.SubmissionViews.Count == 0) ? "none" : "block")" class="hideablepanel">
@@ -574,19 +602,23 @@ else
     </div>
     <br />
 
-    @if (Model.Puzzle.CustomURL != null)
+    @switch (embedType)
     {
-        <iframe id="puzzle-frame" title="@Model.Puzzle.Name" sandbox="allow-same-origin allow-scripts" src="@PuzzleHelper.GetFormattedUrl(Model.Puzzle, Model.Event.ID)"></iframe>
-    }
-    else if (Model.Puzzle.PuzzleFile != null)
-    {
-        // TODO: https://github.com/PuzzleServer/mainpuzzleserver/pull/817
-        // Explicitly check for PDF file type before embedding using this PDF frame
-        // Also check for other file types and embed them appropriately (single html files, images, office docs, etc.)
-        <object id="pdf-frame" title="@Model.Puzzle.Name" data="@Model.Puzzle.PuzzleFile.Url.AbsoluteUri" type="application/pdf">
-            <embed src="@Model.Puzzle.PuzzleFile.Url.AbsoluteUri" type="application/pdf" />
-        </object>
-        <div>Trouble viewing the PDF? <a download href="@Model.Puzzle.PuzzleFile.Url.AbsoluteUri">Click here</a> to download it!</div>
+        case 1: // PDF
+            <object id="pdf-frame" title="@Model.Puzzle.Name" data="@puzzleFilePath" type="application/pdf">
+                <embed src="@puzzleFilePath" type="application/pdf" />
+            </object>
+            break;
+        case 2: // Files that can't be embedded
+            <div><b>This puzzle can't be displayed here.</b> <a href="@puzzleFilePath" download>Click this link</a> to download the file.</div>
+            break;
+        case 3: // HTML
+            puzzleFilePath += "?embed=true";
+            <iframe id="puzzle-frame" title="@Model.Puzzle.Name" sandbox="allow-same-origin allow-scripts allow-popups" src="@puzzleFilePath"></iframe>
+            break;
+        case 4: // Images
+            <img id="img-frame" src="@puzzleFilePath" alt="An image containing a puzzle" />
+            break;
     }
 
     @section Scripts {
@@ -653,7 +685,7 @@ else
                         method: "POST", mode: "cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(submission), credentials: "include"});
                     const responseData = await response.json();
                     
-                    // When the response data is back, add it to the page and list of responses
+                    // When the response data is back, add it to the page
                     // Also clear the previous response from the page
                     // Response Code enum is in Helpers/SubmissionEvaluator
                     const messageArea = document.querySelector("#initialMessage");
@@ -665,37 +697,39 @@ else
                             updateVal += ((Date.now() > Date.parse(dateString).valueOf()) ? `<div class="alert alert-warning" role="alert"><span>You solved this after the event ended and it did not count toward your ranking.</span></div>` : ``);
                             break;
                         case 1: // Incorrect
-                            updateVal = `<div class="panelitem">` + cleanedText + ": " + `@IndexModel.IncorrectResponseText</div>`;
+                            updateVal = `<div class="alert alert-danger" role="alert">` + cleanedText + ": " + `@IndexModel.IncorrectResponseText</div>`;
                             break;
                         case 2: // Freeform
-                            updateVal = `<div class="panelitem">` + cleanedText + ": " + responseData.freeformResponse + `</div>`;
+                            updateVal = `<div class="alert alert-warning" role="alert">` + cleanedText + ": " + responseData.freeformResponse + `</div>`;
                             break;
                         case 3: // Partial
-                            updateVal = `<div class="panelitem">` + cleanedText + ": " + responseData.completeResponse + `</div>`;
+                            updateVal = `<div class="alert alert-warning" role="alert">` + cleanedText + ": " + responseData.completeResponse + `</div>`;
                             break;
                         case 4: // Unauthorized
-                            updateVal = `<div class="panelitem">You don't appear to have access to this puzzle, so your answer has not been recorded.</div>`;
+                            updateVal = `<div class="alert alert-danger" role="alert">You don't appear to have access to this puzzle, so your answer has not been recorded.</div>`;
                             break;
                         case 5: // Puzzle not found
-                            updateVal = `<div class="panelitem">This puzzle can't be found in the system, so your answer has not been recorded.</div>`;
+                            updateVal = `<div class="alert alert-danger" role="alert">This puzzle can't be found in the system, so your answer has not been recorded.</div>`;
                             break;
                         case 6: // Puzzle Locked
                             updateVal = `<div class="alert alert-danger" role="alert"><h4>Answer Submission Locked</h4><span>This puzzle is currently locked! Please <a href="@mailtoUrl">use this link to email us if you think this is a mistake</a>.</span></div>`;
                             break;
                         case 7: // Empty
-                            updateVal = `<div class="panelitem">No valid characters were found in this submission. Please try something else.</div>`;
+                            updateVal = `<div class="alert alert-danger" role="alert">No valid characters were found in this submission. Please try something else.</div>`;
                             break;
                         case 8: // Team locked out
                             updateVal = `<div class="alert alert-danger" role="alert"><h4>Answer Submission Locked</h4><span>You're locked out. Please wait a while before attempting another submission.</span></div>`;
                             break;
                         case 9: // Already solved
-                            updateVal = `<div class="panelitem">This puzzle has already been solved.</div>`;
+                            updateVal = `<div class="alert alert-warning" role="alert">This puzzle has already been solved.</div>`;
                             break;
                         case 10: // Duplicate submission
-                            updateVal = `<div class="panelitem">You've already submitted ` + cleanedText + `.</div>`;
+                            updateVal = `<div class="alert alert-warning" role="alert">You've already submitted ` + cleanedText + `.</div>`;
                             break;
                     }
                     messageArea.innerHTML = updateVal;
+
+                    // Also add the submission to the list of submissions
                     if (responseData.responseCode < 4) { // Correct, Incorrect, Freeform, Partial
                         const wrapper = document.createElement("div");
                         wrapper.classList.add("gridwrapper");
@@ -725,6 +759,15 @@ else
                 }
                 submit.addEventListener("click", submitClickHandler);
 
+                // Make hitting enter in the answer box trigger a submission
+                const submitBox = document.querySelector("#submitBox");
+                submitBox.addEventListener("keydown", (e) => {
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        document.querySelector("#submitButton").click();
+                    }
+                });
+
                 // Resize iframe so the frame has no scrollbars
                 // By the time the window has loaded, the iframe contents should have as well, thus no iframe load listener
                 // Note that when the puzzle receives the message, it should remove any extraneous wrapping before reporting its size
@@ -736,13 +779,13 @@ else
 
             // When the iframe response comes, use it to set the iframe's size
             // Removing the iframe's id removes the hard-coded css size
-            // The extra 20px added to the size undoes the widths of the scrollbars themselves
+            // The extra 25px added to the size undoes the widths of the scrollbars themselves
             window.addEventListener("message", (e) => {
                 if ((e.data.width > 0) && (e.data.height > 0)) {
                     const iframe = document.querySelector("iframe");
                     iframe.id = ""; 
-                    iframe.width = e.data.width + 20;
-                    iframe.height = e.data.height + 20;
+                    iframe.width = e.data.width + 25;
+                    iframe.height = e.data.height + 25;
                 }
             });
         </script>
