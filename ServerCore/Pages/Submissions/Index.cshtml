@@ -509,7 +509,7 @@ else
     <br />
     <div class="centerwrapper">
         <div class="inlineblockwrapper">
-            <div id="submissionHistory" class="hideablepanel">
+            <div id="submissionHistory" style="display: none" class="hideablepanel">
                 Click here to view previous submissions:<span class="caret"></span>
                 <div class="panelcontents" style="display: none">
                     <div class="gridwrapper">
@@ -704,6 +704,7 @@ else
                         wrapper.appendChild(resp);
                         const answerPanel = document.querySelector("#submissionHistory div.panelcontents");
                         answerPanel.firstElementChild.after(wrapper);
+                        document.getElementById("submissionHistory").style.display = "block";
                     }
                     rawText.value = "";
                 }

@@ -345,9 +345,11 @@ namespace ServerCore.Pages.Submissions
 
             IQueryable<PuzzleUser> currentAuthorsQ = _context.PuzzleAuthors.Where(m => m.Puzzle == Puzzle).Select(m => m.Author);
             List<PuzzleUser> CurrentAuthors = await currentAuthorsQ.OrderBy(p => p.Name).ToListAsync();
-            PuzzleAuthor = CurrentAuthors[0].Name;
-            for (int i = 1; i < CurrentAuthors.Count; i++) {
-                PuzzleAuthor += ", ";
+            for (int i = 0; i < CurrentAuthors.Count; i++) {
+                if (i > 0)
+                {
+                    PuzzleAuthor += ", ";
+                }
                 PuzzleAuthor += CurrentAuthors[i].Name;
             }
 
