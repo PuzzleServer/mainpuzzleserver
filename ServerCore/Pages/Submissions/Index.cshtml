@@ -4,7 +4,14 @@
 @{
     @using Helpers;
 
-    ViewData["Title"] = "Create submissions";
+    if (Model.Event.EmbedPuzzles)
+    {
+            ViewData["Title"] = Model.Puzzle.Name;
+    }
+    else
+    {
+            ViewData["Title"] = "Create submissions";
+    }
     ViewData["AdminRoute"] = "../Submissions/AuthorIndex";
     ViewData["AuthorRoute"] = "../Submissions/AuthorIndex";
     // TODO: Needs to handle implicit teams - ViewData["PlayRoute"] = "../Submissions/Index";
@@ -634,7 +641,7 @@ else
                     const rawText = document.querySelector("#submitBox").value;
                     const cleanedText = rawText.normalize("NFKD").replace(/[^a-zA-Z\d]/gi, "").toUpperCase();
                     let submission = {SubmissionText: cleanedText, AllowFreeformSharing: @Model.Puzzle.IsFreeform.ToString().ToLower()};
-                    const response = await fetch("https://puzzlehunt.azurewebsites.net/api/puzzleapi/submitanswer/@Model.Event.ID/@Model.Puzzle.ID", {
+                    const response = await fetch("/api/puzzleapi/submitanswer/@Model.Event.ID/@Model.Puzzle.ID", {
                         method: "POST", mode: "cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(submission), credentials: "include"});
                     const responseData = await response.json();
                     
@@ -650,13 +657,13 @@ else
                             updateVal += ((Date.now() > Date.parse(dateString).valueOf()) ? `<div class="alert alert-warning" role="alert"><span>You solved this after the event ended and it did not count toward your ranking.</span></div>` : ``);
                             break;
                         case 1: // Incorrect
-                            updateVal = `<div class="panelitem">@IndexModel.IncorrectResponseText</div>`;
+                            updateVal = `<div class="panelitem">` + cleanedText + ": " + `@IndexModel.IncorrectResponseText</div>`;
                             break;
                         case 2: // Freeform
-                            updateVal = `<div class="panelitem">` + responseData.freeformResponse + `</div>`;
+                            updateVal = `<div class="panelitem">` + cleanedText + ": " + responseData.freeformResponse + `</div>`;
                             break;
                         case 3: // Partial
-                            updateVal = `<div class="panelitem">` + responseData.completeResponse + `</div>`;
+                            updateVal = `<div class="panelitem">` + cleanedText + ": " + responseData.completeResponse + `</div>`;
                             break;
                         case 4: // Unauthorized
                             updateVal = `<div class="panelitem">You don't appear to have access to this puzzle, so your answer has not been recorded.</div>`;
@@ -677,7 +684,7 @@ else
                             updateVal = `<div class="panelitem">This puzzle has already been solved.</div>`;
                             break;
                         case 10: // Duplicate submission
-                            updateVal = `<div class="panelitem">You've already submitted that answer.</div>`;
+                            updateVal = `<div class="panelitem">You've already submitted ` + cleanedText + `.</div>`;
                             break;
                     }
                     messageArea.innerHTML = updateVal;
