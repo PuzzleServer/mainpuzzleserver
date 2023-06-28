@@ -421,7 +421,7 @@ namespace ServerCore.Helpers
         {
             uint wrongSubmissions = 0;
 
-            foreach (Submission s in submissions)
+            foreach (SubmissionBase s in submissions)
             {
                 if (s.Response == null)
                 {
