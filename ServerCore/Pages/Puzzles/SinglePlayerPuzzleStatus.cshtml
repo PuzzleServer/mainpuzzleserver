@@ -65,20 +65,20 @@ else
         <tr>
             <td></td>
             <td>
-                <a asp-page-handler="UnlockState" asp-route-sort="@Model.Sort" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-value="true" onclick="return confirm('Are you sure you want to mark ALL USERS as unlocked?')">Unlock All</a>
+                <a asp-page-handler="UnlockState" asp-route-sort="@Model.Sort" asp-route-playerId="@Model.LoggedInUser.ID" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-value="false" onclick="return confirm('Are you sure you want to lock the puzzle for yourself?')"> Lock for me</a>
             </td>
-            <td>
-                <a asp-page-handler="SolveState" asp-route-sort="@Model.Sort" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-value="true" onclick="return confirm('Are you sure you want to mark ALL USERS as solved?')">Solve All</a>
-            </td>
+            <td></td>
             <td></td>
             <td></td>
         </tr>
         <tr>
             <td></td>
             <td>
-                <a asp-page-handler="UnlockState" asp-route-sort="@Model.Sort" asp-route-playerId="@Model.LoggedInUser.ID" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-value="false" onclick="return confirm('Are you sure you want to lock the puzzle for yourself?')"> Lock for me</a>
+                <a asp-page-handler="UnlockState" asp-route-sort="@Model.Sort" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-value="true" onclick="return confirm('Are you sure you want to mark ALL USERS as unlocked?')">Unlock All</a>
             </td>
-            <td></td>
+            <td>
+                <a asp-page-handler="SolveState" asp-route-sort="@Model.Sort" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-value="true" onclick="return confirm('Are you sure you want to mark ALL USERS as solved?')">Solve All</a>
+            </td>
             <td></td>
             <td></td>
         </tr>
