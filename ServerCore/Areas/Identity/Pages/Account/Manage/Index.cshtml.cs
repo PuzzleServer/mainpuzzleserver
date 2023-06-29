@@ -71,11 +71,12 @@ namespace ServerCore.Areas.Identity.Pages.Account.Manage
 
             var thisPuzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(_context, User, _userManager);
 
-            // enforce access rights, do not let these change!
+            // enforce hidden values, do not let these change!
             Input.ID = thisPuzzleUser.ID;
             Input.IsGlobalAdmin = thisPuzzleUser.IsGlobalAdmin;
             Input.IdentityUserId = thisPuzzleUser.IdentityUserId;
             Input.MayBeAdminOrAuthor = thisPuzzleUser.MayBeAdminOrAuthor;
+            Input.TShirtSize= thisPuzzleUser.TShirtSize;
 
             _context.Entry(thisPuzzleUser).State = EntityState.Detached;
             _context.Attach(Input).State = EntityState.Modified;
