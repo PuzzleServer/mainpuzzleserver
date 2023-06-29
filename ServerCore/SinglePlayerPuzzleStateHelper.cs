@@ -376,15 +376,27 @@ namespace ServerCore
 
             IQueryable<SinglePlayerPuzzleStatePerPlayer> statesQ = SinglePlayerPuzzleStateHelper.GetFullReadWriteQuery(context, eventObj, puzzleId, playerId, author);
             List<SinglePlayerPuzzleStatePerPlayer> states = await statesQ.ToListAsync();
-
-            for (int i = 0; i < states.Count; i++)
+            if (playerId.HasValue && puzzleId.HasValue && states.Count < 1)
             {
-                // Only allow unlock time to be modified if we were relocking it (setting it to null) or unlocking it for the first time 
-                if (value == null || states[i].UnlockedTime == null)
+                context.SinglePlayerPuzzleStatePerPlayer.Add(new SinglePlayerPuzzleStatePerPlayer
                 {
-                    states[i].UnlockedTime = value;
+                    PuzzleID = puzzleId.Value,
+                    PlayerID = playerId.Value,
+                    UnlockedTime = value
+                });
+            }
+            else
+            {
+                for (int i = 0; i < states.Count; i++)
+                {
+                    // Only allow unlock time to be modified if we were relocking it (setting it to null) or unlocking it for the first time 
+                    if (value == null || states[i].UnlockedTime == null)
+                    {
+                        states[i].UnlockedTime = value;
+                    }
                 }
             }
+
             await context.SaveChangesAsync();
         }
     }
