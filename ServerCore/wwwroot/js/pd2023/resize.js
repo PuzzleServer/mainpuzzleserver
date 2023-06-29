@@ -19,5 +19,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if ((header !== null) && (header !== undefined)) {
             header.parentElement.removeChild(header);
         }
+        const dc = document.querySelector(".has-dc");
+        if ((dc !== null) && (dc !== undefined)) {
+            dc.parentElement.removeChild(dc);
+        }
     }
 });
