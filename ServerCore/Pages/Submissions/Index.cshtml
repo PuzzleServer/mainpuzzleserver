@@ -86,9 +86,13 @@
         {
             embedType = 4;
         }
-        else // Office files, etc.
+        else if (puzzleFilePath.EndsWith(".doc") || puzzleFilePath.EndsWith(".docx") || puzzleFilePath.EndsWith(".xls") || puzzleFilePath.EndsWith(".xlsx") || puzzleFilePath.EndsWith(".ppt") || puzzleFilePath.EndsWith(".pptx") || puzzleFilePath.EndsWith(".pub")) // Office files, etc.
         {
             embedType = 2;
+        }
+        else
+        {
+            embedType = 3; // probably a web endpoint of some kind, e.g. a piece-driven meta or a remote site
         }
     }
 }
