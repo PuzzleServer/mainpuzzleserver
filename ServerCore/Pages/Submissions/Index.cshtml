@@ -72,24 +72,37 @@
     {
         puzzleFilePath = @Model.Puzzle.PuzzleFile.Url.AbsoluteUri;
     }
+
     if (puzzleFilePath.Length > 0)
     {
-        if (puzzleFilePath.ToLowerInvariant().EndsWith(".pdf"))
+        if (!puzzleFilePath.ToLowerInvariant().StartsWith("https://puzzlehunt.azurewebsites.net"))
         {
-            embedType = 1;
-        }
-        else if ((puzzleFilePath.ToLowerInvariant().EndsWith(".htm")) || (puzzleFilePath.ToLowerInvariant().EndsWith(".html")) || (puzzleFilePath.ToLowerInvariant().Contains("api/sync/client")))
-        {
+            // If you're linking out to an external site, we assume this will be to an HTML file that can be embedded in an iframe
+            // If this isn't true, this code will need to be updated
             embedType = 3;
         }
-        else if ((puzzleFilePath.ToLowerInvariant().EndsWith(".jpg")) || (puzzleFilePath.ToLowerInvariant().EndsWith(".jpeg")) || (puzzleFilePath.ToLowerInvariant().EndsWith(".png")) || (puzzleFilePath.ToLowerInvariant().EndsWith(".bmp")) || (puzzleFilePath.ToLowerInvariant().EndsWith(".gif")) || (puzzleFilePath.ToLowerInvariant().EndsWith(".svg")))
+        else
         {
-            embedType = 4;
+            if (puzzleFilePath.ToLowerInvariant().EndsWith(".pdf"))
+            {
+                embedType = 1;
+            }
+            else if ((puzzleFilePath.ToLowerInvariant().EndsWith(".htm")) || (puzzleFilePath.ToLowerInvariant().EndsWith(".html")))
+            {
+                embedType = 3;
+            }
+            else if ((puzzleFilePath.ToLowerInvariant().EndsWith(".jpg")) || (puzzleFilePath.ToLowerInvariant().EndsWith(".jpeg")) || (puzzleFilePath.ToLowerInvariant().EndsWith(".png")) || (puzzleFilePath.ToLowerInvariant().EndsWith(".bmp")) || (puzzleFilePath.ToLowerInvariant().EndsWith(".gif")) || (puzzleFilePath.ToLowerInvariant().EndsWith(".svg")))
+            {
+                embedType = 4;
+            }
+            else
+            {
+                // If the file isn't of a known file extension, we assume the URL is to an HTML file that can be embedded in an iframe
+                // If this isn't true, this code will need to be updated
+                embedType = 3;
+            }
         }
-        else // Office files, etc.
-        {
-            embedType = 2;
-        }
+        
     }
 }
 
@@ -609,7 +622,7 @@ else
                 <embed src="@puzzleFilePath" type="application/pdf" />
             </object>
             break;
-        case 2: // Files that can't be embedded
+        case 2: // Files that can't be embedded (no logic will currently trigger this; if you want to support this, add the file type above)
             <div><b>This puzzle can't be displayed here.</b> <a href="@puzzleFilePath" download>Click this link</a> to download the file.</div>
             break;
         case 3: // HTML
