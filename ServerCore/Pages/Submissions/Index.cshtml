@@ -72,23 +72,32 @@
     {
         puzzleFilePath = @Model.Puzzle.PuzzleFile.Url.AbsoluteUri;
     }
+
     if (puzzleFilePath.Length > 0)
     {
-        if (puzzleFilePath.EndsWith(".pdf"))
+        string lowerPath = puzzleFilePath.ToLowerInvariant();
+        if (lowerPath.EndsWith(".pdf"))
         {
             embedType = 1;
         }
-        else if ((puzzleFilePath.EndsWith(".htm")) || (puzzleFilePath.EndsWith(".html")))
+        else if ((lowerPath.EndsWith(".doc")) || (lowerPath.EndsWith(".docx")) || (lowerPath.EndsWith(".xls")) || (lowerPath.EndsWith(".xlsx")) || (lowerPath.EndsWith(".ppt")) || (lowerPath.EndsWith(".pptx")) || (lowerPath.EndsWith(".pub")))
+        {
+            embedType = 2;
+        }
+        else if ((lowerPath.EndsWith(".htm")) || (lowerPath.EndsWith(".html")))
         {
             embedType = 3;
         }
-        else if ((puzzleFilePath.EndsWith(".jpg")) || (puzzleFilePath.EndsWith(".jpeg")) || (puzzleFilePath.EndsWith(".png")) || (puzzleFilePath.EndsWith(".bmp")) || (puzzleFilePath.EndsWith(".gif")))
+        else if ((lowerPath.EndsWith(".jpg")) || (lowerPath.EndsWith(".jpeg")) || (lowerPath.EndsWith(".png")) || (lowerPath.EndsWith(".bmp")) || (lowerPath.EndsWith(".gif")) || (lowerPath.EndsWith(".svg")))
         {
             embedType = 4;
         }
-        else // Office files, etc.
+        else
         {
-            embedType = 2;
+            // If the file isn't of a known file extension (or the URL has no file extension), we assume the URL is to an HTML page that can be embedded in an iframe
+            // Ideally this file should be living on our website or its backing storage server, but in theory any embeddable webpage from any source can be shown
+            // If this is not the case and the contents of the URL can't be embedded in an iframe, this code will need to be updated
+            embedType = 3;
         }
     }
 }
@@ -613,7 +622,15 @@ else
             <div><b>This puzzle can't be displayed here.</b> <a href="@puzzleFilePath" download>Click this link</a> to download the file.</div>
             break;
         case 3: // HTML
-            puzzleFilePath += "?embed=true";
+            if (puzzleFilePath.Contains('?'))
+            {
+                puzzleFilePath += "&";
+            }
+            else
+            {
+                puzzleFilePath += "?";
+            }
+            puzzleFilePath += "embed=true";
             <iframe id="puzzle-frame" title="@Model.Puzzle.Name" sandbox="allow-same-origin allow-scripts allow-popups" src="@puzzleFilePath"></iframe>
             break;
         case 4: // Images
