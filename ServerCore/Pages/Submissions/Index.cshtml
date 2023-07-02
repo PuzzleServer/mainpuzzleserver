@@ -613,10 +613,15 @@ else
             <div><b>This puzzle can't be displayed here.</b> <a href="@puzzleFilePath" download>Click this link</a> to download the file.</div>
             break;
         case 3: // HTML
-            if ((puzzleFilePath.ToLowerInvariant().EndsWith(".htm")) || (puzzleFilePath.ToLowerInvariant().EndsWith(".html")))
+            if (puzzleFilePath.Contains('?'))
             {
-                puzzleFilePath += "?embed=true";
+                puzzleFilePath += "&";
             }
+            else
+            {
+                puzzleFilePath += "?";
+            }
+            puzzleFilePath += "embed=true";
             <iframe id="puzzle-frame" title="@Model.Puzzle.Name" sandbox="allow-same-origin allow-scripts allow-popups" src="@puzzleFilePath"></iframe>
             break;
         case 4: // Images
