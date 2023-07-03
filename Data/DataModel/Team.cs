@@ -26,11 +26,6 @@ namespace ServerCore.DataModel
         public string Name { get; set; }
 
         /// <summary>
-        /// Cross reference for pre-reserved rooms (PD only)
-        /// </summary>
-        public int? RoomID { get; set; }
-
-        /// <summary>
         /// String formatted rooms for events that don't pre-reserve rooms
         /// </summary>
         public string CustomRoom { get; set; }
