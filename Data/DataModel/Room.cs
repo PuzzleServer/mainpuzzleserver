@@ -18,7 +18,6 @@ namespace ServerCore.DataModel
         /// <summary>
         /// The ID for the event the room is a part of
         /// </summary>
-        [ForeignKey("Event.ID")]
         [Required]
         public int EventID { get; set; }
 
@@ -37,12 +36,16 @@ namespace ServerCore.DataModel
         /// The room number (or building + room if preferred)
         /// </summary>
         [Required]
-        public string RoomNumber { get; set; }
+        public string Number { get; set; }
+
+        /// <summary>
+        /// Room capacity per GAL
+        /// </summary>
+        public int? Capacity { get; set; }
 
         /// <summary>
         /// The ID for the team that is associated with this room
         /// </summary>
-        [ForeignKey("Team.ID")]
         public int? TeamID { get; set; }
 
         /// <summary>
