@@ -1,0 +1,14 @@
+﻿@page  "/{eventId}/{eventRole}/Room/AddRooms"
+@model ServerCore.Pages.Room.AddRoomsModel
+
+@{
+    ViewData["Title"] = "Add Rooms";
+    ViewData["AdminRoute"] = "../Room/AddRooms";
+}
+<h2>Add Rooms</h2>
+
+<form method="post">
+    <textarea name="inputRooms" style="height:500px"></textarea>
+    <input type="submit" />
+</form>
+
