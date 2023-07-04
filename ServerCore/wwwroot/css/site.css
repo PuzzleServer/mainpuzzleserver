@@ -83,6 +83,18 @@ table.ph-statemap > thead > tr > th > a, table.ph-statemap > tbody > tr > td > a
     text-decoration: none;
 }
 
+table.ph-statemap > tbody > tr > td.stateparent {
+    position: relative;
+    padding: 0px;
+}
+
+table.ph-statemap > tbody > tr > td > a.statecell {
+    position: absolute;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
 table.ph-statemap tbody tr td.dark a {
     color: #ccc;
 }
