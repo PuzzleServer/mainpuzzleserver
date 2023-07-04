@@ -59,5 +59,10 @@ namespace ServerCore.DataModel
         [Required]
         [DefaultValue(false)]
         public bool CurrentlyOnline { get; set; }
+
+        /// <summary>
+        /// Optional value to group rooms together, groups can be set to online/offline as a unit
+        /// </summary>
+        public int Group { get; set; }
     }
 }

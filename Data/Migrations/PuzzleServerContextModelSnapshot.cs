@@ -17,7 +17,7 @@ namespace Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.5")
+                .HasAnnotation("ProductVersion", "7.0.8")
                 .HasAnnotation("Proxies:ChangeTracking", false)
                 .HasAnnotation("Proxies:CheckEquality", false)
                 .HasAnnotation("Proxies:LazyLoading", true)
@@ -927,6 +927,47 @@ namespace Data.Migrations
                     b.ToTable("Responses");
                 });
 
+            modelBuilder.Entity("ServerCore.DataModel.Room", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("Building")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int?>("Capacity")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("CurrentlyOnline")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("EventID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Group")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Number")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int?>("TeamID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("TeamID");
+
+                    b.HasIndex("EventID", "Building", "Number")
+                        .IsUnique()
+                        .HasFilter("[Building] IS NOT NULL");
+
+                    b.ToTable("Room");
+                });
+
             modelBuilder.Entity("ServerCore.DataModel.SinglePlayerPuzzleHintStatePerPlayer", b =>
                 {
                     b.Property<int>("PlayerID")
@@ -1153,9 +1194,6 @@ namespace Data.Migrations
 
                     b.Property<string>("PrimaryPhoneNumber")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("RoomID")
-                        .HasColumnType("int");
 
                     b.Property<string>("SecondaryPhoneNumber")
                         .HasColumnType("nvarchar(max)");
@@ -1530,6 +1568,23 @@ namespace Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Puzzle");
+                });
+
+            modelBuilder.Entity("ServerCore.DataModel.Room", b =>
+                {
+                    b.HasOne("ServerCore.DataModel.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ServerCore.DataModel.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamID");
+
+                    b.Navigation("Event");
+
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.SinglePlayerPuzzleHintStatePerPlayer", b =>
