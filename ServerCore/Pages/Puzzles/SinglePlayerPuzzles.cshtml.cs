@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
@@ -12,6 +13,7 @@ namespace ServerCore.Pages.Puzzles
     /// <summary>
     /// Model for the player's "Puzzles" page. Shows a list of the player's individual unsolved puzzles, with sorting options.
     /// </summary>
+    [Authorize()]
     public class SinglePlayerPuzzlesModel : EventSpecificPageModel
     {
         // see https://docs.microsoft.com/en-us/aspnet/core/data/ef-rp/sort-filter-page?view=aspnetcore-2.1 to make this sortable!
