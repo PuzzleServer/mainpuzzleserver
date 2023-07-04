@@ -40,11 +40,6 @@ table.ph-statemap {
     width: auto;
 }
 
-table.ph-statemap > tbody > tr > td {
-    padding: 3px;
-    vertical-align: middle;
-}
-
 table.ph-statemap > thead > tr > th:nth-child(1n+5) > a {
     font-weight: normal;
     writing-mode: vertical-rl;
@@ -81,6 +76,17 @@ table.ph-statemap > tbody > tr > td:nth-child(1n+5) {
 table.ph-statemap > thead > tr > th > a, table.ph-statemap > tbody > tr > td > a {
     color: #333;
     text-decoration: none;
+}
+
+table.ph-statemap > tbody > tr > td {
+    position: relative;
+}
+
+table.ph-statemap > tbody > tr > td > a.statecell {
+    position: absolute;
+    display: block;
+    width: 100%;
+    height: 100%;
 }
 
 table.ph-statemap tbody tr td.dark a {

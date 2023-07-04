@@ -202,69 +202,32 @@ namespace ServerCore.Pages.Events
             public DateTime? SolvedTime { get; set; }
             public Boolean LockedOut { get; set; }
 
-            public string DisplayText
+            public string Color
             {
                 get
                 {
                     if (LockedOut)
                     {
-                        return "E";
+                        return "#FF0000";
                     }
-
-                    if (SolvedTime != null)
-                    {
-                        return "C";
-                    }
-
-                    if (UnlockedTime != null)
-                    {
-                        return "U";
-                    }
-
-                    return "L";
-                }
-            }
-
-            public int DisplayHue
-            {
-                get
-                {
-                    if (LockedOut)
-                    {
-                        return 0;
-                    }
-
-                    if (SolvedTime != null)
-                    {
-                        return 120;
-                    }
-
-                    if (UnlockedTime != null)
-                    {
-                        return 60;
-                    }
-
-                    return 0;
-                }
-            }
-
-            public int DisplayLightness
-            {
-                get
-                {
                     if (SolvedTime != null)
                     {
                         int minutes = (int)((DateTime.UtcNow - SolvedTime.Value).TotalMinutes);
-                        return 75 - (Math.Min(minutes, 236) >> 2);
+                        return minutes > 15 ? "#A9D08E" : "#4D7620";
                     }
-
-                    if (UnlockedTime != null)
+                    if (Puzzle != null && Puzzle.Puzzle.IsMetaPuzzle)
                     {
-                        int minutes = (int)((DateTime.UtcNow - UnlockedTime.Value).TotalMinutes);
-                        return 75 - (Math.Min(minutes, 236) >> 2);
+                        if (UnlockedTime == null)
+                        {
+                            return "#FFE699";
+                        }
+                        else
+                        {
+                            int minutes = (int)((DateTime.UtcNow - UnlockedTime.Value).TotalMinutes);
+                            return minutes > 15 ? "#BD92DE" : "#7030A0";
+                        }
                     }
-
-                    return 100;
+                    return "#FFFFFF";
                 }
             }
         }
