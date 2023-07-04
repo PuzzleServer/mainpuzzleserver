@@ -40,6 +40,11 @@ table.ph-statemap {
     width: auto;
 }
 
+table.ph-statemap > tbody > tr > td {
+    padding: 3px;
+    vertical-align: middle;
+}
+
 table.ph-statemap > thead > tr > th:nth-child(1n+5) > a {
     font-weight: normal;
     writing-mode: vertical-rl;
@@ -78,8 +83,9 @@ table.ph-statemap > thead > tr > th > a, table.ph-statemap > tbody > tr > td > a
     text-decoration: none;
 }
 
-table.ph-statemap > tbody > tr > td {
+table.ph-statemap > tbody > tr > td.stateparent {
     position: relative;
+    padding: 0px;
 }
 
 table.ph-statemap > tbody > tr > td > a.statecell {
