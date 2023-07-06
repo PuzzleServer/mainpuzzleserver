@@ -46,6 +46,7 @@ namespace ServerCore.DataModel
             MinutesOfEventLockout = source.MinutesOfEventLockout;
             MaxAnnotationKey = source.MaxAnnotationKey;
             SupportEmailAlias = source.SupportEmailAlias;
+            CustomAuthorText = source.CustomAuthorText;
             CustomURL = source.CustomURL;
             CustomSolutionURL = source.CustomSolutionURL;
             Description = source.Description;
@@ -215,6 +216,11 @@ namespace ServerCore.DataModel
         /// If null, the event email address should be used instead.
         /// </summary>
         public string SupportEmailAlias { get; set; }
+
+        /// <summary>
+        /// The names of the authors that should be displayed to players
+        /// </summary>
+        public string CustomAuthorText { get; set; }
 
         /// <summary>
         /// Errata

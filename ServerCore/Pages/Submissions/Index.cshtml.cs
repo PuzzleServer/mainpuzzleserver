@@ -343,16 +343,28 @@ namespace ServerCore.Pages.Submissions
                 PuzzlesCausingGlobalLockout = await PuzzleStateHelper.PuzzlesCausingGlobalLockout(_context, Event, Team).ToListAsync();
             }
 
-            IQueryable<PuzzleUser> currentAuthorsQ = _context.PuzzleAuthors.Where(m => m.Puzzle == Puzzle).Select(m => m.Author);
-            List<PuzzleUser> CurrentAuthors = await currentAuthorsQ.OrderBy(p => p.Name).ToListAsync();
-            for (int i = 0; i < CurrentAuthors.Count; i++) {
-                if (CurrentAuthors[i].Name?.Trim().Length > 0)
+            if ((Puzzle.CustomAuthorText != null) && (Puzzle.CustomAuthorText.Trim().Length > 0))
+            {
+                PuzzleAuthor = "by " + Puzzle.CustomAuthorText.Trim();
+            }
+            else
+            {
+                IQueryable<PuzzleUser> currentAuthorsQ = _context.PuzzleAuthors.Where(m => m.Puzzle == Puzzle).Select(m => m.Author);
+                List<PuzzleUser> CurrentAuthors = await currentAuthorsQ.OrderBy(p => p.Name).ToListAsync();
+                for (int i = 0; i < CurrentAuthors.Count; i++)
                 {
-                    if ((PuzzleAuthor != null) && (PuzzleAuthor.Length > 0))
+                    if (CurrentAuthors[i].Name?.Trim().Length > 0)
                     {
-                        PuzzleAuthor += ", ";
+                        if ((PuzzleAuthor != null) && (PuzzleAuthor.Length > 0))
+                        {
+                            PuzzleAuthor += ", ";
+                        }
+                        else if ((PuzzleAuthor == null) || ((PuzzleAuthor != null) && (PuzzleAuthor.Length == 0)))
+                        {
+                            PuzzleAuthor += "by ";
+                        }
+                        PuzzleAuthor += CurrentAuthors[i].Name.Trim();
                     }
-                    PuzzleAuthor += CurrentAuthors[i].Name.Trim();
                 }
             }
 

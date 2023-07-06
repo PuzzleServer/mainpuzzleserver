@@ -686,6 +686,9 @@ namespace Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
+                    b.Property<string>("CustomAuthorText")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("CustomSolutionURL")
                         .HasColumnType("nvarchar(max)");
 
