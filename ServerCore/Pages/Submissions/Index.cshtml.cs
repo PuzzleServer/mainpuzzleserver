@@ -351,18 +351,12 @@ namespace ServerCore.Pages.Submissions
             {
                 IQueryable<PuzzleUser> currentAuthorsQ = _context.PuzzleAuthors.Where(m => m.Puzzle == Puzzle).Select(m => m.Author);
                 List<PuzzleUser> CurrentAuthors = await currentAuthorsQ.OrderBy(p => p.Name).ToListAsync();
+                PuzzleAuthor = "";
                 for (int i = 0; i < CurrentAuthors.Count; i++)
                 {
                     if (CurrentAuthors[i].Name?.Trim().Length > 0)
                     {
-                        if ((PuzzleAuthor != null) && (PuzzleAuthor.Length > 0))
-                        {
-                            PuzzleAuthor += ", ";
-                        }
-                        else if ((PuzzleAuthor == null) || ((PuzzleAuthor != null) && (PuzzleAuthor.Length == 0)))
-                        {
-                            PuzzleAuthor += "by ";
-                        }
+                        PuzzleAuthor += (PuzzleAuthor.Length == 0) ? "by " : ", ";
                         PuzzleAuthor += CurrentAuthors[i].Name.Trim();
                     }
                 }
