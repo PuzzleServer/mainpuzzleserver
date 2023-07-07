@@ -46,6 +46,9 @@ namespace ServerCore.Helpers
                               select annotation;
             context.Annotations.RemoveRange(annotations);
 
+            var room = context.Room.Where(r => r.TeamID == team.ID).ToList();
+            context.Room.RemoveRange(room);
+
             context.Teams.Remove(team);
 
             await context.SaveChangesAsync();

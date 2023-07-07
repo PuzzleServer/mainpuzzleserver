@@ -49,6 +49,8 @@ namespace ServerCore.Pages.Teams
         /// Number of team members that can have lunch
         /// </summary>
         public int EligibleForLunch { get; set; }
+
+        public string TeamRoom { get; set; }
         public IList<TeamLunch> Lunches { get; set; }
         public string NewLunch { get; set; }
         public static readonly string[] PizzaOptions = { "Cheese", "Pepperoni", "Philly Steak", "Salami", "Meatballs", "Grilled Chicken", "Canadian Bacon", "Beef", "Sausage", "Spicy Italian Sausage", "Bacon", "Pineapple", "Green Peppers", "Spinach", "Jalapeños", "Olives", "Mushrooms", "Artichoke Hearts", "Banana Peppers", "Tomatoes", "Garlic", "Onions" };
@@ -145,6 +147,10 @@ namespace ServerCore.Pages.Teams
                 double possibleInPersonMembers = Event.MaxTeamSize - remoteMembers;
                 SoftMaxLunches = (int)Math.Ceiling(possibleInPersonMembers / (double)PlayersPerLunch);
             }
+
+            // Get team room
+            Room teamRoom = _context.Room.Where(r => r.TeamID == teamId).FirstOrDefault();
+            TeamRoom = $"{teamRoom.Building}/{teamRoom.Number}({teamRoom.Capacity})";
 
             return Page();
         }

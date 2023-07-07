@@ -109,7 +109,7 @@
                 <dd>
                     @Model.Team.Name
                 </dd>
-                <!-- MEGAN TODO: Add new room dropdown here and clean up custom room-->
+                <!-- TODO: Add new room dropdown here and clean up custom room-->
                 <dt>
                     Team room
                 </dt>
@@ -118,7 +118,7 @@
                     {
                     @if (Model.Event.IsInternEvent)
                     {
-                    <div>(none - will be selected by the organizers prior to the start of the event)</div>
+                    <div>@Model.TeamRoom</div>
                     }
                     else
                     {
