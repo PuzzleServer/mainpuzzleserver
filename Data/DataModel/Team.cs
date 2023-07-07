@@ -79,6 +79,16 @@ namespace ServerCore.DataModel
         public bool IsDisqualified { get; set; }
 
         /// <summary>
+        /// The list of team names that have been merged into this team.  
+        /// If no teams have been merged into this one, this is blank.  
+        /// Since multiple teams can be merged into a single team, 
+        /// and team names can contain any character, each team name is
+        /// URL encoded before being added to this string so that we can
+        /// use spaces to delimit multiple team names in this single string.
+        /// </summary>
+        public string MergedTeams { get; set; }
+
+        /// <summary>
         /// Show the team announcement for this team
         /// </summary>
         public bool ShowTeamAnnouncement { get; set; }

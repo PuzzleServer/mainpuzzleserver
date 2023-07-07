@@ -1182,6 +1182,9 @@ namespace Data.Migrations
                     b.Property<bool>("IsLookingForTeammates")
                         .HasColumnType("bit");
 
+                    b.Property<string>("MergedTeams")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");

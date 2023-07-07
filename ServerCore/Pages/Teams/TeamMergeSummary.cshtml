@@ -1,0 +1,50 @@
+﻿@page "/{eventId}/{eventRole}/Teams/TeamMergeSummary"
+@model ServerCore.Pages.Teams.TeamMergeSummaryModel
+@{
+    ViewData["Title"] = "Team Index";
+    ViewData["AdminRoute"] = "/Teams/TeamMergeSummary";
+    ViewData["AuthorRoute"] = "/Teams/Index";
+    ViewData["PlayRoute"] = "/Teams/Index";
+}
+
+<a asp-page="/Teams/Index">Back to team list</a>
+<br />
+<h2>Merged Teams</h2>
+<br /> 
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Old Team
+                </th>
+                <th>
+                    Team They Were Merged Into
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var currentTeam in Model.TeamSummaries)
+            {
+                {
+                    string[] mergedTeams = currentTeam.MergedTeams.Split(' ');
+                    foreach (string oldTeam in mergedTeams)
+                    {
+                        <tr>
+                            <td>
+                                @System.Web.HttpUtility.UrlDecode(oldTeam)
+                            </td>
+                            <td>
+                                @currentTeam.TeamName
+                            </td>
+                        </tr>
+                    }
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+
+
+
