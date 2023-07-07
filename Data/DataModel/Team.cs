@@ -82,5 +82,15 @@ namespace ServerCore.DataModel
         /// standings and fastest solves pages.
         /// </summary>
         public bool IsDisqualified { get; set; }
+
+        /// <summary>
+        /// The list of team names that have been merged into this team.  
+        /// If no teams have been merged into this one, this is blank.  
+        /// Since multiple teams can be merged into a single team, 
+        /// and team names can contain any character, each team name is
+        /// URL encoded before being added to this string so that we can
+        /// use commas to delimit multiple team names.
+        /// </summary>
+        public string MergedTeams { get; set; }
     }
 }
