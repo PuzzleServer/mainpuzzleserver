@@ -109,15 +109,7 @@
                 <dd>
                     @Model.Team.Name
                 </dd>
-                <!-- TODO: Conditionally show/hide based on event property (not needed for PuzzleHunt)
-    <dt>
-        RoomID
-    </dt>
-    <dd>
-        @Model.Team.RoomID
-    </dd>
-    -->
-
+                <!-- TODO: Add new room dropdown here and clean up custom room-->
                 <dt>
                     Team room
                 </dt>
@@ -126,7 +118,7 @@
                     {
                     @if (Model.Event.IsInternEvent)
                     {
-                    <div>(none - will be selected by the organizers prior to the start of the event)</div>
+                    <div>@Model.TeamRoom</div>
                     }
                     else
                     {

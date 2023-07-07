@@ -40,6 +40,7 @@ namespace ServerCore.DataModel
         public DbSet<Piece> Pieces { get; set; }
         public DbSet<PlayerInEvent> PlayerInEvent { get; set; }
         public DbSet<TeamLunch> TeamLunch { get; set; }
+        public DbSet<Room> Rooms { get; set; }
 
         public static void UpdateDatabase(IApplicationBuilder app)
         {
@@ -76,6 +77,7 @@ namespace ServerCore.DataModel
             modelBuilder.Entity<SinglePlayerPuzzleStatePerPlayer>().HasIndex(pspt => new { pspt.PlayerID });
             modelBuilder.Entity<SinglePlayerPuzzleStatePerPlayer>().HasIndex(pspt => new { pspt.PlayerID, pspt.SolvedTime });
             modelBuilder.Entity<SinglePlayerPuzzleUnlockState>().HasKey(state => new { state.PuzzleID });
+            modelBuilder.Entity<Room>().HasIndex(room => new { room.EventID, room.Building, room.Number }).IsUnique();
 
             // SQL doesn't allow multiple cacasding delete paths from one entity to another, so cut links that cause those
             modelBuilder.Entity<ContentFile>().HasOne(contentFile => contentFile.Event).WithMany().OnDelete(DeleteBehavior.Restrict);
