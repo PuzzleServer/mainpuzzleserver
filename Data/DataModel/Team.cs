@@ -89,7 +89,7 @@ namespace ServerCore.DataModel
         /// Since multiple teams can be merged into a single team, 
         /// and team names can contain any character, each team name is
         /// URL encoded before being added to this string so that we can
-        /// use commas to delimit multiple team names.
+        /// use spaces to delimit multiple team names in this single string.
         /// </summary>
         public string MergedTeams { get; set; }
 

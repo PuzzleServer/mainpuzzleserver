@@ -32,7 +32,7 @@
             @foreach (var currentTeam in Model.TeamSummaries)
             {
                 {
-                    string[] mergedTeams = currentTeam.MergedTeams.Split(',');
+                    string[] mergedTeams = currentTeam.MergedTeams.Split(' ');
                     foreach (string oldTeam in mergedTeams)
                     {
                         <tr>
