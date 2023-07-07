@@ -399,6 +399,9 @@ namespace Data.Migrations
                     b.Property<bool>("StandingsOverride")
                         .HasColumnType("bit");
 
+                    b.Property<string>("TeamAnnouncement")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("TeamDeleteEnd")
                         .HasColumnType("datetime2");
 
@@ -1156,6 +1159,9 @@ namespace Data.Migrations
 
                     b.Property<string>("SecondaryPhoneNumber")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("ShowTeamAnnouncement")
+                        .HasColumnType("bit");
 
                     b.HasKey("ID");
 

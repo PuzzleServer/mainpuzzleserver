@@ -149,6 +149,19 @@ namespace ServerCore.ModelBases
             }
         }
 
+        public async Task<bool> GetShowTeamAnnouncement()
+        {
+            if (EventRole == ModelBases.EventRole.play)
+            {
+                Team team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
+                return team != null ? team.ShowTeamAnnouncement : false;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public async Task<int> GetPlayerEventId()
         {
             if (EventRole == EventRole.play)

@@ -234,6 +234,11 @@ namespace ServerCore.DataModel
         public string Announcement { get; set; }
 
         /// <summary>
+        /// Announcement to be added to every page, once the team has their state configured to show it
+        /// </summary>
+        public string TeamAnnouncement { get; set; }
+
+        /// <summary>
         /// content for the home page
         /// </summary>
         public string HomeContent { get; set; }
