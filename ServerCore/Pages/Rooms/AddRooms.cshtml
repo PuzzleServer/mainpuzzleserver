@@ -1,4 +1,4 @@
-﻿@page  "/{eventId}/{eventRole}/Rooms/AddRooms"
+﻿@page "/{eventId}/{eventRole}/Rooms/AddRooms"
 @model ServerCore.Pages.Rooms.AddRoomsModel
 
 @{
@@ -9,7 +9,10 @@
 
 <form method="post">
     <textarea name="inputRooms" style="height:500px"></textarea>
-    <textarea name="group"></textarea>
+    <label>
+        Group
+        <textarea name="group"></textarea>
+    </label>
     <input type="submit" />
 </form>
 
