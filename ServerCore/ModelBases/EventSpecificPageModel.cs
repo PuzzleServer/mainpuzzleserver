@@ -42,6 +42,8 @@ namespace ServerCore.ModelBases
         protected readonly PuzzleServerContext _context;
         private readonly UserManager<IdentityUser> userManager;
 
+        private Team team;
+
         public EventSpecificPageModel(PuzzleServerContext serverContext, UserManager<IdentityUser> manager)
         {
             _context = serverContext;
@@ -136,11 +138,21 @@ namespace ServerCore.ModelBases
             return Event.HasSwag;
         }
 
+        private async Task<Team> GetTeamAsync()
+        {
+            if (this.team == null)
+            {
+                this.team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
+            }
+
+            return team;
+        }
+
         public async Task<int> GetTeamId()
         {
             if (EventRole == ModelBases.EventRole.play)
             {
-                Team team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
+                Team team = await this.GetTeamAsync();
                 return team != null ? team.ID : -1;
             }
             else
@@ -153,7 +165,7 @@ namespace ServerCore.ModelBases
         {
             if (EventRole == ModelBases.EventRole.play)
             {
-                Team team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
+                Team team = await this.GetTeamAsync();
                 return team != null ? team.ShowTeamAnnouncement : false;
             }
             else
