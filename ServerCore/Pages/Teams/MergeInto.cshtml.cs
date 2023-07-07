@@ -80,6 +80,7 @@ namespace ServerCore.Pages.Teams
                 }
 
                 mergeIntoTeam.MergedTeams += (mergeIntoTeam.MergedTeams?.Length > 0) ? " " : "";
+                mergeIntoTeam.MergedTeams += (Team.MergedTeams?.Length > 0) ? (Team.MergedTeams + " ") : "";
                 mergeIntoTeam.MergedTeams += System.Web.HttpUtility.UrlEncode(Team.Name);
                 await TeamHelper.DeleteTeamAsync(_context, Team, sendEmail: false);
 
