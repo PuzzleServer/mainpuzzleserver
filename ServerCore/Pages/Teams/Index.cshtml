@@ -90,6 +90,12 @@
             <th>
                 CustomRoom
             </th>
+            @if (Model.EventRole == ModelBases.EventRole.admin && !string.IsNullOrEmpty(Model.Event.TeamAnnouncement))
+            {
+            <th>
+                TeamAnnouncement
+            </th>
+            }
             <th>
                 PrimaryContactEmail
             </th>
@@ -126,6 +132,19 @@
                 <td>
                     @item.CustomRoom
                 </td>
+                @if (Model.EventRole == ModelBases.EventRole.admin && !string.IsNullOrEmpty(Model.Event.TeamAnnouncement))
+                {
+                    <td>
+                        @if (item.ShowTeamAnnouncement == true)
+                        {
+                            <a asp-page-handler="ShowTeamAnnouncement" asp-route-teamId="@item.ID" asp-route-value="false">Unsend</a>
+                        }
+                        else
+                        {
+                            <a asp-page-handler="ShowTeamAnnouncement" asp-route-teamId="@item.ID" asp-route-value="true">Send</a>
+                        }
+                    </td>
+                }
                 <td>
                     @item.PrimaryContactEmail
                 </td>

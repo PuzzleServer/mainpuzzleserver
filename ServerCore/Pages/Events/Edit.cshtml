@@ -230,6 +230,11 @@
                 <span asp-validation-for="EditableEvent.Announcement" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="EditableEvent.TeamAnnouncement" class="control-label"></label>
+                <textarea asp-for="EditableEvent.TeamAnnouncement" class="form-control"></textarea>
+                <span asp-validation-for="EditableEvent.TeamAnnouncement" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="EditableEvent.HomeContent" class="control-label"></label>
                 <textarea asp-for="EditableEvent.HomeContent" class="form-control"></textarea>
                 <span asp-validation-for="EditableEvent.HomeContent" class="text-danger"></span>

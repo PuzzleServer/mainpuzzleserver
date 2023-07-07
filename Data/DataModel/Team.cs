@@ -82,5 +82,10 @@ namespace ServerCore.DataModel
         /// standings and fastest solves pages.
         /// </summary>
         public bool IsDisqualified { get; set; }
+
+        /// <summary>
+        /// Show the team announcement for this team
+        /// </summary>
+        public bool ShowTeamAnnouncement { get; set; }
     }
 }
