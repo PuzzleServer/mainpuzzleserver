@@ -63,6 +63,6 @@ namespace ServerCore.DataModel
         /// <summary>
         /// Optional value to group rooms together, groups can be set to online/offline as a unit
         /// </summary>
-        public int Group { get; set; }
+        public string Group { get; set; }
     }
 }

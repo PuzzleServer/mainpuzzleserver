@@ -1,11 +1,12 @@
 using System;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using ServerCore.DataModel;
 using ServerCore.ModelBases;
 
-namespace ServerCore.Pages.Room
+namespace ServerCore.Pages.Rooms
 {
     [Authorize(Policy = "IsEventAdmin")]
     public class AddRoomsModel : EventSpecificPageModel
@@ -18,20 +19,21 @@ namespace ServerCore.Pages.Room
         {
         }
 
-        public void OnPost(string inputRooms, string group) 
+        public async Task<IActionResult> OnPost(string inputRooms, string group) 
         {
-            List<DataModel.Room> roomsToAdd = new List<DataModel.Room>();
             string[] rooms = inputRooms.Split("\r\n");
 
-            foreach(string room in rooms)
+            foreach (string room in rooms)
             {
                 string[] splitRoom = room.Split(',');
-                DataModel.Room parsedRoom = new DataModel.Room { EventID = Event.ID, Building = splitRoom[0], Number = splitRoom[1], Capacity = Int32.Parse(splitRoom[2]) };
-                roomsToAdd.Add(parsedRoom);
+                Room parsedRoom = new Room { EventID = Event.ID, Building = splitRoom[0], Number = splitRoom[1], Capacity = Int32.Parse(splitRoom[2]) };
+                parsedRoom.Group = group;
+                _context.Room.Add(parsedRoom);
             }
 
-            int groupNum = 0;
-            Int32.TryParse(group, out groupNum);
+            await _context.SaveChangesAsync();
+
+            return RedirectToPage("/Rooms/RoomList");
         }
     }
 }

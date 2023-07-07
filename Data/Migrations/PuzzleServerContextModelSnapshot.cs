@@ -17,7 +17,7 @@ namespace Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.8")
+                .HasAnnotation("ProductVersion", "7.0.5")
                 .HasAnnotation("Proxies:ChangeTracking", false)
                 .HasAnnotation("Proxies:CheckEquality", false)
                 .HasAnnotation("Proxies:LazyLoading", true)
@@ -249,7 +249,7 @@ namespace Data.Migrations
 
                     b.HasIndex("TeamID");
 
-                    b.ToTable("Annotations");
+                    b.ToTable("Annotations", (string)null);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.ContentFile", b =>
@@ -284,7 +284,7 @@ namespace Data.Migrations
                     b.HasIndex("EventID", "ShortName")
                         .IsUnique();
 
-                    b.ToTable("ContentFiles");
+                    b.ToTable("ContentFiles", (string)null);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Event", b =>
@@ -432,7 +432,7 @@ namespace Data.Migrations
                         .IsUnique()
                         .HasFilter("[UrlString] IS NOT NULL");
 
-                    b.ToTable("Events");
+                    b.ToTable("Events", (string)null);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.EventAdmins", b =>
@@ -455,7 +455,7 @@ namespace Data.Migrations
 
                     b.HasIndex("EventID");
 
-                    b.ToTable("EventAdmins");
+                    b.ToTable("EventAdmins", (string)null);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.EventAuthors", b =>
@@ -478,7 +478,7 @@ namespace Data.Migrations
 
                     b.HasIndex("EventID");
 
-                    b.ToTable("EventAuthors");
+                    b.ToTable("EventAuthors", (string)null);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Feedback", b =>
@@ -513,7 +513,7 @@ namespace Data.Migrations
 
                     b.HasIndex("SubmitterID");
 
-                    b.ToTable("Feedback");
+                    b.ToTable("Feedback", (string)null);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Hint", b =>
@@ -545,7 +545,7 @@ namespace Data.Migrations
 
                     b.HasIndex("PuzzleID");
 
-                    b.ToTable("Hints");
+                    b.ToTable("Hints", (string)null);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.HintStatePerTeam", b =>
@@ -563,7 +563,7 @@ namespace Data.Migrations
 
                     b.HasIndex("HintID");
 
-                    b.ToTable("HintStatePerTeam");
+                    b.ToTable("HintStatePerTeam", (string)null);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Invitation", b =>
@@ -593,7 +593,7 @@ namespace Data.Migrations
 
                     b.HasIndex("TeamID");
 
-                    b.ToTable("Invitations");
+                    b.ToTable("Invitations", (string)null);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Piece", b =>
@@ -620,7 +620,7 @@ namespace Data.Migrations
 
                     b.HasIndex("PuzzleID");
 
-                    b.ToTable("Pieces");
+                    b.ToTable("Pieces", (string)null);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.PlayerInEvent", b =>
@@ -655,7 +655,7 @@ namespace Data.Migrations
 
                     b.HasIndex("PlayerId");
 
-                    b.ToTable("Swag");
+                    b.ToTable("Swag", (string)null);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Prerequisites", b =>
@@ -678,7 +678,7 @@ namespace Data.Migrations
 
                     b.HasIndex("PuzzleID");
 
-                    b.ToTable("Prerequisites");
+                    b.ToTable("Prerequisites", (string)null);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Puzzle", b =>
@@ -790,7 +790,7 @@ namespace Data.Migrations
 
                     b.HasIndex("EventID");
 
-                    b.ToTable("Puzzles");
+                    b.ToTable("Puzzles", (string)null);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.PuzzleAuthors", b =>
@@ -813,7 +813,7 @@ namespace Data.Migrations
 
                     b.HasIndex("PuzzleID");
 
-                    b.ToTable("PuzzleAuthors");
+                    b.ToTable("PuzzleAuthors", (string)null);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.PuzzleStatePerTeam", b =>
@@ -851,7 +851,7 @@ namespace Data.Migrations
 
                     b.HasIndex("TeamID", "SolvedTime");
 
-                    b.ToTable("PuzzleStatePerTeam");
+                    b.ToTable("PuzzleStatePerTeam", (string)null);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.PuzzleUser", b =>
@@ -892,7 +892,7 @@ namespace Data.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("PuzzleUsers");
+                    b.ToTable("PuzzleUsers", (string)null);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Response", b =>
@@ -924,48 +924,7 @@ namespace Data.Migrations
 
                     b.HasIndex("PuzzleID");
 
-                    b.ToTable("Responses");
-                });
-
-            modelBuilder.Entity("ServerCore.DataModel.Room", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
-
-                    b.Property<string>("Building")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int?>("Capacity")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("CurrentlyOnline")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("EventID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Group")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Number")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int?>("TeamID")
-                        .HasColumnType("int");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("TeamID");
-
-                    b.HasIndex("EventID", "Building", "Number")
-                        .IsUnique()
-                        .HasFilter("[Building] IS NOT NULL");
-
-                    b.ToTable("Room");
+                    b.ToTable("Responses", (string)null);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.SinglePlayerPuzzleHintStatePerPlayer", b =>
@@ -983,7 +942,7 @@ namespace Data.Migrations
 
                     b.HasIndex("HintID");
 
-                    b.ToTable("SinglePlayerPuzzleHintStatePerPlayer");
+                    b.ToTable("SinglePlayerPuzzleHintStatePerPlayer", (string)null);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.SinglePlayerPuzzleStatePerPlayer", b =>
@@ -1021,7 +980,7 @@ namespace Data.Migrations
 
                     b.HasIndex("PlayerID", "SolvedTime");
 
-                    b.ToTable("SinglePlayerPuzzleStatePerPlayer");
+                    b.ToTable("SinglePlayerPuzzleStatePerPlayer", (string)null);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.SinglePlayerPuzzleSubmission", b =>
@@ -1074,7 +1033,7 @@ namespace Data.Migrations
                     b.HasIndex("SubmitterID", "PuzzleID", "SubmissionText")
                         .IsUnique();
 
-                    b.ToTable("SinglePlayerPuzzleSubmissions");
+                    b.ToTable("SinglePlayerPuzzleSubmissions", (string)null);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.SinglePlayerPuzzleUnlockState", b =>
@@ -1087,7 +1046,7 @@ namespace Data.Migrations
 
                     b.HasKey("PuzzleID");
 
-                    b.ToTable("SinglePlayerPuzzleUnlockStates");
+                    b.ToTable("SinglePlayerPuzzleUnlockStates", (string)null);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Submission", b =>
@@ -1150,7 +1109,7 @@ namespace Data.Migrations
                     b.HasIndex("TeamID", "PuzzleID", "SubmissionText")
                         .IsUnique();
 
-                    b.ToTable("Submissions");
+                    b.ToTable("Submissions", (string)null);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Team", b =>
@@ -1195,6 +1154,9 @@ namespace Data.Migrations
                     b.Property<string>("PrimaryPhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("RoomID")
+                        .HasColumnType("int");
+
                     b.Property<string>("SecondaryPhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
@@ -1205,7 +1167,7 @@ namespace Data.Migrations
 
                     b.HasIndex("EventID");
 
-                    b.ToTable("Teams");
+                    b.ToTable("Teams", (string)null);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.TeamApplication", b =>
@@ -1228,7 +1190,7 @@ namespace Data.Migrations
 
                     b.HasIndex("TeamID");
 
-                    b.ToTable("TeamApplications");
+                    b.ToTable("TeamApplications", (string)null);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.TeamLunch", b =>
@@ -1252,7 +1214,7 @@ namespace Data.Migrations
 
                     b.HasIndex("TeamId");
 
-                    b.ToTable("TeamLunch");
+                    b.ToTable("TeamLunch", (string)null);
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.TeamMembers", b =>
@@ -1275,7 +1237,7 @@ namespace Data.Migrations
 
                     b.HasIndex("User.ID");
 
-                    b.ToTable("TeamMembers");
+                    b.ToTable("TeamMembers", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -1568,23 +1530,6 @@ namespace Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Puzzle");
-                });
-
-            modelBuilder.Entity("ServerCore.DataModel.Room", b =>
-                {
-                    b.HasOne("ServerCore.DataModel.Event", "Event")
-                        .WithMany()
-                        .HasForeignKey("EventID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ServerCore.DataModel.Team", "Team")
-                        .WithMany()
-                        .HasForeignKey("TeamID");
-
-                    b.Navigation("Event");
-
-                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.SinglePlayerPuzzleHintStatePerPlayer", b =>

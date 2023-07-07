@@ -1,0 +1,106 @@
+﻿@page "/{eventId}/{eventRole}/Rooms/RoomList"
+@model ServerCore.Pages.Rooms.RoomListModel
+
+@{
+    ViewData["AdminRoute"] = "../Rooms/RoomList";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Rooms</title>
+</head>
+<body>
+    <p>
+        <a asp-page="AddRooms">Add rooms</a>
+    </p>
+    <form method="post">
+        <button asp-page-handler="AssignRooms">Assign Rooms to All Teams Without Rooms</button>
+    </form>
+    <form method="post">
+        <p>
+            Toggle Waves
+            <table class="table">
+                <tr>
+                    <th>
+                        Group
+                    </th>
+                    <th>
+                        CurrentlyOnline
+                    </th>
+                </tr>
+                <tbody>
+                    @foreach (var item in Model.Groups)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Item1)
+                            </td>
+                            <td>
+                                <input type="checkbox" name="GroupToToggle" value="@item.Item1" checked="@item.Item2"/>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <input type="submit" />
+        </p>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Room[0].Building)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Room[0].Number)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Room[0].Capacity)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Room[0].Team)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Room[0].CurrentlyOnline)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Room[0].Group)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Room)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Building)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Number)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Capacity)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Team.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CurrentlyOnline)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Group)
+                        </td>
+                        <td>
+                            @*                <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> ||
+                        <a asp-page="./Delete" asp-route-id="@item.ID">Delete</a>*@
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </form>
+</body>
+</html>
