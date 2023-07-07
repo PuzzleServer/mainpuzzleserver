@@ -92,5 +92,10 @@ namespace ServerCore.DataModel
         /// use commas to delimit multiple team names.
         /// </summary>
         public string MergedTeams { get; set; }
+
+        /// <summary>
+        /// Show the team announcement for this team
+        /// </summary>
+        public bool ShowTeamAnnouncement { get; set; }
     }
 }

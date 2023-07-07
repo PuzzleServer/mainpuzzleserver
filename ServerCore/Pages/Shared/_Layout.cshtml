@@ -86,6 +86,11 @@
             <p class="announcement">@Event.Announcement</p>
             <hr />
             }
+        @if (!string.IsNullOrEmpty(Event?.TeamAnnouncement) && await (Model as ServerCore.ModelBases.EventSpecificPageModel)?.GetShowTeamAnnouncement())
+            {
+            <p class="announcement">@Event.TeamAnnouncement</p>
+            <hr />
+            }
         @RenderBody()
         <hr />
         <footer>
