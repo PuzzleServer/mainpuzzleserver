@@ -40,7 +40,7 @@ namespace ServerCore.DataModel
         public DbSet<Piece> Pieces { get; set; }
         public DbSet<PlayerInEvent> PlayerInEvent { get; set; }
         public DbSet<TeamLunch> TeamLunch { get; set; }
-        public DbSet<Room> Room { get; set; }
+        public DbSet<Room> Rooms { get; set; }
 
         public static void UpdateDatabase(IApplicationBuilder app)
         {

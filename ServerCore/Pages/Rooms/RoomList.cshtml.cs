@@ -19,19 +19,19 @@ namespace ServerCore.Pages.Rooms
         {
         }
 
-        public IList<Room> Room { get; set; }
+        public IList<Room> Rooms { get; set; }
         public IList<Tuple<string, bool>> Groups { get; set; }
         private Dictionary<string, bool> groupMapping = new Dictionary<string, bool>();
         public bool AssignRooms { get; set; }
 
         public async Task OnGetAsync()
         {
-            await FillCollections();
+            await FillCollectionsAsync();
         }
 
         public async Task<IActionResult> OnPostAsync(List<string> GroupToToggle)
         {
-            await FillCollections();
+            await FillCollectionsAsync();
 
             // Update the rooms that are online if that's changed
 
@@ -41,14 +41,14 @@ namespace ServerCore.Pages.Rooms
                 {
                     groupMapping.Add(gr.Item1, true);
                 }
-                else if(!GroupToToggle.Contains(gr.Item1) && gr.Item2)
+                else if (!GroupToToggle.Contains(gr.Item1) && gr.Item2)
                 {
                     // TODO: Add notification or something for rooms going offline that have been assigned to teams
                     groupMapping.Add(gr.Item1, false);
                 }
             }
 
-            foreach (Room r in Room)
+            foreach (Room r in Rooms)
             {
                 if (groupMapping.ContainsKey(r.Group) && r.CurrentlyOnline != groupMapping[r.Group])
                 {
@@ -67,7 +67,7 @@ namespace ServerCore.Pages.Rooms
                 // Get all of the teams that don't have rooms
                 var teamsWithoutRooms = await (from team in _context.Teams
                                                where team.EventID == Event.ID
-                                               join room in _context.Room on team.ID equals room.TeamID into gj
+                                               join room in _context.Rooms on team.ID equals room.TeamID into gj
                                                from roomOrNull in gj.DefaultIfEmpty()
                                                where roomOrNull == null
                                                select team).ToListAsync();
@@ -75,7 +75,7 @@ namespace ServerCore.Pages.Rooms
                 // Assign them rooms starting at the top of the list of active rooms and moving down until there are no more teams or no more rooms
                 // Teams are pulled in no particular order, so probably the order they registered in
 
-                List<Room> unassignedRooms = _context.Room.Where(r => r.TeamID == null && r.CurrentlyOnline).ToList();
+                List<Room> unassignedRooms = _context.Rooms.Where(r => r.TeamID == null && r.CurrentlyOnline).ToList();
                 int roomsIndex = 0;
 
                 foreach (var team in teamsWithoutRooms)
@@ -93,12 +93,13 @@ namespace ServerCore.Pages.Rooms
             return RedirectToPage("/Rooms/RoomList");
         }
 
-        private async Task FillCollections()
+        private async Task FillCollectionsAsync()
         {
-            Room = await _context.Room
+            Rooms = await _context.Rooms
+                    .Where(r => r.EventID == Event.ID)
                     .Include(r => r.Event)
                     .Include(r => r.Team).ToListAsync();
-            var groupsTemp = await _context.Room.GroupBy(r => new Tuple<string, bool>(r.Group, r.CurrentlyOnline)).Select(r => r.First()).ToListAsync();
+            var groupsTemp = await _context.Rooms.Where(r => r.EventID == Event.ID ).GroupBy(r => new Tuple<string, bool>(r.Group, r.CurrentlyOnline)).Select(r => r.First()).ToListAsync();
             Groups = groupsTemp.Select(g => new Tuple<string, bool>(g.Group, g.CurrentlyOnline)).ToList();
         }
     }

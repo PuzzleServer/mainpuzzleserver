@@ -149,8 +149,11 @@ namespace ServerCore.Pages.Teams
             }
 
             // Get team room
-            Room teamRoom = _context.Room.Where(r => r.TeamID == teamId).FirstOrDefault();
-            TeamRoom = $"{teamRoom.Building}/{teamRoom.Number}({teamRoom.Capacity})";
+            Room teamRoom = _context.Rooms.Where(r => r.TeamID == teamId).FirstOrDefault();
+            if (teamRoom != null)
+            {
+                TeamRoom = $"{teamRoom.Building}/{teamRoom.Number}({teamRoom.Capacity})";
+            }
 
             return Page();
         }

@@ -21,14 +21,14 @@ namespace ServerCore.Pages.Rooms
 
         public async Task<IActionResult> OnPost(string inputRooms, string group) 
         {
-            string[] rooms = inputRooms.Split("\r\n");
+            string[] rooms = inputRooms.Split(Environment.NewLine);
 
             foreach (string room in rooms)
             {
                 string[] splitRoom = room.Split(',');
                 Room parsedRoom = new Room { EventID = Event.ID, Building = splitRoom[0], Number = splitRoom[1], Capacity = Int32.Parse(splitRoom[2]) };
                 parsedRoom.Group = group;
-                _context.Room.Add(parsedRoom);
+                _context.Rooms.Add(parsedRoom);
             }
 
             await _context.SaveChangesAsync();
