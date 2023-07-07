@@ -137,11 +137,11 @@
                     <td>
                         @if (item.ShowTeamAnnouncement == true)
                         {
-                            <a asp-page-handler="ShowTeamAnnouncement" asp-route-teamId="@item.ID" asp-route-value="false" onclick="return confirm('Are you sure you want to unsend the team announcement to @(item.Name)?')">Unsend</a>
+                            <a asp-page-handler="ShowTeamAnnouncement" asp-route-teamId="@item.ID" asp-route-value="false">Unsend</a>
                         }
                         else
                         {
-                            <a asp-page-handler="ShowTeamAnnouncement" asp-route-teamId="@item.ID" asp-route-value="true" onclick="return confirm('Are you sure you want to send the team announcement to @(item.Name)?')">Send</a>
+                            <a asp-page-handler="ShowTeamAnnouncement" asp-route-teamId="@item.ID" asp-route-value="true">Send</a>
                         }
                     </td>
                 }
