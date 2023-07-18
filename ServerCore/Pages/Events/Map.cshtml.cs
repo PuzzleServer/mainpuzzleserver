@@ -147,6 +147,8 @@ namespace ServerCore.Pages.Events
             }
 
             puzzles = puzzles.OrderBy(p => p.GroupOrder)
+                .ThenByDescending(p => p.Puzzle.IsFinalPuzzle)
+                .ThenByDescending(p => p.Puzzle.IsMetaPuzzle)
                 .ThenByDescending(p => p.Puzzle.IsPuzzle)
                 .ThenBy(p => p.Puzzle.Group)
                 .ThenBy(p => p.SolveCount)
