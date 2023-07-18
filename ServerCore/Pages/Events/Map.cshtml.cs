@@ -78,7 +78,20 @@ namespace ServerCore.Pages.Events
                 null,
                 EventRole == EventRole.admin ? null : LoggedInUser).ToListAsync();
 
-            List<StateStats> stateList = new List<StateStats>(states.Count);
+            // Get the earliest unlock time
+            DateTime? earliestUnlock = null;
+            foreach (PuzzleStatePerTeam state in states)
+            {
+                if (state.UnlockedTime != null)
+                {
+                    if (earliestUnlock == null || earliestUnlock.Value >= state.UnlockedTime.Value)
+                    {
+                        earliestUnlock = state.UnlockedTime;
+                    }
+                }
+            }
+
+                List<StateStats> stateList = new List<StateStats>(states.Count);
             foreach (PuzzleStatePerTeam state in states)
             {
                 // TODO: Is it more performant to prefilter the states if an author, or is this sufficient?
@@ -91,6 +104,7 @@ namespace ServerCore.Pages.Events
                 stateList.Add(new StateStats() {
                     Puzzle = puzzle,
                     Team = team,
+                    UnlockedAtStart = state.UnlockedTime == earliestUnlock,
                     UnlockedTime = state.UnlockedTime,
                     SolvedTime = state.SolvedTime,
                     LockedOut = state.IsEmailOnlyMode
@@ -198,36 +212,50 @@ namespace ServerCore.Pages.Events
 
             public PuzzleStats Puzzle { get; set; }
             public TeamStats Team { get; set; }
+            public bool UnlockedAtStart { get; set; }
             public DateTime? UnlockedTime { get; set; }
             public DateTime? SolvedTime { get; set; }
             public Boolean LockedOut { get; set; }
 
-            public string Color
+            public string Classes
             {
                 get
                 {
+                    string puzzleType = null;
+                    string puzzleState = null;
+
+                    if (Puzzle != null && Puzzle.Puzzle.IsFinalPuzzle)
+                    {
+                        puzzleType = "final-puzzle";
+                    }
+                    else if (Puzzle != null && Puzzle.Puzzle.IsMetaPuzzle)
+                    {
+                        puzzleType = "meta-puzzle";
+                    }
+
                     if (LockedOut)
                     {
-                        return "#FF0000";
+                        puzzleState = "email-mode";
                     }
-                    if (SolvedTime != null)
+                    else if (SolvedTime != null)
                     {
                         int minutes = (int)((DateTime.UtcNow - SolvedTime.Value).TotalMinutes);
-                        return minutes > 15 ? "#A9D08E" : "#4D7620";
+                        puzzleState = minutes > 15 ? "solved-old" : "solved-recent";
                     }
-                    if (Puzzle != null && Puzzle.Puzzle.IsMetaPuzzle)
+                    else if (!UnlockedAtStart)
                     {
                         if (UnlockedTime == null)
                         {
-                            return "#FFE699";
+                            puzzleState = "still-locked";
                         }
                         else
                         {
                             int minutes = (int)((DateTime.UtcNow - UnlockedTime.Value).TotalMinutes);
-                            return minutes > 15 ? "#BD92DE" : "#7030A0";
+                            puzzleState = minutes > 15 ? "unlocked-old" : "unlocked-recent";
                         }
                     }
-                    return "#FFFFFF";
+
+                    return puzzleState != null ? $"statecell {puzzleType} {puzzleState}" : $"statecell {puzzleType}";
                 }
             }
         }
