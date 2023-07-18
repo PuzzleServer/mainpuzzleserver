@@ -49,12 +49,14 @@ namespace ServerCore.Pages.Events
             if (EventRole == EventRole.admin)
             {
                 puzzles = await _context.Puzzles.Where(p => p.Event == Event)
+                    .Where(p => !p.IsForSinglePlayer)
                     .Select(p => new PuzzleStats() { Puzzle = p })
                     .ToListAsync();
             }
             else
             {
                 puzzles = await UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser)
+                    .Where(p => !p.IsForSinglePlayer)
                     .Select(p => new PuzzleStats() { Puzzle = p })
                     .ToListAsync();
             }
