@@ -49,12 +49,14 @@ namespace ServerCore.Pages.Events
             if (EventRole == EventRole.admin)
             {
                 puzzles = await _context.Puzzles.Where(p => p.Event == Event)
+                    .Where(p => !p.IsForSinglePlayer)
                     .Select(p => new PuzzleStats() { Puzzle = p })
                     .ToListAsync();
             }
             else
             {
                 puzzles = await UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser)
+                    .Where(p => !p.IsForSinglePlayer)
                     .Select(p => new PuzzleStats() { Puzzle = p })
                     .ToListAsync();
             }
@@ -147,6 +149,8 @@ namespace ServerCore.Pages.Events
             }
 
             puzzles = puzzles.OrderBy(p => p.GroupOrder)
+                .ThenByDescending(p => p.Puzzle.IsFinalPuzzle)
+                .ThenByDescending(p => p.Puzzle.IsMetaPuzzle)
                 .ThenByDescending(p => p.Puzzle.IsPuzzle)
                 .ThenBy(p => p.Puzzle.Group)
                 .ThenBy(p => p.SolveCount)
