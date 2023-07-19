@@ -28,7 +28,7 @@ namespace ServerCore.Pages.Player
 
             if(player != null)
             {
-                return RedirectToPage("./Details", new { id = player.ID });
+                return RedirectToPage("/Teams/List");
             }
 
             return Page();
