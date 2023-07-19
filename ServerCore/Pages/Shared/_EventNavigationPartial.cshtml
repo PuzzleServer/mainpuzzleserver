@@ -202,10 +202,13 @@
                             <li><a asp-page="/Player/Details" asp-route-id="@playerEventId">My registration</a></li>
                         </ul>
                     </li>
-                    @if(!isOnTeam)
+                    @if (!isOnTeam)
                     {
                         <li><a asp-page="/Puzzles/SinglePlayerPuzzles">Pregame puzzles</a></li>
-                        <li><a style="color:yellow" asp-page="/Teams/List"> Join or Create a Team!</a></li>
+                        @if (Event.IsTeamMembershipChangeActive)
+                        {
+                            <li><a style="color:yellow" asp-page="/Teams/List"> Join or Create a Team!</a></li>
+                        }
                     }
                     else
                     {
@@ -316,13 +319,16 @@
                 <ul class="nav navbar-nav">
                     <li><a asp-page="/EventSpecific/Index">Event</a></li>
                     <li><a asp-page="/Puzzles/SinglePlayerPuzzles">Pregame puzzles</a></li>
-                    @if(isOnTeam && Event.IsTeamMembershipChangeActive && !Event.EventHasStarted) // Exclude previous events from this registration prompt
+                    @if (Event.IsTeamMembershipChangeActive)
                     {
-                        <li><a style="color:yellow" asp-page="/Player/Create">Complete Your Registration</a></li>
-                    }
-                    else
-                    {
-                        <li><a style="color:yellow" asp-page="/Player/Create">Register</a></li>
+                        if (isOnTeam)
+                        {
+                            <li><a style="color:yellow" asp-page="/Player/Create">Complete Your Registration</a></li>
+                        }
+                        else
+                        {
+                            <li><a style="color:yellow" asp-page="/Player/Create">Register</a></li>
+                        }
                     }
                     <li><a asp-page="/Teams/AllTeams">View all teams</a></li>
                     <li class="dropdown">
