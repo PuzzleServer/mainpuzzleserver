@@ -285,6 +285,6 @@ namespace ServerCore.DataModel
         /// True if the single player puzzles should be shown.
         /// </summary>
         [NotMapped]
-        public bool ShouldShowSinglePlayerPuzzles => string.IsNullOrEmpty(SinglePlayerPuzzleTitle);
+        public bool ShouldShowSinglePlayerPuzzles => !string.IsNullOrEmpty(SinglePlayerPuzzleTitle);
     }
 }
