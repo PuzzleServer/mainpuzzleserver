@@ -393,6 +393,9 @@ namespace Data.Migrations
                     b.Property<bool>("ShowFastestSolves")
                         .HasColumnType("bit");
 
+                    b.Property<string>("SinglePlayerPuzzleTitle")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("StandingsAvailableBegin")
                         .HasColumnType("datetime2");
 
