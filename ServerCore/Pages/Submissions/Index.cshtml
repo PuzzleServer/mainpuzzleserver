@@ -56,6 +56,10 @@
 
 
 <h2>Submissions for @RawHtmlHelper.Display(Model.Puzzle.Name, Model.Event.ID, Html)</h2>
+
+<!-- Embeds a Blazor component in the middle of this razor page -->
+<component type="typeof(ServerCore.Pages.SomePath.MyBlazorComponent)" render-mode="ServerPrerendered" />
+
 <hr />
 <div>
     @if (Model.IsPuzzleForSinglePlayer == true)

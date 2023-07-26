@@ -1,0 +1,16 @@
+﻿<!-- This is a Blazor component. It's a snippet of HTML that will go into another page -->
+
+<!-- Some plain HTML -->
+<h3>MyBlazorComponent</h3>
+
+<!-- Showing the value of a property in the codebehind class-->
+<p>@CounterVal</p>
+
+<!-- Calling an event handler in the codebehind class on an event -->
+<button @onclick="IncrementCounter">Increment counter</button>
+
+<!-- Using a bit of C# logic to change rendering -->
+@if(CounterVal > 3)
+{
+    <b>You pressed it a lot!</b>
+}
