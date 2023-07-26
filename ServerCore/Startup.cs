@@ -61,6 +61,8 @@ namespace ServerCore
                 options.Conventions.AuthorizeFolder("/ModelBases");
             });
 
+            services.AddServerSideBlazor();
+
             DeploymentConfiguration.ConfigureDatabase(Configuration, services, _hostEnv);
             FileManager.ConnectionString = Configuration.GetConnectionString("AzureStorageConnectionString");
 
@@ -158,8 +160,16 @@ namespace ServerCore
             // According to the Identity Scaffolding readme the order of the following calls matters
             // Must be UseStaticFiles, UseAuthentication, UseMvc
             app.UseStaticFiles();
+            app.UseRouting();
+
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapBlazorHub();
+            });
+
             app.UseMvc();
 
             app.UseCors();
