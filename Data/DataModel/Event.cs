@@ -274,5 +274,17 @@ namespace ServerCore.DataModel
         /// If no lunch is chosen, what to fill in with
         /// </summary>
         public string DefaultLunch { get; set; }
+
+        /// <summary>
+        /// Title for single player puzzles.
+        /// Note: If this field is empty or null, the tab will not be shown.
+        /// </summary>
+        public string SinglePlayerPuzzleTitle { get; set; }
+
+        /// <summary>
+        /// True if the single player puzzles should be shown.
+        /// </summary>
+        [NotMapped]
+        public bool ShouldShowSinglePlayerPuzzles => string.IsNullOrEmpty(SinglePlayerPuzzleTitle);
     }
 }
