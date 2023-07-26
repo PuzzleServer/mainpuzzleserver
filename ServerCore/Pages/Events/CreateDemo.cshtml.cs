@@ -89,6 +89,7 @@ namespace ServerCore.Pages.Events
                 Event.MaxNumberOfTeams = 120;
                 Event.MaxExternalsPerTeam = 9;
                 Event.MaxTeamSize = 12;
+                Event.AllowBlazor = true;
                 _context.Events.Add(Event);
 
                 await _context.SaveChangesAsync();

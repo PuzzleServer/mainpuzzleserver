@@ -286,5 +286,10 @@ namespace ServerCore.DataModel
         /// </summary>
         [NotMapped]
         public bool ShouldShowSinglePlayerPuzzles => !string.IsNullOrEmpty(SinglePlayerPuzzleTitle);
+
+        /// <summary>
+        /// True if Blazor can run on pages for this event. Should normally be true, but can be disabled in an emergency
+        /// </summary>
+        public bool AllowBlazor { get; set; }
     }
 }

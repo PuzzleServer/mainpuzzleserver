@@ -17,14 +17,21 @@
     </environment>
 
     <base href="~/" />
-    <component type="typeof(Microsoft.AspNetCore.Components.Web.HeadOutlet)"
-               render-mode="ServerPrerendered" />
 
-    <!-- TODO: Make this actually scalable and correct -->
     @{
         // Using ev here so that it isn't the same as Event that we bind in the <body>
         // Works fine if we use Event, but VS will yell at you with an error in the IDE
         var ev = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Event;
+    }
+
+    @if (ev == null || ev.AllowBlazor)
+    {
+        <component type="typeof(Microsoft.AspNetCore.Components.Web.HeadOutlet)"
+                   render-mode="ServerPrerendered" />
+    }
+
+    <!-- TODO: Make this actually scalable and correct -->
+    @{
         if ((ev?.UrlString != null) && ((ev.UrlString.StartsWith("pd")) || (ev.UrlString.StartsWith("nipd"))))
         {
             <link rel="stylesheet" href="~/css/@(ev.UrlString)/styles.min.css" />
@@ -130,7 +137,10 @@
         <script src="~/js/site.min.js" asp-append-version="true"></script>
     </environment>
 
-    <script src="_framework/blazor.server.js"></script>
+    @if (Event == null || Event.AllowBlazor)
+    {
+        <script src="_framework/blazor.server.js"></script>
+    }
 
     @RenderSection("Scripts", required: false)
 </body>
