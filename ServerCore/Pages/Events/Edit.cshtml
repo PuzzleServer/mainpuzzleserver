@@ -36,6 +36,11 @@
                 <span asp-validation-for="EditableEvent.HomePartial" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="EditableEvent.SinglePlayerPuzzleTitle" class="control-label"></label>
+                <input asp-for="EditableEvent.SinglePlayerPuzzleTitle" class="form-control" />
+                <span asp-validation-for="EditableEvent.SinglePlayerPuzzleTitle" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="EditableEvent.ContactEmail" class="control-label"></label>
                 <input asp-for="EditableEvent.ContactEmail" class="form-control" />
                 <span asp-validation-for="EditableEvent.ContactEmail" class="text-danger"></span>
@@ -258,6 +263,13 @@
                 <label asp-for="EditableEvent.TermForGroup" class="control-label"></label>
                 <textarea asp-for="EditableEvent.TermForGroup" class="form-control"></textarea>
                 <span asp-validation-for="EditableEvent.TermForGroup" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="EditableEvent.AllowBlazor" /> AllowBlazor
+                    </label>
+                </div>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-default" />
