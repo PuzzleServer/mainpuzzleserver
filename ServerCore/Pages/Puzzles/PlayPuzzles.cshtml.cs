@@ -42,7 +42,6 @@ namespace ServerCore.Pages.Puzzles
         public Team Team { get; set; }
 
         public async Task OnGetAsync(
-            int? teamId,
             SortOrder? teamPuzzleSort,
             SortOrder? singlePlayerPuzzleSort,
             PuzzleStateFilter? stateFilter)
@@ -53,55 +52,36 @@ namespace ServerCore.Pages.Puzzles
             ShowAnswers = Event.AnswersAvailableBegin <= DateTime.UtcNow;
             AllowFeedback = Event.AllowFeedback;
 
-            if (teamId != null)
-            {
-                Team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
-                if (Team != null)
-                {
-                    await PuzzleStateHelper.CheckForTimedUnlocksAsync(_context, Event, Team);
-                }
-            }
-
-            VisibleSinglePlayerPuzzleViews = this.GetVisibleSinglePlayerPuzzleViews(singlePlayerPuzzleSort).ToList();
-            VisibleTeamPuzzleViews = (await this.GetVisibleTeamPlayerPuzzleViews(teamPuzzleSort, Team).ToList();
             Dictionary<int, ContentFile> files = await (from file in _context.ContentFiles
                                                         where file.Event == Event && file.FileType == ContentFileType.Puzzle
                                                         select file).ToDictionaryAsync(file => file.PuzzleID);
 
+            VisibleSinglePlayerPuzzleViews = this.GetVisibleSinglePlayerPuzzleViews(singlePlayerPuzzleSort).ToList();
             await this.PopulatePuzzleViewsWithFiles(VisibleSinglePlayerPuzzleViews, files);
-            await this.PopulatePuzzleViewsWithFiles(VisibleTeamPuzzleViews, files);
+
+            Team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
+            if (Team != null)
+            {
+                await PuzzleStateHelper.CheckForTimedUnlocksAsync(_context, Event, Team);
+                VisibleTeamPuzzleViews = (await this.GetVisibleTeamPlayerPuzzleViews(teamPuzzleSort, Team)).ToList();
+                await this.PopulatePuzzleViewsWithFiles(VisibleTeamPuzzleViews, files);
+            }
         }
 
         public SortOrder? SortForColumnLink(SortOrder? currentSort, SortOrder ascendingSort, SortOrder descendingSort)
         {
-            switch (currentSort)
+            if (currentSort == null)
             {
-                case SortOrder.PuzzleAscending:
-                    return SortOrder.PuzzleDescending;
-                case SortOrder.PuzzleDescending:
-                    return SortOrder.PuzzleAscending;
-                case SortOrder.GroupAscending:
-                    return SortOrder.GroupDescending;
-                case SortOrder.GroupDescending:
-                    return SortOrder.GroupAscending;
-                case SortOrder.SolveAscending:
-                    return SortOrder.SolveDescending;
-                case SortOrder.SolveDescending:
-                    return SortOrder.SolveAscending;
+                return ascendingSort;
             }
-            SortOrder result = ascendingSort;
-
-            if (result == (currentSort ?? DefaultSort))
+            else if (currentSort == ascendingSort)
             {
-                result = descendingSort;
+                return descendingSort;
             }
-
-            if (result == DefaultSort)
+            else
             {
-                return null;
+                return ascendingSort;
             }
-
-            return result;
         }
 
         public class PuzzleView
@@ -139,7 +119,7 @@ namespace ServerCore.Pages.Puzzles
         private async Task<IEnumerable<PuzzleView>> GetVisibleTeamPlayerPuzzleViews(SortOrder? sortOrder, Team team)
         {
             // all puzzles for this event that are real puzzles
-            var puzzlesInEventQ = _context.Puzzles.Where(puzzle => puzzle.Event.ID == this.Event.ID && puzzle.IsPuzzle);
+            var puzzlesInEventQ = _context.Puzzles.Where(puzzle => puzzle.Event.ID == this.Event.ID && puzzle.IsPuzzle && !puzzle.IsForSinglePlayer);
 
             // unless we're in a global lockout, then filter to those!
             var puzzlesCausingGlobalLockoutQ = PuzzleStateHelper.PuzzlesCausingGlobalLockout(_context, Event, team);

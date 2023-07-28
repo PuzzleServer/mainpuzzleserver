@@ -187,14 +187,7 @@
     <h2>Submissions for @RawHtmlHelper.Display(Model.Puzzle.Name, Model.Event.ID, Html)</h2>
     <hr />
     <div>
-        @if (Model.IsPuzzleForSinglePlayer == true)
-        {
-            <a asp-page="/Puzzles/SinglePlayerPuzzles">Back to puzzle list</a>
-        }
-        else
-        {
-            <a asp-page="/Teams/Play" asp-route-teamId="@Model.Team.ID">Back to puzzle list</a>
-        }
+        <a asp-page="/Puzzles/PlayPuzzles">Back to puzzle list</a>
     </div>
     <br />
     @if (!string.IsNullOrEmpty(Model.Puzzle.Errata))
