@@ -51,7 +51,14 @@
 }
 else if (!Model.VisibleTeamPuzzleViews.Any())
 {
-    <p>Looks like there are no Team puzzles available yet.</p>
+    if (unsolvedFilter)
+    {
+        <p>You have no unsolved team puzzles.</p>
+    }
+    else
+    {
+        <p>Looks like there are no Team puzzles available here yet!</p>
+    }
 }
 else
 {
@@ -219,7 +226,14 @@ else
     <h2>@Model.Event.SinglePlayerPuzzleTitle</h2>
     @if (!Model.VisibleSinglePlayerPuzzleViews.Any())
     {
-        <p>Looks like there are no puzzles available here yet!</p>
+        if (unsolvedFilter)
+        {
+            <p>You have no unsolved puzzles in this section.</p>
+        }
+        else
+        {
+            <p>Looks like there are no puzzles available here yet!</p>
+        }
     }
     else
     {
