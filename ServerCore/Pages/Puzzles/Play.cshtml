@@ -33,28 +33,30 @@
     </div>
 }
 
+<p>Note: Puzzles with a &#x26A0; before the name have errata, which will be provided on that puzzle's answer submission page.</p>
+<div>
+    <a asp-page="./Play"
+       asp-route-singlePlayerPuzzleSort="@Model.SinglePlayerPuzzleSort"
+       asp-route-teamPuzzleSort="@Model.TeamPuzzleSort"
+       asp-route-stateFilter=@(unsolvedFilter ? PlayModel.PuzzleStateFilter.All : PlayModel.PuzzleStateFilter.Unsolved)>
+        Show @(unsolvedFilter ? "All" : "only unsolved") puzzles
+    </a>
+</div>
+
 <h2>Team puzzles</h2>
 @if (Model.Team == null)
 {
-    <p>You cannot see team puzzles because you are not yet on a team!</p>
+    <p>You cannot see team puzzles because you are not yet on a team!<br/>
+        Create or join a team <a asp-page="/Teams/List">HERE</a>.</p>
 }
 else if (!Model.VisibleTeamPuzzleViews.Any())
 {
-    <p>Looks like there are no Team puzzles unlocked yet.</p>
+    <p>Looks like there are no Team puzzles available yet.</p>
 }
 else
 {
     <div>
-        <a asp-page="/Teams/Answers" asp-route-teamId="@Model.Team.ID">View All Correct Team Answers</a>
-    </div>
-    <br />
-    <div>
-        <a asp-page="./Play"
-           asp-route-singlePlayerPuzzleSort="@Model.SinglePlayerPuzzleSort"
-           asp-route-teamPuzzleSort="@Model.TeamPuzzleSort"
-           asp-route-stateFilter=@(unsolvedFilter ? PlayModel.PuzzleStateFilter.All : PlayModel.PuzzleStateFilter.Unsolved)>
-            Show @(unsolvedFilter ? "All" : "Unsolved") Puzzles
-        </a>
+        <a asp-page="/Teams/Answers" asp-route-teamId="@Model.Team.ID">View all correct team answers</a>
     </div>
     <br />
     <a asp-page="/Events/FastestSolves"
@@ -213,22 +215,14 @@ else
 
 @if (Model.Event.ShouldShowSinglePlayerPuzzles)
 {
+    <br/>
     <h2>@Model.Event.SinglePlayerPuzzleTitle</h2>
     @if (!Model.VisibleSinglePlayerPuzzleViews.Any())
     {
-        <p>Looks like there are no puzzles unlocked here yet!</p>
+        <p>Looks like there are no puzzles available here yet!</p>
     }
     else
     {
-        <br />
-        <div>
-            <a asp-page="./Play"
-               asp-route-teamPuzzleSort="@Model.TeamPuzzleSort"
-               asp-route-singlePlayerPuzzleSort="@Model.SinglePlayerPuzzleSort"
-               asp-route-stateFilter=@(unsolvedFilter ? PlayModel.PuzzleStateFilter.All : PlayModel.PuzzleStateFilter.Unsolved)>
-                Show @(unsolvedFilter ? "All" : "Unsolved") Puzzles
-            </a>
-        </div>
         <table class="table">
             <thead>
                 <tr>
@@ -364,5 +358,3 @@ else
         </table>
     }
 }
-
-<p>Note: Puzzles with a &#x26A0; before the name have errata, which will be provided on that puzzle's answer submission page.</p>
