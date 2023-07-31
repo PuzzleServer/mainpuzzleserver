@@ -104,7 +104,7 @@ namespace ServerCore.Pages.Puzzles
 
             await _context.SaveChangesAsync();
 
-            return RedirectToPage("/Puzzles/PlayPuzzles");
+            return RedirectToPage("/Puzzles/Play");
         }
     }
 }

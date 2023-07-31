@@ -1,14 +1,14 @@
-﻿@page "/{eventId}/{eventRole}/PlayPuzzles"
-@model ServerCore.Pages.Puzzles.PlayPuzzlesModel
+﻿@page "/{eventId}/{eventRole}/Play"
+@model ServerCore.Pages.Puzzles.PlayModel
 
 @{
     @using Helpers;
 
-    ViewData["Title"] = "PlayPuzzles";
+    ViewData["Title"] = "Play";
     ViewData["AdminRoute"] = "/Puzzles/Index";
     ViewData["AuthorRoute"] = "/Puzzles/Index";
 
-    bool unsolvedFilter = Model.StateFilter == PlayPuzzlesModel.PuzzleStateFilter.Unsolved;
+    bool unsolvedFilter = Model.StateFilter == PlayModel.PuzzleStateFilter.Unsolved;
     bool canSubmit = DateTime.UtcNow >= Model.Event.EventBegin;
 }
 <style>
@@ -49,10 +49,10 @@ else
     </div>
     <br />
     <div>
-        <a asp-page="./PlayPuzzles"
+        <a asp-page="./Play"
            asp-route-singlePlayerPuzzleSort="@Model.SinglePlayerPuzzleSort"
            asp-route-teamPuzzleSort="@Model.TeamPuzzleSort"
-           asp-route-stateFilter=@(unsolvedFilter ? PlayPuzzlesModel.PuzzleStateFilter.All : PlayPuzzlesModel.PuzzleStateFilter.Unsolved)>
+           asp-route-stateFilter=@(unsolvedFilter ? PlayModel.PuzzleStateFilter.All : PlayModel.PuzzleStateFilter.Unsolved)>
             Show @(unsolvedFilter ? "All" : "Unsolved") Puzzles
         </a>
     </div>
@@ -73,18 +73,18 @@ else
         <thead>
             <tr>
                 <th>
-                    <a asp-page="./PlayPuzzles"
+                    <a asp-page="./Play"
                         asp-route-teamId="@Model.Team.ID"
                         asp-route-singlePlayerPuzzleSort="@Model.SinglePlayerPuzzleSort" 
-                        asp-route-teamPuzzleSort="@(Model.SortForColumnLink(Model.TeamPuzzleSort, PlayPuzzlesModel.SortOrder.GroupAscending, PlayPuzzlesModel.SortOrder.GroupDescending))" 
+                        asp-route-teamPuzzleSort="@(Model.SortForColumnLink(Model.TeamPuzzleSort, PlayModel.SortOrder.GroupAscending, PlayModel.SortOrder.GroupDescending))" 
                         asp-route-stateFilter="@Model.StateFilter">
                         @(Model.Event.TermForGroup ?? "Group")
                     </a>
                 </th>
                 <th>
-                    <a asp-page="./PlayPuzzles"
+                    <a asp-page="./Play"
                         asp-route-singlePlayerPuzzleSort="@Model.SinglePlayerPuzzleSort"
-                        asp-route-teamPuzzleSort="@(Model.SortForColumnLink(Model.TeamPuzzleSort, PlayPuzzlesModel.SortOrder.PuzzleAscending, PlayPuzzlesModel.SortOrder.PuzzleDescending))"
+                        asp-route-teamPuzzleSort="@(Model.SortForColumnLink(Model.TeamPuzzleSort, PlayModel.SortOrder.PuzzleAscending, PlayModel.SortOrder.PuzzleDescending))"
                         asp-route-stateFilter="@Model.StateFilter">
                         Puzzle
                     </a>
@@ -96,9 +96,9 @@ else
                     </th>
                 }
                 <th>
-                    <a asp-page="./PlayPuzzles"
+                    <a asp-page="./Play"
                         asp-route-singlePlayerPuzzleSort="@Model.SinglePlayerPuzzleSort" 
-                        asp-route-teamPuzzleSort="@(Model.SortForColumnLink(Model.TeamPuzzleSort, PlayPuzzlesModel.SortOrder.SolveAscending, PlayPuzzlesModel.SortOrder.SolveDescending))"
+                        asp-route-teamPuzzleSort="@(Model.SortForColumnLink(Model.TeamPuzzleSort, PlayModel.SortOrder.SolveAscending, PlayModel.SortOrder.SolveDescending))"
                         asp-route-stateFilter="@Model.StateFilter">
                         Solve
                     </a>
@@ -222,10 +222,10 @@ else
     {
         <br />
         <div>
-            <a asp-page="./PlayPuzzles"
+            <a asp-page="./Play"
                asp-route-teamPuzzleSort="@Model.TeamPuzzleSort"
                asp-route-singlePlayerPuzzleSort="@Model.SinglePlayerPuzzleSort"
-               asp-route-stateFilter=@(unsolvedFilter ? PlayPuzzlesModel.PuzzleStateFilter.All : PlayPuzzlesModel.PuzzleStateFilter.Unsolved)>
+               asp-route-stateFilter=@(unsolvedFilter ? PlayModel.PuzzleStateFilter.All : PlayModel.PuzzleStateFilter.Unsolved)>
                 Show @(unsolvedFilter ? "All" : "Unsolved") Puzzles
             </a>
         </div>
@@ -233,17 +233,17 @@ else
             <thead>
                 <tr>
                     <th>
-                        <a asp-page="./PlayPuzzles"
+                        <a asp-page="./Play"
                             asp-route-teamPuzzleSort="@Model.TeamPuzzleSort" 
-                            asp-route-singlePlayerPuzzleSort="@(Model.SortForColumnLink(Model.SinglePlayerPuzzleSort, PlayPuzzlesModel.SortOrder.GroupAscending, PlayPuzzlesModel.SortOrder.GroupDescending))"
+                            asp-route-singlePlayerPuzzleSort="@(Model.SortForColumnLink(Model.SinglePlayerPuzzleSort, PlayModel.SortOrder.GroupAscending, PlayModel.SortOrder.GroupDescending))"
                             asp-route-stateFilter="@Model.StateFilter">
                             @(Model.Event.TermForGroup ?? "Group")
                         </a>
                     </th>
                     <th>
-                        <a asp-page="./PlayPuzzles"
+                        <a asp-page="./Play"
                             asp-route-teamPuzzleSort="@Model.TeamPuzzleSort" 
-                            asp-route-singlePlayerPuzzleSort="@(Model.SortForColumnLink(Model.SinglePlayerPuzzleSort, PlayPuzzlesModel.SortOrder.PuzzleAscending, PlayPuzzlesModel.SortOrder.PuzzleDescending))" 
+                            asp-route-singlePlayerPuzzleSort="@(Model.SortForColumnLink(Model.SinglePlayerPuzzleSort, PlayModel.SortOrder.PuzzleAscending, PlayModel.SortOrder.PuzzleDescending))" 
                             asp-route-stateFilter="@Model.StateFilter">
                             Puzzle
                         </a>
@@ -255,9 +255,9 @@ else
                         </th>
                     }
                     <th>
-                        <a asp-page="./PlayPuzzles"
+                        <a asp-page="./Play"
                             asp-route-teamPuzzleSort="@Model.TeamPuzzleSort" 
-                            asp-route-singlePlayerPuzzleSort="@(Model.SortForColumnLink(Model.SinglePlayerPuzzleSort, PlayPuzzlesModel.SortOrder.SolveAscending, PlayPuzzlesModel.SortOrder.SolveDescending))"
+                            asp-route-singlePlayerPuzzleSort="@(Model.SortForColumnLink(Model.SinglePlayerPuzzleSort, PlayModel.SortOrder.SolveAscending, PlayModel.SortOrder.SolveDescending))"
                             asp-route-stateFilter="@Model.StateFilter">
                             Solve
                         </a>

@@ -206,7 +206,7 @@
                     {
                         @if (Event.ShouldShowSinglePlayerPuzzles)
                         {
-                            <li><a asp-page="/Puzzles/PlayPuzzles">@Event.SinglePlayerPuzzleTitle</a></li>
+                            <li><a asp-page="/Puzzles/Play">@Event.SinglePlayerPuzzleTitle</a></li>
                         }
                         @if (Event.IsTeamMembershipChangeActive)
                         {
@@ -215,7 +215,7 @@
                     }
                     else
                     {
-                        <li><a asp-page="/Puzzles/PlayPuzzles">Puzzles</a></li>
+                        <li><a asp-page="/Puzzles/Play">Puzzles</a></li>
                     }
                     @if (Event.HasSwag)
                     {
@@ -313,7 +313,7 @@
                     <li><a asp-page="/EventSpecific/Index">Event</a></li>
                     @if (Event.ShouldShowSinglePlayerPuzzles)
                     {
-                        <li><a asp-page="/Puzzles/PlayPuzzles">@Event.SinglePlayerPuzzleTitle</a></li>
+                        <li><a asp-page="/Puzzles/Play">@Event.SinglePlayerPuzzleTitle</a></li>
                     }
                     @if (Event.IsTeamMembershipChangeActive)
                     {

@@ -15,11 +15,11 @@ namespace ServerCore.Pages.Puzzles
     /// Model for the player's "Puzzles" page. Shows a list of the all the player puzzles (both team puzzles and single player puzzles).
     /// </summary>
     [Authorize()]
-    public class PlayPuzzlesModel : EventSpecificPageModel
+    public class PlayModel : EventSpecificPageModel
     {
         // see https://docs.microsoft.com/en-us/aspnet/core/data/ef-rp/sort-filter-page?view=aspnetcore-2.1 to make this sortable!
 
-        public PlayPuzzlesModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
+        public PlayModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
         }
 
@@ -52,19 +52,35 @@ namespace ServerCore.Pages.Puzzles
             ShowAnswers = Event.AnswersAvailableBegin <= DateTime.UtcNow;
             AllowFeedback = Event.AllowFeedback;
 
-            Dictionary<int, ContentFile> files = await (from file in _context.ContentFiles
-                                                        where file.Event == Event && file.FileType == ContentFileType.Puzzle
-                                                        select file).ToDictionaryAsync(file => file.PuzzleID);
+            Dictionary<int, ContentFile> answers = await (from file in _context.ContentFiles
+                                                          where file.Event == Event && file.FileType == ContentFileType.Answer
+                                                          select file).ToDictionaryAsync(file => file.PuzzleID);
+            var puzzleFiles = new Dictionary<int, ContentFile>();
+            var answerFiles = new Dictionary<int, ContentFile>();
+            await (from file in _context.ContentFiles
+                where file.Event == Event && file.FileType == ContentFileType.Puzzle
+                select file)
+                .ForEachAsync(file => 
+                {
+                    if (file.FileType == ContentFileType.Puzzle)
+                    {
+                        puzzleFiles.Add(file.PuzzleID, file);
+                    }
+                    else if (file.FileType == ContentFileType.Answer)
+                    {
+                        answerFiles.Add(file.PuzzleID, file);
+                    }
+                });
 
             VisibleSinglePlayerPuzzleViews = this.GetVisibleSinglePlayerPuzzleViews(singlePlayerPuzzleSort).ToList();
-            await this.PopulatePuzzleViewsWithFiles(VisibleSinglePlayerPuzzleViews, files);
+            this.PopulatePuzzleViewsWithFiles(VisibleSinglePlayerPuzzleViews, puzzleFiles, answerFiles);
 
             Team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
             if (Team != null)
             {
                 await PuzzleStateHelper.CheckForTimedUnlocksAsync(_context, Event, Team);
                 VisibleTeamPuzzleViews = (await this.GetVisibleTeamPlayerPuzzleViews(teamPuzzleSort, Team)).ToList();
-                await this.PopulatePuzzleViewsWithFiles(VisibleTeamPuzzleViews, files);
+                this.PopulatePuzzleViewsWithFiles(VisibleTeamPuzzleViews, puzzleFiles, answerFiles);
             }
         }
 
@@ -210,25 +226,19 @@ namespace ServerCore.Pages.Puzzles
             }
         }
 
-        private async Task PopulatePuzzleViewsWithFiles(
+        private void PopulatePuzzleViewsWithFiles(
             IEnumerable<PuzzleView> puzzleViews,
-            Dictionary<int, ContentFile> files)
+            Dictionary<int, ContentFile> puzzleFiles,
+            Dictionary<int, ContentFile> answerFiles)
         {
             foreach (var puzzleView in puzzleViews)
             {
-                files.TryGetValue(puzzleView.ID, out ContentFile content);
+                puzzleFiles.TryGetValue(puzzleView.ID, out ContentFile content);
                 puzzleView.Content = content;
-            }
 
-            if (ShowAnswers)
-            {
-                Dictionary<int, ContentFile> answers = await(from file in _context.ContentFiles
-                                                             where file.Event == Event && file.FileType == ContentFileType.Answer
-                                                             select file).ToDictionaryAsync(file => file.PuzzleID);
-
-                foreach (var puzzleView in puzzleViews)
+                if (ShowAnswers)
                 {
-                    answers.TryGetValue(puzzleView.ID, out ContentFile answer);
+                    answerFiles.TryGetValue(puzzleView.ID, out ContentFile answer);
                     puzzleView.Answer = answer;
                 }
             }
