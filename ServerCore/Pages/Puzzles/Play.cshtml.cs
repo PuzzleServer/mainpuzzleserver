@@ -52,9 +52,6 @@ namespace ServerCore.Pages.Puzzles
             ShowAnswers = Event.AnswersAvailableBegin <= DateTime.UtcNow;
             AllowFeedback = Event.AllowFeedback;
 
-            Dictionary<int, ContentFile> answers = await (from file in _context.ContentFiles
-                                                          where file.Event == Event && file.FileType == ContentFileType.Answer
-                                                          select file).ToDictionaryAsync(file => file.PuzzleID);
             var puzzleFiles = new Dictionary<int, ContentFile>();
             var answerFiles = new Dictionary<int, ContentFile>();
             await (from file in _context.ContentFiles
