@@ -55,7 +55,7 @@ namespace ServerCore.Pages.Puzzles
             var puzzleFiles = new Dictionary<int, ContentFile>();
             var answerFiles = new Dictionary<int, ContentFile>();
             await (from file in _context.ContentFiles
-                where file.Event == Event && file.FileType == ContentFileType.Puzzle
+                where file.Event == Event && (file.FileType == ContentFileType.Puzzle || file.FileType == ContentFileType.Answer)
                 select file)
                 .ForEachAsync(file => 
                 {
