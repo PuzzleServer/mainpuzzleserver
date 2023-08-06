@@ -56,7 +56,7 @@ namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
                                                        IsRegisteredForEventRequirement requirement)
         {
-            await authHelper.IsEventPlayerCheck(authContext, requirement);
+            await authHelper.IsPlayerRegisteredForEvent(authContext, requirement);
         }
     }
 }
