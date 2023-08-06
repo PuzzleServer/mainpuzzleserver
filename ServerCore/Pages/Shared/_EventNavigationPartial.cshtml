@@ -327,6 +327,10 @@
                         }
                     }
                     <li><a asp-page="/Teams/AllTeams">View all teams</a></li>
+                    @if (Event.ShouldShowSinglePlayerPuzzles)
+                    {
+                        <li><a asp-page="/Events/SinglePlayerPuzzleFastestSolves">Solve counts</a></li>
+                    }
                     <li class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                             Resources

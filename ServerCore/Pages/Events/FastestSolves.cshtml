@@ -13,6 +13,15 @@
 }
 
 <h2>Fastest solves</h2>
+@if (Model.Event.ShouldShowSinglePlayerPuzzles)
+{
+    <div>
+        <a asp-page="./SinglePlayerPuzzleFastestSolves">
+            Go to @Model.Event.SinglePlayerPuzzleTitle solve counts
+        </a>
+    </div>
+    <br />
+}
 <br/>
 <div>
     <a asp-page="./FastestSolves"
