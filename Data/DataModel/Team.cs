@@ -5,6 +5,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ServerCore.DataModel
 {
+    public enum AutoTeamType
+    {
+        Beginner,
+        Intermediate,
+        Serious
+    }
+
     public class Team
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -35,7 +42,17 @@ namespace ServerCore.DataModel
         public string PrimaryContactEmail { get; set; }
         public string PrimaryPhoneNumber { get; set; }
         public string SecondaryPhoneNumber { get; set; }
+        
+        /// <summary>
+        /// True if a team should show up on the list of teams accepting applications
+        /// </summary>
         public bool IsLookingForTeammates { get; set; }
+
+        /// <summary>
+        /// True if applications to a team should be automatically approved without their intervention
+        /// </summary>
+        public bool AutoApproveTeammates { get; set; }
+
 
         public virtual List<Submission> Submissions { get; set; }
 
@@ -92,5 +109,11 @@ namespace ServerCore.DataModel
         /// Show the team announcement for this team
         /// </summary>
         public bool ShowTeamAnnouncement { get; set; }
+
+        /// <summary>
+        /// If the team is automatically created, contains which type of players it's for.
+        /// Null if the team is manually created.
+        /// </summary>
+        public AutoTeamType? AutoTeamType { get; set; }
     }
 }

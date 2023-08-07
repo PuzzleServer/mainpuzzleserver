@@ -1253,6 +1253,12 @@ namespace Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
+                    b.Property<bool>("AutoApproveTeammates")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("AutoTeamType")
+                        .HasColumnType("int");
+
                     b.Property<string>("Bio")
                         .HasColumnType("nvarchar(max)");
 

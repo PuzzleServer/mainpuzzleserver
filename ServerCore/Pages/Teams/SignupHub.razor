@@ -1,0 +1,18 @@
+﻿<head>
+    <title>Create or Join A Team</title>
+</head>
+<body>
+    <h1>Create or Join A Team</h1>
+    <EditForm Model="this">
+        <input type="text" @bind="TestString" />
+
+        <InputRadioGroup Name="SignupPicker" @bind-Value="Strategy">
+            <label><InputRadio Name="SignupPicker" Value="@SignupStrategy.Create.ToString()" />Create A Team</label>
+            <label><InputRadio Name="SignupPicker" Value="@SignupStrategy.Join.ToString()" />Apply for an existing team</label>
+            <label><InputRadio Name="SignupPicker" Value="@SignupStrategy.Auto.ToString()" />Help me find a team</label>
+        </InputRadioGroup>
+    </EditForm>
+    <h2>Chosen option: @Strategy</h2>
+    <h2>Test string: @TestString</h2>
+</body>
+
