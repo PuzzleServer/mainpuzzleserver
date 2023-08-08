@@ -77,7 +77,6 @@ namespace ServerCore
                 options.AddPolicy("IsEventAuthor", policy => policy.Requirements.Add(new IsAuthorInEventRequirement()));
                 options.AddPolicy("IsEventAdmin", policy => policy.Requirements.Add(new IsAdminInEventRequirement()));
                 options.AddPolicy("IsGlobalAdmin", policy => policy.Requirements.Add(new IsGlobalAdminRequirement()));
-                options.AddPolicy("IsPlayer", policy => policy.Requirements.Add(new IsPlayerInEventRequirement()));
                 options.AddPolicy("PlayerCanSeePuzzle", policy => policy.Requirements.Add(new PlayerCanSeePuzzleRequirement()));
                 options.AddPolicy("PlayerIsOnTeam", policy => policy.Requirements.Add(new PlayerIsOnTeamRequirement()));
                 options.AddPolicy("IsAuthorOfPuzzle", policy => policy.Requirements.Add(new IsAuthorOfPuzzleRequirement()));
@@ -102,7 +101,6 @@ namespace ServerCore
             services.AddScoped<IAuthorizationHandler, IsAuthorInEventHandler>();
             services.AddScoped<IAuthorizationHandler, IsAdminInEventHandler>();
             services.AddScoped<IAuthorizationHandler, IsGlobalAdminHandler>();
-            services.AddScoped<IAuthorizationHandler, IsPlayerInEventHandler>();
             services.AddScoped<IAuthorizationHandler, PlayerCanSeePuzzleHandler>();
             services.AddScoped<IAuthorizationHandler, PlayerIsOnTeamHandler>();
             services.AddScoped<IAuthorizationHandler, IsAuthorOfPuzzleHandler>();

@@ -133,7 +133,24 @@ namespace ServerCore.Areas.Identity
             }
         }
 
-        public async Task IsEventPlayerCheck(AuthorizationHandlerContext authContext, IAuthorizationRequirement requirement)
+        public async Task IsPlayerRegisteredForEvent(AuthorizationHandlerContext authContext, IAuthorizationRequirement requirement)
+        {
+            EventRole role = GetEventRoleFromRoute();
+            if (role != EventRole.play)
+            {
+                return;
+            }
+
+            PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
+            Event thisEvent = await GetEventFromRoute();
+
+            if (thisEvent != null && await puzzleUser.IsRegisteredForEvent(dbContext, thisEvent))
+            {
+                authContext.Succeed(requirement);
+            }
+        }
+
+        public async Task IsEventPlayerOnTeamCheck(AuthorizationHandlerContext authContext, IAuthorizationRequirement requirement)
         {
             EventRole role = GetEventRoleFromRoute();
             if (role != EventRole.play)
