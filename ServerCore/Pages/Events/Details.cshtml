@@ -37,9 +37,18 @@
         <dt>
             SinglePlayerPuzzleTitle
         </dt>
-        <dd>
-            @Model.Event.SinglePlayerPuzzleTitle
-        </dd>
+        @if (Model.Event.ShouldShowSinglePlayerPuzzles)
+        {
+            <dd>
+                @Model.Event.SinglePlayerPuzzleTitle
+            </dd>
+        }
+        else
+        {
+            <dd>
+                NONE (if there is no title, SinglePlayerPuzzles will not be shown).
+            </dd>
+        }
         <dt>
             ContactEmail
         </dt>
