@@ -6,11 +6,11 @@
 
     if (Model.Event.EmbedPuzzles)
     {
-            ViewData["Title"] = Model.Puzzle.Name;
+        ViewData["Title"] = Model.Puzzle.Name;
     }
     else
     {
-            ViewData["Title"] = "Create submissions";
+        ViewData["Title"] = "Create submissions";
     }
     ViewData["AdminRoute"] = "../Submissions/AuthorIndex";
     ViewData["AuthorRoute"] = "../Submissions/AuthorIndex";
@@ -344,28 +344,27 @@
                             <td>
                                 @{
                                     var response = Model.SubmissionViews[i].Response;
-
                                     if (response == null)
                                     {
                                         if (Model.SubmissionViews[i].IsFreeform)
                                         {
                                             if (Model.SubmissionViews[i].Submission.FreeformAccepted != null)
                                             {
-                                                @(Model.SubmissionViews[i].FreeformReponse);
+                                                             @(Model.SubmissionViews[i].FreeformReponse);
                                             }
                                             else if (Model.PuzzleState.SolvedTime == null)
                                             {
-                                                <text>Pending...</text>
+                                                            <text>Pending...</text>
                                             }
                                         }
                                         else
                                         {
-                                            <text>@IndexModel.IncorrectResponseText</text>
+                                                        <text>@IndexModel.IncorrectResponseText</text>
                                         }
                                     }
                                     else
                                     {
-                                        @ServerCore.Helpers.RawHtmlHelper.Display(response.ResponseText, Model.Event.ID, Html);
+                                                    @ServerCore.Helpers.RawHtmlHelper.Display(response.ResponseText, Model.Event.ID, Html);
                                     }
                                 }
                             </td>
@@ -572,28 +571,27 @@ else
                             <div class="panelitem">@(Model.SubmissionViews[i].Submission.SubmissionText)</div>
                             @{
                                 var response = Model.SubmissionViews[i].Response;
-
                                 if (response == null)
                                 {
                                     if (Model.SubmissionViews[i].IsFreeform)
                                     {
                                         if (Model.SubmissionViews[i].Submission.FreeformAccepted != null)
                                         {
-                                            <div class="panelitem">@(Model.SubmissionViews[i].FreeformReponse)</div>
+                                                        <div class="panelitem">@(Model.SubmissionViews[i].FreeformReponse)</div>
                                         }
                                         else if (Model.PuzzleState.SolvedTime == null)
                                         {
-                                            <div class="panelitem">Pending...</div>
+                                                        <div class="panelitem">Pending...</div>
                                         }
                                     }
                                     else
                                     {
-                                        <div class="panelitem">@IndexModel.IncorrectResponseText</div>
+                                                    <div class="panelitem">@IndexModel.IncorrectResponseText</div>
                                     }
                                 }
                                 else
                                 {
-                                    <div class="panelitem">@ServerCore.Helpers.RawHtmlHelper.Display(response.ResponseText, Model.Event.ID, Html)</div>
+                                                <div class="panelitem">@ServerCore.Helpers.RawHtmlHelper.Display(response.ResponseText, Model.Event.ID, Html)</div>
                                 }
                             }
                         </div>
@@ -700,20 +698,43 @@ else
                     // Response Code enum is in Helpers/SubmissionEvaluator
                     const messageArea = document.querySelector("#initialMessage");
                     let updateVal = "";
+                    let responseString = (responseData.completeResponse ?? "") + (responseData.freeformResponse ?? "");
+                    if (responseString.startsWith("Html.Raw")) { 
+                        responseString = responseString.substring(9, responseString.length - 1);
+                    }
+                    let headerString = "";
                     switch (responseData.responseCode) {
                         case 0: // Correct
+                            headerString = "Correct!"
+                            if (responseString.length > 0) { 
+                                headerString = responseString;
+                            }
+                            updateVal = `<div class="alert alert-success" role="alert"><h4>` + headerString + `</h4><span>Answer: ` + cleanedText + `</span></div>`;
                             const dateString = `@Model.Event.AnswerSubmissionEnd.ToString("YYYY-MM-DDTHH:mm:ss.sssZ")`;
-                            updateVal = `<div class="alert alert-success" role="alert"><h4>Correct</h4><span>Answer: ` + cleanedText + `</span></div>`;
                             updateVal += ((Date.now() > Date.parse(dateString).valueOf()) ? `<div class="alert alert-warning" role="alert"><span>You solved this after the event ended and it did not count toward your ranking.</span></div>` : ``);
                             break;
                         case 1: // Incorrect
-                            updateVal = `<div class="alert alert-danger" role="alert">` + cleanedText + ": " + `@IndexModel.IncorrectResponseText</div>`;
+                            headerString = `@IndexModel.IncorrectResponseText`;
+                            if (responseString.length > 0) {
+                                headerString = responseString;
+                            }
+                            updateVal = `<div class="alert alert-danger" role="alert"><h4>` + headerString + `</h4><span>Submission: ` + cleanedText + `</span></div>`;
                             break;
                         case 2: // Freeform
-                            updateVal = `<div class="alert alert-warning" role="alert">` + cleanedText + ": " + responseData.freeformResponse + `</div>`;
+                            updateVal = `<div class="alert alert-warning" role="alert"><h4>Your freeform submission has a response</h4><span>Freeform Submission: ` + cleanedText + `</span>`;
+                            if (responseString.length > 0) {
+                                updateVal += `<br /><span>Response: ` + responseString + `</span></div>`;
+                            }
+                            else { 
+                                updateVal += `</div>`;
+                            }
                             break;
                         case 3: // Partial
-                            updateVal = `<div class="alert alert-warning" role="alert">` + cleanedText + ": " + responseData.completeResponse + `</div>`;
+                            headerString = `This submission has a partial response`;
+                            if (responseString.length > 0) {
+                                headerString = `Response from the system: ` + responseString;
+                            }
+                            updateVal = `<div class="alert alert-warning" role="alert"><h4>` + headerString + `</h4><span>Submission: ` + cleanedText + `</span></div>`;
                             break;
                         case 4: // Unauthorized
                             updateVal = `<div class="alert alert-danger" role="alert">You don't appear to have access to this puzzle, so your answer has not been recorded.</div>`;
@@ -758,14 +779,14 @@ else
                         wrapper.appendChild(text);
                         const resp = document.createElement("div");
                         resp.classList.add("panelitem");
-                        resp.innerText = (responseData.completeResponse ?? "") + (responseData.freeformResponse ?? "");
-                        resp.innerText += ((resp.innerText.length == 0) ? ((responseData.responseCode == 0) ? "Correct!" : "Incorrect") : "");
+                        resp.innerHTML = responseString;
+                        resp.innerHTML += ((responseString.length == 0) ? ((responseData.responseCode == 0) ? "Correct!" : "Incorrect") : "");
                         wrapper.appendChild(resp);
                         const answerPanel = document.querySelector("#submissionHistory div.panelcontents");
                         answerPanel.firstElementChild.after(wrapper);
                         document.getElementById("submissionHistory").style.display = "block";
                     }
-                    rawText.value = "";
+                    document.querySelector("#submitBox").value = "";
                 }
                 submit.addEventListener("click", submitClickHandler);
 
