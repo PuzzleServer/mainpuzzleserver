@@ -696,11 +696,13 @@ else
                     // When the response data is back, add it to the page
                     // Also clear the previous response from the page
                     // Response Code enum is in Helpers/SubmissionEvaluator
+                    // Raw HTML stripping conforms to expected format in RawHtmlHelper
                     const messageArea = document.querySelector("#initialMessage");
                     let updateVal = "";
                     let responseString = (responseData.completeResponse ?? "") + (responseData.freeformResponse ?? "");
-                    if (responseString.startsWith("Html.Raw")) { 
-                        responseString = responseString.substring(9, responseString.length - 1);
+                    const rawPos = responseString.indexOf("Html.Raw(");
+                    if (rawPos >= 0) { 
+                        responseString = responseString.substring(0, rawPos) + responseString.substring(rawPos + 9, responseString.length - 1);
                     }
                     let headerString = "";
                     switch (responseData.responseCode) {
