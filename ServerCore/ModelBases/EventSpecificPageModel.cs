@@ -51,6 +51,7 @@ namespace ServerCore.ModelBases
         }
 
         private bool? isRegisteredUser;
+
         public async Task<bool> IsRegisteredUser()
         {
             if (LoggedInUser == null)
