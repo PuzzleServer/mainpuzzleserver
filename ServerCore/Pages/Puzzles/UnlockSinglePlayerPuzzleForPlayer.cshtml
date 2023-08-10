@@ -1,0 +1,43 @@
+﻿@page "/{eventId}/{eventRole}/Puzzles/UnlockSinglePlayerPuzzleForPlayer/{puzzleId}"
+@model ServerCore.Pages.Puzzles.UnlockSinglePlayerPuzzleForPlayerModel
+
+@{
+    ViewData["Title"] = "Unlock single player puzzle for player";
+}
+
+<h2>Unlock @Model.Puzzle.Name for a player</h2>
+
+<div>
+    <a asp-page="/Puzzles/SinglePlayerPuzzleStatus" asp-route-puzzleid=@Model.Puzzle.ID>Cancel</a>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Name
+            </th>
+            <th>
+                Email
+            </th>
+            <th>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var player in Model.Users)
+        {
+            <tr>
+                <td>
+                    @player.Name
+                </td>
+                <td>
+                    @player.Email
+                </td>
+                <td>
+                    <a asp-page-handler="UnlockPlayer" asp-route-userId=@player.ID>Unlock</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
