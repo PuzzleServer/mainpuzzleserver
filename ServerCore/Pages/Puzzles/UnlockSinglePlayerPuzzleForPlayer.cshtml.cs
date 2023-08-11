@@ -34,7 +34,7 @@ namespace ServerCore.Pages.Puzzles
             }
 
             HashSet<int> playerIdsAlreadyUnlocked = (await (from puzzleState in _context.SinglePlayerPuzzleStatePerPlayer
-                                                 where !puzzleState.UnlockedTime.HasValue && puzzleState.PuzzleID == puzzleId
+                                                 where puzzleState.UnlockedTime.HasValue && puzzleState.PuzzleID == puzzleId
                                                  select puzzleState.PlayerID).ToListAsync()).ToHashSet();
 
             Users = await (from user in _context.PlayerInEvent
@@ -44,7 +44,7 @@ namespace ServerCore.Pages.Puzzles
             return Page();
         }
 
-        public async Task<IActionResult> OnGetUnlockPlayerAsync(int userId)
+        public async Task<IActionResult> OnGetUnlockPlayerAsync(int userId, int puzzleId)
         {
             PuzzleUser user = await _context.PuzzleUsers.FirstOrDefaultAsync(m => m.ID == userId);
             if (user == null)
@@ -53,7 +53,7 @@ namespace ServerCore.Pages.Puzzles
             }
 
             var userPuzzleState = (await (from puzzleState in _context.SinglePlayerPuzzleStatePerPlayer
-                                         where puzzleState.PlayerID == userId && puzzleState.PuzzleID == Puzzle.ID
+                                         where puzzleState.PlayerID == userId && puzzleState.PuzzleID == puzzleId
                                          select puzzleState)
                                          .ToListAsync()).FirstOrDefault();
 
@@ -69,18 +69,18 @@ namespace ServerCore.Pages.Puzzles
                 _context.SinglePlayerPuzzleStatePerPlayer.Add(
                     new SinglePlayerPuzzleStatePerPlayer
                     { 
-                        Puzzle = Puzzle,
+                        PuzzleID = puzzleId,
                         PlayerID = userId,
                         UnlockedTime = DateTime.UtcNow
                     });
             }
             else
             {
-
+                userPuzzleState.UnlockedTime = DateTime.UtcNow;
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToPage("/Puzzles/SinglePlayerPuzzleStatus", new { puzzleId = Puzzle.ID });
+            return RedirectToPage("/Puzzles/SinglePlayerPuzzleStatus", new { puzzleId = puzzleId });
         }
     }
 }
