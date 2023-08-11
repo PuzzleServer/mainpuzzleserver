@@ -232,11 +232,23 @@ else
         }
         else
         {
-            <p>Looks like there are no puzzles available here yet!</p>
+            <p>There are no puzzles available here yet.</p>
         }
     }
     else
     {
+        <a asp-page="/Events/FastestSolves"
+           asp-route-teamPuzzleSort="CountDescending"
+           asp-route-stateFilter="Unsolved">
+
+            Feeling stuck?
+        </a>
+        <br />
+            <span>
+                The link above will take you to a page where you can view puzzles, sorted by how many players have solved them.
+            </span>
+            <br />
+            <br />
         <table class="table">
             <thead>
                 <tr>
