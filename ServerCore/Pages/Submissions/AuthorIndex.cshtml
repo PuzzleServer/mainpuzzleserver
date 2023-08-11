@@ -99,7 +99,7 @@
                     <a asp-page="AuthorIndex" asp-route-puzzleId="@item.PuzzleID" asp-route-teamId="@Model.Team?.ID">@(item.PuzzleName)</a>
                 </td>
                 <td>
-                    @(item.ResponseText)
+                    @ServerCore.Helpers.RawHtmlHelper.Display(item.ResponseText, Model.Event.ID, Html)
                 </td>
                 <td style="max-width: 500px; word-wrap: break-word">
                     @if (item.Linkify)
