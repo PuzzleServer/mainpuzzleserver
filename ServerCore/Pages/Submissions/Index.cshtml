@@ -773,7 +773,7 @@ else
                         wrapper.appendChild(time);
                         const name = document.createElement("div");
                         name.classList.add("panelitem");
-                        name.innerText = "@Model.LoggedInUser.Name";
+                        name.innerHTML = "@Model.LoggedInUser.Name";
                         wrapper.appendChild(name);
                         const text = document.createElement("div");
                         text.classList.add("panelitem");
