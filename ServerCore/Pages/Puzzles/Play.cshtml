@@ -372,6 +372,10 @@ else
                                 }
                             </a>
                         </td>
+                        @if (!Model.Event.HideHints)
+                        {
+                            <td></td>
+                        }
                         @if (Model.AllowFeedback)
                         {
                             <td>

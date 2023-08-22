@@ -59,18 +59,24 @@ namespace ServerCore.Pages.Puzzles
                 {
                     puzzles = UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser);
                 }
+
+                Dictionary<int, string> playerIdToTeamName = _context.TeamMembers
+                    .Where(teamMember => teamMember.Team.Event == Event)
+                    .ToDictionary(teamMember => teamMember.Member.ID, teamMember => teamMember.Team.Name);
+
                 feedbackRows = from feedback in _context.Feedback
                                join puzzle in puzzles on feedback.Puzzle equals puzzle
+                               where puzzle.Event == Event
                                join submitter in _context.PuzzleUsers on feedback.Submitter equals submitter
-                               join teamMember in _context.TeamMembers on submitter.ID equals teamMember.Member.ID
-                               where teamMember.Team.Event == Event
                                orderby feedback.SubmissionTime descending
                                select new FeedbackView()
                                {
                                    Puzzle = puzzle,
                                    Feedback = feedback,
                                    Submitter = submitter,
-                                   TeamName = teamMember.Team.Name
+                                   TeamName = playerIdToTeamName.ContainsKey(submitter.ID)
+                                       ? playerIdToTeamName[submitter.ID]
+                                       : null,
                                };
             }
             else
@@ -90,17 +96,22 @@ namespace ServerCore.Pages.Puzzles
 
                 PuzzleName = puzzle.Name;
 
+                Dictionary<int, string> playerIdToTeamName = _context.TeamMembers
+                    .Where(teamMember => teamMember.Team.Event == Event)
+                    .ToDictionary(teamMember => teamMember.Member.ID, teamMember => teamMember.Team.Name);
+
                 feedbackRows = from feedback in _context.Feedback
                                join submitter in _context.PuzzleUsers on feedback.Submitter equals submitter
-                               join teamMember in _context.TeamMembers on submitter.ID equals teamMember.Member.ID
-                               where feedback.Puzzle == puzzle && teamMember.Team.Event == Event
+                               where feedback.Puzzle == puzzle
                                orderby feedback.SubmissionTime descending
                                select new FeedbackView()
                                {
                                    Puzzle = puzzle,
                                    Feedback = feedback,
                                    Submitter = submitter,
-                                   TeamName = teamMember.Team.Name
+                                   TeamName = playerIdToTeamName.ContainsKey(submitter.ID)
+                                       ? playerIdToTeamName[submitter.ID]
+                                       : null,
                                };
             }
 
