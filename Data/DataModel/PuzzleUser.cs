@@ -123,13 +123,19 @@ namespace ServerCore.DataModel
         }
 
         /// <summary>
-        /// Returns whether or not a user has completed the registration form for the given event
+        /// Returns whether or not a user has completed the registration form for the given event (for events with individual registration) 
+        /// or if they're on a team for the event (for events without individual registration)
         /// </summary>
         /// <param name="dbContext">Current PuzzleServerContext</param>
         /// <param name="thisEvent">The event that's being checked</param>
         public async Task<bool> IsRegisteredForEvent(PuzzleServerContext dbContext, Event thisEvent)
         {
-            return await dbContext.PlayerInEvent.Where(p => p.PlayerId == ID && p.EventId == thisEvent.ID).AnyAsync();
+            if(thisEvent.HasIndividualRegistration)
+            {
+                return await dbContext.PlayerInEvent.Where(p => p.PlayerId == ID && p.EventId == thisEvent.ID).AnyAsync();
+            }
+
+            return await dbContext.TeamMembers.Where(tm => tm.Member.ID == ID && tm.Team.Event.ID == thisEvent.ID).AnyAsync();
         }
     }
 }

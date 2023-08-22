@@ -198,8 +198,11 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li><a asp-page="/EventSpecific/Index">Event homepage</a></li>
-                            <li class="divider"></li>
-                            <li><a asp-page="/Player/Details" asp-route-id="@playerEventId">My registration</a></li>
+                            @if (Event.HasIndividualRegistration)
+                            {
+                                <li class="divider"></li>
+                                <li><a asp-page="/Player/Details" asp-route-id="@playerEventId">My registration</a></li>
+                            }
                         </ul>
                     </li>
                     @if (!isOnTeam)
@@ -317,15 +320,23 @@
                     }
                     @if (Event.IsTeamMembershipChangeActive)
                     {
-                        if (isOnTeam)
+                        @if (Event.HasIndividualRegistration)
                         {
-                            <li><a style="color:yellow" asp-page="/Player/Create">Complete Your Registration</a></li>
+                            if (isOnTeam)
+                            {
+                                <li><a style="color:yellow" asp-page="/Player/Create">Complete Your Registration</a></li>
+                            }
+                            else
+                            {
+                                <li><a style="color:yellow" asp-page="/Player/Create">Register</a></li>
+                            }
                         }
                         else
                         {
-                            <li><a style="color:yellow" asp-page="/Player/Create">Register</a></li>
+                            <li><a asp-page="/Teams/List"> Join or Create a Team!</a></li>
                         }
                     }
+
                     <li><a asp-page="/Teams/AllTeams">View all teams</a></li>
                     @if (Event.ShouldShowSinglePlayerPuzzles)
                     {

@@ -139,6 +139,15 @@ namespace ServerCore.ModelBases
             return Event.HasSwag;
         }
 
+        /// <summary>
+        /// Whether or not the event requires individuals to register independent of joining a team
+        /// </summary>
+        /// <returns></returns>
+        public bool EventHasIndividualRegistration()
+        {
+            return Event.HasIndividualRegistration;
+        }
+
         private async Task<Team> GetTeamAsync()
         {
             if (this.team == null)
