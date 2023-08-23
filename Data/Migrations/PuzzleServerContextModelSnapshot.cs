@@ -976,6 +976,24 @@ namespace Data.Migrations
                     b.ToTable("Rooms");
                 });
 
+            modelBuilder.Entity("ServerCore.DataModel.SinglePlayerPuzzleHintCoinCountPerPlayer", b =>
+                {
+                    b.Property<int>("PuzzleUserID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EventID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HintCoinCount")
+                        .HasColumnType("int");
+
+                    b.HasKey("PuzzleUserID", "EventID");
+
+                    b.HasIndex("EventID");
+
+                    b.ToTable("SinglePlayerPuzzleHintCoinCountPerPlayer");
+                });
+
             modelBuilder.Entity("ServerCore.DataModel.SinglePlayerPuzzleHintStatePerPlayer", b =>
                 {
                     b.Property<int>("PlayerID")
@@ -1596,6 +1614,25 @@ namespace Data.Migrations
                     b.Navigation("Event");
 
                     b.Navigation("Team");
+                });
+
+            modelBuilder.Entity("ServerCore.DataModel.SinglePlayerPuzzleHintCoinCountPerPlayer", b =>
+                {
+                    b.HasOne("ServerCore.DataModel.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "PuzzleUser")
+                        .WithMany()
+                        .HasForeignKey("PuzzleUserID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Event");
+
+                    b.Navigation("PuzzleUser");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.SinglePlayerPuzzleHintStatePerPlayer", b =>

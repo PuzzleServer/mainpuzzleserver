@@ -30,6 +30,7 @@ namespace ServerCore.DataModel
         public DbSet<Response> Responses { get; set; }
         public DbSet<Submission> Submissions { get; set; }
         public DbSet<SinglePlayerPuzzleSubmission> SinglePlayerPuzzleSubmissions { get; set; }
+        public DbSet<SinglePlayerPuzzleHintCoinCountPerPlayer> SinglePlayerPuzzleHintCoinCountPerPlayer { get; set; }
         public DbSet<Team> Teams { get; set; }
         public DbSet<TeamApplication> TeamApplications { get; set; }
         public DbSet<TeamMembers> TeamMembers { get; set; }
@@ -72,6 +73,7 @@ namespace ServerCore.DataModel
             modelBuilder.Entity<Piece>().HasIndex(piece => new { piece.ProgressLevel });
             modelBuilder.Entity<Submission>().HasIndex(submission => new { submission.TeamID, submission.PuzzleID, submission.SubmissionText }).IsUnique();
             modelBuilder.Entity<SinglePlayerPuzzleSubmission>().HasIndex(submission => new { submission.SubmitterID, submission.PuzzleID, submission.SubmissionText }).IsUnique();
+            modelBuilder.Entity<SinglePlayerPuzzleHintCoinCountPerPlayer>().HasKey(coinCount => new { coinCount.PuzzleUserID, coinCount.EventID });
             modelBuilder.Entity<PuzzleStatePerTeam>().HasIndex(pspt => new { pspt.TeamID });
             modelBuilder.Entity<PuzzleStatePerTeam>().HasIndex(pspt => new { pspt.TeamID, pspt.SolvedTime });
             modelBuilder.Entity<SinglePlayerPuzzleStatePerPlayer>().HasKey(state => new { state.PuzzleID, state.PlayerID });
@@ -85,6 +87,7 @@ namespace ServerCore.DataModel
             modelBuilder.Entity<PuzzleStatePerTeam>().HasOne(state => state.Team).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<SinglePlayerPuzzleStatePerPlayer>().HasOne(state => state.Player).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<SinglePlayerPuzzleUnlockState>().HasOne(state => state.Puzzle).WithMany().OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<SinglePlayerPuzzleHintCoinCountPerPlayer>().HasOne(coinCount => coinCount.PuzzleUser).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<HintStatePerTeam>().HasOne(state => state.Team).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<SinglePlayerPuzzleHintStatePerPlayer>().HasOne(state => state.Player).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Submission>().HasOne(submission => submission.Team).WithMany().OnDelete(DeleteBehavior.Restrict);
