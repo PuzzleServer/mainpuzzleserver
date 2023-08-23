@@ -356,3 +356,8 @@
     </nav>
 }
 <!--UNREGISTERED PLAYER NAV BAR END-->
+
+@if (Event?.AllowBlazor == true)
+{
+    <component type="typeof(ServerCore.Components.NotificationComponent)" render-mode="ServerPrerendered" param-EventID="@Event?.ID" param-TeamID="@teamId" param-PlayerID="@playerEventId" />
+}

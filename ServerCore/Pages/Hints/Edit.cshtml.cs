@@ -67,6 +67,15 @@ namespace ServerCore.Pages.Hints
                 MailHelper.Singleton.SendPlaintextBcc(teamMembers,
                     $"{Event.Name}: Hint updated for {puzzle.PlaintextName}",
                     $"The new content for '{Hint.Description}' is: '{Hint.Content}'.");
+
+                var teams = await (from hspt in _context.HintStatePerTeam
+                                         join pspt in _context.PuzzleStatePerTeam on hspt.Team equals pspt.Team
+                                         where hspt.Hint.Id == Hint.Id && hspt.UnlockTime != null && pspt.PuzzleID == puzzleId && pspt.SolvedTime == null
+                                         select hspt.Team).ToListAsync();
+                foreach (Team team in teams)
+                {
+                    NotificationHelper.SendNotification(team, $"Hint updated for {puzzle.PlaintextName}", $"The new content for '{Hint.Description}' is: '{Hint.Content}'.");
+                }
             }
             catch (DbUpdateConcurrencyException)
             {

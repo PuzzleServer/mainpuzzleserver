@@ -505,9 +505,16 @@ namespace ServerCore
                                              join sub in context.Submissions on tm.Team equals sub.Team
                                              where sub.PuzzleID == response.PuzzleID && sub.SubmissionText == response.SubmittedText
                                              select tm.Member.Email).ToListAsync();
+                    var teams = await (from sub in context.Submissions
+                                             where sub.PuzzleID == response.PuzzleID && sub.SubmissionText == response.SubmittedText
+                                             select sub.Team).ToListAsync();
                     MailHelper.Singleton.SendPlaintextBcc(teamMembers,
                         $"{puzzle.Event.Name}: {puzzle.PlaintextName} Response updated for '{response.SubmittedText}'",
                         $"The new response for this submission is: '{response.GetPlaintextResponseText(puzzle?.EventID ?? 0)}'.");
+                    foreach (Team team in teams)
+                    {
+                        NotificationHelper.SendNotification(team, $"{puzzle.PlaintextName} Response updated for '{response.SubmittedText}'", $"The new response for this submission is: '{response.GetPlaintextResponseText(puzzle?.EventID ?? 0)}'.");
+                    }
                 }
             }
         }

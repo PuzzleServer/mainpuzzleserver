@@ -171,6 +171,7 @@ namespace ServerCore.Pages.Submissions
             if (submission != null)
             {
                 MailHelper.Singleton.SendPlaintextOneAddress(submission.Submitter.Email, $"{submission.Puzzle.PlaintextName} Submission {Result}", $"Your submission for {submission.Puzzle.Name} has been {Result} with the response: {FreeformResponse}");
+                NotificationHelper.SendNotification(submission.Team, $"{submission.Puzzle.PlaintextName} Submission {Result}", $"Your submission for {submission.Puzzle.Name} has been {Result} with the response: {FreeformResponse}");
             }
 
             return RedirectToPage();
