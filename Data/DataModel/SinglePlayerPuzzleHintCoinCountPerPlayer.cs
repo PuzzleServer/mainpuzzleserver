@@ -18,7 +18,7 @@ namespace ServerCore.DataModel
         public virtual PuzzleUser PuzzleUser { get; set; }
 
         /// <summary>
-        /// The event
+        /// The event.
         /// </summary>
         [ForeignKey("Event.ID")]
         public int EventID { get; set; }
@@ -26,8 +26,13 @@ namespace ServerCore.DataModel
         public virtual Event Event { get; set; }
 
         /// <summary>
-        /// The hint coin count.
+        /// The number of hint coins the player has left.
         /// </summary>
         public int HintCoinCount { get; set; }
+
+        /// <summary>
+        /// The number of hint coins the player has used.
+        /// </summary>
+        public int HintCoinsUsed { get; set; }
     }
 }

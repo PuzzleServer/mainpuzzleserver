@@ -987,6 +987,9 @@ namespace Data.Migrations
                     b.Property<int>("HintCoinCount")
                         .HasColumnType("int");
 
+                    b.Property<int>("HintCoinsUsed")
+                        .HasColumnType("int");
+
                     b.HasKey("PuzzleUserID", "EventID");
 
                     b.HasIndex("EventID");

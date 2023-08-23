@@ -12,8 +12,8 @@ using ServerCore.DataModel;
 namespace Data.Migrations
 {
     [DbContext(typeof(PuzzleServerContext))]
-    [Migration("20230823083038_AddSinglePlayerPuzzleHintCounts")]
-    partial class AddSinglePlayerPuzzleHintCounts
+    [Migration("20230823084102_AddSinglePlayerPuzzleHintCountsFinal")]
+    partial class AddSinglePlayerPuzzleHintCountsFinal
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -988,6 +988,9 @@ namespace Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("HintCoinCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HintCoinsUsed")
                         .HasColumnType("int");
 
                     b.HasKey("PuzzleUserID", "EventID");

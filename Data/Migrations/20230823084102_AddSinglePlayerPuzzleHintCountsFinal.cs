@@ -5,7 +5,7 @@
 namespace Data.Migrations
 {
     /// <inheritdoc />
-    public partial class AddSinglePlayerPuzzleHintCounts : Migration
+    public partial class AddSinglePlayerPuzzleHintCountsFinal : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,7 +16,8 @@ namespace Data.Migrations
                 {
                     PuzzleUserID = table.Column<int>(type: "int", nullable: false),
                     EventID = table.Column<int>(type: "int", nullable: false),
-                    HintCoinCount = table.Column<int>(type: "int", nullable: false)
+                    HintCoinCount = table.Column<int>(type: "int", nullable: false),
+                    HintCoinsUsed = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
