@@ -188,7 +188,7 @@ namespace ServerCore.Pages.Puzzles
             }
 
             IEnumerable<PuzzleView> visibleSinglePlayerPuzzlesQ = singlePlayerPuzzleViewDict.Values.AsEnumerable().Where(puzzleView => ShowAnswers || puzzleView.UnlockedTime != null);
-            visibleSinglePlayerPuzzlesQ = this.GetSortedView(visibleSinglePlayerPuzzlesQ, sortOrder ?? DefaultSort);
+            visibleSinglePlayerPuzzlesQ = this.GetSortedView(visibleSinglePlayerPuzzlesQ, sortOrder);
             if (StateFilter == PuzzleStateFilter.Unsolved)
             {
                 visibleSinglePlayerPuzzlesQ = visibleSinglePlayerPuzzlesQ.Where(puzzles => puzzles.SolvedTime == null);
@@ -199,12 +199,9 @@ namespace ServerCore.Pages.Puzzles
 
         private IEnumerable<PuzzleView> GetSortedView(IEnumerable<PuzzleView> puzzleViews, SortOrder? sortOrder)
         {
-            if (sortOrder == null)
-            {
-                return puzzleViews;
-            }
+            SortOrder actualSortOrder = sortOrder.HasValue ? sortOrder.Value : DefaultSort;
 
-            switch (sortOrder)
+            switch (actualSortOrder)
             {
                 case SortOrder.PuzzleAscending:
                     return puzzleViews.OrderBy(pv => pv.Name);
