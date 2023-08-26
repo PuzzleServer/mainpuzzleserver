@@ -52,7 +52,7 @@ namespace ServerCore.Pages.Events
         private async Task updateTeamPuzzleStats()
         {
             bool isRegisteredUser = await this.IsRegisteredUser();
-            if (!isRegisteredUser)
+            if (EventRole == EventRole.play && !isRegisteredUser)
             {
                 this.TeamSectionNotShowMessage = "Please register for the event to see team standings.";
                 this.TeamPuzzles = new List<TeamPuzzleStats>();
