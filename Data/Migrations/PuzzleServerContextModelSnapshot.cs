@@ -642,6 +642,12 @@ namespace Data.Migrations
                     b.Property<int>("EventId")
                         .HasColumnType("int");
 
+                    b.Property<int>("HintCoinCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HintCoinsUsed")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsRemote")
                         .HasColumnType("bit");
 

@@ -205,7 +205,7 @@ else
                     @if (!Model.Event.HideHints)
                     {
                         <td>
-                            <a asp-page="./Hints" asp-route-puzzleid="@item.ID" asp-route-teamId="@Model.Team.ID">Hints</a>
+                            <a asp-page="/Teams/Hints" asp-route-puzzleid="@item.ID" asp-route-teamId="@Model.Team.ID">Hints</a>
                         </td>
                     }
                     @if (Model.AllowFeedback)
