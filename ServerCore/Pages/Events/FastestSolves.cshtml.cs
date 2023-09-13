@@ -45,11 +45,12 @@ namespace ServerCore.Pages.Events
             this.StateFilter = stateFilter;
             this.CurrentTeam = (await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser));
 
-            await this.updateTeamPuzzleStats();
-            await this.updateSinglePlayerPuzzleStats();
+            HashSet<int> authorPuzzleIds = this.GetAuthorPuzzleIds();
+            await this.updateTeamPuzzleStats(authorPuzzleIds);
+            await this.updateSinglePlayerPuzzleStats(authorPuzzleIds);
         }
 
-        private async Task updateTeamPuzzleStats()
+        private async Task updateTeamPuzzleStats(HashSet<int> authorPuzzleIds)
         {
             bool isRegisteredUser = await this.IsRegisteredUser();
             if (EventRole == EventRole.play && !isRegisteredUser)
@@ -78,7 +79,8 @@ namespace ServerCore.Pages.Events
                                     pspt.UnlockedTime != null &&
                                     pspt.SolvedTime <= submissionEnd &&
                                     !pspt.Team.IsDisqualified &&
-                                    pspt.Puzzle.Event == Event
+                                    pspt.Puzzle.Event == Event &&
+                                    (EventRole != EventRole.author || authorPuzzleIds.Contains(pspt.PuzzleID))
                                     let puzzleToGroup = new { PuzzleID = pspt.Puzzle.ID, PuzzleName = pspt.Puzzle.Name } // Using 'let' to work around EF grouping limitations (https://www.codeproject.com/Questions/5266406/Invalidoperationexception-the-LINQ-expression-for)
                                     group puzzleToGroup by puzzleToGroup.PuzzleID into puzzleGroup
                                     orderby puzzleGroup.Count() descending, puzzleGroup.Max(puzzleGroup => puzzleGroup.PuzzleName) // Using Max(PuzzleName) because only aggregate operators are allowed
@@ -92,7 +94,8 @@ namespace ServerCore.Pages.Events
                 pspt.UnlockedTime != null &&
                 pspt.SolvedTime != null &&
                 pspt.SolvedTime < submissionEnd &&
-                !pspt.Team.IsDisqualified);
+                !pspt.Team.IsDisqualified &&
+                (EventRole != EventRole.author || authorPuzzleIds.Contains(pspt.PuzzleID)));
 
             // Sort by time and get the top 3
             var fastestResults = _context.PuzzleStatePerTeam
@@ -192,7 +195,7 @@ namespace ServerCore.Pages.Events
             }
         }
 
-        private async Task updateSinglePlayerPuzzleStats()
+        private async Task updateSinglePlayerPuzzleStats(HashSet<int> authorPuzzleIds)
         {
             if (!Event.ShouldShowSinglePlayerPuzzles)
             {
@@ -205,7 +208,8 @@ namespace ServerCore.Pages.Events
             var solveCounts = await (from statePerPlayer in _context.SinglePlayerPuzzleStatePerPlayer
                                      where statePerPlayer.Puzzle.IsPuzzle &&
                                      statePerPlayer.UnlockedTime != null &&
-                                     statePerPlayer.Puzzle.Event == Event
+                                     statePerPlayer.Puzzle.Event == Event &&
+                                    (EventRole != EventRole.author || authorPuzzleIds.Contains(statePerPlayer.PuzzleID))
                                      let puzzleToGroup = new
                                      {
                                          PuzzleID = statePerPlayer.Puzzle.ID,
@@ -226,8 +230,9 @@ namespace ServerCore.Pages.Events
 
             // Filter to unlocked puzzles
             HashSet<int> unlockedPuzzleIds = (await _context.SinglePlayerPuzzleUnlockStates
-                .Where(unlockState => unlockState.Puzzle.EventID == Event.ID)
-                .Where(unlockState => unlockState.UnlockedTime.HasValue)
+                .Where(unlockState => unlockState.Puzzle.EventID == Event.ID
+                    && unlockState.UnlockedTime.HasValue
+                   && (EventRole != EventRole.author || authorPuzzleIds.Contains(unlockState.PuzzleID)))
                 .Select(unlockSate => unlockSate.PuzzleID)
                 .ToListAsync())
                 .ToHashSet();
@@ -277,6 +282,22 @@ namespace ServerCore.Pages.Events
             if (this.SinglePlayerPuzzles.Count == 0)
             {
                 this.SinglePlayerPuzzleSectionNotShowMessage = "No puzzles in this section have been released yet.";
+            }
+        }
+
+        private HashSet<int> GetAuthorPuzzleIds()
+        {
+            if (EventRole == EventRole.author)
+            {
+                return _context.PuzzleAuthors
+                    .Where(author => author.AuthorID == LoggedInUser.ID
+                        && author.Puzzle.EventID == Event.ID)
+                    .Select(author => author.PuzzleID)
+                    .ToHashSet();
+            }
+            else
+            {
+                return new HashSet<int>();
             }
         }
 
