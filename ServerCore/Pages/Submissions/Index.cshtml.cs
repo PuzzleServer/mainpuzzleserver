@@ -163,7 +163,7 @@ namespace ServerCore.Pages.Submissions
                     {
                         await SinglePlayerPuzzleStateHelper.SetSolveStateAsync(_context,
                             Event,
-                            submission.Puzzle.ID,
+                            submission.Puzzle,
                             LoggedInUser.ID,
                             submission.TimeSubmitted);
                     }

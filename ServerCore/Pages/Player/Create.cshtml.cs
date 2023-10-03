@@ -1,5 +1,8 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
+using Data.Migrations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -53,6 +56,20 @@ namespace ServerCore.Pages.Player
             PlayerInEvent.Player = LoggedInUser;
 
             _context.PlayerInEvent.Add(PlayerInEvent);
+            await _context.SaveChangesAsync();
+
+            List<Hint> singlePlayerPuzzleHints = await (from Hint hint in _context.Hints
+                               where hint.Puzzle.EventID == Event.ID && hint.Puzzle.IsForSinglePlayer
+                               select hint).ToListAsync();
+
+            foreach (Hint hint in singlePlayerPuzzleHints)
+            {
+                _context.SinglePlayerPuzzleHintStatePerPlayer.Add(new SinglePlayerPuzzleHintStatePerPlayer()
+                {
+                    Hint = hint,
+                    PlayerID = LoggedInUser.ID
+                });
+            }
             await _context.SaveChangesAsync();
 
             return RedirectToPage("/Teams/List");

@@ -29,61 +29,128 @@
     @if(Model.Puzzle != null && Model.Team != null) { <text>|</text> <a asp-page="./AuthorIndex" asp-route-puzzleId="" asp-route-teamId="">Clear All Filters</a> }
 </div>
 
-<br />
-<div>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.TeamAscending, AuthorIndexModel.SortOrder.TeamDescending))">
-                        Team Name
-                    </a>
-                </th>
-                <th>
-                    <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.PuzzleAscending, AuthorIndexModel.SortOrder.PuzzleDescending))">
-                        Puzzle
-                    </a>
-                </th>
-                <th>
-                    <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.DescriptionAscending, AuthorIndexModel.SortOrder.DescriptionDescending))">
-                        Description
-                    </a>
-                </th>
-                <th>
-                    <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.CostAscending, AuthorIndexModel.SortOrder.CostDescending))">
-                        Cost
-                    </a>
-                </th>
-                <th>
-                    <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.TimeAscending, AuthorIndexModel.SortOrder.TimeDescending))">
-                        UnlockTime
-                    </a>
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.HintViews)
-            {
-            <tr>
-                <td>
-                    <a asp-page="AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@item.TeamId">@item.TeamName</a>
-                </td>
-                <td>
-                    <a asp-page="AuthorIndex" asp-route-puzzleId="@item.PuzzleId" asp-route-teamId="@Model.Team?.ID">@item.PuzzleName</a>
-                </td>
-                <td>
-                    @item.Description
-                </td>
-                <td>
-                    @item.Cost
-                </td>
-                <td>
-                    @Html.Raw(Model.LocalTime(item.UnlockTime))
-                </td>
-            </tr>
-            }
-        </tbody>
-    </table>
-</div>
+@if (Model.ShouldShowTeamHints)
+{
+    <br />
+    <h3>Team hints</h3>
+    <div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.NameAscending, AuthorIndexModel.SortOrder.NameDescending))">
+                            Team Name
+                        </a>
+                    </th>
+                    <th>
+                        <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.PuzzleAscending, AuthorIndexModel.SortOrder.PuzzleDescending))">
+                            Puzzle
+                        </a>
+                    </th>
+                    <th>
+                        <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.DescriptionAscending, AuthorIndexModel.SortOrder.DescriptionDescending))">
+                            Description
+                        </a>
+                    </th>
+                    <th>
+                        <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.CostAscending, AuthorIndexModel.SortOrder.CostDescending))">
+                            Cost
+                        </a>
+                    </th>
+                    <th>
+                        <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.TimeAscending, AuthorIndexModel.SortOrder.TimeDescending))">
+                            UnlockTime
+                        </a>
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.HintViews)
+                {
+                    <tr>
+                        <td>
+                        <a asp-page="AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@item.TeamId">@item.TeamName</a>
+                    </td>
+                    <td>
+                        <a asp-page="AuthorIndex" asp-route-puzzleId="@item.PuzzleId" asp-route-teamId="@Model.Team?.ID">@item.PuzzleName</a>
+                    </td>
+                    <td>
+                        @item.Description
+                    </td>
+                    <td>
+                        @item.Cost
+                    </td>
+                    <td>
+                        @Html.Raw(Model.LocalTime(item.UnlockTime))
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@if (Model.ShouldShowSinglePlayerPuzzleHints)
+{
+    <br />
+    <h3>@Model.Event.SinglePlayerPuzzleTitle hints</h3>
+    <div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.NameAscending, AuthorIndexModel.SortOrder.NameDescending))">
+                            Player Name
+                        </a>
+                    </th>
+                    <th>
+                        <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.PuzzleAscending, AuthorIndexModel.SortOrder.PuzzleDescending))">
+                            Puzzle
+                        </a>
+                    </th>
+                    <th>
+                        <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.DescriptionAscending, AuthorIndexModel.SortOrder.DescriptionDescending))">
+                            Description
+                        </a>
+                    </th>
+                    <th>
+                        <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.CostAscending, AuthorIndexModel.SortOrder.CostDescending))">
+                            Cost
+                        </a>
+                    </th>
+                    <th>
+                        <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.TimeAscending, AuthorIndexModel.SortOrder.TimeDescending))">
+                            UnlockTime
+                        </a>
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.SinglePlayerPuzzleHintViews)
+                {
+                    <tr>
+                        <td>
+                            <a asp-page="AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID">@item.PlayerName</a>
+                        </td>
+                        <td>
+                            <a asp-page="AuthorIndex" asp-route-puzzleId="@item.PuzzleId" asp-route-teamId="@Model.Team?.ID">@item.PuzzleName</a>
+                        </td>
+                        <td>
+                            @item.Description
+                        </td>
+                        <td>
+                            @item.Cost
+                        </td>
+                        <td>
+                            @Html.Raw(Model.LocalTime(item.UnlockTime))
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
 

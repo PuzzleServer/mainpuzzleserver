@@ -84,12 +84,12 @@ namespace ServerCore.ModelBases
             return result;
         }
 
-        public async Task SetSolveStateAsync(int puzzleId, int? playerId, bool value)
+        public async Task SetSolveStateAsync(Puzzle puzzle, int? playerId, bool value)
         {
             await SinglePlayerPuzzleStateHelper.SetSolveStateAsync(
                 _context,
                 Event,
-                puzzleId,
+                puzzle,
                 playerId,
                 value ? (DateTime?)DateTime.UtcNow : null,
                 EventRole == EventRole.admin ? null : LoggedInUser);

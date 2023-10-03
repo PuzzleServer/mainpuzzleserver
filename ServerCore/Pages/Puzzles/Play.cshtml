@@ -374,7 +374,9 @@ else
                         </td>
                         @if (!Model.Event.HideHints)
                         {
-                            <td></td>
+                            <td>
+                                <a asp-page="/Puzzles/SinglePlayerPuzzleHints" asp-route-puzzleid="@item.ID">Hints</a>
+                            </td>
                         }
                         @if (Model.AllowFeedback)
                         {
