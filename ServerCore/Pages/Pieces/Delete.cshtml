@@ -14,26 +14,32 @@
 <div>
     <h4>Piece</h4>
     <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            Puzzle
-        </dt>
-        <dd>
-            @Model.Piece.Puzzle.Name
-        </dd>
-        <dt>
-            ProgressLevel
-        </dt>
-        <dd>
-            @Model.Piece.ProgressLevel
-        </dd>
-        <dt>
-            Contents
-        </dt>
-        <dd>
-            @Model.Piece.Contents
-        </dd>
-    </dl>
+    <table class="table-definitions">
+        <tr>
+            <td>
+                Puzzle
+            </td>
+            <td>
+                @Model.Piece.Puzzle.Name
+            </td>
+        </tr>
+        <tr>
+            <td>
+                ProgressLevel
+            </td>
+            <td>
+                @Model.Piece.ProgressLevel
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Contents
+            </td>
+            <td>
+                @Model.Piece.Contents
+            </td>
+        </tr>
+    </table>
 
     <form method="post">
         <input type="hidden" asp-for="Piece.ID" />

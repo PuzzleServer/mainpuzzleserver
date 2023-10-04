@@ -1464,6 +1464,11 @@ dd {
   .dl-horizontal dd {
     margin-left: 180px;
   }
+  .table-definitions td:first-child{
+    font-weight: bold;
+    text-align: right;
+    padding-right: 10px;
+  }
 }
 abbr[title],
 abbr[data-original-title] {

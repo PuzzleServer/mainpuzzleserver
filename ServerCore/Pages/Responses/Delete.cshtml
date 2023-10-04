@@ -17,32 +17,40 @@
 <div>
     <h4>Response</h4>
     <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            IsSolution
-        </dt>
-        <dd>
-            @Model.PuzzleResponse.IsSolution
-        </dd>
-        <dt>
-            SubmittedText
-        </dt>
-        <dd>
-            @Model.PuzzleResponse.SubmittedText
-        </dd>
-        <dt>
-            ResponseText
-        </dt>
-        <dd>
-            @Model.PuzzleResponse.ResponseText
-        </dd>
-        <dt>
-            Note
-        </dt>
-        <dd>
-            @Model.PuzzleResponse.Note
-        </dd>
-    </dl>
+    <table class="table-definitions">
+        <tr>
+            <td>
+                IsSolution
+            </td>
+            <td>
+                @Model.PuzzleResponse.IsSolution
+            </td>
+        </tr>
+        <tr>
+            <td>
+                SubmittedText
+            </td>
+            <td>
+                @Model.PuzzleResponse.SubmittedText
+            </td>
+        </tr>
+        <tr>
+            <td>
+                ResponseText
+            </td>
+            <td>
+                @Model.PuzzleResponse.ResponseText
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Note
+            </td>
+            <td>
+                @Model.PuzzleResponse.Note
+            </td>
+        </tr>
+    </table>
 
     <form method="post">
         <input type="hidden" asp-for="PuzzleResponse.ID" />

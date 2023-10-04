@@ -11,38 +11,48 @@
 <div>
     <h4>PlayerInEvent</h4>
     <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.PlayerInEvent.Event)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.PlayerInEvent.Event.Name)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.PlayerInEvent.IsRemote)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.PlayerInEvent.IsRemote)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.PlayerInEvent.Lunch)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.PlayerInEvent.Lunch)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.PlayerInEvent.LunchModifications)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.PlayerInEvent.LunchModifications)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.PlayerInEvent.ShirtSize)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.PlayerInEvent.ShirtSize)
-        </dd>
-    </dl>
+    <table class="table-descriptions">
+        <tr>
+            <td>
+                @Html.DisplayNameFor(model => model.PlayerInEvent.Event)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.PlayerInEvent.Event.Name)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.DisplayNameFor(model => model.PlayerInEvent.IsRemote)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.PlayerInEvent.IsRemote)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.DisplayNameFor(model => model.PlayerInEvent.Lunch)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.PlayerInEvent.Lunch)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.DisplayNameFor(model => model.PlayerInEvent.LunchModifications)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.PlayerInEvent.LunchModifications)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.DisplayNameFor(model => model.PlayerInEvent.ShirtSize)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.PlayerInEvent.ShirtSize)
+            </td>
+        </tr>
+    </table>
 
     <form method="post">
         <input type="hidden" asp-for="PlayerInEvent.ID" />

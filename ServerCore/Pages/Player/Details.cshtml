@@ -10,50 +10,59 @@
 <div>
     <h4>PlayerInEvent</h4>
     <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.PlayerInEvent.Event)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.PlayerInEvent.Event.Name)
-        </dd>
-
+    <table class="table-definitions">
+        <tr>
+            <td>
+                @Html.DisplayNameFor(model => model.PlayerInEvent.Event)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.PlayerInEvent.Event.Name)
+            </td>
+        </tr>
         @if (Model.Event.AllowsRemote)
         {
-            <dt>
-                @Html.DisplayNameFor(model => model.PlayerInEvent.IsRemote)
-            </dt>
-            <dd>
-                @Html.DisplayFor(model => model.PlayerInEvent.IsRemote)
-        </dd>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.PlayerInEvent.IsRemote)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.PlayerInEvent.IsRemote)
+                </td>
+            </tr>
         }
 
         @if (Model.Event.HasIndividualLunch)
         {
-            <dt>
-                @Html.DisplayNameFor(model => model.PlayerInEvent.Lunch)
-            </dt>
-            <dd>
-                @Html.DisplayFor(model => model.PlayerInEvent.Lunch)
-            </dd>
-            <dt>
-                @Html.DisplayNameFor(model => model.PlayerInEvent.LunchModifications)
-            </dt>
-            <dd>
-                @Html.DisplayFor(model => model.PlayerInEvent.LunchModifications)
-        </dd>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.PlayerInEvent.Lunch)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.PlayerInEvent.Lunch)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.PlayerInEvent.LunchModifications)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.PlayerInEvent.LunchModifications)
+                </td>
+            </tr>
         }
 
         @if (Model.Event.HasTShirts)
         {
-            <dt>
-                @Html.DisplayNameFor(model => model.PlayerInEvent.ShirtSize)
-            </dt>
-            <dd>
-                @Html.DisplayFor(model => model.PlayerInEvent.ShirtSize)
-        </dd>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.PlayerInEvent.ShirtSize)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.PlayerInEvent.ShirtSize)
+                </td>
+            </tr>
         }
-    </dl>
+    </table>
 </div>
 <div>
     <a asp-page="./Edit" asp-route-id="@Model.PlayerInEvent.ID">Edit</a> |
