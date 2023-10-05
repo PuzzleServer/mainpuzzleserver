@@ -52,22 +52,7 @@ namespace ServerCore.Pages.Hints
             {
                 _context.Hints.Add(Hint);
 
-                if (puzzle.IsForSinglePlayer)
-                {
-                    var players = from player in _context.PlayerInEvent
-                                where player.Event == Event
-                                select player;
-
-                    foreach (PlayerInEvent player in players)
-                    {
-                        _context.SinglePlayerPuzzleHintStatePerPlayer.Add(new SinglePlayerPuzzleHintStatePerPlayer() 
-                        {
-                            Hint = Hint,
-                            PlayerID = player.PlayerId
-                        });
-                    }
-                }
-                else
+                if (!puzzle.IsForSinglePlayer)
                 {
                     var teams = from team in _context.Teams
                                 where team.Event == Event

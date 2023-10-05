@@ -69,10 +69,6 @@ namespace ServerCore.Pages.Hints
                         where team.Event == Event
                         select team;
 
-            var playersInEvent = from player in _context.PlayerInEvent
-                        where player.Event == Event
-                        select player;
-
             while (true)
             {
                 string description = descriptionReader.ReadLine();
@@ -132,14 +128,7 @@ namespace ServerCore.Pages.Hints
 
                 _context.Hints.Add(hint);
 
-                if (Puzzle.IsForSinglePlayer)
-                {
-                    foreach (PlayerInEvent playerInEvent in playersInEvent)
-                    {
-                        _context.SinglePlayerPuzzleHintStatePerPlayer.Add(new SinglePlayerPuzzleHintStatePerPlayer() { Hint = hint, PlayerID = playerInEvent.PlayerId });
-                    }
-                }
-                else
+                if (!Puzzle.IsForSinglePlayer)
                 {
                     foreach (Team team in teams)
                     {

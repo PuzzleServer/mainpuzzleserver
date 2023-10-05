@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Numerics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -62,10 +61,6 @@ namespace ServerCore.Pages.Hints
             var teams = from team in _context.Teams
                         where team.Event == Event
                         select team;
-
-            var players = from player in _context.PlayerInEvent
-                          where player.Event == Event
-                          select player;
 
             while (true)
             {
@@ -173,19 +168,7 @@ namespace ServerCore.Pages.Hints
                 };
 
                 _context.Hints.Add(hint);
-                if (hint.Puzzle.IsForSinglePlayer)
-                {
-                    foreach (PlayerInEvent player in players)
-                    {
-                        _context.SinglePlayerPuzzleHintStatePerPlayer.Add(
-                            new SinglePlayerPuzzleHintStatePerPlayer() 
-                            { 
-                                Hint = hint, 
-                                PlayerID = player.PlayerId
-                            });
-                    }
-                }
-                else
+                if (!hint.Puzzle.IsForSinglePlayer)
                 {
                     foreach (Team team in teams)
                     {

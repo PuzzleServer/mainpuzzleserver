@@ -143,18 +143,7 @@ namespace ServerCore.Pages.Events
                         destHint.Puzzle = puzzleCloneMap[sourceHint.Puzzle.ID];
                         _context.Hints.Add(destHint);
 
-                        if (sourcePuzzle.IsForSinglePlayer)
-                        {
-                            foreach (PlayerInEvent player in _context.PlayerInEvent.Where(player => player.Event == Event))
-                            {
-                                _context.SinglePlayerPuzzleHintStatePerPlayer.Add(new SinglePlayerPuzzleHintStatePerPlayer() 
-                                { 
-                                    Hint = destHint,
-                                    PlayerID = player.PlayerId
-                                });
-                            }
-                        }
-                        else
+                        if (!sourcePuzzle.IsForSinglePlayer)
                         {
                             foreach (Team team in _context.Teams.Where(t => t.Event == Event))
                             {
