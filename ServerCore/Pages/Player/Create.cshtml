@@ -20,8 +20,11 @@ else
         </div>
 }
 
-<h4>Please provide the following information to register for this event.</h4>
-<hr />
+@if (Model.Event.AllowsRemote || Model.Event.HasIndividualLunch || Model.Event.HasTShirts)
+{
+    <h4>Please provide the following information to register for this event.</h4>
+    <hr />
+}
 <div class="row">
     <div class="col-md-4">
         <form method="post">
