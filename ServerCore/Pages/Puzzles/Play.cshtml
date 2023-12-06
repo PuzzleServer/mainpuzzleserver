@@ -9,7 +9,7 @@
     ViewData["AuthorRoute"] = "/Puzzles/Index";
 
     bool unsolvedFilter = Model.StateFilter == PlayModel.PuzzleStateFilter.Unsolved;
-    bool canSubmit = DateTime.UtcNow >= Model.Event.EventBegin;
+    bool canSubmit = DateTime.UtcNow >= Model.Event.EventBegin || Model.Team?.IsDisqualified == true;
 }
 <style>
     .radioButton {
