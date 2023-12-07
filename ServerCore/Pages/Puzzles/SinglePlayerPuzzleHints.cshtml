@@ -1,0 +1,172 @@
+﻿@page "/{eventId}/{eventRole}/Puzzles/SinglePlayerPuzzleHints/{puzzleId}"
+@model ServerCore.Pages.Puzzles.SinglePlayerPuzzleHintsModel
+
+<style>
+    button:disabled {
+        color: #aaaaaa;
+    }
+
+    /*
+         * Strikeout style for hints
+         */
+    .strike1 {
+        position: relative;
+    }
+
+        .strike1:before {
+            color: red;
+            position: absolute;
+            content: "";
+            left: 0;
+            top: 50%;
+            right: 0;
+            border-top: 1px solid;
+            border-color: inherit;
+            -webkit-transform: rotate(-35deg);
+            -moz-transform: rotate(-35deg);
+            -ms-transform: rotate(-35deg);
+            -o-transform: rotate(-35deg);
+            transform: rotate(-35deg);
+        }
+
+    .strike2:after {
+        color: red;
+        position: absolute;
+        content: "";
+        left: 0;
+        top: 50%;
+        right: 0;
+        border-top: 1px solid;
+        border-color: inherit;
+        -webkit-transform: rotate(35deg);
+        -moz-transform: rotate(35deg);
+        -ms-transform: rotate(35deg);
+        -o-transform: rotate(35deg);
+        transform: rotate(35deg);
+    }
+</style>
+@{
+    @using Helpers;
+
+    ViewData["Title"] = "Hints";
+    ViewData["AdminRoute"] = "/Puzzles/Index";
+    ViewData["AuthorRoute"] = "/Puzzles/Index";
+}
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <h3>@Model.ErrorMessage</h3>
+    return;
+}
+
+<h2>Hints for @RawHtmlHelper.Display(Model.PuzzleName, Model.Event.ID, Html)</h2>
+
+<div>
+    <a asp-page="/Puzzles/Play">Back to puzzle list</a>
+</div>
+
+You have <b>
+    @if (Model.PlayerInEvent.HintCoinCount > 0)
+    {
+        @Model.PlayerInEvent.HintCoinCount
+    }
+    else
+    {
+        <text>no</text>
+    }
+</b> hint coins.
+@if (Model.Hints.Any(h => h.Hint.Cost < 0))
+{
+    <text>
+        <br />
+        Hints marked ★ are creditable hints:
+        if you unlock these hints, you will receive credit for the cost of that hint against the cost of other creditable hints.
+    </text>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Description
+            </th>
+            <th>
+                <text>Hint</text>
+            </th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var hint in Model.Hints)
+        {
+            <tr>
+                <td>
+                    @hint.Hint.Description
+                </td>
+                <td>
+                    @if (hint.IsUnlocked)
+                    {
+                        @hint.Hint.Content
+                    }
+                    else
+                    {
+                        <b>Cost:</b>
+                        if (hint.AdjustedCost < hint.BaseCost)
+                        {
+                            <span class="strike1 strike2">&nbsp;@hint.BaseCost&nbsp;</span>
+                        }
+                        if (hint.AdjustedCost == 0)
+                        {
+                            <text>FREE</text>
+                        }
+                        else
+                        {
+                            @hint.AdjustedCost
+                        }
+                    }
+                    @if (hint.Hint.Cost < 0)
+                    {
+                        <text>★</text>
+                    }
+
+                    @if (!hint.IsUnlocked)
+                    {
+                        <form method="post" style="display:inline-block">
+                            @if (Model.PlayerInEvent.HintCoinCount >= hint.AdjustedCost)
+                            {
+                                var clickString = hint.AdjustedCost == 0
+                                ? "return confirm('Are you sure you want to unlock this free hint?')"
+                                : "return confirm('Are you sure you want to spend " + @hint.AdjustedCost + " coins to find out \\'" + @hint.Hint.Description + "\\'?')";
+
+                                <button type="submit" asp-route-hintId="@hint.Hint.Id"
+                            asp-route-puzzleId="@Model.PuzzleID"
+                            asp-page-handler="Unlock"
+                            onclick="@clickString"
+                            style="margin-left: 5px; margin-right: 5px;">
+                                    Unlock
+                                </button>
+                            }
+                            else
+                            {
+                                <button type="submit" disabled
+                            style="margin-left: 5px; margin-right: 5px;">
+                                    Unlock
+                                </button>
+                                if (hint.AdjustedCost - Model.PlayerInEvent.HintCoinCount == 1)
+                                {
+                                    <text>You need 1 more coin to unlock.</text>
+                                }
+                                else
+                                {
+                                    <text>You need @(hint.AdjustedCost - Model.PlayerInEvent.HintCoinCount) more coins to unlock.</text>
+                                }
+                            }
+                        </form>
+                    }
+                </td>
+                <td></td>
+            </tr>
+        }
+    </tbody>
+</table>

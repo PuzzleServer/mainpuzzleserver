@@ -245,7 +245,7 @@ namespace ServerCore.Helpers
                 {
                     await SinglePlayerPuzzleStateHelper.SetSolveStateAsync(context,
                         thisEvent,
-                        submission.Puzzle.ID,
+                        submission.Puzzle,
                         loggedInUser.ID,
                         submission.TimeSubmitted);
                 }
