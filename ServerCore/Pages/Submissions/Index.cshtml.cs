@@ -66,12 +66,12 @@ namespace ServerCore.Pages.Submissions
             }
 
             SubmissionText = submissionText;
-            if (DateTime.UtcNow < Event.EventBegin)
+            await SetupContext(puzzleId);
+
+            if (DateTime.UtcNow < Event.EventBegin && Team?.IsDisqualified != true)
             {
                 return NotFound("The event hasn't started yet!");
             }
-
-            await SetupContext(puzzleId);
 
             if (!ModelState.IsValid)
             {

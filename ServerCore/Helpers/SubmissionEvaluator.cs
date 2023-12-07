@@ -118,7 +118,7 @@ namespace ServerCore.Helpers
             }
 
             // The event hasn't started yet
-            if (DateTime.UtcNow < thisEvent.EventBegin)
+            if (DateTime.UtcNow < thisEvent.EventBegin && team?.IsDisqualified != true)
             {
                 return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.Unauthorized };
             }

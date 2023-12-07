@@ -220,7 +220,7 @@
             </div>
         }
     }
-    else if (DateTime.UtcNow < Model.Event.EventBegin)
+    else if (DateTime.UtcNow < Model.Event.EventBegin && Model.Team?.IsDisqualified != true)
     {
         <div class="col-md-12" style="padding-bottom: 15px;">
             <h3>This event is not yet in session. No submissions will be accepted at this time.</h3>
@@ -493,7 +493,7 @@ else
                 </div>
             }
         }
-        else if (DateTime.UtcNow < Model.Event.EventBegin)
+        else if (DateTime.UtcNow < Model.Event.EventBegin && Model.Team?.IsDisqualified != true)
         {
             <div class="col-md-12" style="padding-bottom: 15px;">
                 <h3>This event is not yet in session. No submissions will be accepted at this time.</h3>
