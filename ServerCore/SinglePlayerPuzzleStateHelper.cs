@@ -137,13 +137,13 @@ namespace ServerCore
         public static async Task SetSolveStateAsync(
             PuzzleServerContext context,
             Event eventObj,
-            int? puzzleId,
+            Puzzle puzzle,
             int? playerId,
             DateTime? value,
             PuzzleUser author = null)
         {
             IQueryable<SinglePlayerPuzzleStatePerPlayer> statesQ = SinglePlayerPuzzleStateHelper
-                .GetFullReadWriteQuery(context, eventObj, puzzleId, playerId, author);
+                .GetFullReadWriteQuery(context, eventObj, puzzle?.ID, playerId, author);
 
             List<SinglePlayerPuzzleStatePerPlayer> states = await statesQ.ToListAsync();
 
@@ -162,14 +162,37 @@ namespace ServerCore
                 }
             }
 
+            // Award hint coins
+            if (value != null && puzzle != null && puzzle.HintCoinsForSolve != 0)
+            {
+                IQueryable<PlayerInEvent> playersInEvent;
+                if (playerId != null)
+                {
+                    playersInEvent = from PlayerInEvent player in context.PlayerInEvent
+                                        where player.PlayerId == playerId && player.EventId == eventObj.ID
+                                        select player;
+                }
+                else
+                {
+                    playersInEvent = from PlayerInEvent player in context.PlayerInEvent
+                                     where player.EventId == eventObj.ID
+                                     select player;
+                }
+
+                foreach (PlayerInEvent player in playersInEvent)
+                {
+                    player.HintCoinCount += puzzle.HintCoinsForSolve;
+                }
+            }
+
             await context.SaveChangesAsync();
 
             // if this puzzle got solved, look for others to unlock
-            if (puzzleId.HasValue && value != null)
+            if (puzzle != null && value != null)
             {
                 await UnlockAnyPuzzlesThatThisSolveUnlockedAsync(context,
                     eventObj,
-                    puzzleId,
+                    puzzle.ID,
                     playerId,
                     value.Value);
             }

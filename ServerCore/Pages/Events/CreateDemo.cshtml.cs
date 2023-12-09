@@ -165,6 +165,21 @@ namespace ServerCore.Pages.Events
                 };
                 _context.Puzzles.Add(singlePlayer);
 
+                Puzzle singlePlayer2 = new Puzzle
+                {
+                    Name = "Single player sample 2",
+                    Event = Event,
+                    IsPuzzle = true,
+                    SolveValue = 10,
+                    HintCoinsForSolve = 1,
+                    Group = "Sample",
+                    OrderInGroup = 3,
+                    MinPrerequisiteCount = 1,
+                    Description = "Demonstrates single player puzzles",
+                    IsForSinglePlayer = true
+                };
+                _context.Puzzles.Add(singlePlayer2);
+
                 Puzzle meta = new Puzzle
                 {
                     Name = "Lagomorph Meta",
@@ -298,6 +313,8 @@ namespace ServerCore.Pages.Events
                 _context.Responses.Add(new Response() { Puzzle = hard, SubmittedText = "ANSWER", ResponseText = "Correct!", IsSolution = true });
                 _context.Responses.Add(new Response() { Puzzle = singlePlayer, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
                 _context.Responses.Add(new Response() { Puzzle = singlePlayer, SubmittedText = "ANSWER", ResponseText = "Correct!", IsSolution = true });
+                _context.Responses.Add(new Response() { Puzzle = singlePlayer2, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
+                _context.Responses.Add(new Response() { Puzzle = singlePlayer2, SubmittedText = "ANSWER", ResponseText = "Correct!", IsSolution = true });
                 _context.Responses.Add(new Response() { Puzzle = meta, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
                 _context.Responses.Add(new Response() { Puzzle = meta, SubmittedText = "ANSWER", ResponseText = "Correct!", IsSolution = true });
                 _context.Responses.Add(new Response() { Puzzle = other, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
@@ -329,6 +346,10 @@ namespace ServerCore.Pages.Events
                 _context.Hints.Add(new Hint() { Puzzle = hard, Description = hint2Description, DisplayOrder = 1, Cost = 1, Content = hint2Content });
                 _context.Hints.Add(new Hint() { Puzzle = meta, Description = hint1Description, DisplayOrder = 0, Cost = 0, Content = hint1Content });
                 _context.Hints.Add(new Hint() { Puzzle = meta, Description = hint2Description, DisplayOrder = 1, Cost = 1, Content = hint2Content });
+                _context.Hints.Add(new Hint() { Puzzle = singlePlayer, Description = hint1Description, DisplayOrder = 0, Cost = 0, Content = hint1Content });
+                _context.Hints.Add(new Hint() { Puzzle = singlePlayer, Description = hint2Description, DisplayOrder = 1, Cost = 1, Content = hint2Content });
+                _context.Hints.Add(new Hint() { Puzzle = singlePlayer2, Description = hint1Description, DisplayOrder = 0, Cost = 0, Content = hint1Content });
+                _context.Hints.Add(new Hint() { Puzzle = singlePlayer2, Description = hint2Description, DisplayOrder = 1, Cost = 1, Content = hint2Content });
 
                 await _context.SaveChangesAsync();
 
@@ -407,6 +428,11 @@ namespace ServerCore.Pages.Events
                     _context.PuzzleAuthors.Add(new PuzzleAuthors() { Puzzle = intermediate, Author = demoCreatorUser });
                     _context.PuzzleAuthors.Add(new PuzzleAuthors() { Puzzle = hard, Author = demoCreatorUser });
                     _context.PuzzleAuthors.Add(new PuzzleAuthors() { Puzzle = meta, Author = demoCreatorUser });
+
+                    //
+                    // Puzzle author for the first Single Player puzzle
+                    //
+                    _context.PuzzleAuthors.Add(new PuzzleAuthors() { Puzzle = singlePlayer, Author = demoCreatorUser });
                 }
 
                 // TODO: Files (need to know how to detect whether local blob storage is configured)

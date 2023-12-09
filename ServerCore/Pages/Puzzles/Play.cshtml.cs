@@ -131,6 +131,12 @@ namespace ServerCore.Pages.Puzzles
 
         private async Task<IEnumerable<PuzzleView>> GetVisibleTeamPlayerPuzzleViews(SortOrder? sortOrder, Team team)
         {
+            // If the event has not yet begun, no puzzles yet
+            if (DateTime.UtcNow < Event.EventBegin && !team.IsDisqualified)
+            {
+                return Enumerable.Empty<PuzzleView>();
+            }
+
             // all puzzles for this event that are real puzzles
             var puzzlesInEventQ = _context.Puzzles.Where(puzzle => puzzle.Event.ID == this.Event.ID && puzzle.IsPuzzle && !puzzle.IsForSinglePlayer);
 

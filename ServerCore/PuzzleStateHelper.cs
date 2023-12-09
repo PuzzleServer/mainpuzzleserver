@@ -329,6 +329,16 @@ namespace ServerCore
 
             DateTime now = DateTime.UtcNow;
 
+            // unlock any puzzle with zero prerequisites
+            var zeroPrerequisitePuzzlesToUnlock = await PuzzleStateHelper.GetSparseQuery(context, eventObj, null, team)
+                .Where(state => state.UnlockedTime == null && state.Puzzle.MinPrerequisiteCount == 0)
+                .Select((state) => state.Puzzle)
+                .ToListAsync();
+            foreach (var puzzle in zeroPrerequisitePuzzlesToUnlock)
+            {
+                await PuzzleStateHelper.SetUnlockStateAsync(context, eventObj, puzzle, team, now);
+            }
+
             // do the unlocks in a loop.
             // The loop will catch cascading unlocks, e.g. if someone does not hit the site between 11:59 and 12:31, catch up to the 12:30 unlocks immediately.
             while (true)
