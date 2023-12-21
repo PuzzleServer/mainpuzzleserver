@@ -457,7 +457,18 @@ else
             }
         </div>
         <div class="inlinewrapper">
-            @if (!Model.PuzzleState.IsEmailOnlyMode)
+            @if (!Model.Event.HideHints)
+            {
+                if (Model.Puzzle.IsForSinglePlayer)
+                {
+                    <div><b>Need help?</b> <a asp-page="/Puzzles/SinglePlayerPuzzleHints" asp-route-puzzleid="Model.Puzzle.ID" target="_blank">Click this link</a> to access hints for this puzzle.</div>
+                }
+                else
+                {
+                    <div><b>Need help?</b> <a asp-page="/Teams/Hints" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-teamId="@Model.Team.ID" target="_blank">Click this link</a> to access hints for this puzzle.</div>
+                }
+            }
+            else if (!Model.PuzzleState.IsEmailOnlyMode)
             {
                 <div><b>Need help?</b> <a href="@mailtoUrl">Click this link</a> to send an email to the author.</div>
             }
@@ -804,7 +815,7 @@ else
                 // Resize iframe so the frame has no scrollbars
                 // By the time the window has loaded, the iframe contents should have as well, thus no iframe load listener
                 // Note that when the puzzle receives the message, it should remove any extraneous wrapping before reporting its size
-                const iframe = document.querySelector("iframe");
+                const iframe = document.querySelector("#puzzle-frame");
                 if ((iframe !== null) && (iframe !== undefined)) {
                     iframe.contentWindow.postMessage("", "*");
                 }
@@ -815,7 +826,7 @@ else
             // The extra 25px added to the size undoes the widths of the scrollbars themselves
             window.addEventListener("message", (e) => {
                 if ((e.data.width > 0) && (e.data.height > 0)) {
-                    const iframe = document.querySelector("iframe");
+                    const iframe = document.querySelector("#puzzle-frame");
                     iframe.id = ""; 
                     iframe.width = e.data.width + 25;
                     iframe.height = e.data.height + 25;
