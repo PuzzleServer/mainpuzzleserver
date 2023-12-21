@@ -461,11 +461,11 @@ else
             {
                 if (Model.Puzzle.IsForSinglePlayer)
                 {
-                    <div><b>Need help?</b> <a asp-page="/Puzzles/SinglePlayerPuzzleHints" asp-route-puzzleid="Model.Puzzle.ID">Click this link</a> to access hints for this puzzle.</div>
+                    <div><b>Need help?</b> <a asp-page="/Puzzles/SinglePlayerPuzzleHints" asp-route-puzzleid="Model.Puzzle.ID" target="_blank">Click this link</a> to access hints for this puzzle.</div>
                 }
                 else
                 {
-                    <div><b>Need help?</b> <a asp-page="/Teams/Hints" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-teamId="@Model.Team.ID">Click this link</a> to access hints for this puzzle.</div>
+                    <div><b>Need help?</b> <a asp-page="/Teams/Hints" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-teamId="@Model.Team.ID" target="_blank">Click this link</a> to access hints for this puzzle.</div>
                 }
             }
             else if (!Model.PuzzleState.IsEmailOnlyMode)
