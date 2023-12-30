@@ -21,20 +21,26 @@
             }
             var RoutingPuzzleId = ViewData["RoutingPuzzleId"] as string;
             var RoutingTeamId = ViewData["RoutingTeamId"] as string;
-
-<ul class="dropdown-menu">
-    @if (IsAdmin)
-    {
-    <li><a asp-page=@AdminRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.admin" asp-route-teamId=@RoutingTeamId asp-route-puzzleId=@RoutingPuzzleId>Admin mode</a></li>
-    <li class="divider"></li>
-    }
-    @if (IsAuthor)
-    {
-    <li><a asp-page=@AuthorRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.author" asp-route-teamId=@RoutingTeamId asp-route-puzzleId=@RoutingPuzzleId>Author mode</a></li>
-    <li class="divider"></li>
-    }
-    <li><a asp-page=@PlayRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play" asp-route-teamId=@RoutingTeamId asp-route-puzzleId=@RoutingPuzzleId>Player mode</a></li>
-</ul>
+            var cssValue = "player-menu";
+            if (IsAdmin)
+            {
+                cssValue = "admin-menu";
+            }
+            else if (IsAuthor) 
+            {
+                cssValue = "author-menu";
+            }
+            <ul class="dropdown-menu @cssValue">
+                @if (IsAdmin)
+                {
+                    <li><a class="dropdown-item" asp-page=@AdminRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.admin" asp-route-teamId=@RoutingTeamId asp-route-puzzleId=@RoutingPuzzleId>Admin mode</a></li>
+                }
+                @if (IsAuthor)
+                {
+                    <li><a class="dropdown-item" asp-page=@AuthorRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.author" asp-route-teamId=@RoutingTeamId asp-route-puzzleId=@RoutingPuzzleId>Author mode</a></li>
+                }
+                <li><a class="dropdown-item" asp-page=@PlayRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play" asp-route-teamId=@RoutingTeamId asp-route-puzzleId=@RoutingPuzzleId>Player mode</a></li>
+            </ul>
         }
     }
 }

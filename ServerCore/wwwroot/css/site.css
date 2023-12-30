@@ -193,3 +193,84 @@ table.ph-statemap tbody tr td.dark a {
     font-size: 20px;
     font-weight: bold;
 }
+
+.player-menu a.dropdown-item:hover {
+    background-color: #527a58;
+}
+
+.author-menu a.dropdown-item:hover {
+    background-color: #87765e;
+}
+
+.admin-menu a.dropdown-item:hover {
+    background-color: #990003;
+}
+
+a {
+    text-decoration: none;
+}
+
+.navbar-custom {
+    color: #9d9d9d;
+    padding: 0px 10%;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.navbar-custom a {
+    text-decoration: none;
+    color: #9d9d9d;
+    padding-right: 20px;
+}
+
+.navbar-custom a:hover {
+    color: #ffffff;
+}
+
+#topBarCollapsable.show {
+    border-top: 1px solid black;
+    padding-bottom: 10px;
+}
+
+.navbar-collapse button {
+    border: 0px solid black;
+    text-decoration: none;
+    color: #9d9d9d;
+    background-color: transparent;
+}
+
+.navbar-collapse button:hover {
+    color: #ffffff;
+}
+
+.navbar-collapse.show button {
+    padding-left: 0px;
+}
+
+.nav-item {
+    min-height: 40px;
+    padding-top: 10px;
+}
+
+.nav-item.blank {
+    min-height: 0px;
+    max-height: 0px;
+    padding-top: 0px;
+}
+
+.nav-item button {
+    padding: 0px 20px;
+}
+
+.navbar-toggler {
+    margin: 10px 0px;
+}
+
+a.navbar-brand {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.dropdown a.show {
+    color: #ffffff;
+}
