@@ -339,6 +339,9 @@ namespace Data.Migrations
                     b.Property<bool>("HasIndividualLunch")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("HasIndividualRegistration")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("HasSwag")
                         .HasColumnType("bit")
                         .HasColumnName("EventHasSwag");

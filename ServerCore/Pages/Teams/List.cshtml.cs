@@ -32,7 +32,7 @@ namespace ServerCore.Pages.Teams
                 return Challenge();
             }
 
-            if (!(await LoggedInUser.IsRegisteredForEvent(_context, Event)))
+            if (Event.HasIndividualRegistration && !(await LoggedInUser.IsRegisteredForEvent(_context, Event)))
             {
                 return RedirectToPage("/Player/Create");
             }

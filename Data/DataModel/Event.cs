@@ -40,7 +40,7 @@ namespace ServerCore.DataModel
         public int MaxTeamSize { get; set; }
         public int MaxExternalsPerTeam { get; set; }
         public bool IsInternEvent { get; set; }
-
+        public bool HasIndividualRegistration { get; set; }
         public bool HasIndividualLunch { get; set; }
         public bool HasTShirts { get; set; }
         public bool AllowsRemote { get; set; }
