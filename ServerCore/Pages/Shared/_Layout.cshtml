@@ -32,7 +32,7 @@
 
     <!-- TODO: Make this actually scalable and correct -->
     @{
-        if ((ev?.UrlString != null) && ((ev.UrlString.StartsWith("pd")) || (ev.UrlString.StartsWith("nipd"))))
+        if ((ev?.HomePartial != null) && ((ev.HomePartial.StartsWith("pd")) || (ev.HomePartial.StartsWith("nipd"))))
         {
             <link rel="stylesheet" href="~/css/@(ev.UrlString)/styles.min.css" />
         }

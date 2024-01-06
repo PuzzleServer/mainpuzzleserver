@@ -82,6 +82,7 @@ namespace ServerCore.Pages.Events
                 Event.TeamDeleteEnd = Event.AnswerSubmissionEnd;
                 Event.AnswersAvailableBegin = Event.AnswerSubmissionEnd;
                 Event.StandingsAvailableBegin = DateTime.UtcNow;
+                Event.LunchReportDate = Event.AnswerSubmissionEnd;
                 Event.LockoutIncorrectGuessLimit = 5;
                 Event.LockoutIncorrectGuessPeriod = 15;
                 Event.LockoutDurationMultiplier = 2;
