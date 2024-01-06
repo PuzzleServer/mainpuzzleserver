@@ -823,13 +823,13 @@ else
 
             // When the iframe response comes, use it to set the iframe's size
             // Removing the iframe's id removes the hard-coded css size
-            // The extra 25px added to the size undoes the widths of the scrollbars themselves
+            // The extra 27px added to the size undoes the widths of the scrollbars themselves
             window.addEventListener("message", (e) => {
                 if ((e.data.width > 0) && (e.data.height > 0)) {
                     const iframe = document.querySelector("#puzzle-frame");
                     iframe.id = ""; 
-                    iframe.width = e.data.width + 25;
-                    iframe.height = e.data.height + 25;
+                    iframe.width = e.data.width + 27;
+                    iframe.height = e.data.height + 27;
                 }
             });
         </script>

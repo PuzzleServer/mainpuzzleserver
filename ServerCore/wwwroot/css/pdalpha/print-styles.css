@@ -1,0 +1,58 @@
+@page {
+  margin: 0in;
+}
+
+body {
+  font-size: 0.8rem;
+}
+
+.page-div {
+  margin: 0px;
+}
+
+.header-div {
+  position: absolute;
+  display: grid;
+  grid-template-columns: 540px 200px;
+}
+
+.has-dc {
+  -webkit-print-color-adjust: exact;
+  background-size: cover;
+  position: absolute;
+  top: 10px;
+  left: 750px;
+  width: 25px;
+  height: 25px;
+}
+
+h1 {
+  font-size: 28px;
+  margin-left: 0.5in;
+  margin-top: 10px;
+  text-align: left;
+  text-transform: uppercase;
+  grid-column: 1;
+}
+
+.byline-div {
+  font-size: 14px;
+  line-height: 48px;
+  margin: 0px;
+  text-align: right;
+  grid-column: 2;
+}
+
+.answer-div {
+  grid-column: 1;
+  margin-left: -20px;
+}
+
+.content-div {
+  padding: 1in 0.5in 0in 0.5in;
+  border: none;
+}
+
+.online-only {
+  display: none;
+}
