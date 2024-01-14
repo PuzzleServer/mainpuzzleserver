@@ -61,6 +61,10 @@ namespace ServerCore.Pages.Events
                     .ToListAsync();
             }
 
+            int finalMetaCount = await _context.Puzzles.Where(p => p.Event == Event)
+                    .Where(p => p.IsFinalPuzzle)
+                    .CountAsync();
+
             List<TeamStats> teams = await _context.Teams.Where(t => t.Event == Event)
                 .Select(t => new TeamStats() { Team = t })
                 .ToListAsync();
@@ -126,7 +130,16 @@ namespace ServerCore.Pages.Events
 
                     if (puzzle.Puzzle.IsFinalPuzzle && !team.CheatCodeUsed)
                     {
-                        team.FinalMetaSolveTime = state.SolvedTime.Value;
+                        if (team.LatestFinalMetaSolveTime < state.SolvedTime.Value)
+                        {
+                            team.LatestFinalMetaSolveTime = state.SolvedTime.Value;
+                        }
+                        team.FinalMetaSolveCount++;
+
+                        if (team.FinalMetaSolveCount == finalMetaCount)
+                        {
+                            team.FinalMetaSolveTime = team.LatestFinalMetaSolveTime;
+                        }
                     }
                 }
             }
@@ -203,10 +216,12 @@ namespace ServerCore.Pages.Events
         {
             public Team Team { get; set; }
             public int SolveCount { get; set; }
+            public int FinalMetaSolveCount { get; set; }
             public int Score { get; set; }
             public int SortOrder { get; set; }
             public int? Rank { get; set; }
             public bool CheatCodeUsed { get; set; }
+            public DateTime LatestFinalMetaSolveTime { get; set; } = DateTime.MinValue;
             public DateTime FinalMetaSolveTime { get; set; } = DateTime.MaxValue;
         }
 
