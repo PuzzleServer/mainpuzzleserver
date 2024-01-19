@@ -1,0 +1,18 @@
+:root {
+    --microsoft-yellow: rgb(255,185,0);
+    --microsoft-red: rgb(242, 80, 34);
+    --microsoft-blue: rgb(0, 164, 239);
+    --microsoft-green: rgb(127, 186, 0);
+}
+
+body {
+    font-size: 1.4rem;
+    font-family: Tahoma, Verdana, sans-serif;
+}
+
+.container {
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto
+}

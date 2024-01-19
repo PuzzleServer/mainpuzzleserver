@@ -32,7 +32,7 @@
 
     <!-- TODO: Make this actually scalable and correct -->
     @{
-        if ((ev?.UrlString != null) && ((ev.UrlString.StartsWith("pd")) || (ev.UrlString.StartsWith("nipd"))))
+        if ((ev?.HomePartial != null) && ((ev.HomePartial.StartsWith("pd")) || (ev.HomePartial.StartsWith("nipd"))))
         {
             <link rel="stylesheet" href="~/css/@(ev.UrlString)/styles.min.css" />
         }
@@ -103,8 +103,15 @@
             <hr />
             }
         @RenderBody()
-        <hr />
-        <footer>
+        <style>
+            @@media print {
+                .online-only {
+                    display: none;
+                }
+            }
+        </style>
+        <hr class="online-only" />
+        <footer class="online-only">
             <ul class="list-inline text-right">
                 <li><a href="mailto:@(Event?.ContactEmail ?? "puzzhunt@microsoft.com")">Contact Us</a></li>
                 <li><a href="mailto:puzztech@puzzlehunt.org">Website Emergency?</a></li>
