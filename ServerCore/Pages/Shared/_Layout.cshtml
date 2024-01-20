@@ -46,6 +46,13 @@
     </environment>
 
     <base href="~/" />
+    <style>
+        @@media print {
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
 
     @{
         // Using ev here so that it isn't the same as Event that we bind in the <body>
@@ -61,7 +68,7 @@
 
     <!-- TODO: Make this actually scalable and correct -->
     @{
-        if ((ev?.UrlString != null) && ((ev.UrlString.StartsWith("pd")) || (ev.UrlString.StartsWith("nipd"))))
+        if ((ev?.HomePartial != null) && ((ev.HomePartial.StartsWith("pd")) || (ev.HomePartial.StartsWith("nipd"))))
         {
             <link rel="stylesheet" href="~/css/@(ev.UrlString)/styles.min.css" />
         }
@@ -128,17 +135,17 @@
     <div class="container body-content">
         @if (!string.IsNullOrEmpty(Event?.Announcement))
             {
-            <p class="announcement">@Event.Announcement</p>
-            <hr />
+            <p class="announcement no-print">@Event.Announcement</p>
+            <hr class="no-print" />
             }
         @if (!string.IsNullOrEmpty(Event?.TeamAnnouncement) && await (Model as ServerCore.ModelBases.EventSpecificPageModel)?.GetShowTeamAnnouncement())
             {
-            <p class="announcement">@Event.TeamAnnouncement</p>
-            <hr />
+            <p class="announcement no-print">@Event.TeamAnnouncement</p>
+            <hr class="no-print" />
             }
         @RenderBody()
-        <hr />
-        <footer>
+        <hr class="no-print" />
+        <footer class="no-print">
             <ul class="list-inline text-end">
                 <li class="list-inline-item"><a href="mailto:@(Event?.ContactEmail ?? "puzzhunt@microsoft.com")">Contact Us</a></li>
                 <li class="list-inline-item"><a href="mailto:puzztech@puzzlehunt.org">Website Emergency?</a></li>

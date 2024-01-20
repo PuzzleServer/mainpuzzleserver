@@ -181,6 +181,31 @@
     #img-frame {
         width: 100%;
     }
+
+    @@media print {
+        .no-print {
+            display: none;
+        }
+        #puzzleNamePrintable {
+            text-transform: uppercase;
+            margin-top: -5px;
+        }
+        #dataConfirmationPrintable {
+            margin-top: 0px;
+            width: 25px;
+            height: 25px;
+        }
+        #puzzleAuthorPrintable {
+            margin-top: -0.15in;
+        }
+        iframe {
+            margin: -0.5in -0.25in 0in -0.25in;
+            width: 100%;
+            height: 100%;
+            padding: 25px;
+            object-fit: none;
+        }
+    }
 </style>
 
 @if (!Model.Event.EmbedPuzzles) {
@@ -425,24 +450,24 @@ else
 {
     <div class="twocolumn">
         <div class="flexwrapper">
-            <div><h2><b>@RawHtmlHelper.Display(Model.Puzzle.Name, Model.Event.ID, Html)</b></h2></div>&nbsp;&nbsp;
+            <div><h2 id="puzzleNamePrintable"><b>@RawHtmlHelper.Display(Model.Puzzle.Name, Model.Event.ID, Html)</b></h2></div>&nbsp;&nbsp;
             @if (Model.Puzzle.HasDataConfirmation)
             {
-                <img src="~/images/DataConfirmationIcon.png" width="30" height="30" style="margin-bottom:3px" title="Reminder: This puzzle supports data confirmation" />
+                <img id="dataConfirmationPrintable" src="~/images/comic-dc.png" width="30" height="30" style="margin-bottom:3px" title="Reminder: This puzzle supports data confirmation" />
             }
         </div>
         <div class="inlinewrapper">
-            <br /><h4>@RawHtmlHelper.Display(Model.PuzzleAuthor, Model.Event.ID, Html)</h4>
+            <br /><h4 id="puzzleAuthorPrintable">@RawHtmlHelper.Display(Model.PuzzleAuthor, Model.Event.ID, Html)</h4>
         </div>
     </div>
 
     @if (!string.IsNullOrEmpty(Model.Puzzle.Errata))
     {
-        <div><span style="color: red; font-weight:600;">&#x26A0; Errata: </span>@Model.Puzzle.Errata</div>
+        <div class="no-print"><span style="color: red; font-weight:600;">&#x26A0; Errata: </span>@Model.Puzzle.Errata</div>
         <br />
     }
 
-    <div class="evencolumn">
+    <div class="evencolumn no-print">
         <div class="flexwrapper">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <label for="submissionText" class="marginright margintop">Answer:</label>
@@ -489,7 +514,7 @@ else
         </div>
     </div>
     <br />
-    <div id="initialMessage">
+    <div id="initialMessage" class="no-print">
         @if (!string.IsNullOrEmpty(Model.AnswerToken))
         {
             <div class="alert alert-success" role="alert">
@@ -563,7 +588,7 @@ else
             }
         }
     </div>
-    <div class="centerwrapper">
+    <div class="centerwrapper no-print">
         <div class="inlineblockwrapper">
             <div id="submissionHistory" style="display: @((Model.SubmissionViews.Count == 0) ? "none" : "block")" class="hideablepanel">
                 Click here to view previous submissions:<span class="caret"></span>
@@ -823,13 +848,13 @@ else
 
             // When the iframe response comes, use it to set the iframe's size
             // Removing the iframe's id removes the hard-coded css size
-            // The extra 25px added to the size undoes the widths of the scrollbars themselves
+            // The extra 27px added to the size undoes the widths of the scrollbars themselves
             window.addEventListener("message", (e) => {
                 if ((e.data.width > 0) && (e.data.height > 0)) {
                     const iframe = document.querySelector("#puzzle-frame");
                     iframe.id = ""; 
-                    iframe.width = e.data.width + 25;
-                    iframe.height = e.data.height + 25;
+                    iframe.width = e.data.width + 27;
+                    iframe.height = e.data.height + 27;
                 }
             });
         </script>
