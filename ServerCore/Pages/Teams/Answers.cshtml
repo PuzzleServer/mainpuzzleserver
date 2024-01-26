@@ -62,7 +62,7 @@
                 </td>
             }
             <td>
-                @item.ResponseText
+                @ServerCore.Helpers.RawHtmlHelper.Display(item.ResponseText, Model.Event.ID, Html)
             </td>
         </tr>
         }

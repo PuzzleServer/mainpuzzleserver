@@ -39,6 +39,8 @@ namespace ServerCore.Pages.Puzzles
 
         public bool AllowFeedback { get; set; }
 
+        public bool AnyErrata { get; set; }
+
         public Team Team { get; set; }
 
         public async Task OnGetAsync(
@@ -71,6 +73,7 @@ namespace ServerCore.Pages.Puzzles
 
             VisibleSinglePlayerPuzzleViews = this.GetVisibleSinglePlayerPuzzleViews(singlePlayerPuzzleSort).ToList();
             this.PopulatePuzzleViewsWithFiles(VisibleSinglePlayerPuzzleViews, puzzleFiles, answerFiles);
+            AnyErrata = VisibleSinglePlayerPuzzleViews.Any(v => v.Errata != null);
 
             Team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
             if (Team != null)
@@ -78,6 +81,10 @@ namespace ServerCore.Pages.Puzzles
                 await PuzzleStateHelper.CheckForTimedUnlocksAsync(_context, Event, Team);
                 VisibleTeamPuzzleViews = (await this.GetVisibleTeamPlayerPuzzleViews(teamPuzzleSort, Team)).ToList();
                 this.PopulatePuzzleViewsWithFiles(VisibleTeamPuzzleViews, puzzleFiles, answerFiles);
+                if (!AnyErrata)
+                {
+                    AnyErrata = VisibleTeamPuzzleViews.Any(v => v.Errata != null);
+                }
             }
         }
 

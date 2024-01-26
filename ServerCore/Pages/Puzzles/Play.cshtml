@@ -33,7 +33,10 @@
     </div>
 }
 
-<p>Note: Puzzles with a &#x26A0; before the name have errata, which will be provided on that puzzle's answer submission page.</p>
+@if (Model.AnyErrata)
+{
+    <p>Note: Puzzles with a &#x26A0; before the name have errata, which will be provided on that puzzle's answer submission page.</p>
+}
 <div>
     <a asp-page="./Play"
        asp-route-singlePlayerPuzzleSort="@Model.SinglePlayerPuzzleSort"
