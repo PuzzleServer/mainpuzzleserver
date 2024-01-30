@@ -89,7 +89,8 @@ namespace ServerCore.Pages.Events
             // Getting the top 3 requires working around EF limitations translating sorting results within a group to SQL. Workaround from https://github.com/dotnet/efcore/issues/13805
 
             // Filter to solved puzzles
-            var psptToQuery = _context.PuzzleStatePerTeam.Where(pspt => pspt.Puzzle.EventID == Event.ID &&
+            var psptToQuery = _context.PuzzleStatePerTeam.Where(
+                pspt => pspt.Puzzle.EventID == Event.ID &&
                 pspt.Puzzle.IsPuzzle &&
                 pspt.UnlockedTime != null &&
                 pspt.SolvedTime != null &&
@@ -108,7 +109,10 @@ namespace ServerCore.Pages.Events
 
             var unlockedData = this.CurrentTeam == null ? null : (
                 await PuzzleStateHelper.GetSparseQuery(_context, this.Event, null, null)
-                    .Where(state => state.Team == this.CurrentTeam && state.UnlockedTime != null)
+                    .Where(state => 
+                        state.Team == this.CurrentTeam 
+                        && state.UnlockedTime != null 
+                        && (EventRole != EventRole.author || authorPuzzleIds.Contains(state.PuzzleID)))
                     .Select(s => new { s.PuzzleID, IsSolvedByUserTeam = (s.SolvedTime < submissionEnd) })
                     .ToDictionaryAsync(s => s.PuzzleID));
 
@@ -136,7 +140,8 @@ namespace ServerCore.Pages.Events
                 }
 
                 bool isSolved = false;
-                if (unlockedData != null)
+                if (unlockedData != null
+                    && unlockedData.ContainsKey(data.PuzzleID))
                 {
                     isSolved = unlockedData[data.PuzzleID].IsSolvedByUserTeam;
                 }
