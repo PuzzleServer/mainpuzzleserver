@@ -18,81 +18,71 @@
 <!--ADMIN NAV BAR-->
 @if (Event != null && EventRole != null && EventRole == ModelBases.EventRole.admin)
 {
-    <nav class="navbar navbar-inverse navbar-static-top admin-menu">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
+    <nav class="navbar navbar-dark navbar-custom static-top navbar-expand-xl admin-menu" data-bs-theme="dark">
+        <div class="container-fluid">
+            <div class="nav-header dropdown">
+                <a class="navbar-brand" data-bs-toggle="dropdown" role="button" href="#">
+                    @Event.Name - Admin
+                </a>
+                <partial name="/Pages/Shared/_RoleSwitcherPartial.cshtml" />
+
+                <button type="button" class="navbar-toggler admin-menu" data-bs-toggle="collapse" data-bs-target="#topBarCollapsable" title="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
                 </button>
-                <ul class="nav navbar-nav">
-                    <li>
-                        <a class="navbar-brand" data-toggle="dropdown" href="#">
-                            @Event.Name - Admin
-                        </a>
-                        <partial name="/Pages/Shared/_RoleSwitcherPartial.cshtml" />
-                    </li>
-                </ul>
             </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                            Event
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a asp-page="/EventSpecific/Index">Home</a></li>
-                            <li class="divider"></li>
-                            <li><a asp-page="/Events/Details">Details</a></li>
-                        </ul>
+
+            <div class="collapse navbar-collapse" id="topBarCollapsable">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <div class="dropdown">
+                            <a class="dropdown-toggle" data-bs-toggle="dropdown" role="button" href="#">
+                                Event
+                            </a>
+                            <ul class="dropdown-menu admin-menu">
+                                <li><a class="dropdown-item" asp-page="/EventSpecific/Index">Home</a></li>
+                                <li><a class="dropdown-item" asp-page="/Events/Details">Details</a></li>
+                            </ul>
+                        </div>
                     </li>
-                    <li><a asp-page="/Puzzles/Index">Puzzles</a></li>
-                    <li><a asp-page="/Teams/Index">Teams</a></li>
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                            Leaderboards
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a asp-page="/Events/Standings">Standings</a></li>
-                            <li class="divider"></li>
-                            <li><a asp-page="/Events/FastestSolves">Fastest solves</a></li>
-                            <li class="divider"></li>
-                            <li><a asp-page="/Events/Map">Puzzle state map</a></li>
-                            <li class="divider"></li>
-                            <li><a asp-page="/Events/PlayerSubmissions">Shared submissions</a></li>
-                        </ul>
+                    <li class="nav-item"><a asp-page="/Puzzles/Index">Puzzles</a></li>
+                    <li class="nav-item"><a asp-page="/Teams/Index">Teams</a></li>
+                    <li class="nav-item">
+                        <div class="dropdown">
+                            <a class="dropdown-toggle" data-bs-toggle="dropdown" role="button" href="#">
+                                Leaderboards
+                            </a>
+                            <ul class="dropdown-menu admin-menu">
+                                <li><a class="dropdown-item" asp-page="/Events/Standings">Standings</a></li>
+                                <li><a class="dropdown-item" asp-page="/Events/FastestSolves">Fastest solves</a></li>
+                                <li><a class="dropdown-item" asp-page="/Events/Map">Puzzle state map</a></li>
+                                <li><a class="dropdown-item" asp-page="/Events/PlayerSubmissions">Shared submissions</a></li>
+                            </ul>
+                        </div>
                     </li>
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                            Users
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a asp-page="/Events/Players">All Users</a></li>
-                            <li class="divider"></li>
-                            <li><a asp-page="/Player/Index">Players in Event</a></li>
-                        </ul>
+                    <li class="nav-item">
+                        <div class="dropdown">
+                            <a class="dropdown-toggle" data-bs-toggle="dropdown" role="button" href="#">
+                                Users
+                            </a>
+                            <ul class="dropdown-menu admin-menu">
+                                <li><a class="dropdown-item" asp-page="/Events/Players">All Users</a></li>
+                                <li><a class="dropdown-item" asp-page="/Player/Index">Players in Event</a></li>
+                            </ul>
+                        </div>
                     </li>
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                            Resources
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a asp-page="/EventSpecific/Rules">Rules</a></li>
-                            <li class="divider"></li>
-                            <li><a asp-page="/EventSpecific/FAQ">FAQ</a></li>
-                            <li class="divider"></li>
-                            <li><a asp-page="/EventSpecific/Samples">Sample puzzles</a></li>
-                            <li class="divider"></li>
-                            <li><a asp-page="/EventSpecific/Encodings">Encodings</a></li>
-                            <li class="divider"></li>
-                            <li><a asp-page="/EventSpecific/Tools">Tools</a></li>
-                        </ul>
+                    <li class="nav-item">
+                        <div class="dropdown">
+                            <a class="dropdown-toggle" data-bs-toggle="dropdown" role="button" href="#">
+                                Resources
+                            </a>
+                            <ul class="dropdown-menu admin-menu">
+                                <li><a class="dropdown-item" asp-page="/EventSpecific/Rules">Rules</a></li>
+                                <li><a class="dropdown-item" asp-page="/EventSpecific/FAQ">FAQ</a></li>
+                                <li><a class="dropdown-item" asp-page="/EventSpecific/Samples">Sample puzzles</a></li>
+                                <li><a class="dropdown-item" asp-page="/EventSpecific/Encodings">Encodings</a></li>
+                                <li><a class="dropdown-item" asp-page="/EventSpecific/Tools">Tools</a></li>
+                            </ul>
+                        </div>
                     </li>
                 </ul>
 
@@ -105,60 +95,50 @@
 <!--AUTHOR NAV BAR-->
 @if (Event != null && EventRole != null && EventRole == ModelBases.EventRole.author)
 {
-    <nav class="navbar navbar-inverse navbar-static-top author-menu">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
+    <nav class="navbar navbar-dark navbar-custom static-top navbar-expand-xl author-menu" data-bs-theme="dark">
+        <div class="container-fluid">
+            <div class="nav-header dropdown">
+                <a class="navbar-brand" data-bs-toggle="dropdown" role="button" href="#">
+                    @Event.Name - Author
+                </a>
+                <partial name="/Pages/Shared/_RoleSwitcherPartial.cshtml" />
+
+                <button type="button" class="navbar-toggler author-menu" data-bs-toggle="collapse" data-bs-target="#topBarCollapsable" title="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
                 </button>
-                <ul class="nav navbar-nav">
-                    <li>
-                        <a class="navbar-brand" data-toggle="dropdown" href="#">
-                            @Event.Name - Author
-                        </a>
-                        <partial name="/Pages/Shared/_RoleSwitcherPartial.cshtml" />
-                    </li>
-                </ul>
             </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li><a asp-page="/EventSpecific/Index">Event</a></li>
-                    <li><a asp-page="/Puzzles/Index">Puzzles</a></li>
-                    <li><a asp-page="/Teams/Index">Teams</a></li>
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                            Leaderboards
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a asp-page="/Events/Standings">Standings</a></li>
-                            <li class="divider"></li>
-                            <li><a asp-page="/Events/FastestSolves">Fastest solves</a></li>
-                            <li class="divider"></li>
-                            <li><a asp-page="/Events/Map">Puzzle state map</a></li>
-                            <li class="divider"></li>
-                            <li><a asp-page="/Events/PlayerSubmissions">Shared submissions</a></li>
-                        </ul>
+
+            <div class="collapse navbar-collapse" id="topBarCollapsable">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a asp-page="/EventSpecific/Index">Event</a></li>
+                    <li class="nav-item"><a asp-page="/Puzzles/Index">Puzzles</a></li>
+                    <li class="nav-item"><a asp-page="/Teams/Index">Teams</a></li>
+                    <li class="nav-item">
+                        <div class="dropdown">
+                            <a class="dropdown-toggle" data-bs-toggle="dropdown" role="button" href="#">
+                                Leaderboards
+                            </a>
+                            <ul class="dropdown-menu author-menu">
+                                <li><a class="dropdown-item" asp-page="/Events/Standings">Standings</a></li>
+                                <li><a class="dropdown-item" asp-page="/Events/FastestSolves">Fastest solves</a></li>
+                                <li><a class="dropdown-item" asp-page="/Events/Map">Puzzle state map</a></li>
+                                <li><a class="dropdown-item" asp-page="/Events/PlayerSubmissions">Shared submissions</a></li>
+                            </ul>
+                        </div>
                     </li>
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                            Resources
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a asp-page="/EventSpecific/Rules">Rules</a></li>
-                            <li class="divider"></li>
-                            <li><a asp-page="/EventSpecific/FAQ">FAQ</a></li>
-                            <li class="divider"></li>
-                            <li><a asp-page="/EventSpecific/Samples">Sample puzzles</a></li>
-                            <li class="divider"></li>
-                            <li><a asp-page="/EventSpecific/Encodings">Encodings</a></li>
-                            <li class="divider"></li>
-                            <li><a asp-page="/EventSpecific/Tools">Tools</a></li>
-                        </ul>
+                    <li class="nav-item">
+                        <div class="dropdown">
+                            <a class="dropdown-toggle" data-bs-toggle="dropdown" role="button" href="#">
+                                Resources
+                            </a>
+                            <ul class="dropdown-menu author-menu">
+                                <li><a class="dropdown-item" asp-page="/EventSpecific/Rules">Rules</a></li>
+                                <li><a class="dropdown-item" asp-page="/EventSpecific/FAQ">FAQ</a></li>
+                                <li><a class="dropdown-item" asp-page="/EventSpecific/Samples">Sample puzzles</a></li>
+                                <li><a class="dropdown-item" asp-page="/EventSpecific/Encodings">Encodings</a></li>
+                                <li><a class="dropdown-item" asp-page="/EventSpecific/Tools">Tools</a></li>
+                            </ul>
+                        </div>
                     </li>
                 </ul>
 
@@ -171,113 +151,104 @@
 <!--REGISTERED PLAYER NAV BAR-->
 @if (Event != null && (EventRole == null || (EventRole != ModelBases.EventRole.admin && EventRole != ModelBases.EventRole.author)) && IsRegistered)
 {
-    <nav class="navbar navbar-inverse navbar-static-top player-menu">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
+    <nav class="navbar navbar-dark navbar-custom static-top navbar-expand-xl player-menu" data-bs-theme="dark">
+        <div class="container-fluid">
+            <div class="nav-header dropdown">
+                <a class="navbar-brand" data-bs-toggle="dropdown" role="button" href="#">
+                    @Event.Name
+                </a>
+                <partial name="/Pages/Shared/_RoleSwitcherPartial.cshtml" />
+
+                <button type="button" class="navbar-toggler player-menu" data-bs-toggle="collapse" data-bs-target="#topBarCollapsable" title="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
                 </button>
-                <ul class="nav navbar-nav">
-                    <li>
-                        <a class="navbar-brand" data-toggle="dropdown" href="#">
-                            @Event.Name
-                        </a>
-                        <partial name="/Pages/Shared/_RoleSwitcherPartial.cshtml" />
-                    </li>
-                </ul>
             </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                            Event
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a asp-page="/EventSpecific/Index">Event homepage</a></li>
-                            <li class="divider"></li>
-                            <li><a asp-page="/Player/Details" asp-route-id="@playerEventId">My registration</a></li>
-                        </ul>
+
+            <div class="collapse navbar-collapse" id="topBarCollapsable">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <div class="dropdown">
+                            <a class="dropdown-toggle" data-bs-toggle="dropdown" role="button" href="#">
+                                Event
+                            </a>
+                            <ul class="dropdown-menu player-menu">
+                                <li><a class="dropdown-item" asp-page="/EventSpecific/Index">Event homepage</a></li>
+                                <li><a class="dropdown-item" asp-page="/Player/Details" asp-route-id="@playerEventId">My registration</a></li>
+                            </ul>
+                        </div>
                     </li>
                     @if (!isOnTeam)
                     {
                         @if (Event.ShouldShowSinglePlayerPuzzles)
                         {
-                            <li><a asp-page="/Puzzles/Play">Puzzles</a></li>
+                            <li class="nav-item"><a asp-page="/Puzzles/Play">Puzzles</a></li>
                         }
                         @if (Event.IsTeamMembershipChangeActive)
                         {
-                            <li><a style="color:yellow" asp-page="/Teams/List"> Join or Create a Team!</a></li>
+                            <li class="nav-item"><a style="color:yellow" asp-page="/Teams/List"> Join or Create a Team!</a></li>
                         }
                     }
                     else
                     {
-                        <li><a asp-page="/Puzzles/Play">Puzzles</a></li>
+                        <li class="nav-item"><a asp-page="/Puzzles/Play">Puzzles</a></li>
                     }
                     @if (Event.HasSwag)
                     {
                         if (DateTime.UtcNow > Event.TeamMiscDataChangeEnd || await Model.HasSwag())
                         {
-                            <li><a asp-page="/Swag/Register" title="Lunch">Lunch</a></li>
+                            <li class="nav-item"><a asp-page="/Swag/Register" title="Lunch">Lunch</a></li>
                         }
                         else
                         {
-                            <li><a style="color:yellow" asp-page="/Swag/Register" title="Lunch">Pick Lunch by @(Event.TeamMiscDataChangeEnd.ToString("M/dd"))!</a></li>
+                            <li class="nav-item"><a style="color:yellow" asp-page="/Swag/Register" title="Lunch">Pick Lunch by @(Event.TeamMiscDataChangeEnd.ToString("M/dd"))!</a></li>
                         }
                     }
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                            Teams
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            @if (!isOnTeam)
-                            {
-                                <li><a asp-page="/Teams/List"> Join or Create a Team!</a></li>
-                            }
-                            else
-                            {
-                                <li><a asp-page="/Teams/Details" asp-route-teamId="@teamId">My team</a></li>
-                            }
-                            <li class="divider"></li>
-                            <li><a asp-page="/Teams/AllTeams">All teams</a></li>
-                        </ul>
+                    <li class="nav-item">
+                        <div class="dropdown">
+                            <a class="dropdown-toggle" data-bs-toggle="dropdown" role="button" href="#">
+                                Teams
+                            </a>
+                            <ul class="dropdown-menu player-menu">
+                                @if (!isOnTeam)
+                                {
+                                    <li><a class="dropdown-item" asp-page="/Teams/List"> Join or Create a Team!</a></li>
+                                }
+                                else
+                                {
+                                    <li><a class="dropdown-item" asp-page="/Teams/Details" asp-route-teamId="@teamId">My team</a></li>
+                                }
+                                <li><a class="dropdown-item" asp-page="/Teams/AllTeams">All teams</a></li>
+                            </ul>
+                        </div>
                     </li>
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                            Leaderboards
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a asp-page="/Events/Standings">Standings</a></li>
-                            <li class="divider"></li>
-                            <li><a asp-page="/Events/FastestSolves">Fastest solves</a></li>
-                            @if (DateTime.UtcNow >= Event.AnswersAvailableBegin)
-                            {
-                                <li class="divider"></li>
-                                <li><a asp-page="/Events/PlayerSubmissions">Player submissions</a></li>
-                            }
-                        </ul>
+                    <li class="nav-item">
+                        <div class="dropdown">
+                            <a class="dropdown-toggle" data-bs-toggle="dropdown" role="button" href="#">
+                                Leaderboards
+                            </a>
+                            <ul class="dropdown-menu player-menu">
+                                <li><a class="dropdown-item" asp-page="/Events/Standings">Standings</a></li>
+                                <li><a class="dropdown-item" asp-page="/Events/FastestSolves">Fastest solves</a></li>
+                                @if (DateTime.UtcNow >= Event.AnswersAvailableBegin)
+                                {
+                                    <li><a class="dropdown-item" asp-page="/Events/PlayerSubmissions">Player submissions</a></li>
+                                }
+                            </ul>
+                        </div>
                     </li>
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                            Resources
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a asp-page="/EventSpecific/Rules">Rules</a></li>
-                            <li class="divider"></li>
-                            <li><a asp-page="/EventSpecific/FAQ">FAQ</a></li>
-                            <li class="divider"></li>
-                            <li><a asp-page="/EventSpecific/Samples">Sample puzzles</a></li>
-                            <li class="divider"></li>
-                            <li><a asp-page="/EventSpecific/Encodings">Encodings</a></li>
-                            <li class="divider"></li>
-                            <li><a asp-page="/EventSpecific/Tools">Tools</a></li>
-                        </ul>
+                    <li class="nav-item">
+                        <div class="dropdown">
+                            <a class="dropdown-toggle" data-bs-toggle="dropdown" role="button" href="#">
+                                Resources
+                            </a>
+                            <ul class="dropdown-menu player-menu">
+                                <li><a class="dropdown-item" asp-page="/EventSpecific/Rules">Rules</a></li>
+                                <li><a class="dropdown-item" asp-page="/EventSpecific/FAQ">FAQ</a></li>
+                                <li><a class="dropdown-item" asp-page="/EventSpecific/Samples">Sample puzzles</a></li>
+                                <li><a class="dropdown-item" asp-page="/EventSpecific/Encodings">Encodings</a></li>
+                                <li><a class="dropdown-item" asp-page="/EventSpecific/Tools">Tools</a></li>
+                            </ul>
+                        </div>
                     </li>
                 </ul>
 
@@ -290,63 +261,55 @@
 <!--UNREGISTERED PLAYER NAV BAR-->
 @if (Event != null && (EventRole == null || (EventRole != ModelBases.EventRole.admin && EventRole != ModelBases.EventRole.author)) && !IsRegistered)
 {
-    <nav class="navbar navbar-inverse navbar-static-top player-menu">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
+    <nav class="navbar navbar-dark navbar-custom static-top navbar-expand-xl player-menu" data-bs-theme="dark">
+        <div class="container-fluid">
+            <div class="nav-header dropdown">
+                <a class="navbar-brand" data-bs-toggle="dropdown" role="button" href="#">
+                    @Event.Name
+                </a>
+                <partial name="/Pages/Shared/_RoleSwitcherPartial.cshtml" />
+
+                <button type="button" class="navbar-toggler player-menu" data-bs-toggle="collapse" data-bs-target="#topBarCollapsable" title="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
                 </button>
-                <ul class="nav navbar-nav">
-                    <li>
-                        <a class="navbar-brand" data-toggle="dropdown" href="#">
-                            @Event.Name
-                        </a>
-                        <partial name="/Pages/Shared/_RoleSwitcherPartial.cshtml" />
-                    </li>
-                </ul>
             </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li><a asp-page="/EventSpecific/Index">Event</a></li>
+
+            <div class="collapse navbar-collapse" id="topBarCollapsable">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a asp-page="/EventSpecific/Index">Event</a></li>
                     @if (Event.ShouldShowSinglePlayerPuzzles)
                     {
-                        <li><a asp-page="/Puzzles/Play">Puzzles</a></li>
+                        <li class="nav-item"><a asp-page="/Puzzles/Play">Puzzles</a></li>
                     }
                     @if (Event.IsTeamMembershipChangeActive)
                     {
                         if (isOnTeam)
                         {
-                            <li><a style="color:yellow" asp-page="/Player/Create">Complete Your Registration</a></li>
+                            <li class="nav-item"><a style="color:yellow" asp-page="/Player/Create">Complete Your Registration</a></li>
                         }
                         else
                         {
-                            <li><a style="color:yellow" asp-page="/Player/Create">Register</a></li>
+                            <li class="nav-item"><a style="color:yellow" asp-page="/Player/Create">Register</a></li>
                         }
                     }
-                    <li><a asp-page="/Teams/AllTeams">View all teams</a></li>
+                    <li class="nav-item"><a asp-page="/Teams/AllTeams">View all teams</a></li>
                     @if (Event.ShouldShowSinglePlayerPuzzles)
                     {
-                        <li><a asp-page="/Events/FastestSolves">Solve counts</a></li>
+                        <li class="nav-item"><a asp-page="/Events/FastestSolves">Solve counts</a></li>
                     }
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                            Resources
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a asp-page="/EventSpecific/Rules">Rules</a></li>
-                            <li class="divider"></li>
-                            <li><a asp-page="/EventSpecific/FAQ">FAQ</a></li>
-                            <li class="divider"></li>
-                            <li><a asp-page="/EventSpecific/Samples">Sample puzzles</a></li>
-                            <li class="divider"></li>
-                            <li><a asp-page="/EventSpecific/Encodings">Encodings</a></li>
-                            <li class="divider"></li>
-                            <li><a asp-page="/EventSpecific/Tools">Tools</a></li>
-                        </ul>
+                    <li class="nav-item">
+                        <div class="dropdown">
+                            <a class="dropdown-toggle" data-bs-toggle="dropdown" role="button" href="#">
+                                Resources
+                            </a>
+                            <ul class="dropdown-menu player-menu">
+                                <li><a class="dropdown-item" asp-page="/EventSpecific/Rules">Rules</a></li>
+                                <li><a class="dropdown-item" asp-page="/EventSpecific/FAQ">FAQ</a></li>
+                                <li><a class="dropdown-item" asp-page="/EventSpecific/Samples">Sample puzzles</a></li>
+                                <li><a class="dropdown-item" asp-page="/EventSpecific/Encodings">Encodings</a></li>
+                                <li><a class="dropdown-item" asp-page="/EventSpecific/Tools">Tools</a></li>
+                            </ul>
+                        </div>
                     </li>
                 </ul>
 
