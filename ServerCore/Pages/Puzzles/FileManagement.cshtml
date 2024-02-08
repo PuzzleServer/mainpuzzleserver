@@ -84,6 +84,7 @@
             <label class="control-label">Materials</label>
             <br />
             <button id="buttonSelectAllMaterials" type="button">Select All</button>
+            <br />
             @foreach (var material in Model.Puzzle.Materials.OrderBy(file => file.ShortName))
             {
                 <p>
