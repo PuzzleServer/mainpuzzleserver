@@ -58,11 +58,15 @@ table.ph-statemap {
     overflow: hidden;
     white-space: nowrap;
     width: auto;
+    border-collapse: collapse;
 }
 
 table.ph-statemap > tbody > tr > td {
     padding: 3px;
     vertical-align: middle;
+    border-width: 1px;
+    border-style: solid;
+    border-collapse: collapse;
 }
 
 table.ph-statemap > thead > tr > th:nth-child(1n+5) > a {
@@ -190,7 +194,7 @@ input.btn {
     border: 1px solid black;
     border-radius: 4px;
     background-color: #f0f0f0;
-    font-size: 16px;
+    font-size: 14px;
     padding: 0px 6px;
 }
 
