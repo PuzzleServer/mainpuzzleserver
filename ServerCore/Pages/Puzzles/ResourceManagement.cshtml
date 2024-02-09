@@ -43,6 +43,7 @@
                 <button type="submit" asp-page-handler="DeleteAll" onclick="return confirm('Are you sure you want to delete all shared resources for this event?')">Delete All</button>
             </p>
             <button id="buttonSelectAllResources" type="button">Select All</button>
+            <br />
             @foreach (var resource in Model.Resources)
             {
                 <p>

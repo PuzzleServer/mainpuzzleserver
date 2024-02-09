@@ -141,6 +141,10 @@ else
                         {
                             <text>&#x26A0; </text>
                         }
+                        @if (item.SolvedTime != null)
+                        {
+                            <text>&#10004; </text>
+                        }
 
                         @if (!Model.Event.EmbedPuzzles)
                         {
@@ -181,29 +185,25 @@ else
                         </td>
                     }
                     <td>
-                        <a asp-page="/Submissions/Index" asp-route-puzzleId="@item.ID">
-                            @if (item.SolvedTime != null)
-                            {
-                                <text>Solved on </text>
-
-                                @Html.Raw(Model.LocalTime(item.SolvedTime))
-                            }
-                            else if (canSubmit)
+                            @if (canSubmit)
                             {
                                 @if (Model.Event.EmbedPuzzles)
                                 {
-                                    <text>View</text>
+                                    <a asp-page="/Submissions/Index" asp-route-puzzleId="@item.ID">View Puzzle</a>
                                 }
                                 else
                                 {
-                                    <text>Submit Answer</text>
+                                    <a asp-page="/Submissions/Index" asp-route-puzzleId="@item.ID">Submit Answer</a>
                                 }
                             }
                             else
                             {
                                 <text>Not yet available</text>
                             }
-                        </a>
+                        @if (item.SolvedTime != null)
+                        {
+                            <text> (Solved on </text> @Html.Raw(Model.LocalTime(item.SolvedTime))<text>)</text>
+                        }
                     </td>
                     @if (!Model.Event.HideHints)
                     {

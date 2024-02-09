@@ -108,7 +108,7 @@
         align-self: flex-end;
     }
     .flexwrapper img {
-        margin-top: 20px;
+        margin-top: 5px;
     }
     .inlinewrapper {
         display: inline;
@@ -161,6 +161,7 @@
         border: 1px solid;
         border-color: rgb(51, 51, 51);
         background-color: rgba(255,255,255,1);
+        cursor: auto;
     }
     .panelitem {
         padding: 3px;
@@ -182,27 +183,37 @@
         width: 100%;
     }
 
+    /* Host-side printing of an embedded puzzle only supports portrait orientation; 
+    puzzle-defined orientation when printing can only be done by clicking the link to print the puzzle file itself */
     @@media print {
         .no-print {
             display: none;
+        }
+        .container {
+            padding: 0px;
+            margin: 0px;
+            width: 8in;
+        }
+        .twocolumn {
+            grid-template-columns: 5.5in 2.5in;
         }
         #puzzleNamePrintable {
             text-transform: uppercase;
             margin-top: -5px;
         }
         #dataConfirmationPrintable {
-            margin-top: 0px;
+            margin-top: 1px;
             width: 25px;
             height: 25px;
         }
         #puzzleAuthorPrintable {
+            font-size: 16px;
             margin-top: -0.15in;
         }
         iframe {
             margin: -0.5in -0.25in 0in -0.25in;
-            width: 100%;
-            height: 100%;
-            padding: 25px;
+            width: 8in;
+            padding: 0px 25px;
             object-fit: none;
         }
     }
@@ -464,7 +475,7 @@ else
     @if (!string.IsNullOrEmpty(Model.Puzzle.Errata))
     {
         <div class="no-print"><span style="color: red; font-weight:600;">&#x26A0; Errata: </span>@Model.Puzzle.Errata</div>
-        <br />
+        <br class="no-print" />
     }
 
     <div class="evencolumn no-print">
@@ -513,7 +524,7 @@ else
             }
         </div>
     </div>
-    <br />
+    <br class="no-print" />
     <div id="initialMessage" class="no-print">
         @if (!string.IsNullOrEmpty(Model.AnswerToken))
         {
@@ -591,7 +602,7 @@ else
     <div class="centerwrapper no-print">
         <div class="inlineblockwrapper">
             <div id="submissionHistory" style="display: @((Model.SubmissionViews.Count == 0) ? "none" : "block")" class="hideablepanel">
-                Click here to view previous submissions:<span class="caret"></span>
+                Click here to view previous submissions: 
                 <div class="panelcontents" style="display: none">
                     <div class="gridwrapper">
                         <div class="panelitem"><b>Time Submitted</b></div>
