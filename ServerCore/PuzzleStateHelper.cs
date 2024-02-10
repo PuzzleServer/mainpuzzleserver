@@ -336,7 +336,7 @@ namespace ServerCore
                 .ToListAsync();
             foreach (var puzzle in zeroPrerequisitePuzzlesToUnlock)
             {
-                await PuzzleStateHelper.SetUnlockStateAsync(context, eventObj, puzzle, team, now);
+                await PuzzleStateHelper.SetUnlockStateAsync(context, eventObj, puzzle, team, eventObj.EventBegin);
             }
 
             // do the unlocks in a loop.
@@ -411,9 +411,7 @@ namespace ServerCore
         /// <returns></returns>
         private static async Task UnlockAnyPuzzlesThatThisSolveUnlockedAsync(PuzzleServerContext context, Event eventObj, Puzzle puzzleJustSolved, Team team, DateTime unlockTime)
         {
-            // a simple query for all puzzle IDs in the event - will be used at least once below
-            IQueryable<int> allPuzzleIDsQ = context.Puzzles.Where(p => p.Event == eventObj).Select(p => p.ID);
-
+            var puzzlesInGroup = puzzleJustSolved.Group == null ? null : await context.Puzzles.Where(p => p.Event == eventObj && !p.IsForSinglePlayer && p.Group == puzzleJustSolved.Group).Select(p => new { PuzzleID = p.ID, MinInGroupCount = p.MinInGroupCount }).ToDictionaryAsync(p => p.PuzzleID);
 
             // get the prerequisites for all puzzles that need an update
             // information we get per puzzle: { id, min count, number of solved prereqs including this one }
@@ -445,7 +443,7 @@ namespace ServerCore
 
                 // Make a hash set out of them for easy lookup in case we have several prerequisites to chase
                 HashSet<int> unlockedPuzzleIDsForTeamT = new HashSet<int>();
-                HashSet<int> solvedPuzzleIDsForTeamT = new HashSet<int>();
+                int solveCountInGroup = 0;
 
                 foreach (var puzzleState in puzzleStateForTeamT)
                 {
@@ -454,9 +452,9 @@ namespace ServerCore
                         unlockedPuzzleIDsForTeamT.Add(puzzleState.PuzzleID);
                     }
 
-                    if (puzzleState.SolvedTime != null)
+                    if (puzzleState.SolvedTime != null && puzzlesInGroup != null && puzzlesInGroup.ContainsKey(puzzleState.PuzzleID))
                     {
-                        solvedPuzzleIDsForTeamT.Add(puzzleState.PuzzleID);
+                        solveCountInGroup++;
                     }
                 }
 
@@ -474,6 +472,21 @@ namespace ServerCore
                     {
                         PuzzleStatePerTeam state = await context.PuzzleStatePerTeam.Where(s => s.PuzzleID == puzzleToUpdate.PuzzleID && s.Team == t).FirstAsync();
                         state.UnlockedTime = unlockTime;
+                    }
+                }
+
+                if (puzzlesInGroup != null)
+                {
+                    foreach (var pair in puzzlesInGroup)
+                    {
+                        if (pair.Value.MinInGroupCount.HasValue &&
+                            solveCountInGroup >= pair.Value.MinInGroupCount.Value &&
+                            !unlockedPuzzleIDsForTeamT.Contains(pair.Key))
+                        {
+                            // enough puzzles unlocked in the same group? Let's unlock it
+                            PuzzleStatePerTeam state = await context.PuzzleStatePerTeam.Where(s => s.PuzzleID == pair.Key && s.Team == t).FirstAsync();
+                            state.UnlockedTime = unlockTime;
+                        }
                     }
                 }
             }

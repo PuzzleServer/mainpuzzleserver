@@ -757,6 +757,9 @@ namespace Data.Migrations
                     b.Property<int>("MaxAnnotationKey")
                         .HasColumnType("int");
 
+                    b.Property<int?>("MinInGroupCount")
+                        .HasColumnType("int");
+
                     b.Property<int>("MinPrerequisiteCount")
                         .HasColumnType("int");
 

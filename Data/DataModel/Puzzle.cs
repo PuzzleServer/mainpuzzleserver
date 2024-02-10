@@ -42,6 +42,7 @@ namespace ServerCore.DataModel
             OrderInGroup = source.OrderInGroup;
             IsGloballyVisiblePrerequisite = source.IsGloballyVisiblePrerequisite;
             MinPrerequisiteCount = source.MinPrerequisiteCount;
+            MinInGroupCount = source.MinInGroupCount;
             MinutesToAutomaticallySolve = source.MinutesToAutomaticallySolve;
             MinutesOfEventLockout = source.MinutesOfEventLockout;
             MaxAnnotationKey = source.MaxAnnotationKey;
@@ -174,6 +175,11 @@ namespace ServerCore.DataModel
         /// TODO: When the system is mature, set the default to 1 so new puzzles are not accidentally displayed.
         /// </summary>
         public int MinPrerequisiteCount { get; set; } = 0;
+
+        /// <summary>
+        /// Minimum number of puzzles with the same Group that must be solved for this to unlock
+        /// </summary>
+        public int? MinInGroupCount { get; set; } = null;
 
         /// <summary>
         /// Minutes from the time a puzzle is unlocked until it is automatically marked as solved.
