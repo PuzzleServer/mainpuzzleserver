@@ -70,7 +70,7 @@
     @{
         if ((ev?.HomePartial != null) && ((ev.HomePartial.StartsWith("pd")) || (ev.HomePartial.StartsWith("nipd"))))
         {
-            <link rel="stylesheet" href="~/css/@(ev.UrlString)/styles.min.css" />
+            <link rel="stylesheet" href="~/css/@(ev.HomePartial)/styles.min.css" />
         }
     }
 
@@ -129,7 +129,6 @@
     {
         <!-- Navigation header for event specific pages -->
         <partial name="/Pages/Shared/_EventNavigationPartial.cshtml" />
-
     }
 
     <div class="container body-content">
@@ -144,17 +143,18 @@
             <hr class="no-print" />
             }
         @RenderBody()
-        <hr class="no-print" />
-        <footer class="no-print">
-            <ul class="list-inline text-end">
-                <li class="list-inline-item"><a href="mailto:@(Event?.ContactEmail ?? "puzzhunt@microsoft.com")">Contact Us</a></li>
-                <li class="list-inline-item"><a href="mailto:puzztech@puzzlehunt.org">Website Emergency?</a></li>
-                <li class="list-inline-item"><a href="https://go.microsoft.com/fwlink/?LinkID=206977">Terms Of Use</a></li>
-                <li class="list-inline-item"><a href="https://go.microsoft.com/fwlink/?LinkId=506942">Trademarks</a></li>
-                <li class="list-inline-item"><a href="http://go.microsoft.com/fwlink/?LinkId=521839">Privacy &amp; Cookies</a></li>
-                <li class="list-inline-item">© @(DateTime.Now.Year) @(Event?.Copyright ?? "Puzzlehunt")</li>
-            </ul>
-        </footer>
     </div>
+
+    <hr class="no-print" />
+    <footer class="no-print footer-custom">
+        <ul class="list-inline text-end">
+            <li class="list-inline-item"><a href="mailto:@(Event?.ContactEmail ?? "puzzhunt@microsoft.com")">Contact Us</a></li>
+            <li class="list-inline-item"><a href="mailto:puzztech@puzzlehunt.org">Website Emergency?</a></li>
+            <li class="list-inline-item"><a href="https://go.microsoft.com/fwlink/?LinkID=206977">Terms Of Use</a></li>
+            <li class="list-inline-item"><a href="https://go.microsoft.com/fwlink/?LinkId=506942">Trademarks</a></li>
+            <li class="list-inline-item"><a href="http://go.microsoft.com/fwlink/?LinkId=521839">Privacy &amp; Cookies</a></li>
+            <li class="list-inline-item">&copy; @(DateTime.Now.Year) @(Event?.Copyright ?? "Puzzlehunt")</li>
+        </ul>
+    </footer>
 </body>
 </html>

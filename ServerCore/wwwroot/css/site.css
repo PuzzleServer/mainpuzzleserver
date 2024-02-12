@@ -204,6 +204,10 @@ input.btn:hover {
     background-color: #d8d8d8;
 }
 
+#submissionHistory {
+    background-color: #ffffff;
+}
+
 .shortcut-menu-dropdown {
     position: relative;
     display: inline-block;
@@ -349,4 +353,13 @@ a.navbar-brand {
 
 .dropdown a.show {
     color: #ffffff;
+}
+
+.footer-custom {
+    padding: 0px 10%;
+    margin: 0px;
+}
+
+.footer-custom ul {
+    margin: 0px;
 }

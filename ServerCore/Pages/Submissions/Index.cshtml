@@ -459,16 +459,30 @@
 }
 else
 {
+    string cssFileName = String.IsNullOrEmpty(Model.Puzzle.CustomCSSFile) ? "" : Model.Puzzle.CustomCSSFile.Trim();
+    @if (cssFileName.Length > 0)
+    {
+        // Add class to body wrapper here so only this page's content gets it, not every page
+        <script type="text/javascript">
+            document.addEventListener("DOMContentLoaded", () => {
+                let bodyWrapper = document.querySelector(".body-content");
+                bodyWrapper.classList.add("body-content-customizable");
+            });
+        </script>
+        cssFileName += (!cssFileName.EndsWith(".css")) ? ".css" : "";
+        <link rel="stylesheet" href="~/css/@(Model.Event.HomePartial)/@cssFileName" />
+    }
+
     <div class="twocolumn">
         <div class="flexwrapper">
-            <div><h2 id="puzzleNamePrintable"><b>@RawHtmlHelper.Display(Model.Puzzle.Name, Model.Event.ID, Html)</b></h2></div>&nbsp;&nbsp;
+            <div><h2 class="puzzle-title-customizable" id="puzzleNamePrintable"><b>@RawHtmlHelper.Display(Model.Puzzle.Name, Model.Event.ID, Html)</b></h2></div>&nbsp;&nbsp;
             @if (Model.Puzzle.HasDataConfirmation)
             {
-                <img id="dataConfirmationPrintable" src="~/images/comic-dc.png" width="30" height="30" style="margin-bottom:3px" title="Reminder: This puzzle supports data confirmation" />
+                <img class="dc-icon-customizable" id="dataConfirmationPrintable" src="~/images/comic-dc.png" width="30" height="30" style="margin-bottom:3px" title="Reminder: This puzzle supports data confirmation" />
             }
         </div>
         <div class="inlinewrapper">
-            <br /><h4 id="puzzleAuthorPrintable">@RawHtmlHelper.Display(Model.PuzzleAuthor, Model.Event.ID, Html)</h4>
+            <br /><h4 class="puzzle-author-customizable" id="puzzleAuthorPrintable">@RawHtmlHelper.Display(Model.PuzzleAuthor, Model.Event.ID, Html)</h4>
         </div>
     </div>
 

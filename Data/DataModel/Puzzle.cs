@@ -24,6 +24,9 @@ namespace ServerCore.DataModel
         {
         }
 
+        //
+        // WARNING: If you add new properties add them to the constructor as well so importing will work.
+        //
         public Puzzle (Puzzle source)
         {
             // do not fill out the ID
@@ -41,14 +44,17 @@ namespace ServerCore.DataModel
             Group = source.Group;
             OrderInGroup = source.OrderInGroup;
             IsGloballyVisiblePrerequisite = source.IsGloballyVisiblePrerequisite;
+            PrerequisiteWeight = source.PrerequisiteWeight;
             MinPrerequisiteCount = source.MinPrerequisiteCount;
             MinutesToAutomaticallySolve = source.MinutesToAutomaticallySolve;
             MinutesOfEventLockout = source.MinutesOfEventLockout;
             MaxAnnotationKey = source.MaxAnnotationKey;
+            PuzzleVersion = source.PuzzleVersion;
             SupportEmailAlias = source.SupportEmailAlias;
             CustomAuthorText = source.CustomAuthorText;
             CustomURL = source.CustomURL;
             CustomSolutionURL = source.CustomSolutionURL;
+            CustomCSSFile = source.CustomCSSFile;
             Description = source.Description;
             Errata = source.Errata;
             PieceMetaUsage = source.PieceMetaUsage;
@@ -240,6 +246,11 @@ namespace ServerCore.DataModel
         public string CustomSolutionURL { get; set; }
 
         /// <summary>
+        /// A file in the wwwroot/css/<HomePartial>/ directory applied to the answer submission page to style it
+        /// </summary>
+        public string CustomCSSFile { get; set; }
+
+        /// <summary>
         /// Short description of the puzzle for authors or special pages
         /// </summary>
         public string Description { get; set; }
@@ -273,10 +284,6 @@ namespace ServerCore.DataModel
         /// True if puzzle can be solved as a player rather than solved as a team.
         /// </summary>
         public bool IsForSinglePlayer { get; set; }
-
-        //
-        // WARNING: If you add new properties add them to the constructor as well so importing will work.
-        //
 
         /// <summary>
         /// File for the main puzzle (typically a PDF containing the puzzle)
