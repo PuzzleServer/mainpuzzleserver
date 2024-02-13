@@ -171,13 +171,13 @@ namespace ServerCore.DataModel
         public int? PrerequisiteWeight { get; set; } = null;
 
         /// <summary>
-        /// Minimum number of <see cref="Prerequisites.cs"/> that must be satisfied
+        /// This puzzle unlocks when this number of <see cref="Prerequisites.cs"/> are satisfied (or the MinInGroupCount property causes an unlock).
         /// TODO: When the system is mature, set the default to 1 so new puzzles are not accidentally displayed.
         /// </summary>
         public int MinPrerequisiteCount { get; set; } = 0;
 
         /// <summary>
-        /// Minimum number of puzzles with the same Group that must be solved for this to unlock
+        /// This puzzle unlocks when this number of puzzles with the same Group are satisfied (or the MinPrerequisite property causes an unlock).
         /// </summary>
         public int? MinInGroupCount { get; set; } = null;
 

@@ -317,17 +317,16 @@ namespace ServerCore
             Team team)
         {
             DateTime expiry;
+            DateTime now = DateTime.UtcNow;
 
             lock (TimedUnlockExpiryCache)
             {
                 // throttle this by an expiry interval before we do anything even remotely expensive
-                if (TimedUnlockExpiryCache.TryGetValue(team.ID, out expiry) && expiry >= DateTime.UtcNow)
+                if (TimedUnlockExpiryCache.TryGetValue(team.ID, out expiry) && expiry >= now)
                 {
                     return;
                 }
             }
-
-            DateTime now = DateTime.UtcNow;
 
             // unlock any puzzle with zero prerequisites
             var zeroPrerequisitePuzzlesToUnlock = await PuzzleStateHelper.GetSparseQuery(context, eventObj, null, team)
@@ -363,8 +362,8 @@ namespace ServerCore
 
             lock (TimedUnlockExpiryCache)
             {
-                // effectively, expiry = Math.Max(DateTime.UtcNow, LastGlobalExpiry) + ClosestExpirySpacing - if you could use Math.Max on DateTime
-                expiry = DateTime.UtcNow;
+                // effectively, expiry = Math.Max(now, LastGlobalExpiry) + ClosestExpirySpacing - if you could use Math.Max on DateTime
+                expiry = now;
                 if (expiry < LastGlobalExpiry)
                 {
                     expiry = LastGlobalExpiry;
