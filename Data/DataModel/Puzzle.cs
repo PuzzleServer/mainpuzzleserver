@@ -42,6 +42,7 @@ namespace ServerCore.DataModel
             OrderInGroup = source.OrderInGroup;
             IsGloballyVisiblePrerequisite = source.IsGloballyVisiblePrerequisite;
             MinPrerequisiteCount = source.MinPrerequisiteCount;
+            MinInGroupCount = source.MinInGroupCount;
             MinutesToAutomaticallySolve = source.MinutesToAutomaticallySolve;
             MinutesOfEventLockout = source.MinutesOfEventLockout;
             MaxAnnotationKey = source.MaxAnnotationKey;
@@ -170,10 +171,15 @@ namespace ServerCore.DataModel
         public int? PrerequisiteWeight { get; set; } = null;
 
         /// <summary>
-        /// Minimum number of <see cref="Prerequisites.cs"/> that must be satisfied
+        /// This puzzle unlocks when this number of <see cref="Prerequisites.cs"/> are satisfied (or the MinInGroupCount property causes an unlock).
         /// TODO: When the system is mature, set the default to 1 so new puzzles are not accidentally displayed.
         /// </summary>
         public int MinPrerequisiteCount { get; set; } = 0;
+
+        /// <summary>
+        /// This puzzle unlocks when this number of puzzles with the same Group are satisfied (or the MinPrerequisite property causes an unlock).
+        /// </summary>
+        public int? MinInGroupCount { get; set; } = null;
 
         /// <summary>
         /// Minutes from the time a puzzle is unlocked until it is automatically marked as solved.

@@ -192,7 +192,7 @@ namespace ServerCore
             {
                 await UnlockAnyPuzzlesThatThisSolveUnlockedAsync(context,
                     eventObj,
-                    puzzle.ID,
+                    puzzle,
                     playerId,
                     value.Value);
             }
@@ -207,11 +207,9 @@ namespace ServerCore
         /// <param name="playerId">The id of the player.</param>
         /// <param name="unlockTime">The time that the puzzle should be marked as unlocked.</param>
         /// <returns></returns>
-        private static async Task UnlockAnyPuzzlesThatThisSolveUnlockedAsync(PuzzleServerContext context, Event eventObj, int? puzzleJustSolvedId, int? playerId, DateTime unlockTime)
+        private static async Task UnlockAnyPuzzlesThatThisSolveUnlockedAsync(PuzzleServerContext context, Event eventObj, Puzzle puzzleJustSolved, int? playerId, DateTime unlockTime)
         {
-            // a simple query for all puzzle IDs in the event - will be used at least once below
-            IQueryable<int> allPuzzleIDsQ = context.Puzzles.Where(p => p.Event == eventObj).Select(p => p.ID);
-
+            var puzzlesInGroup = puzzleJustSolved.Group == null ? null : await context.Puzzles.Where(p => p.Event == eventObj && p.IsForSinglePlayer && p.Group == puzzleJustSolved.Group).Select(p => new { PuzzleID = p.ID, MinInGroupCount = p.MinInGroupCount }).ToDictionaryAsync(p => p.PuzzleID);
 
             // get the prerequisites for all puzzles that need an update
             // information we get per puzzle: { id, min count, number of solved prereqs including this one }
@@ -219,7 +217,7 @@ namespace ServerCore
                                                          join unlockedBy in context.Prerequisites on possibleUnlock.PuzzleID equals unlockedBy.PuzzleID
                                                          join pspt in context.SinglePlayerPuzzleStatePerPlayer on unlockedBy.PrerequisiteID equals pspt.PuzzleID
                                                          join puz in context.Puzzles on unlockedBy.PrerequisiteID equals puz.ID
-                                                         where possibleUnlock.Prerequisite.ID == puzzleJustSolvedId && pspt.SolvedTime != null
+                                                         where possibleUnlock.Prerequisite.ID == puzzleJustSolved.ID && pspt.SolvedTime != null
                                                          group puz by new { unlockedBy.PuzzleID, unlockedBy.Puzzle.MinPrerequisiteCount, pspt.PlayerID } into g
                                                          select new
                                                          {
@@ -240,6 +238,10 @@ namespace ServerCore
                 .Select(puzzleState => puzzleState.PuzzleID)
                 .ToHashSet();
 
+            int solveCountInGroup = puzzlesInGroup == null ? 0 : singlePlayerPuzzleStates
+                .Where(puzzleState => puzzleState.SolvedTime != null)
+                .Count();
+
             // now loop through all puzzles and count up who needs to be unlocked
             foreach (var puzzleToUpdate in prerequisiteDataForNeedsUpdatePuzzles)
             {
@@ -254,6 +256,21 @@ namespace ServerCore
                 {
                     SinglePlayerPuzzleStatePerPlayer state = await context.SinglePlayerPuzzleStatePerPlayer.Where(s => s.PuzzleID == puzzleToUpdate.PuzzleID && s.PlayerID == playerId).FirstAsync();
                     state.UnlockedTime = unlockTime;
+                }
+            }
+
+            if (puzzlesInGroup != null)
+            {
+                foreach (var pair in puzzlesInGroup)
+                {
+                    if (pair.Value.MinInGroupCount.HasValue &&
+                        solveCountInGroup >= pair.Value.MinInGroupCount.Value &&
+                        !unlockedPuzzleIDs.Contains(pair.Key))
+                    {
+                        // enough puzzles unlocked in the same group? Let's unlock it
+                        SinglePlayerPuzzleStatePerPlayer state = await context.SinglePlayerPuzzleStatePerPlayer.Where(s => s.PuzzleID == pair.Key && s.PlayerID == playerId).FirstAsync();
+                        state.UnlockedTime = unlockTime;
+                    }
                 }
             }
 
