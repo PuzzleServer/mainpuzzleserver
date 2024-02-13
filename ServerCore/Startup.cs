@@ -16,6 +16,9 @@ using Microsoft.Extensions.Azure;
 using Azure.Storage.Queues;
 using Azure.Storage.Blobs;
 using Azure.Core.Extensions;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
+using System.Diagnostics;
 
 namespace ServerCore
 {
@@ -116,6 +119,16 @@ namespace ServerCore
             services.AddScoped<IAuthorizationHandler, IsRegisteredForEventHandler_Player>();
             services.AddScoped<BackgroundFileUploader>();
             services.AddScoped<AuthorizationHelper>();
+
+            // todo: maybe set up a local instance, maybe stick with cloud for free
+            // todo: the free tier has a max of 20 connections and this is turning itself on for both
+            // the notification hub and the blazor hub (called "componenthub"). We'd need standard tier
+            // for blazor to work in the off season and it consts $1.61/day, which isn't ideal. Can we only use the signalr hub if there's more than one instance or based on some other config that it's scaled?
+            services.AddSignalR().AddAzureSignalR(options =>
+            {
+                options.ServerStickyMode = Microsoft.Azure.SignalR.ServerStickyMode.Required;
+            }) ; // note: this reads the connection string from config, currently in my user secrets
+            services.AddSingleton<NotificationListener>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -166,6 +179,7 @@ namespace ServerCore
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapBlazorHub();
+                endpoints.MapHub<NotificationHub>("/notify");
             });
 
             app.UseMvc();
