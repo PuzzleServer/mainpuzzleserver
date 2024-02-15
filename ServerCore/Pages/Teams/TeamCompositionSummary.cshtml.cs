@@ -64,6 +64,12 @@ namespace ServerCore.Pages.Teams
 
         public IEnumerable<TeamComposition> TeamCompositions { get; set; }
 
+        public int TotalEmployeeCount { get; set; }
+        public int TotalInternCount { get; set; }
+        public int TotalNonMicrosoftCount { get; set; }
+        public int TotalTotal { get; set; }
+        public int TotalPossibleEmployeeAliasesCount { get; set; }
+
         public SortEnum SortBy { get; set; }
 
         public SortDirectionEnum SortDirection { get; set; }
@@ -88,6 +94,15 @@ namespace ServerCore.Pages.Teams
                 .ToList()
                 .GroupBy(intermediate => intermediate.TeamID)
                 .Select(this.MapToTeamComposition);
+
+            foreach (TeamComposition t in TeamCompositions)
+            {
+                TotalTotal += t.Total;
+                TotalNonMicrosoftCount += t.NonMicrosoftCount;
+                TotalInternCount += t.InternCount;
+                TotalEmployeeCount += t.EmployeeCount;
+                TotalPossibleEmployeeAliasesCount += t.PossibleEmployeeAliases.Count;
+            }
 
             this.SortTeamComposition();
             if (SortDirection == SortDirectionEnum.Descend)
