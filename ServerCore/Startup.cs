@@ -120,14 +120,27 @@ namespace ServerCore
             services.AddScoped<BackgroundFileUploader>();
             services.AddScoped<AuthorizationHelper>();
 
-            // todo: maybe set up a local instance, maybe stick with cloud for free
-            // todo: the free tier has a max of 20 connections and this is turning itself on for both
-            // the notification hub and the blazor hub (called "componenthub"). We'd need standard tier
-            // for blazor to work in the off season and it consts $1.61/day, which isn't ideal. Can we only use the signalr hub if there's more than one instance or based on some other config that it's scaled?
-            services.AddSignalR().AddAzureSignalR(options =>
+            var signalRBuilder = services.AddSignalR();
+
+            // Azure SignalR free tier only allows 20 connections and each of the SignalR Hub and Blazor default to 5 connections per frontend.
+            // This is too small to be practical, so rely on a setting to decide whether to use it.
+            bool useAzureSignalR = Configuration.GetValue<bool>("UseAzureSignalR");
+            if (useAzureSignalR)
             {
-                options.ServerStickyMode = Microsoft.Azure.SignalR.ServerStickyMode.Required;
-            }) ; // note: this reads the connection string from config, currently in my user secrets
+                // This automatically reads the connection string from the "Azure:SignalR:ConnectionString" setting.
+                // To use this locally, add a connection string to your User Secrets file.
+                signalRBuilder.AddAzureSignalR(options =>
+                {
+                    // Ensure Blazor connections get back to the frontend they initially connected to
+                    options.ServerStickyMode = Microsoft.Azure.SignalR.ServerStickyMode.Required;
+
+                    // Lowered for local debugging to not run out of connections on free tier
+                    if (_hostEnv.IsDevelopment())
+                    {
+                        options.InitialHubServerConnectionCount = 1;
+                    }
+                });
+            }
             services.AddSingleton<NotificationListener>();
         }
 
