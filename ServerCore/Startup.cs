@@ -141,7 +141,7 @@ namespace ServerCore
                     }
                 });
             }
-            services.AddSingleton<NotificationListener>();
+            services.AddSingleton<ServerMessageListener>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -192,7 +192,7 @@ namespace ServerCore
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapBlazorHub();
-                endpoints.MapHub<NotificationHub>("/notify");
+                endpoints.MapHub<ServerMessageHub>("/serverMessage");
             });
 
             app.UseMvc();
