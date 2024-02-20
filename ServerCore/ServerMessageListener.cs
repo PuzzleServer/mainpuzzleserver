@@ -15,6 +15,7 @@ namespace ServerCore
     {
         HubConnection HubConnection { get; set; }
         IDisposable exampleSubscription = null;
+        IDisposable presenceSubscription = null;
 
         public ServerMessageListener(IHubContext<ServerMessageHub> hub, IWebHostEnvironment env)
         {
@@ -33,6 +34,8 @@ namespace ServerCore
             // Register listeners
             var onExampleMessage = OnExampleMessage;
             exampleSubscription = HubConnection.On(nameof(ExampleMessage), onExampleMessage);
+            var onPresenceMessage = OnPresenceMessage;
+            presenceSubscription = HubConnection.On(nameof(PresenceMessage), onPresenceMessage);
 
             TryInitAsync(hub).Wait();
         }
@@ -43,7 +46,7 @@ namespace ServerCore
             {
                 try
                 {
-                    await HubConnection.StartAsync();
+                    await HubConnection.StartAsync().ConfigureAwait(false);
                     Debug.WriteLine($"Hub connection succeeded on try {i}");
 
                     await hub.Groups.AddToGroupAsync(HubConnection.ConnectionId, "servers");
@@ -70,10 +73,18 @@ namespace ServerCore
             // Distribute the message to the relevant components for the player/team/everyone
         }
 
+        public event EventHandler<PresenceMessage> OnPresence;
+        private void OnPresenceMessage(PresenceMessage message)
+        {
+            OnPresence?.Invoke(null, message);
+        }
+
         public void Dispose()
         {
             exampleSubscription?.Dispose();
             exampleSubscription = null;
+            presenceSubscription?.Dispose();
+            presenceSubscription = null;
         }
     }
 }

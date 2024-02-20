@@ -25,5 +25,10 @@ namespace ServerCore
         {
             await hub.Clients.Group(ServersGroup).SendAsync(nameof(ExampleMessage), message);
         }
+
+        public static async Task BroadcastPresenceMessageAsync(this IHubContext<ServerMessageHub> hub, PresenceMessage message)
+        {
+            await hub.Clients.Groups(ServersGroup).SendAsync(nameof(PresenceMessage), message);
+        }
     }
 }

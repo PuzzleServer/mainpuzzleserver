@@ -1,0 +1,12 @@
+﻿@using Microsoft.AspNetCore.SignalR
+
+@inject ServerMessageListener MessageListener
+@inject IHubContext<ServerMessageHub> MessageHub
+@inject DataModel.PuzzleServerContext PuzzleServerContext
+
+<h3>PresenceComponent</h3>
+@foreach(PresenceModel presenceModel in PresentUsers)
+{
+    <p>@presenceModel.Name @presenceModel.PresenceType.ToString()</p>
+}
+<p>End of list</p>
