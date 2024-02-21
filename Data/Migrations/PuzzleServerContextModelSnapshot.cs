@@ -604,6 +604,52 @@ namespace Data.Migrations
                     b.ToTable("Invitations");
                 });
 
+            modelBuilder.Entity("ServerCore.DataModel.Message", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<DateTime>("DateTimeInUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EventID")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsMarkedAsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("SenderID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Subject")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Text")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ThreadId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("EventID");
+
+                    b.HasIndex("SenderID");
+
+                    b.ToTable("GeneralMessages");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("Message");
+
+                    b.UseTphMappingStrategy();
+                });
+
             modelBuilder.Entity("ServerCore.DataModel.Piece", b =>
                 {
                     b.Property<int>("ID")
@@ -1295,6 +1341,18 @@ namespace Data.Migrations
                     b.ToTable("TeamMembers");
                 });
 
+            modelBuilder.Entity("ServerCore.DataModel.PuzzleMessage", b =>
+                {
+                    b.HasBaseType("ServerCore.DataModel.Message");
+
+                    b.Property<int>("PuzzleID")
+                        .HasColumnType("int");
+
+                    b.HasIndex("PuzzleID");
+
+                    b.HasDiscriminator().HasValue("PuzzleMessage");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -1476,6 +1534,25 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Team", null)
                         .WithMany("Invitations")
                         .HasForeignKey("TeamID");
+                });
+
+            modelBuilder.Entity("ServerCore.DataModel.Message", b =>
+                {
+                    b.HasOne("ServerCore.DataModel.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
+
+                    b.Navigation("Sender");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Piece", b =>
@@ -1785,6 +1862,17 @@ namespace Data.Migrations
                     b.Navigation("Member");
 
                     b.Navigation("Team");
+                });
+
+            modelBuilder.Entity("ServerCore.DataModel.PuzzleMessage", b =>
+                {
+                    b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
+                        .WithMany()
+                        .HasForeignKey("PuzzleID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Puzzle");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Puzzle", b =>
