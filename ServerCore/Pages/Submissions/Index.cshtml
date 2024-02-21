@@ -516,6 +516,7 @@ else
 
             @if (embedType > 2) // HTML files or images
             {
+                puzzleFilePath = puzzleFilePath.Split('?')[0] + "?print=true";
                 <div><b>Want to print?</b> <a href="@puzzleFilePath" target="_blank">Click this link</a> for a printable version. Print in color!</div>
             }
             else if (embedType == 1) // PDFs
@@ -660,15 +661,7 @@ else
             <div><b>This puzzle can't be displayed here.</b> <a href="@puzzleFilePath" download>Click this link</a> to download the file.</div>
             break;
         case 3: // HTML
-            if (puzzleFilePath.Contains('?'))
-            {
-                puzzleFilePath += "&";
-            }
-            else
-            {
-                puzzleFilePath += "?";
-            }
-            puzzleFilePath += "embed=true";
+            puzzleFilePath = puzzleFilePath.Split('?')[0] + "?embed=true";
             <iframe id="puzzle-frame" class="unsized" title="@Model.Puzzle.Name" sandbox="allow-same-origin allow-scripts allow-popups" src="@puzzleFilePath"></iframe>
             break;
         case 4: // Images
@@ -866,6 +859,16 @@ else
                     iframe.width = e.data.width + 27;
                     iframe.height = e.data.height + 27;
                 }
+            });
+
+            // Intercept print calls since printing the embedded page doesn't work well
+            // Instead open the puzzle in a new tab and pop the print dialog automatically
+            // This will unfortunately leave the dialog still open in the parent page
+            window.addEventListener("beforeprint", (e) => {
+                let url = "@puzzleFilePath";
+                url = url.split("?")[0];
+                url += "?print=true";
+                window.open(url, "_blank");
             });
         </script>
     }
