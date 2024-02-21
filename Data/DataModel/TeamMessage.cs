@@ -7,7 +7,7 @@
     {
         public TeamMessage()
         {
-            this.IsFromGameControl = true;
+            this.IsFromGameControl = false;
         }
 
         /// <summary>

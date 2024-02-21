@@ -7,7 +7,7 @@
     {
         public TeamPuzzleMessage() 
         {
-            this.IsFromGameControl = true;
+            this.IsFromGameControl = false;
         }
 
         /// <summary>
