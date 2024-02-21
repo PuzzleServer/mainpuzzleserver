@@ -32,7 +32,7 @@ namespace ServerCore.Pages.Components
 
         Guid pageInstance = Guid.NewGuid();
 
-        private async void OnPresenceChange(object sender, PresenceMessage presenceMessage)
+        private async Task OnPresenceChange(PresenceMessage presenceMessage)
         {
             if (presenceMessage.PresenceType == PresenceType.Disconnected)
             {

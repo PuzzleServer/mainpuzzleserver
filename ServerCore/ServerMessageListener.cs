@@ -67,16 +67,16 @@ namespace ServerCore
             throw new Exception("Shouldn't get here");
         }
 
-        private void OnExampleMessage(ExampleMessage message)
+        private async Task OnExampleMessage(ExampleMessage message)
         {
             Debug.WriteLine($"Example message recieved: player {message.PuzzleUserId} team {message.TeamId} someinfo {message.SomeInfo}");
             // Distribute the message to the relevant components for the player/team/everyone
         }
 
-        public event EventHandler<PresenceMessage> OnPresence;
-        private void OnPresenceMessage(PresenceMessage message)
+        public event Func<PresenceMessage, Task> OnPresence;
+        private async Task OnPresenceMessage(PresenceMessage message)
         {
-            OnPresence?.Invoke(null, message);
+            await OnPresence?.Invoke(message);
         }
 
         public void Dispose()
