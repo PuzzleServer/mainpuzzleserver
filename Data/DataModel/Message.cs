@@ -22,7 +22,7 @@ namespace ServerCore.DataModel
         /// <summary>
         /// Gets or sets if sender is from game control.
         /// </summary>
-        public bool IsFromGameControl { get; }
+        public bool IsFromGameControl { get; set; }
 
         /// <summary>
         /// Gets or sets the subject.

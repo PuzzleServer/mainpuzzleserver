@@ -622,6 +622,9 @@ namespace Data.Migrations
                     b.Property<int>("EventID")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsFromGameControl")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsMarkedAsRead")
                         .HasColumnType("bit");
 
@@ -1353,6 +1356,36 @@ namespace Data.Migrations
                     b.HasDiscriminator().HasValue("PuzzleMessage");
                 });
 
+            modelBuilder.Entity("ServerCore.DataModel.TeamMessage", b =>
+                {
+                    b.HasBaseType("ServerCore.DataModel.Message");
+
+                    b.Property<int>("TeamID")
+                        .HasColumnType("int");
+
+                    b.HasIndex("TeamID");
+
+                    b.HasDiscriminator().HasValue("TeamMessage");
+                });
+
+            modelBuilder.Entity("ServerCore.DataModel.TeamPuzzleMessage", b =>
+                {
+                    b.HasBaseType("ServerCore.DataModel.PuzzleMessage");
+
+                    b.Property<int>("TeamID")
+                        .HasColumnType("int");
+
+                    b.HasIndex("TeamID");
+
+                    b.ToTable("GeneralMessages", t =>
+                        {
+                            t.Property("TeamID")
+                                .HasColumnName("TeamPuzzleMessage_TeamID");
+                        });
+
+                    b.HasDiscriminator().HasValue("TeamPuzzleMessage");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -1873,6 +1906,28 @@ namespace Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Puzzle");
+                });
+
+            modelBuilder.Entity("ServerCore.DataModel.TeamMessage", b =>
+                {
+                    b.HasOne("ServerCore.DataModel.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Team");
+                });
+
+            modelBuilder.Entity("ServerCore.DataModel.TeamPuzzleMessage", b =>
+                {
+                    b.HasOne("ServerCore.DataModel.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Puzzle", b =>
