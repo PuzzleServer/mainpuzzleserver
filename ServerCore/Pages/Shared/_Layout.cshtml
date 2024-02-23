@@ -66,11 +66,25 @@
                    render-mode="ServerPrerendered" />
     }
 
-    <!-- TODO: Make this actually scalable and correct -->
     @{
+        // Keep the old path for events prior to 2024 so they aren't broken
+        // For all future events, resources global to all pages for an event should be uploaded to the shared event resources page
+        // Note that the link for development may be different on your machine
         if ((ev?.HomePartial != null) && ((ev.HomePartial.StartsWith("pd")) || (ev.HomePartial.StartsWith("nipd"))))
         {
-            <link rel="stylesheet" href="~/css/@(ev.HomePartial)/styles.min.css" />
+            if (ev.EventBegin.Year < 2024)
+            {
+                <link rel="stylesheet" href="~/css/@(ev.HomePartial)/styles.min.css" />
+            }
+            else
+            {
+                <environment include="Development">
+                    <link rel="stylesheet" href="http://127.0.0.1:10000/devstoreaccount1/evt@(ev.ID)/resources/global-styles.css" />
+                </environment>
+                <environment exclude="Development">
+                    <link rel="stylesheet" href="https://puzzleserverteststore.blob.core.windows.net/evt@(ev.ID)/resources/global-styles.css" />
+                </environment>
+            }
         }
     }
 
@@ -82,7 +96,7 @@
         }
     }
 </head>
-<body>
+<body class="body-customizable">
     @{
         var Event = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Event;
         var EventRole = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.EventRole;
@@ -131,15 +145,15 @@
         <partial name="/Pages/Shared/_EventNavigationPartial.cshtml" />
     }
 
-    <div class="container body-content">
+    <div class="container body-content body-content-customizable">
         @if (!string.IsNullOrEmpty(Event?.Announcement))
             {
-            <p class="announcement no-print">@Event.Announcement</p>
+            <p class="announcement announcement-customizable no-print">@Event.Announcement</p>
             <hr class="no-print" />
             }
         @if (!string.IsNullOrEmpty(Event?.TeamAnnouncement) && await (Model as ServerCore.ModelBases.EventSpecificPageModel)?.GetShowTeamAnnouncement())
             {
-            <p class="announcement no-print">@Event.TeamAnnouncement</p>
+            <p class="announcement announcement-customizable no-print">@Event.TeamAnnouncement</p>
             <hr class="no-print" />
             }
         @RenderBody()

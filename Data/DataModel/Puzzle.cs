@@ -252,7 +252,7 @@ namespace ServerCore.DataModel
         public string CustomSolutionURL { get; set; }
 
         /// <summary>
-        /// A file in the wwwroot/css/<HomePartial>/ directory applied to the answer submission page to style it
+        /// A file or url that will be applied to the answer submission page to style it
         /// </summary>
         public string CustomCSSFile { get; set; }
 
