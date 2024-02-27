@@ -1,19 +1,5 @@
-﻿@{
-    var eventPage = Model as ServerCore.ModelBases.EventSpecificPageModel;
-    var Event = eventPage?.Event;
+﻿<h2>@Model?.Event?.Name rules TBD</h2>
+@if (Model?.Event?.EventRole == ModelBases.EventRole.admin)
+{
+    <p><b>Since you're an admin:</b> Upload a file named rules-content.html to the <a href="https://puzzlehunt.azurewebsites.net/@(Model.Event.UrlString)/admin/Puzzles/ResourceManagement">shared resources folder</a> for this event. Don't forget the homepage and FAQ, and for good measure, set the event's HomePartial field to be the same as its UrlString so this content is permanently hidden.</p>
 }
-
-<div class="container">
-    @if (!string.IsNullOrEmpty(Event.RulesContent))
-    {
-        @Html.Raw(Event.RulesContent);
-    }
-    else
-    {
-        <h2>@Event?.Name rules TBD</h2>
-        if (eventPage?.EventRole == ModelBases.EventRole.admin)
-        {
-            <p><b>Since you're an admin:</b> Either set the HomePartial field of your event to match a folder in the Pages\Resources directory, or place raw HTML into the RulesContent field of your event.</p>
-        }
-    }
-</div>

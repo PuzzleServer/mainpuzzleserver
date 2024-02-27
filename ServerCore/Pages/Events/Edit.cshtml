@@ -240,21 +240,24 @@
                 <textarea asp-for="EditableEvent.TeamAnnouncement" class="form-control"></textarea>
                 <span asp-validation-for="EditableEvent.TeamAnnouncement" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="EditableEvent.HomeContent" class="control-label"></label>
-                <textarea asp-for="EditableEvent.HomeContent" class="form-control"></textarea>
-                <span asp-validation-for="EditableEvent.HomeContent" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EditableEvent.FAQContent" class="control-label"></label>
-                <textarea asp-for="EditableEvent.FAQContent" class="form-control"></textarea>
-                <span asp-validation-for="EditableEvent.FAQContent" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EditableEvent.RulesContent" class="control-label"></label>
-                <textarea asp-for="EditableEvent.RulesContent" class="form-control"></textarea>
-                <span asp-validation-for="EditableEvent.RulesContent" class="text-danger"></span>
-            </div>
+            @if (Model.Event.EventBegin.Year < 2024)
+            {
+                <div class="form-group">
+                    <label asp-for="EditableEvent.HomeContent" class="control-label"></label>
+                    <textarea asp-for="EditableEvent.HomeContent" class="form-control"></textarea>
+                    <span asp-validation-for="EditableEvent.HomeContent" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="EditableEvent.FAQContent" class="control-label"></label>
+                    <textarea asp-for="EditableEvent.FAQContent" class="form-control"></textarea>
+                    <span asp-validation-for="EditableEvent.FAQContent" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="EditableEvent.RulesContent" class="control-label"></label>
+                    <textarea asp-for="EditableEvent.RulesContent" class="form-control"></textarea>
+                    <span asp-validation-for="EditableEvent.RulesContent" class="text-danger"></span>
+                </div>
+            }
             <div class="form-group">
                 <label asp-for="EditableEvent.Copyright" class="control-label"></label>
                 <textarea asp-for="EditableEvent.Copyright" class="form-control"></textarea>

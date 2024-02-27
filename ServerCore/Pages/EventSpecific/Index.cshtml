@@ -5,6 +5,27 @@
     ViewData["AdminRoute"] = "/EventSpecific/Index";
     ViewData["AuthorRoute"] = "/EventSpecific/Index";
     ViewData["PlayRoute"] = "/EventSpecific/Index";
+    var eventPage = Model as ServerCore.ModelBases.EventSpecificPageModel;
+    var Event = eventPage?.Event;
 }
 
-<partial name="../Resources/@(Model.Event.HomePartial ?? "Default")/HomePartial.cshtml" />
+@if ((Event.EventBegin.Year < 2024) || string.IsNullOrEmpty(Event.HomePartial))
+{
+    if (!string.IsNullOrEmpty(Event.HomeContent))
+    {
+        @Html.Raw(Event.HomeContent);
+    }
+    else
+    {
+        <partial name="../Resources/@(Event.HomePartial ?? "Default")/HomePartial.cshtml" />
+    }
+}
+else
+{
+    <environment include="Development">
+        <iframe id="home-frame" style="width:100%;height:100%;overflow-x:scroll;overflow-y:visible;" title="Home Content" sandbox="allow-same-origin allow-scripts allow-popups" src="http://127.0.0.1:10000/devstoreaccount1/evt@(Model.Event.ID)/resources/home-content.html"></iframe>
+    </environment>
+    <environment exclude="Development">
+        <iframe id="home-frame" style="width:100%;height:100%;overflow-x:scroll;overflow-y:visible;" title="Home Content" sandbox="allow-same-origin allow-scripts allow-popups" src="https://puzzleserverteststore.blob.core.windows.net/evt@(Model.Event.ID)/resources/home-content.html"></iframe>
+    </environment>
+}
