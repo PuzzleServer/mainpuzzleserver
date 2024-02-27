@@ -60,19 +60,38 @@ namespace ServerCore.DataModel
         public virtual PuzzleUser Sender { get; set; }
 
         /// <summary>
-        /// Gets or sets the value indicating whether a user has marked the message as "read".
-        /// This will likely be used by game control to "claim" a question so no one else tries to answer it.
+        /// Gets or sets the puzzle id.
         /// </summary>
-        public bool IsMarkedAsRead { get; set; }
+        public int PuzzleID { get; set; }
 
         /// <summary>
-        /// Gets or sets the id of the user that marked the message as "read".
+        /// Gets or sets the puzzle.
         /// </summary>
-        public int MarkReadUserID { get; set; }
+        public virtual Puzzle Puzzle { get; set; }
 
         /// <summary>
-        /// Gets or sets the user that marked the message as "read".
+        /// Gets or sets the team id.
         /// </summary>
-        public virtual PuzzleUser MarkReadUser { get; set; }
+        public int TeamID { get; set; }
+
+        /// <summary>
+        /// Gets or sets the team.
+        /// </summary>
+        public Team Team { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value indicating whether the message has been claimed by someone in Game Control.
+        /// </summary>
+        public bool IsClaimed { get; set; }
+
+        /// <summary>
+        /// Gets or sets the id of the user that claimed the message.
+        /// </summary>
+        public int ClaimerID { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user claimed the message.
+        /// </summary>
+        public virtual PuzzleUser Claimer { get; set; }
     }
 }
