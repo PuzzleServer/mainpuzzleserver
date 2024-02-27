@@ -612,23 +612,22 @@ namespace Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
+                    b.Property<int>("ClaimerID")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("DateTimeInUtc")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("EventID")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsClaimed")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsFromGameControl")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsMarkedAsRead")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("MarkReadUserID")
+                    b.Property<int>("PuzzleID")
                         .HasColumnType("int");
 
                     b.Property<int>("SenderID")
@@ -637,25 +636,30 @@ namespace Data.Migrations
                     b.Property<string>("Subject")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("TeamID")
+                        .HasColumnType("int");
+
                     b.Property<string>("Text")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ThreadId")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("ID");
 
+                    b.HasIndex("ClaimerID");
+
                     b.HasIndex("EventID");
 
-                    b.HasIndex("MarkReadUserID");
+                    b.HasIndex("PuzzleID");
 
                     b.HasIndex("SenderID");
 
-                    b.ToTable("GeneralMessages");
+                    b.HasIndex("TeamID");
 
-                    b.HasDiscriminator<string>("Discriminator").HasValue("Message");
+                    b.HasIndex("ThreadId");
 
-                    b.UseTphMappingStrategy();
+                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Piece", b =>
@@ -1349,48 +1353,6 @@ namespace Data.Migrations
                     b.ToTable("TeamMembers");
                 });
 
-            modelBuilder.Entity("ServerCore.DataModel.PuzzleMessage", b =>
-                {
-                    b.HasBaseType("ServerCore.DataModel.Message");
-
-                    b.Property<int>("PuzzleID")
-                        .HasColumnType("int");
-
-                    b.HasIndex("PuzzleID");
-
-                    b.HasDiscriminator().HasValue("PuzzleMessage");
-                });
-
-            modelBuilder.Entity("ServerCore.DataModel.TeamMessage", b =>
-                {
-                    b.HasBaseType("ServerCore.DataModel.Message");
-
-                    b.Property<int>("TeamID")
-                        .HasColumnType("int");
-
-                    b.HasIndex("TeamID");
-
-                    b.HasDiscriminator().HasValue("TeamMessage");
-                });
-
-            modelBuilder.Entity("ServerCore.DataModel.TeamPuzzleMessage", b =>
-                {
-                    b.HasBaseType("ServerCore.DataModel.PuzzleMessage");
-
-                    b.Property<int>("TeamID")
-                        .HasColumnType("int");
-
-                    b.HasIndex("TeamID");
-
-                    b.ToTable("GeneralMessages", t =>
-                        {
-                            t.Property("TeamID")
-                                .HasColumnName("TeamPuzzleMessage_TeamID");
-                        });
-
-                    b.HasDiscriminator().HasValue("TeamPuzzleMessage");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -1576,15 +1538,21 @@ namespace Data.Migrations
 
             modelBuilder.Entity("ServerCore.DataModel.Message", b =>
                 {
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Claimer")
+                        .WithMany()
+                        .HasForeignKey("ClaimerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("ServerCore.DataModel.Event", "Event")
                         .WithMany()
                         .HasForeignKey("EventID")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("ServerCore.DataModel.PuzzleUser", "MarkReadUser")
+                    b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
                         .WithMany()
-                        .HasForeignKey("MarkReadUserID")
+                        .HasForeignKey("PuzzleID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1594,11 +1562,21 @@ namespace Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("ServerCore.DataModel.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Claimer");
+
                     b.Navigation("Event");
 
-                    b.Navigation("MarkReadUser");
+                    b.Navigation("Puzzle");
 
                     b.Navigation("Sender");
+
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Piece", b =>
@@ -1906,39 +1884,6 @@ namespace Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Member");
-
-                    b.Navigation("Team");
-                });
-
-            modelBuilder.Entity("ServerCore.DataModel.PuzzleMessage", b =>
-                {
-                    b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
-                        .WithMany()
-                        .HasForeignKey("PuzzleID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Puzzle");
-                });
-
-            modelBuilder.Entity("ServerCore.DataModel.TeamMessage", b =>
-                {
-                    b.HasOne("ServerCore.DataModel.Team", "Team")
-                        .WithMany()
-                        .HasForeignKey("TeamID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Team");
-                });
-
-            modelBuilder.Entity("ServerCore.DataModel.TeamPuzzleMessage", b =>
-                {
-                    b.HasOne("ServerCore.DataModel.Team", "Team")
-                        .WithMany()
-                        .HasForeignKey("TeamID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
 
                     b.Navigation("Team");
                 });

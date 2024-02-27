@@ -77,7 +77,7 @@ namespace ServerCore.DataModel
         /// <summary>
         /// Gets or sets the team.
         /// </summary>
-        public Team Team { get; set; }
+        public virtual Team Team { get; set; }
 
         /// <summary>
         /// Gets or sets the value indicating whether the message has been claimed by someone in Game Control.
