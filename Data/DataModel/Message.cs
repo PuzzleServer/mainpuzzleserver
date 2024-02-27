@@ -64,5 +64,15 @@ namespace ServerCore.DataModel
         /// This will likely be used by game control to "claim" a question so no one else tries to answer it.
         /// </summary>
         public bool IsMarkedAsRead { get; set; }
+
+        /// <summary>
+        /// Gets or sets the id of the user that marked the message as "read".
+        /// </summary>
+        public int MarkReadUserID { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user that marked the message as "read".
+        /// </summary>
+        public virtual PuzzleUser MarkReadUser { get; set; }
     }
 }

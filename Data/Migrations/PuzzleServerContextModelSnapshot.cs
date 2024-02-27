@@ -628,6 +628,9 @@ namespace Data.Migrations
                     b.Property<bool>("IsMarkedAsRead")
                         .HasColumnType("bit");
 
+                    b.Property<int>("MarkReadUserID")
+                        .HasColumnType("int");
+
                     b.Property<int>("SenderID")
                         .HasColumnType("int");
 
@@ -643,6 +646,8 @@ namespace Data.Migrations
                     b.HasKey("ID");
 
                     b.HasIndex("EventID");
+
+                    b.HasIndex("MarkReadUserID");
 
                     b.HasIndex("SenderID");
 
@@ -1577,6 +1582,12 @@ namespace Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "MarkReadUser")
+                        .WithMany()
+                        .HasForeignKey("MarkReadUserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("ServerCore.DataModel.PuzzleUser", "Sender")
                         .WithMany()
                         .HasForeignKey("SenderID")
@@ -1584,6 +1595,8 @@ namespace Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Event");
+
+                    b.Navigation("MarkReadUser");
 
                     b.Navigation("Sender");
                 });
