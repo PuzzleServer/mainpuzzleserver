@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
 using ServerCore.ModelBases;
@@ -94,6 +95,13 @@ namespace ServerCore.Pages.Puzzles
 
         public async Task<IActionResult> OnPostAsync(int puzzleId)
         {
+            // Prevent false-positives when saving localhost urls to puzzle fields
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == Environments.Development)
+            {
+                ModelState.ClearValidationState("Puzzle.CustomURL");
+                ModelState.ClearValidationState("Puzzle.CustomSolutionURL");
+            }
+
             ModelState.Remove("Puzzle.Event");
             if (!ModelState.IsValid)
             {

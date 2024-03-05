@@ -1,10 +1,25 @@
-﻿<h2>@Model?.Event?.Name homepage TBD</h2>
-@if (Model?.Event?.EventRole == ModelBases.EventRole.admin)
-{
-    <p><b>Since you're an admin:</b> Upload a file named home-content.html to the <a href="https://puzzlehunt.azurewebsites.net/@(Model.Event.UrlString)/admin/Puzzles/ResourceManagement">shared resources folder</a> for this event. Don't forget the rules and FAQ, and for good measure, set the event's HomePartial field to be the same as its UrlString so this content is permanently hidden.</p>
-    <p> Also, take a look at <a href="https://github.com/PuzzleServer/mainpuzzleserver/wiki/Admins:-How-to-use-the-site" target="_blank">Admins: How to use the site</a> wiki for more information on how to use this site as an admin.</p>
+﻿﻿@{
+    var eventPage = Model as ServerCore.ModelBases.EventSpecificPageModel;
+    var Event = eventPage?.Event;
 }
-@if (Model?.Event?.EventRole == ModelBases.EventRole.author)
-{
-    <p><b>Since you're an author:</b> Take a look at <a href="https://github.com/PuzzleServer/mainpuzzleserver/wiki/Authors:-How-to-use-the-site" target="_blank">Authors: How to use the site</a> wiki for more information on how to use this site as an author.</p>
-}
+
+<div class="container">
+    @if (!string.IsNullOrEmpty(Event.HomeContent))
+    {
+        @Html.Raw(Event.HomeContent)
+        ;
+    }
+    else
+    {
+        <h2>@Event?.Name homepage TBD</h2>
+        if (eventPage?.EventRole == ModelBases.EventRole.admin)
+        {
+            <p><b>Since you're an admin:</b> Either set the HomePartial field of your event to match a folder in the Pages\Resources directory, or place raw HTML into the HomeContent field of your event.</p>
+            <p> Also, take a look at <a href="https://github.com/PuzzleServer/mainpuzzleserver/wiki/Admins:-How-to-use-the-site" target="_blank">Admins: How to use the site</a> wiki for more information on how to use this site as an admin.</p>
+        }
+        if (eventPage?.EventRole == ModelBases.EventRole.author)
+        {
+            <p><b>Since you're an author:</b> Take a look at <a href="https://github.com/PuzzleServer/mainpuzzleserver/wiki/Authors:-How-to-use-the-site" target="_blank">Authors: How to use the site</a> wiki for more information on how to use this site as an author.</p>
+        }
+    }
+</div>
