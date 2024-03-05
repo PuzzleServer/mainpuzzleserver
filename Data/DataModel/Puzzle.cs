@@ -50,7 +50,6 @@ namespace ServerCore.DataModel
             MinutesToAutomaticallySolve = source.MinutesToAutomaticallySolve;
             MinutesOfEventLockout = source.MinutesOfEventLockout;
             MaxAnnotationKey = source.MaxAnnotationKey;
-            PuzzleVersion = source.PuzzleVersion;
             SupportEmailAlias = source.SupportEmailAlias;
             CustomAuthorText = source.CustomAuthorText;
             CustomURL = source.CustomURL;
