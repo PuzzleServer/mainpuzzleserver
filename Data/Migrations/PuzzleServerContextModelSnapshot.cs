@@ -612,7 +612,7 @@ namespace Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                    b.Property<int>("ClaimerID")
+                    b.Property<int?>("ClaimerID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("DateTimeInUtc")
@@ -627,7 +627,7 @@ namespace Data.Migrations
                     b.Property<bool>("IsFromGameControl")
                         .HasColumnType("bit");
 
-                    b.Property<int>("PuzzleID")
+                    b.Property<int?>("PuzzleID")
                         .HasColumnType("int");
 
                     b.Property<int>("SenderID")
@@ -636,7 +636,7 @@ namespace Data.Migrations
                     b.Property<string>("Subject")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TeamID")
+                    b.Property<int?>("TeamID")
                         .HasColumnType("int");
 
                     b.Property<string>("Text")
@@ -649,15 +649,13 @@ namespace Data.Migrations
 
                     b.HasIndex("ClaimerID");
 
-                    b.HasIndex("EventID");
-
                     b.HasIndex("PuzzleID");
 
                     b.HasIndex("SenderID");
 
                     b.HasIndex("TeamID");
 
-                    b.HasIndex("ThreadId");
+                    b.HasIndex("EventID", "ThreadId");
 
                     b.ToTable("Messages");
                 });
@@ -1540,9 +1538,7 @@ namespace Data.Migrations
                 {
                     b.HasOne("ServerCore.DataModel.PuzzleUser", "Claimer")
                         .WithMany()
-                        .HasForeignKey("ClaimerID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ClaimerID");
 
                     b.HasOne("ServerCore.DataModel.Event", "Event")
                         .WithMany()
@@ -1552,9 +1548,7 @@ namespace Data.Migrations
 
                     b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
                         .WithMany()
-                        .HasForeignKey("PuzzleID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PuzzleID");
 
                     b.HasOne("ServerCore.DataModel.PuzzleUser", "Sender")
                         .WithMany()
@@ -1564,9 +1558,7 @@ namespace Data.Migrations
 
                     b.HasOne("ServerCore.DataModel.Team", "Team")
                         .WithMany()
-                        .HasForeignKey("TeamID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TeamID");
 
                     b.Navigation("Claimer");
 

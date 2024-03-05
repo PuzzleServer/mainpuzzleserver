@@ -62,7 +62,7 @@ namespace ServerCore.DataModel
         /// <summary>
         /// Gets or sets the puzzle id.
         /// </summary>
-        public int PuzzleID { get; set; }
+        public int? PuzzleID { get; set; }
 
         /// <summary>
         /// Gets or sets the puzzle.
@@ -72,7 +72,7 @@ namespace ServerCore.DataModel
         /// <summary>
         /// Gets or sets the team id.
         /// </summary>
-        public int TeamID { get; set; }
+        public int? TeamID { get; set; }
 
         /// <summary>
         /// Gets or sets the team.
@@ -87,7 +87,7 @@ namespace ServerCore.DataModel
         /// <summary>
         /// Gets or sets the id of the user that claimed the message.
         /// </summary>
-        public int ClaimerID { get; set; }
+        public int? ClaimerID { get; set; }
 
         /// <summary>
         /// Gets or sets the user claimed the message.
