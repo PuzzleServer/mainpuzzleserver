@@ -95,13 +95,6 @@ namespace ServerCore.Pages.Puzzles
 
         public async Task<IActionResult> OnPostAsync(int puzzleId)
         {
-            // Prevent false-positives when saving localhost urls to puzzle fields
-            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == Environments.Development)
-            {
-                ModelState.ClearValidationState("Puzzle.CustomURL");
-                ModelState.ClearValidationState("Puzzle.CustomSolutionURL");
-            }
-
             ModelState.Remove("Puzzle.Event");
             if (!ModelState.IsValid)
             {

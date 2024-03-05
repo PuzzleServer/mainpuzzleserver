@@ -59,6 +59,12 @@ namespace ServerCore
             {
                 options.Conventions.AuthorizeFolder("/Pages");
                 options.Conventions.AuthorizeFolder("/ModelBases");
+            }).AddViewOptions(options =>
+            {
+                if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == Environments.Development)
+                {
+                    options.HtmlHelperOptions.ClientValidationEnabled = false;
+                }
             });
 
             services.AddServerSideBlazor();
