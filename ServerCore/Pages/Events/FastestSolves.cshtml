@@ -36,7 +36,6 @@ else
                        asp-route-teamPuzzleSort="@(Model.SortForColumnLink(FastestSolvesModel.TeamPuzzleSortOrder.PuzzleAscending,
                                                                       FastestSolvesModel.TeamPuzzleSortOrder.PuzzleDescending))"
                        asp-route-stateFilter="@Model.StateFilter">
-
                         PuzzleName
                     </a>
                 </th>
@@ -45,7 +44,6 @@ else
                        asp-route-teamPuzzleSort="@(Model.SortForColumnLink(FastestSolvesModel.TeamPuzzleSortOrder.CountAscending,
                                                                       FastestSolvesModel.TeamPuzzleSortOrder.CountDescending))"
                        asp-route-stateFilter="@Model.StateFilter">
-
                         Teams Solved
                     </a>
                 </th>
@@ -73,7 +71,7 @@ else
                 Func<TimeSpan, string> convertTimeToString = ts => string.Format("{0:00}.{1:00}:{2:00}:{3:00}", ts.TotalDays, Math.Abs(ts.Hours), Math.Abs(ts.Minutes), Math.Abs(ts.Seconds));
 
                 <tr>
-                    <td>
+                    <td class="puzzle-list-title-customizable">
                         @(RawHtmlHelper.Display(puzzle.PuzzleName, Model.Event.ID, Html))
                     </td>
                     <td>
@@ -151,7 +149,6 @@ else
                            asp-route-singlePlayerPuzzleSort="@(Model.SortForColumnLink(FastestSolvesModel.SinglePlayerPuzzleSortOrder.CountAscending,
                                                                       FastestSolvesModel.SinglePlayerPuzzleSortOrder.CountDescending))"
                            asp-route-stateFilter="@Model.StateFilter">
-
                             Players solved
                         </a>
                     </th>
@@ -165,7 +162,7 @@ else
                 {
                     var puzzle = Model.SinglePlayerPuzzles[y];
                     <tr>
-                        <td>
+                        <td class="puzzle-list-title-customizable">
                             @(RawHtmlHelper.Display(puzzle.PuzzleName, Model.Event.ID, Html))
                         </td>
                         <td>

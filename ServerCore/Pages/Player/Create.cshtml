@@ -9,15 +9,15 @@
 
 @if (Model.EventRole == ModelBases.EventRole.admin)
 {
-        <div>
-            <a asp-page="Index">Cancel</a>
-        </div>
+    <div>
+        <a asp-page="Index">Cancel</a>
+    </div>
 }
 else
 {
-        <div>
-            <a asp-page="../EventSpecific/Index" asp-route-eventId="@Model.Event.EventID" asp-route-eventRole="@Model.EventRole">Cancel</a>
-        </div>
+    <div>
+        <a asp-page="../EventSpecific/Index" asp-route-eventId="@Model.Event.EventID" asp-route-eventRole="@Model.EventRole">Cancel</a>
+    </div>
 }
 
 @if (Model.Event.AllowsRemote || Model.Event.HasIndividualLunch || Model.Event.HasTShirts)
