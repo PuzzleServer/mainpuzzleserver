@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.CodeAnalysis.Elfie.Model.Strings;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
@@ -138,12 +139,21 @@ namespace ServerCore
         /// </summary>
         /// <param name="eventId">Event the directory should be associated with</param>
         /// <param name="puzzleDirectoryName">Name of a subdirectory to concatenate. Use empty string for none.</param>
-        public static async Task<CloudBlobDirectory> GetPuzzleDirectoryAsync(int eventId, string puzzleDirectoryName)
+        private static async Task<CloudBlobDirectory> GetPuzzleDirectoryAsync(int eventId, string puzzleDirectoryName)
         {
             CloudBlobContainer eventContainer = await GetOrCreateEventContainerAsync(eventId);
             CloudBlobDirectory puzzleDirectory = eventContainer.GetDirectoryReference(puzzleDirectoryName);
 
             return puzzleDirectory;
+        }
+
+        /// <summary>
+        /// Gets the url that that all file storage for this event lives at
+        /// </summary>
+        /// <returns>The url as a string</returns>
+        public static async Task<string> GetFileStoragePrefix(int eventId, string puzzleDirectoryName) {
+            CloudBlobDirectory fileStorage = await FileManager.GetPuzzleDirectoryAsync(eventId, puzzleDirectoryName);
+            return fileStorage.Uri.AbsoluteUri;
         }
 
         /// <summary>

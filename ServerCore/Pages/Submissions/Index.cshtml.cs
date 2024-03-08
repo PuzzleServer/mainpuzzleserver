@@ -384,8 +384,7 @@ namespace ServerCore.Pages.Submissions
                 }
             }
 
-            CloudBlobDirectory fileStorage = await FileManager.GetPuzzleDirectoryAsync(Event.ID, "");
-            FileStoragePrefix = fileStorage.Uri.AbsoluteUri;
+            FileStoragePrefix = await FileManager.GetFileStoragePrefix(Event.ID, "");
         }
 
         /// <summary>

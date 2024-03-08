@@ -209,8 +209,7 @@ namespace ServerCore.ModelBases
         }
 
         public async Task<string> GetFileStoragePrefix() {
-            CloudBlobDirectory fileStorage = await FileManager.GetPuzzleDirectoryAsync(Event.ID, "");
-            return fileStorage.Uri.AbsoluteUri;
+            return await FileManager.GetFileStoragePrefix(Event.ID, "");
         } 
 
         public class RoleBinder : IModelBinder
