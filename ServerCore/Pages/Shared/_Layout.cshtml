@@ -59,7 +59,7 @@
         // Works fine if we use Event, but VS will yell at you with an error in the IDE
         var ev = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Event;
         string fileStoragePrefix = "";
-        var evBase = (Model as ServerCore.ModelBases.EventSpecificPageModel);
+        var evBase = Model as ServerCore.ModelBases.EventSpecificPageModel;
         if (evBase != null)
         {
             fileStoragePrefix = await evBase.GetFileStoragePrefix();

@@ -6,8 +6,12 @@
     ViewData["AuthorRoute"] = "/EventSpecific/Rules";
     ViewData["PlayRoute"] = "/EventSpecific/Rules";
     var eventPage = Model as ServerCore.ModelBases.EventSpecificPageModel;
-    string fileStoragePrefix = await (Model as ServerCore.ModelBases.EventSpecificPageModel)?.GetFileStoragePrefix();
     var Event = eventPage?.Event;
+    string fileStoragePrefix = "";
+    if (eventPage != null)
+    {
+        fileStoragePrefix = await eventPage.GetFileStoragePrefix();
+    }
 }
 
 @if (Event.EventBegin.Year < 2024)
