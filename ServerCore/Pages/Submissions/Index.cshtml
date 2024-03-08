@@ -470,20 +470,16 @@ else
             {
                 // For relative urls, ASSUME THAT THE RULES DESCRIBED ON THE UPLOAD PAGE HAVE BEEN FOLLOWED
                 // This means that the leading . will be replaced with the puzzleFilePath variable above, minus the puzzle file itself
+                // If the file doesn't start with a ., it's assumed to be a full url that will be used as-is
                 cssFileName = puzzleFilePath.Substring(0, puzzleFilePath.LastIndexOf('/')) + cssFileName.Substring(1);
             }
             <link rel="stylesheet" href="@cssFileName" />
         }
         else
         {
-            // Otherwise, assume that bare file names are in the shared resources folder
-            // Note that the url for development may be different on your machine
-            <environment include="Development">
-                <link rel="stylesheet" href="http://127.0.0.1:10000/devstoreaccount1/evt@(Model.Event.ID)/resources/@cssFileName" />
-            </environment>
-            <environment exclude="Development">
-                <link rel="stylesheet" href="https://puzzleserverteststore.blob.core.windows.net/evt@(Model.Event.ID)/resources/@cssFileName" />
-            </environment>
+            // Otherwise, assume that bare file names are in the shared resources folder 
+            // (FileStoragePrefix used to account for different urls between development and production)
+            <link rel="stylesheet" href="@(Model.FileStoragePrefix)/resources/@cssFileName" />
         }
     }
 

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.WindowsAzure.Storage.Blob;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
 using ServerCore.ModelBases;
@@ -46,6 +47,8 @@ namespace ServerCore.Pages.Submissions
 
         [BindProperty]
         public bool AllowFreeformSharing { get; set; }
+
+        public string FileStoragePrefix { get; set; }
 
         public class SubmissionView
         {
@@ -380,6 +383,9 @@ namespace ServerCore.Pages.Submissions
                     AnswerToken = "(marked as solved by admin or author)";
                 }
             }
+
+            CloudBlobDirectory fileStorage = await FileManager.GetPuzzleDirectoryAsync(Event.ID, "");
+            FileStoragePrefix = fileStorage.Uri.AbsoluteUri;
         }
 
         /// <summary>

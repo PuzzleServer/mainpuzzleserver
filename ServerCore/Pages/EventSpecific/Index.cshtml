@@ -6,6 +6,7 @@
     ViewData["AuthorRoute"] = "/EventSpecific/Index";
     ViewData["PlayRoute"] = "/EventSpecific/Index";
     var eventPage = Model as ServerCore.ModelBases.EventSpecificPageModel;
+    string fileStoragePrefix = await (Model as ServerCore.ModelBases.EventSpecificPageModel)?.GetFileStoragePrefix();
     var Event = eventPage?.Event;
 }
 
@@ -22,7 +23,7 @@ else
     <style>
         #home-frame.unsized {
             width: 100%;
-            height: 100vh;
+            height: 85vh;
         }
     </style>
     <script type="text/javascript">
@@ -41,10 +42,5 @@ else
             }
         });
     </script>
-    <environment include="Development">
-        <iframe id="home-frame" class="unsized" title="Home Content" sandbox="allow-same-origin allow-scripts allow-popups" src="http://127.0.0.1:10000/devstoreaccount1/evt@(Model.Event.ID)/resources/home-content.html"></iframe>
-    </environment>
-    <environment exclude="Development">
-        <iframe id="home-frame" class="unsized" title="Home Content" sandbox="allow-same-origin allow-scripts allow-popups" src="https://puzzleserverteststore.blob.core.windows.net/evt@(Model.Event.ID)/resources/home-content.html"></iframe>
-    </environment>
+    <iframe id="home-frame" class="unsized" title="Home Content" sandbox="allow-same-origin allow-scripts allow-popups" src="@(fileStoragePrefix)/resources/home-content.html"></iframe>
 }

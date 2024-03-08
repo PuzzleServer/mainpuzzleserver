@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.WindowsAzure.Storage.Blob;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
 
@@ -206,6 +207,11 @@ namespace ServerCore.ModelBases
                 }
             }
         }
+
+        public async Task<string> GetFileStoragePrefix() {
+            CloudBlobDirectory fileStorage = await FileManager.GetPuzzleDirectoryAsync(Event.ID, "");
+            return fileStorage.Uri.AbsoluteUri;
+        } 
 
         public class RoleBinder : IModelBinder
         {

@@ -138,7 +138,7 @@ namespace ServerCore
         /// </summary>
         /// <param name="eventId">Event the directory should be associated with</param>
         /// <param name="puzzleDirectoryName">Name of a subdirectory to concatenate. Use empty string for none.</param>
-        private static async Task<CloudBlobDirectory> GetPuzzleDirectoryAsync(int eventId, string puzzleDirectoryName)
+        public static async Task<CloudBlobDirectory> GetPuzzleDirectoryAsync(int eventId, string puzzleDirectoryName)
         {
             CloudBlobContainer eventContainer = await GetOrCreateEventContainerAsync(eventId);
             CloudBlobDirectory puzzleDirectory = eventContainer.GetDirectoryReference(puzzleDirectoryName);

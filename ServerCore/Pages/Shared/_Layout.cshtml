@@ -58,6 +58,12 @@
         // Using ev here so that it isn't the same as Event that we bind in the <body>
         // Works fine if we use Event, but VS will yell at you with an error in the IDE
         var ev = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Event;
+        string fileStoragePrefix = "";
+        var evBase = (Model as ServerCore.ModelBases.EventSpecificPageModel);
+        if (evBase != null)
+        {
+            fileStoragePrefix = await evBase.GetFileStoragePrefix();
+        }
     }
 
     @if (ev != null && ev.AllowBlazor)
@@ -78,12 +84,7 @@
             }
             else
             {
-                <environment include="Development">
-                    <link rel="stylesheet" href="http://127.0.0.1:10000/devstoreaccount1/evt@(ev.ID)/resources/global-styles.css" />
-                </environment>
-                <environment exclude="Development">
-                    <link rel="stylesheet" href="https://puzzleserverteststore.blob.core.windows.net/evt@(ev.ID)/resources/global-styles.css" />
-                </environment>
+                <link rel="stylesheet" href="@(fileStoragePrefix)/resources/global-styles.css" />
             }
         }
     }
