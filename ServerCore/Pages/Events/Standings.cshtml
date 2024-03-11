@@ -11,70 +11,70 @@
 <h2>Standings</h2>
 
 <table class="table table-condensed">
-            <thead>
-                <tr>
-                    <th>
-                        <a asp-page="./Standings" asp-route-sort="@(Model.SortForColumnLink(StandingsModel.SortOrder.RankAscending, StandingsModel.SortOrder.RankDescending))">
-                            Rank
-                        </a>
-                    </th>
-                    <th>
-                        <a asp-page="./Standings" asp-route-sort="@(Model.SortForColumnLink(StandingsModel.SortOrder.NameAscending, StandingsModel.SortOrder.NameDescending))">
-                            Name
-                        </a>
-                    </th>
-                    <th>
-                        <a asp-page="./Standings" asp-route-sort="@(Model.SortForColumnLink(StandingsModel.SortOrder.PuzzlesDescending, StandingsModel.SortOrder.PuzzlesAscending))">
-                            Puzzles
-                        </a>
-                    </th>
-                    <th>
-                        <a asp-page="./Standings" asp-route-sort="@(Model.SortForColumnLink(StandingsModel.SortOrder.ScoreDescending, StandingsModel.SortOrder.ScoreAscending))">
-                            Score
-                        </a>
-                    </th>
-                    @if (!Model.Event.HideHints)
-                    {
-                        <th>
-                            <a asp-page="./Standings" asp-route-sort="@(Model.SortForColumnLink(StandingsModel.SortOrder.HintsEarnedDescending, StandingsModel.SortOrder.HintsEarnedAscending))">
-                                Hint Coins Earned
-                            </a>
-                        </th>
-                        <th>
-                            <a asp-page="./Standings" asp-route-sort="@(Model.SortForColumnLink(StandingsModel.SortOrder.HintsUsedDescending, StandingsModel.SortOrder.HintsUsedAscending))">
-                                Hint Coins Used
-                            </a>
-                        </th>
-                    }
-                </tr>
-            </thead>
-            <tbody>
+    <thead>
+        <tr>
+            <th>
+                <a asp-page="./Standings" asp-route-sort="@(Model.SortForColumnLink(StandingsModel.SortOrder.RankAscending, StandingsModel.SortOrder.RankDescending))">
+                    Rank
+                </a>
+            </th>
+            <th>
+                <a asp-page="./Standings" asp-route-sort="@(Model.SortForColumnLink(StandingsModel.SortOrder.NameAscending, StandingsModel.SortOrder.NameDescending))">
+                    Name
+                </a>
+            </th>
+            <th>
+                <a asp-page="./Standings" asp-route-sort="@(Model.SortForColumnLink(StandingsModel.SortOrder.PuzzlesDescending, StandingsModel.SortOrder.PuzzlesAscending))">
+                    Puzzles
+                </a>
+            </th>
+            <th>
+                <a asp-page="./Standings" asp-route-sort="@(Model.SortForColumnLink(StandingsModel.SortOrder.ScoreDescending, StandingsModel.SortOrder.ScoreAscending))">
+                    Score
+                </a>
+            </th>
+            @if (!Model.Event.HideHints)
+            {
+                <th>
+                    <a asp-page="./Standings" asp-route-sort="@(Model.SortForColumnLink(StandingsModel.SortOrder.HintsEarnedDescending, StandingsModel.SortOrder.HintsEarnedAscending))">
+                        Hint Coins Earned
+                    </a>
+                </th>
+                <th>
+                    <a asp-page="./Standings" asp-route-sort="@(Model.SortForColumnLink(StandingsModel.SortOrder.HintsUsedDescending, StandingsModel.SortOrder.HintsUsedAscending))">
+                        Hint Coins Used
+                    </a>
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
         @for (int y = 0; y < Model.Teams.Count; y++) {
             var team = Model.Teams[y];
             var finished = team.FinalMetaSolveTime < DateTime.MaxValue;
-                <tr style="font-weight:@(finished ? "bold" : "normal")">
+            <tr style="font-weight:@(finished ? "bold" : "normal")">
+                <td>
+                    @(team.Rank)
+                </td>
+                <td>
+                    @(team.Team.Name)
+                </td>
+                <td>
+                    @(team.SolveCount)
+                </td>
+                <td>
+                    @(team.Score)
+                </td>
+                @if (!Model.Event.HideHints)
+                {
                     <td>
-                        @(team.Rank)
+                        @(team.Team.HintCoinsEarned)
                     </td>
                     <td>
-                        @(team.Team.Name)
+                        @(team.Team.HintCoinsUsed)
                     </td>
-                    <td>
-                        @(team.SolveCount)
-                    </td>
-                    <td>
-                        @(team.Score)
-                    </td>
-                    @if (!Model.Event.HideHints)
-                    {
-                        <td>
-                            @(team.Team.HintCoinsEarned)
-                        </td>
-                        <td>
-                            @(team.Team.HintCoinsUsed)
-                        </td>
-                    }
-                </tr>
+                }
+            </tr>
         }
-            </tbody>
+    </tbody>
 </table>

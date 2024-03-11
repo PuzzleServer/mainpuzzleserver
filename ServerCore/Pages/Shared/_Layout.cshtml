@@ -58,6 +58,12 @@
         // Using ev here so that it isn't the same as Event that we bind in the <body>
         // Works fine if we use Event, but VS will yell at you with an error in the IDE
         var ev = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Event;
+        string fileStoragePrefix = "";
+        var evBase = Model as ServerCore.ModelBases.EventSpecificPageModel;
+        if (evBase != null)
+        {
+            fileStoragePrefix = await evBase.GetFileStoragePrefix();
+        }
     }
 
     @if (ev != null && ev.AllowBlazor)
@@ -66,11 +72,20 @@
                    render-mode="ServerPrerendered" />
     }
 
-    <!-- TODO: Make this actually scalable and correct -->
     @{
+        // Keep the old path for events prior to 2024 so they aren't broken
+        // For all future events, resources global to all pages for an event should be uploaded to the shared event resources page
+        // Note that the link for development may be different on your machine
         if ((ev?.HomePartial != null) && ((ev.HomePartial.StartsWith("pd")) || (ev.HomePartial.StartsWith("nipd"))))
         {
-            <link rel="stylesheet" href="~/css/@(ev.UrlString)/styles.min.css" />
+            if (ev.EventBegin.Year < 2024)
+            {
+                <link rel="stylesheet" href="~/css/@(ev.HomePartial)/styles.min.css" />
+            }
+            else
+            {
+                <link rel="stylesheet" href="@(fileStoragePrefix)/resources/global-styles.css" />
+            }
         }
     }
 
@@ -82,7 +97,7 @@
         }
     }
 </head>
-<body>
+<body class="body-customizable">
     @{
         var Event = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Event;
         var EventRole = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.EventRole;
@@ -129,32 +144,32 @@
     {
         <!-- Navigation header for event specific pages -->
         <partial name="/Pages/Shared/_EventNavigationPartial.cshtml" />
-
     }
 
-    <div class="container body-content">
+    <div class="container body-content body-content-customizable">
         @if (!string.IsNullOrEmpty(Event?.Announcement))
             {
-            <p class="announcement no-print">@Event.Announcement</p>
+            <p class="announcement announcement-customizable no-print">@Event.Announcement</p>
             <hr class="no-print" />
             }
         @if (!string.IsNullOrEmpty(Event?.TeamAnnouncement) && await (Model as ServerCore.ModelBases.EventSpecificPageModel)?.GetShowTeamAnnouncement())
             {
-            <p class="announcement no-print">@Event.TeamAnnouncement</p>
+            <p class="announcement announcement-customizable no-print">@Event.TeamAnnouncement</p>
             <hr class="no-print" />
             }
         @RenderBody()
-        <hr class="no-print" />
-        <footer class="no-print">
-            <ul class="list-inline text-end">
-                <li class="list-inline-item"><a href="mailto:@(Event?.ContactEmail ?? "puzzhunt@microsoft.com")">Contact Us</a></li>
-                <li class="list-inline-item"><a href="mailto:puzztech@puzzlehunt.org">Website Emergency?</a></li>
-                <li class="list-inline-item"><a href="https://go.microsoft.com/fwlink/?LinkID=206977">Terms Of Use</a></li>
-                <li class="list-inline-item"><a href="https://go.microsoft.com/fwlink/?LinkId=506942">Trademarks</a></li>
-                <li class="list-inline-item"><a href="http://go.microsoft.com/fwlink/?LinkId=521839">Privacy &amp; Cookies</a></li>
-                <li class="list-inline-item">© @(DateTime.Now.Year) @(Event?.Copyright ?? "Puzzlehunt")</li>
-            </ul>
-        </footer>
     </div>
+
+    <hr class="no-print" />
+    <footer class="no-print footer-custom">
+        <ul class="list-inline text-end">
+            <li class="list-inline-item"><a href="mailto:@(Event?.ContactEmail ?? "puzzhunt@microsoft.com")">Contact Us</a></li>
+            <li class="list-inline-item"><a href="mailto:puzztech@puzzlehunt.org">Website Emergency?</a></li>
+            <li class="list-inline-item"><a href="https://go.microsoft.com/fwlink/?LinkID=206977">Terms Of Use</a></li>
+            <li class="list-inline-item"><a href="https://go.microsoft.com/fwlink/?LinkId=506942">Trademarks</a></li>
+            <li class="list-inline-item"><a href="http://go.microsoft.com/fwlink/?LinkId=521839">Privacy &amp; Cookies</a></li>
+            <li class="list-inline-item">&copy; @(DateTime.Now.Year) @(Event?.Copyright ?? "Puzzlehunt")</li>
+        </ul>
+    </footer>
 </body>
 </html>

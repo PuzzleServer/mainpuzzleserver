@@ -5,6 +5,46 @@
     ViewData["AdminRoute"] = "/EventSpecific/Rules";
     ViewData["AuthorRoute"] = "/EventSpecific/Rules";
     ViewData["PlayRoute"] = "/EventSpecific/Rules";
+    var eventPage = Model as ServerCore.ModelBases.EventSpecificPageModel;
+    var Event = eventPage?.Event;
+    string fileStoragePrefix = "";
+    if (eventPage != null)
+    {
+        fileStoragePrefix = await eventPage.GetFileStoragePrefix();
+    }
 }
 
-<partial name="../Resources/@(Model.Event.HomePartial ?? "Default")/RulesPartial.cshtml" />
+@if (Event.EventBegin.Year < 2024)
+{
+    <partial name="../Resources/@(Event.HomePartial ?? "Default")/RulesPartial.cshtml" />
+}
+else
+{
+    if (!string.IsNullOrEmpty(Event.RulesContent))
+    {
+        @Html.Raw(Event.RulesContent);
+    }
+    <style>
+        #rules-frame.unsized {
+            width: 100%;
+            height: 85vh;
+        }
+    </style>
+    <script type="text/javascript">
+        window.addEventListener("load", () => {
+            const iframe = document.querySelector("#rules-frame");
+            if ((iframe !== null) && (iframe !== undefined)) {
+                iframe.contentWindow.postMessage("", "*");
+            }
+        });
+        window.addEventListener("message", (e) => {
+            if ((e.data.width > 0) && (e.data.height > 0)) {
+                const iframe = document.querySelector("#rules-frame");
+                iframe.classList.remove("unsized");
+                iframe.width = e.data.width + 30;
+                iframe.height = e.data.height + 30;
+            }
+        });
+    </script>
+    <iframe id="rules-frame" class="unsized" title="Rules Content" sandbox="allow-same-origin allow-scripts allow-popups" src="@(fileStoragePrefix)/resources/rules-content.html"></iframe>
+}
