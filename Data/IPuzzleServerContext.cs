@@ -26,6 +26,5 @@ namespace ServerCore.DataModel
         DbSet<PlayerInEvent> PlayerInEvent { get; set; }
         DbSet<TeamLunch> TeamLunch { get; set; }
         DbSet<Room> Rooms { get; set; }
-        DbSet<Message> Messages { get; set; }
     }
 }

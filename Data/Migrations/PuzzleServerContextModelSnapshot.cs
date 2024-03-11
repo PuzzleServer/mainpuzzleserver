@@ -604,62 +604,6 @@ namespace Data.Migrations
                     b.ToTable("Invitations");
                 });
 
-            modelBuilder.Entity("ServerCore.DataModel.Message", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
-
-                    b.Property<int?>("ClaimerID")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("DateTimeInUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("EventID")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsClaimed")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsFromGameControl")
-                        .HasColumnType("bit");
-
-                    b.Property<int?>("PuzzleID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SenderID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Subject")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("TeamID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Text")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ThreadId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("ClaimerID");
-
-                    b.HasIndex("PuzzleID");
-
-                    b.HasIndex("SenderID");
-
-                    b.HasIndex("TeamID");
-
-                    b.HasIndex("EventID", "ThreadId");
-
-                    b.ToTable("Messages");
-                });
-
             modelBuilder.Entity("ServerCore.DataModel.Piece", b =>
                 {
                     b.Property<int>("ID")
@@ -1538,43 +1482,6 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Team", null)
                         .WithMany("Invitations")
                         .HasForeignKey("TeamID");
-                });
-
-            modelBuilder.Entity("ServerCore.DataModel.Message", b =>
-                {
-                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Claimer")
-                        .WithMany()
-                        .HasForeignKey("ClaimerID");
-
-                    b.HasOne("ServerCore.DataModel.Event", "Event")
-                        .WithMany()
-                        .HasForeignKey("EventID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
-                        .WithMany()
-                        .HasForeignKey("PuzzleID");
-
-                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Sender")
-                        .WithMany()
-                        .HasForeignKey("SenderID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ServerCore.DataModel.Team", "Team")
-                        .WithMany()
-                        .HasForeignKey("TeamID");
-
-                    b.Navigation("Claimer");
-
-                    b.Navigation("Event");
-
-                    b.Navigation("Puzzle");
-
-                    b.Navigation("Sender");
-
-                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Piece", b =>
