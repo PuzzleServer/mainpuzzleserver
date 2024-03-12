@@ -25,13 +25,21 @@ else
         @Html.Raw(Event.HomeContent);
     }
     <style>
-        #home-frame.unsized {
+        #home-frame {
             width: 100%;
+        }
+        #home-frame.unsized {
             height: 85vh;
         }
     </style>
     <script type="text/javascript">
         window.addEventListener("load", () => {
+            const iframe = document.querySelector("#home-frame");
+            if ((iframe !== null) && (iframe !== undefined)) {
+                iframe.contentWindow.postMessage("", "*");
+            }
+        });
+        window.addEventListener("resize", (e) => {
             const iframe = document.querySelector("#home-frame");
             if ((iframe !== null) && (iframe !== undefined)) {
                 iframe.contentWindow.postMessage("", "*");

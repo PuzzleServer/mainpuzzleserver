@@ -25,13 +25,21 @@ else
         @Html.Raw(Event.FAQContent);
     }
     <style>
-        #faq-frame.unsized {
+        #faq-frame {
             width: 100%;
+        }
+        #faq-frame.unsized {
             height: 85vh;
         }
     </style>
     <script type="text/javascript">
         window.addEventListener("load", () => {
+            const iframe = document.querySelector("#faq-frame");
+            if ((iframe !== null) && (iframe !== undefined)) {
+                iframe.contentWindow.postMessage("", "*");
+            }
+        });
+        window.addEventListener("resize", (e) => {
             const iframe = document.querySelector("#faq-frame");
             if ((iframe !== null) && (iframe !== undefined)) {
                 iframe.contentWindow.postMessage("", "*");

@@ -171,8 +171,10 @@
     iframe {
         border: 0px solid black;
     }
-    #puzzle-frame.unsized {
+    #puzzle-frame {
         width: 100%;
+    }
+    #puzzle-frame.unsized {
         height: 100vh;
     }
     #pdf-frame {
@@ -386,21 +388,21 @@
                                         {
                                             if (Model.SubmissionViews[i].Submission.FreeformAccepted != null)
                                             {
-                                                @(Model.SubmissionViews[i].FreeformReponse);
+                                                    @(Model.SubmissionViews[i].FreeformReponse);
                                             }
                                             else if (Model.PuzzleState.SolvedTime == null)
                                             {
-                                                <text>Pending...</text>
+                                                    <text>Pending...</text>
                                             }
                                         }
                                         else
                                         {
-                                            <text>@IndexModel.IncorrectResponseText</text>
+                                                <text>@IndexModel.IncorrectResponseText</text>
                                         }
                                     }
                                     else
                                     {
-                                        @ServerCore.Helpers.RawHtmlHelper.Display(response.ResponseText, Model.Event.ID, Html);
+                                            @ServerCore.Helpers.RawHtmlHelper.Display(response.ResponseText, Model.Event.ID, Html);
                                     }
                                 }
                             </td>
@@ -658,21 +660,21 @@ else
                                     {
                                         if (Model.SubmissionViews[i].Submission.FreeformAccepted != null)
                                         {
-                                            <div class="panelitem">@(Model.SubmissionViews[i].FreeformReponse)</div>
+                                                <div class="panelitem">@(Model.SubmissionViews[i].FreeformReponse)</div>
                                         }
                                         else if (Model.PuzzleState.SolvedTime == null)
                                         {
-                                            <div class="panelitem">Pending...</div>
+                                                <div class="panelitem">Pending...</div>
                                         }
                                     }
                                     else
                                     {
-                                        <div class="panelitem">@IndexModel.IncorrectResponseText</div>
+                                            <div class="panelitem">@IndexModel.IncorrectResponseText</div>
                                     }
                                 }
                                 else
                                 {
-                                    <div class="panelitem">@ServerCore.Helpers.RawHtmlHelper.Display(response.ResponseText, Model.Event.ID, Html)</div>
+                                        <div class="panelitem">@ServerCore.Helpers.RawHtmlHelper.Display(response.ResponseText, Model.Event.ID, Html)</div>
                                 }
                             }
                         </div>
@@ -883,7 +885,7 @@ else
                     }
                 });
 
-                // Resize iframe so the frame has no scrollbars
+                // Resize iframe upon first load so the frame has no scrollbars
                 // By the time the window has loaded, the iframe contents should have as well, thus no iframe load listener
                 // Note that when the puzzle receives the message, it should remove any extraneous wrapping before reporting its size
                 const iframe = document.querySelector("#puzzle-frame");
@@ -892,13 +894,21 @@ else
                 }
             });
 
+            // Resize the frame if the window width changes to maintain no double scrollbars
+            window.addEventListener("resize", (e) => {
+                const iframe = document.querySelector("#puzzle-frame");
+                if ((iframe !== null) && (iframe !== undefined)) {
+                    iframe.contentWindow.postMessage("", "*");
+                }
+            });
+
             // When the iframe response comes, use it to set the iframe's size
-            // The extra 27px added to the size undoes the widths of the scrollbars themselves
+            // The extra 30px added to the size undoes the widths of the scrollbars themselves
+            // Keep the width at 100% by default so internal content can resize if needed
             window.addEventListener("message", (e) => {
                 if ((e.data.width > 0) && (e.data.height > 0)) {
                     const iframe = document.querySelector("#puzzle-frame");
                     iframe.classList.remove("unsized");
-                    iframe.width = e.data.width + 30;
                     iframe.height = e.data.height + 30;
                 }
             });
