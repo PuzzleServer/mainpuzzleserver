@@ -80,7 +80,11 @@ namespace ServerCore.DataModel
             modelBuilder.Entity<SinglePlayerPuzzleStatePerPlayer>().HasIndex(pspt => new { pspt.PlayerID, pspt.SolvedTime });
             modelBuilder.Entity<SinglePlayerPuzzleUnlockState>().HasKey(state => new { state.PuzzleID });
             modelBuilder.Entity<Room>().HasIndex(room => new { room.EventID, room.Building, room.Number }).IsUnique();
-            modelBuilder.Entity<Message>().HasIndex(message => new { message.EventID, message.ThreadId });
+            modelBuilder.Entity<Message>().HasIndex(message => message.ThreadId).IsUnique();
+            modelBuilder.Entity<Message>().HasIndex(message => message.EventID);
+            modelBuilder.Entity<Message>().HasIndex(message => message.PuzzleID);
+            modelBuilder.Entity<Message>().HasIndex(message => message.SenderID);
+            modelBuilder.Entity<Message>().HasIndex(message => message.TeamID);
 
             // SQL doesn't allow multiple cacasding delete paths from one entity to another, so cut links that cause those
             // See https://learn.microsoft.com/en-us/ef/core/saving/cascade-delete for more data

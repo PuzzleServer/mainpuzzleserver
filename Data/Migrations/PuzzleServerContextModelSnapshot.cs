@@ -649,13 +649,17 @@ namespace Data.Migrations
 
                     b.HasIndex("ClaimerID");
 
+                    b.HasIndex("EventID");
+
                     b.HasIndex("PuzzleID");
 
                     b.HasIndex("SenderID");
 
                     b.HasIndex("TeamID");
 
-                    b.HasIndex("EventID", "ThreadId");
+                    b.HasIndex("ThreadId")
+                        .IsUnique()
+                        .HasFilter("[ThreadId] IS NOT NULL");
 
                     b.ToTable("Messages");
                 });
