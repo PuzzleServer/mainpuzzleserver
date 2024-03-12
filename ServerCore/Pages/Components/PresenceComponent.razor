@@ -1,12 +1,20 @@
 ﻿@using Microsoft.AspNetCore.SignalR
+@using Microsoft.Extensions.Caching.Memory
+@using ServerCore;
+@using ServerCore.ServerMessages
 
 @inject ServerMessageListener MessageListener
 @inject IHubContext<ServerMessageHub> MessageHub
 @inject DataModel.PuzzleServerContext PuzzleServerContext
+@inject IMemoryCache MemoryCache
+@inject PresenceStore PresenceStore
 
-<h3>PresenceComponent</h3>
-@foreach(PresenceModel presenceModel in PresentUsers)
-{
-    <p>@presenceModel.Name @presenceModel.PresenceType.ToString()</p>
-}
-<p>End of list</p>
+<div>
+    <span>
+        <b>Who&apos;s Here: </b>|
+        @foreach (PresenceModel presenceModel in PresentUsers)
+        {
+            <span>@presenceModel.Name |&nbsp;</span>
+        }
+    </span>
+</div>

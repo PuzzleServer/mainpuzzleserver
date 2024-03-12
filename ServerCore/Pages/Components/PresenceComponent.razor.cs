@@ -1,10 +1,12 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using ServerCore.DataModel;
+using ServerCore.ServerMessages;
 
 namespace ServerCore.Pages.Components
 {
@@ -20,9 +22,7 @@ namespace ServerCore.Pages.Components
     /// </summary>
     public partial class PresenceComponent : IAsyncDisposable
     {
-        public ConcurrentDictionary<Guid, PresenceModel> PresentPages { get; set; } = new ConcurrentDictionary<Guid, PresenceModel>();
         public IEnumerable<PresenceModel> PresentUsers { get; set; } = Array.Empty<PresenceModel>();
-        public Dictionary<int, string> TeamMemberNames { get; set; }
 
         [Parameter]
         public int PuzzleUserId { get; set; }
@@ -30,29 +30,34 @@ namespace ServerCore.Pages.Components
         [Parameter]
         public int TeamId { get; set; }
 
+        [Parameter]
+        public int PuzzleId { get; set; }
+
         Guid pageInstance = Guid.NewGuid();
+        TeamPuzzleStore teamPuzzleStore;
 
-        private async Task OnPresenceChange(PresenceMessage presenceMessage)
+        private async Task OnPresenceChange(IDictionary<Guid, PresenceModel> presentPages)
         {
-            if (presenceMessage.PresenceType == PresenceType.Disconnected)
-            {
-                PresentPages.Remove(presenceMessage.PageInstance, out _);
-            }
-            else
-            {
-                PresentPages[presenceMessage.PageInstance] = new PresenceModel { UserId = presenceMessage.PuzzleUserId, Name = presenceMessage.PageInstance.ToString(), PresenceType = presenceMessage.PresenceType };
-            }
+            await UpdateModelAsync(presentPages);
+        }
 
-            if (PresentPages.Count > 0)
+        private async Task UpdateModelAsync(IDictionary<Guid, PresenceModel> presentPages)
+        {
+            if (presentPages.Count > 0)
             {
-                var deduplicatedUsers = (from model in PresentPages.Values
+                var deduplicatedUsers = (from model in presentPages.Values
                                          group model by model.UserId into userGroup
                                          select new { UserId = userGroup.Key, PresenceType = userGroup.Min(user => user.PresenceType) }).ToArray();
 
-                PresentUsers = from user in deduplicatedUsers
-                               let name = TeamMemberNames.TryGetValue(user.UserId, out var userName) ? userName : String.Empty
-                               orderby user.PresenceType, name
-                               select new PresenceModel { Name = name, PresenceType = user.PresenceType, UserId = user.UserId };
+                List<PresenceModel> presentUsers = new List<PresenceModel>();
+                foreach(var user in deduplicatedUsers)
+                {
+                    PresenceModel presenceModel = new PresenceModel { UserId = user.UserId, PresenceType = user.PresenceType };
+                    presenceModel.Name = await GetUserNameAsync(user.UserId);
+                    presentUsers.Add(presenceModel);
+                }
+
+                PresentUsers = presentUsers.OrderBy(presence => presence.PresenceType).ThenBy(presence => presence.Name);
             }
             else
             {
@@ -62,30 +67,56 @@ namespace ServerCore.Pages.Components
             await InvokeAsync(StateHasChanged);
         }
 
+        /// <summary>
+        /// Gets a puzzle user's name
+        /// </summary>
+        /// <param name="puzzleUserId"></param>
+        /// <returns></returns>
+        private async Task<string> GetUserNameAsync(int puzzleUserId)
+        {
+            string userName = await MemoryCache.GetOrCreateAsync<string>(puzzleUserId, async entry =>
+            {
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
+                string userName = await (from user in PuzzleServerContext.PuzzleUsers
+                                         where user.ID == puzzleUserId
+                                         select user.Name).SingleAsync();
+                if (userName is null)
+                {
+                    userName = String.Empty;
+                }
+
+                entry.SetValue(userName);
+                entry.SetSize(userName.Length);
+                return userName;
+            });
+
+            return userName;
+        }
+
         protected override async Task OnInitializedAsync()
         {
-            TeamMemberNames = await (from user in PuzzleServerContext.PuzzleUsers
-                                     join teamMember in PuzzleServerContext.TeamMembers on user.ID equals teamMember.Member.ID
-                                     where teamMember.Team.ID == TeamId
-                                     select new { user.ID, user.Name }).ToDictionaryAsync(user => user.ID, user => user.Name);
-
-            MessageListener.OnPresence += OnPresenceChange;
-
             await base.OnInitializedAsync();
         }
 
         protected override async Task OnParametersSetAsync()
         {
-            // todo: fill in the rest of the message
-            await MessageHub.BroadcastPresenceMessageAsync(new PresenceMessage { PageInstance = pageInstance, PuzzleUserId = PuzzleUserId, PresenceType = PresenceType.Active });
+            teamPuzzleStore = PresenceStore.GetOrCreateTeamPuzzleStore(TeamId, PuzzleId);
+            teamPuzzleStore.OnTeamPuzzlePresenceChange += OnPresenceChange;
+
+            await UpdateModelAsync(teamPuzzleStore.PresentPages);
+
+            await MessageHub.BroadcastPresenceMessageAsync(new PresenceMessage { PageInstance = pageInstance, PuzzleUserId = PuzzleUserId, TeamId = TeamId, PuzzleId = PuzzleId, PresenceType = PresenceType.Active });
             await base.OnParametersSetAsync();
         }
 
         public async ValueTask DisposeAsync()
         {
-            MessageListener.OnPresence -= OnPresenceChange;
+            if (teamPuzzleStore is not null)
+            {
+                teamPuzzleStore.OnTeamPuzzlePresenceChange -= OnPresenceChange;
+            }
 
-            await MessageHub.BroadcastPresenceMessageAsync(new PresenceMessage { PageInstance = pageInstance, PuzzleUserId = PuzzleUserId, PresenceType = PresenceType.Disconnected });
+            await MessageHub.BroadcastPresenceMessageAsync(new PresenceMessage { PageInstance = pageInstance, PuzzleUserId = PuzzleUserId, TeamId = TeamId, PuzzleId = PuzzleId, PresenceType = PresenceType.Disconnected });
         }
     }
 }

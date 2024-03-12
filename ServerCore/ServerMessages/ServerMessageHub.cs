@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 
-namespace ServerCore
+namespace ServerCore.ServerMessages
 {
     /// <summary>
     /// Server hub for server messages. Note that the class is necessary even though it doesn't look like it does anything

@@ -2,23 +2,15 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using ServerCore.Areas.Deployment;
+using ServerCore.Areas.Identity;
 using ServerCore.Areas.Identity.UserAuthorizationPolicy;
 using ServerCore.DataModel;
-using ServerCore.Areas.Identity;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Azure;
-using Azure.Storage.Queues;
-using Azure.Storage.Blobs;
-using Azure.Core.Extensions;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.SignalR;
-using System.Diagnostics;
+using ServerCore.ServerMessages;
 
 namespace ServerCore
 {
@@ -142,6 +134,7 @@ namespace ServerCore
                 });
             }
             services.AddSingleton<ServerMessageListener>();
+            services.AddSingleton<PresenceStore>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

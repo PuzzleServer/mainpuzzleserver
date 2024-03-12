@@ -18,11 +18,6 @@ public enum PresenceType
     Active,
 
     /// <summary>
-    /// The puzzle is in the background
-    /// </summary>
-    Idle,
-
-    /// <summary>
     /// The puzzle has been closed or idle long enough that the browser slept the tab
     /// </summary>
     Disconnected,

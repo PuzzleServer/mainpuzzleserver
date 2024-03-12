@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Hosting;
 
-namespace ServerCore
+namespace ServerCore.ServerMessages
 {
     /// <summary>
     /// Singleton that registers listeners for all server messages to distribute them to listening components
@@ -19,7 +19,7 @@ namespace ServerCore
 
         public ServerMessageListener(IHubContext<ServerMessageHub> hub, IWebHostEnvironment env)
         {
-            string localhostSignalRUrl;            
+            string localhostSignalRUrl;
             if (env.IsDevelopment())
             {
                 localhostSignalRUrl = "http://localhost:44319/serverMessage";
@@ -32,11 +32,13 @@ namespace ServerCore
             HubConnection = new HubConnectionBuilder().WithUrl(localhostSignalRUrl).WithAutomaticReconnect().Build();
 
             // Register listeners
-            var onExampleMessage = OnExampleMessage;
+            var onExampleMessage = OnExampleMessageAsync;
             exampleSubscription = HubConnection.On(nameof(ExampleMessage), onExampleMessage);
-            var onPresenceMessage = OnPresenceMessage;
+            var onPresenceMessage = OnPresenceMessageAsync;
             presenceSubscription = HubConnection.On(nameof(PresenceMessage), onPresenceMessage);
 
+            // todo: don't wait for this. Instead, save it in a task and add a method to wait for it to be ready that all callers should call.
+            // That method can also trigger a "what did I miss?" broadcast after the connection is established.
             TryInitAsync(hub).Wait();
         }
 
@@ -67,14 +69,14 @@ namespace ServerCore
             throw new Exception("Shouldn't get here");
         }
 
-        private async Task OnExampleMessage(ExampleMessage message)
+        private async Task OnExampleMessageAsync(ExampleMessage message)
         {
             Debug.WriteLine($"Example message recieved: player {message.PuzzleUserId} team {message.TeamId} someinfo {message.SomeInfo}");
             // Distribute the message to the relevant components for the player/team/everyone
         }
 
         public event Func<PresenceMessage, Task> OnPresence;
-        private async Task OnPresenceMessage(PresenceMessage message)
+        private async Task OnPresenceMessageAsync(PresenceMessage message)
         {
             await OnPresence?.Invoke(message);
         }
