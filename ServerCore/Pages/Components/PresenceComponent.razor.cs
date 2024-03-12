@@ -95,6 +95,7 @@ namespace ServerCore.Pages.Components
 
         protected override async Task OnInitializedAsync()
         {
+            await MessageListener.EnsureInitializedAsync();
             await base.OnInitializedAsync();
         }
 

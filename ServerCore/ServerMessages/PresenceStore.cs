@@ -35,6 +35,33 @@ namespace ServerCore.ServerMessages
             return teamPuzzleStore;
         }
 
+        /// <summary>
+        /// Returns a list of all present users on puzzles
+        /// </summary>
+        public List<PresenceMessage> GetAllPresence()
+        {
+            List<PresenceMessage> presenceMessages = new List<PresenceMessage>();
+            foreach(KeyValuePair<int, TeamStore> teamStore in TeamStores)
+            {
+                foreach(KeyValuePair<int, TeamPuzzleStore> teamPuzzleStore in teamStore.Value.TeamPuzzleStores)
+                {
+                    foreach(KeyValuePair<Guid, PresenceModel> presence in teamPuzzleStore.Value.PresentPages)
+                    {
+                        presenceMessages.Add(new PresenceMessage
+                        {
+                            PageInstance = presence.Key,
+                            PuzzleUserId = presence.Value.UserId,
+                            TeamId = teamStore.Key,
+                            PuzzleId = teamPuzzleStore.Key,
+                            PresenceType = presence.Value.PresenceType
+                        });
+                    }
+                }
+            }
+
+            return presenceMessages;
+        }
+
         private async Task OnPresenceChange(PresenceMessage message)
         {
             TeamPuzzleStore teamPuzzleStore = GetOrCreateTeamPuzzleStore(message.TeamId, message.PuzzleId);
@@ -49,6 +76,17 @@ namespace ServerCore.ServerMessages
             }
 
             await teamPuzzleStore.InvokeTeamPuzzlePresenceChange();
+        }
+
+        /// <summary>
+        /// Incorporates a new set of presence state into the store
+        /// </summary>
+        public async Task MergePresenceState(PresenceMessage[] allPresence)
+        {
+            foreach(PresenceMessage message in allPresence)
+            {
+                await OnPresenceChange(message);
+            }
         }
 
         private class TeamStore
@@ -74,7 +112,11 @@ namespace ServerCore.ServerMessages
 
         public async Task InvokeTeamPuzzlePresenceChange()
         {
-            await OnTeamPuzzlePresenceChange?.Invoke(PresentPages);
+            var onTeamPuzzlePresenceChange = OnTeamPuzzlePresenceChange;
+            if (onTeamPuzzlePresenceChange != null)
+            {
+                await onTeamPuzzlePresenceChange?.Invoke(PresentPages);
+            }
         }
     }
 }

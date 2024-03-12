@@ -53,3 +53,25 @@ public class PresenceMessage
     /// </summary>
     public PresenceType PresenceType { get; set; }
 }
+
+/// <summary>
+/// Message requesting all presence state
+/// </summary>
+public class GetPresenceState
+{
+    /// <summary>
+    /// The client requesting the presence state
+    /// </summary>
+    public string Client { get; set; }
+}
+
+/// <summary>
+/// Full presence information for all clients
+/// </summary>
+public class AllPresenceState
+{
+    /// <summary>
+    /// The presence information for all clients
+    /// </summary>
+    public PresenceMessage[] AllPresence { get; set; }
+}

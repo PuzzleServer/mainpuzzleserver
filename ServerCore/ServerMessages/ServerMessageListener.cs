@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace ServerCore.ServerMessages
@@ -14,11 +16,18 @@ namespace ServerCore.ServerMessages
     public class ServerMessageListener : IDisposable
     {
         HubConnection HubConnection { get; set; }
-        IDisposable exampleSubscription = null;
-        IDisposable presenceSubscription = null;
+        IHubContext<ServerMessageHub> Hub { get; set; }
+        public IServiceProvider ServiceProvider { get; }
 
-        public ServerMessageListener(IHubContext<ServerMessageHub> hub, IWebHostEnvironment env)
+        List<IDisposable> subscriptionsToDispose = new List<IDisposable>();
+
+        Task initTracker = null;
+
+        public ServerMessageListener(IHubContext<ServerMessageHub> hub, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
+            Hub = hub;
+            ServiceProvider = serviceProvider;
+
             string localhostSignalRUrl;
             if (env.IsDevelopment())
             {
@@ -33,13 +42,44 @@ namespace ServerCore.ServerMessages
 
             // Register listeners
             var onExampleMessage = OnExampleMessageAsync;
-            exampleSubscription = HubConnection.On(nameof(ExampleMessage), onExampleMessage);
+            subscriptionsToDispose.Add(HubConnection.On(nameof(ExampleMessage), onExampleMessage));
             var onPresenceMessage = OnPresenceMessageAsync;
-            presenceSubscription = HubConnection.On(nameof(PresenceMessage), onPresenceMessage);
+            subscriptionsToDispose.Add(HubConnection.On(nameof(PresenceMessage), onPresenceMessage));
+            var onGetPresenceState = OnGetPressenceState;
+            subscriptionsToDispose.Add(HubConnection.On(nameof(GetPresenceState), onGetPresenceState));
+            var onAllPresenceState = OnAllPresenceState;
+            subscriptionsToDispose.Add(HubConnection.On(nameof(AllPresenceState), onAllPresenceState));
 
-            // todo: don't wait for this. Instead, save it in a task and add a method to wait for it to be ready that all callers should call.
-            // That method can also trigger a "what did I miss?" broadcast after the connection is established.
-            TryInitAsync(hub).Wait();
+            // We can't wait for this in a constructor, so defer waiting to EnsureInitializedAsync
+            initTracker = TryInitAsync(hub);
+            initTracker.ContinueWith(t => GetStateFromOtherServersAsync());
+        }
+
+        /// <summary>
+        /// Call this from any components that need to wait for the listener to be ready
+        /// </summary>
+        public async Task EnsureInitializedAsync()
+        {
+            if (initTracker.IsCompletedSuccessfully)
+            {
+                return;
+            }
+
+            lock (this)
+            {
+                // If it failed, try again
+                if (initTracker.IsFaulted)
+                {
+                    initTracker = TryInitAsync(Hub);
+                }
+            }
+
+            await initTracker;
+        }
+
+        async Task GetStateFromOtherServersAsync()
+        {
+            await Hub.BroadcastGetPresenceStateAsync(HubConnection.ConnectionId);
         }
 
         async Task TryInitAsync(IHubContext<ServerMessageHub> hub)
@@ -75,18 +115,34 @@ namespace ServerCore.ServerMessages
             // Distribute the message to the relevant components for the player/team/everyone
         }
 
+        /// <summary>
+        /// Fires when any presence message comes in
+        /// </summary>
         public event Func<PresenceMessage, Task> OnPresence;
+
         private async Task OnPresenceMessageAsync(PresenceMessage message)
         {
             await OnPresence?.Invoke(message);
         }
 
+        private async Task OnGetPressenceState(GetPresenceState requestMessage)
+        {
+            List<PresenceMessage> allPresence = ServiceProvider.GetRequiredService<PresenceStore>().GetAllPresence();
+            await Hub.SendAllPresenceState(HubConnection.ConnectionId, allPresence.ToArray());
+        }
+
+        private async Task OnAllPresenceState(AllPresenceState allPresenceState)
+        {
+            await ServiceProvider.GetRequiredService<PresenceStore>().MergePresenceState(allPresenceState.AllPresence);
+        }
+
         public void Dispose()
         {
-            exampleSubscription?.Dispose();
-            exampleSubscription = null;
-            presenceSubscription?.Dispose();
-            presenceSubscription = null;
+            foreach(IDisposable subscription in subscriptionsToDispose)
+            {
+                subscription.Dispose();
+            }
+            subscriptionsToDispose.Clear();
         }
     }
 }

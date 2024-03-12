@@ -30,5 +30,15 @@ namespace ServerCore.ServerMessages
         {
             await hub.Clients.Groups(ServersGroup).SendAsync(nameof(PresenceMessage), message);
         }
+
+        public static async Task BroadcastGetPresenceStateAsync(this IHubContext<ServerMessageHub> hub, string clientId)
+        {
+            await hub.Clients.Groups(ServersGroup).SendAsync(nameof(GetPresenceState), new GetPresenceState { Client = clientId });
+        }
+
+        public static async Task SendAllPresenceState(this IHubContext<ServerMessageHub> hub, string client, PresenceMessage[] allPresence)
+        {
+            await hub.Clients.Clients(client).SendAsync(nameof(AllPresenceState), new AllPresenceState { AllPresence = allPresence });
+        }
     }
 }
