@@ -540,8 +540,17 @@ else
 
             @if (embedType > 2) // HTML files or images
             {
-                puzzleFilePath = puzzleFilePath.Split('?')[0] + "?print=true";
-                <div><b>Want to print?</b> <a href="@puzzleFilePath" target="_blank">Click this link</a> for a printable version. Print in color!</div>
+                string urlSuffix = "";
+                if (puzzleFilePath.Contains('?')) 
+                {
+                    urlSuffix += "&";
+                }
+                else
+                {
+                    urlSuffix += "?";
+                }
+                urlSuffix += "print=true";
+                <div><b>Want to print?</b> <a href="@puzzleFilePath@urlSuffix" target="_blank">Click this link</a> for a printable version. Print in color!</div>
             }
             else if (embedType == 1) // PDFs
             {
@@ -685,8 +694,17 @@ else
             <div><b>This puzzle can't be displayed here.</b> <a href="@puzzleFilePath" download>Click this link</a> to download the file.</div>
             break;
         case 3: // HTML
-            puzzleFilePath = puzzleFilePath.Split('?')[0] + "?embed=true";
-            <iframe id="puzzle-frame" class="unsized" title="@Model.Puzzle.Name" sandbox="allow-same-origin allow-scripts allow-popups" src="@puzzleFilePath"></iframe>
+            string urlSuffix = "";
+            if (puzzleFilePath.Contains('?'))
+            {
+                urlSuffix += "&";
+            }
+            else
+            {
+                urlSuffix += "?";
+            }
+            urlSuffix += "embed=true";
+            <iframe id="puzzle-frame" class="unsized" title="@Model.Puzzle.Name" sandbox="allow-same-origin allow-scripts allow-popups" src="@puzzleFilePath@urlSuffix"></iframe>
             break;
         case 4: // Images
             <img id="img-frame" src="@puzzleFilePath" alt="An image containing a puzzle" />
@@ -890,8 +908,15 @@ else
             // This will unfortunately leave the dialog still open in the parent page
             window.addEventListener("beforeprint", (e) => {
                 let url = "@puzzleFilePath";
-                url = url.split("?")[0];
-                url += "?print=true";
+                let urlSuffix = "";
+                if (url.includes('?')) {
+                    urlSuffix += "&";
+                }
+                else {
+                    urlSuffix += "?";
+                }
+                urlSuffix += "print=true";
+                url += urlSuffix;
                 window.open(url, "_blank");
             });
         </script>
