@@ -1538,27 +1538,30 @@ namespace Data.Migrations
                 {
                     b.HasOne("ServerCore.DataModel.PuzzleUser", "Claimer")
                         .WithMany()
-                        .HasForeignKey("ClaimerID");
+                        .HasForeignKey("ClaimerID")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("ServerCore.DataModel.Event", "Event")
                         .WithMany()
                         .HasForeignKey("EventID")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
                         .WithMany()
-                        .HasForeignKey("PuzzleID");
+                        .HasForeignKey("PuzzleID")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("ServerCore.DataModel.PuzzleUser", "Sender")
                         .WithMany()
                         .HasForeignKey("SenderID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("ServerCore.DataModel.Team", "Team")
                         .WithMany()
-                        .HasForeignKey("TeamID");
+                        .HasForeignKey("TeamID")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Claimer");
 

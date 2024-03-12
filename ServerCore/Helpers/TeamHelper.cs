@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Migrations;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 using ServerCore.ModelBases;
@@ -45,6 +46,11 @@ namespace ServerCore.Helpers
                               where annotation.Team == team
                               select annotation;
             context.Annotations.RemoveRange(annotations);
+
+            List<Message> messages = (from message in context.Messages
+                              where message.Team == team
+                              select message).ToList();
+            context.Messages.RemoveRange(messages);
 
             var rooms = context.Rooms.Where(r => r.TeamID == team.ID).ToList();
             foreach(var r in rooms)

@@ -83,6 +83,7 @@ namespace ServerCore.DataModel
             modelBuilder.Entity<Message>().HasIndex(message => new { message.EventID, message.ThreadId });
 
             // SQL doesn't allow multiple cacasding delete paths from one entity to another, so cut links that cause those
+            // See https://learn.microsoft.com/en-us/ef/core/saving/cascade-delete for more data
             modelBuilder.Entity<ContentFile>().HasOne(contentFile => contentFile.Event).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<PuzzleStatePerTeam>().HasOne(state => state.Team).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<SinglePlayerPuzzleStatePerPlayer>().HasOne(state => state.Player).WithMany().OnDelete(DeleteBehavior.Restrict);
@@ -92,7 +93,10 @@ namespace ServerCore.DataModel
             modelBuilder.Entity<Submission>().HasOne(submission => submission.Team).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<SinglePlayerPuzzleSubmission>().HasOne(submission => submission.Submitter).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Annotation>().HasOne(annotation => annotation.Team).WithMany().OnDelete(DeleteBehavior.Restrict);
-            modelBuilder.Entity<Message>().HasOne(message => message.Event).WithMany().OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Message>().HasOne(message => message.Puzzle).WithMany().OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Message>().HasOne(message => message.Sender).WithMany().OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Message>().HasOne(message => message.Team).WithMany().OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Message>().HasOne(message => message.Claimer).WithMany().OnDelete(DeleteBehavior.SetNull);
 
             base.OnModelCreating(modelBuilder);
         }
