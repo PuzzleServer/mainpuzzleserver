@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 
 namespace ServerCore.Components
 {
@@ -14,10 +15,10 @@ namespace ServerCore.Components
         [Parameter]
         public int PlayerID { get; set; }
 
-        private IDisposable listener = null;
+        [Inject]
+        protected IJSRuntime JS { get; set; } = default!;
 
-        // TODO this is just a placeholder until Bootstrap 5
-        public string NotificationText { get; set; } = "";
+        private IDisposable listener = null;
 
         public NotificationComponent()
         {
@@ -31,9 +32,7 @@ namespace ServerCore.Components
 
         private void OnNotification(object sender, NotificationEventArgs args)
         {
-            // TODO this is just a placeholder until Bootstrap 5
-            NotificationText += $"{args.Notification.Title}: {args.Notification.Content} ";
-            InvokeAsync(() => StateHasChanged());
+            this.JS.InvokeVoidAsync("displayNotification", args.Notification.Title, args.Notification.Content);
         }
 
         public void Dispose()

@@ -93,7 +93,15 @@ namespace ServerCore.Pages.Events
 
             if (Group == MailGroup.Players)
             {
-                NotificationHelper.SendNotification(Event, MailSubject, "Check your email for details.");
+                if (TeamID != null)
+                {
+                    var team = await _context.Teams.FindAsync(TeamID);
+                    NotificationHelper.SendNotification(team, MailSubject, "Check your email for details.");
+                }
+                else
+                {
+                    NotificationHelper.SendNotification(Event, MailSubject, "Check your email for details.");
+                }
             }
 
             MailHelper.Singleton.SendPlaintextBcc(addresses, MailSubject, MailBody);
