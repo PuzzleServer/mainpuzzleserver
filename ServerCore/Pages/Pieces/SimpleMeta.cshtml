@@ -9,12 +9,12 @@
 
 <table class="table">
     <tbody>
-@foreach (var item in Model.EarnedPieces) {
-        <tr>
-            <td>
-                @Html.Raw(item.Contents)
-            </td>
-        </tr>
-}
+        @foreach (var item in Model.EarnedPieces) {
+            <tr>
+                <td class="meta-list-piece-customizable">
+                    @Html.Raw(item.Contents)
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

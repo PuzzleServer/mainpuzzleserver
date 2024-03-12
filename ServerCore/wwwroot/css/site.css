@@ -44,6 +44,10 @@ nav {
     font-weight: normal;
 }
 
+.hidden {
+    display: none;
+}
+
 /* Set some basic padding to keep content from hitting the edges */
 .container {
     padding-right: 15px;
@@ -191,6 +195,7 @@ li {
 
 button,
 input.btn {
+    color: black;
     border: 1px solid black;
     border-radius: 4px;
     background-color: #f0f0f0;
@@ -202,6 +207,10 @@ button:hover,
 input.btn:hover {
     border: 1px solid black;
     background-color: #d8d8d8;
+}
+
+#submissionHistory {
+    background-color: #ffffff;
 }
 
 .shortcut-menu-dropdown {
@@ -281,6 +290,7 @@ nav li {
     color: #9d9d9d;
     padding: 0px 10%;
     margin-bottom: 20px;
+    user-select: none;
 }
 
 .navbar-custom a {
@@ -349,4 +359,13 @@ a.navbar-brand {
 
 .dropdown a.show {
     color: #ffffff;
+}
+
+.footer-custom {
+    padding: 0px 10%;
+    margin: 0px;
+}
+
+.footer-custom ul {
+    margin: 0px;
 }

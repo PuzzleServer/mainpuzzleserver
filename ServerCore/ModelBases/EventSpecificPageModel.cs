@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.WindowsAzure.Storage.Blob;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
 
@@ -206,6 +207,10 @@ namespace ServerCore.ModelBases
                 }
             }
         }
+
+        public async Task<string> GetFileStoragePrefix() {
+            return await FileManager.GetFileStoragePrefix(Event.ID, "");
+        } 
 
         public class RoleBinder : IModelBinder
         {

@@ -706,6 +706,9 @@ namespace Data.Migrations
                     b.Property<string>("CustomAuthorText")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("CustomCSSFile")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("CustomSolutionURL")
                         .HasColumnType("nvarchar(max)");
 

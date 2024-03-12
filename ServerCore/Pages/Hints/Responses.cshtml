@@ -1,6 +1,7 @@
 ﻿@page "/{eventId}/{eventRole}/Hints/Responses"
 @model ServerCore.Pages.Hints.ResponsesModel
 @{
+    @using Helpers;
     ViewData["Title"] = "Responses";
     ViewData["AdminRoute"] = "../Hints/Responses";
     ViewData["AuthorRoute"] = "../Hints/Responses";
@@ -46,7 +47,7 @@
                         @item.Description
                     </td>
                     <td>
-                        @item.Content
+                        @(RawHtmlHelper.Display(item.Content, Model.Event.ID, Html))
                     </td>
                     <td>
                         @item.Cost
