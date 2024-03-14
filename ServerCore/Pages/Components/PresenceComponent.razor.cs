@@ -45,9 +45,9 @@ namespace ServerCore.Pages.Components
         {
             if (presentPages.Count > 0)
             {
-                var deduplicatedUsers = (from model in presentPages.Values
+                var deduplicatedUsers = from model in presentPages.Values
                                          group model by model.UserId into userGroup
-                                         select new { UserId = userGroup.Key, PresenceType = userGroup.Min(user => user.PresenceType) }).ToArray();
+                                         select new { UserId = userGroup.Key, PresenceType = userGroup.Min(user => user.PresenceType) };
 
                 List<PresenceModel> presentUsers = new List<PresenceModel>();
                 foreach(var user in deduplicatedUsers)

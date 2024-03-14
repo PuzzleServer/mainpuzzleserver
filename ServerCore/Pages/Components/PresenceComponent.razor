@@ -11,10 +11,7 @@
 
 <div>
     <span>
-        <b>Who&apos;s Here: </b>|
-        @foreach (PresenceModel presenceModel in PresentUsers)
-        {
-            <span>@presenceModel.Name |&nbsp;</span>
-        }
+        <b>Who&apos;s Here: </b>
+        @string.Join(" | ", PresentUsers.Select(u => u.Name))
     </span>
 </div>

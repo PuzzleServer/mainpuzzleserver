@@ -41,11 +41,9 @@ namespace ServerCore.ServerMessages
             HubConnection = new HubConnectionBuilder().WithUrl(localhostSignalRUrl).WithAutomaticReconnect().Build();
 
             // Register listeners
-            var onExampleMessage = OnExampleMessageAsync;
-            subscriptionsToDispose.Add(HubConnection.On(nameof(ExampleMessage), onExampleMessage));
             var onPresenceMessage = OnPresenceMessageAsync;
             subscriptionsToDispose.Add(HubConnection.On(nameof(PresenceMessage), onPresenceMessage));
-            var onGetPresenceState = OnGetPressenceState;
+            var onGetPresenceState = OnGetPresenceState;
             subscriptionsToDispose.Add(HubConnection.On(nameof(GetPresenceState), onGetPresenceState));
             var onAllPresenceState = OnAllPresenceState;
             subscriptionsToDispose.Add(HubConnection.On(nameof(AllPresenceState), onAllPresenceState));
@@ -109,12 +107,6 @@ namespace ServerCore.ServerMessages
             throw new Exception("Shouldn't get here");
         }
 
-        private async Task OnExampleMessageAsync(ExampleMessage message)
-        {
-            Debug.WriteLine($"Example message recieved: player {message.PuzzleUserId} team {message.TeamId} someinfo {message.SomeInfo}");
-            // Distribute the message to the relevant components for the player/team/everyone
-        }
-
         /// <summary>
         /// Fires when any presence message comes in
         /// </summary>
@@ -125,10 +117,10 @@ namespace ServerCore.ServerMessages
             await OnPresence?.Invoke(message);
         }
 
-        private async Task OnGetPressenceState(GetPresenceState requestMessage)
+        private async Task OnGetPresenceState(GetPresenceState requestMessage)
         {
             List<PresenceMessage> allPresence = ServiceProvider.GetRequiredService<PresenceStore>().GetAllPresence();
-            await Hub.SendAllPresenceState(HubConnection.ConnectionId, allPresence.ToArray());
+            await Hub.SendAllPresenceState(requestMessage.Client, allPresence.ToArray());
         }
 
         private async Task OnAllPresenceState(AllPresenceState allPresenceState)
