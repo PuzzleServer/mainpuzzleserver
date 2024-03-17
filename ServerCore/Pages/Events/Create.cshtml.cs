@@ -1,10 +1,13 @@
 ﻿using System;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using ServerCore.DataModel;
+using ServerCore.Helpers;
 
 namespace ServerCore.Pages.Events
 {
@@ -13,6 +16,7 @@ namespace ServerCore.Pages.Events
     {
         private readonly PuzzleServerContext _context;
         private readonly UserManager<IdentityUser> _userManager;
+        const string SharedResourceDirectoryName = "resources";
 
         [BindProperty]
         public Event Event { get; set; }
@@ -69,6 +73,12 @@ namespace ServerCore.Pages.Events
             }
 
             await _context.SaveChangesAsync();
+
+            // Create base files for event content and style
+            await FileManager.UploadBlobAsync("global-styles.css", Event.ID, NewFileHelper.GetStreamContent(NewFileHelper.ContentType.GlobalCss), SharedResourceDirectoryName);
+            await FileManager.UploadBlobAsync("home-content.html", Event.ID, NewFileHelper.GetStreamContent(NewFileHelper.ContentType.HomeContent), SharedResourceDirectoryName);
+            await FileManager.UploadBlobAsync("faq-content.html", Event.ID, NewFileHelper.GetStreamContent(NewFileHelper.ContentType.FAQContent), SharedResourceDirectoryName);
+            await FileManager.UploadBlobAsync("rules-content.html", Event.ID, NewFileHelper.GetStreamContent(NewFileHelper.ContentType.RulesContent), SharedResourceDirectoryName);
 
             return RedirectToPage("./Index");
         }
