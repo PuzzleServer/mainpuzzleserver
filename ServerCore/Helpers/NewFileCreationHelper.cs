@@ -1,15 +1,30 @@
 ﻿using System.IO;
 using System.Text;
+using ServerCore.DataModel;
 
 namespace ServerCore.Helpers
 {
-    public static class NewFileHelper
+    public static class NewFileCreationHelper
     {
         public enum ContentType {
             GlobalCss = 0,
             HomeContent,
             FAQContent,
             RulesContent,
+        }
+
+        public static async void CreateNewEventFiles(int eventId, string sharedResourceDirectoryName) {
+            try
+            {
+                await FileManager.UploadBlobAsync("global-styles.css", eventId, NewFileCreationHelper.GetStreamContent(NewFileCreationHelper.ContentType.GlobalCss), sharedResourceDirectoryName);
+                await FileManager.UploadBlobAsync("home-content.html", eventId, NewFileCreationHelper.GetStreamContent(NewFileCreationHelper.ContentType.HomeContent), sharedResourceDirectoryName);
+                await FileManager.UploadBlobAsync("faq-content.html", eventId, NewFileCreationHelper.GetStreamContent(NewFileCreationHelper.ContentType.FAQContent), sharedResourceDirectoryName);
+                await FileManager.UploadBlobAsync("rules-content.html", eventId, NewFileCreationHelper.GetStreamContent(NewFileCreationHelper.ContentType.RulesContent), sharedResourceDirectoryName);
+            }
+            catch (System.Exception)
+            {
+                // If this fails to create the files, we can ignore it and continue
+            }
         }
 
         public static Stream GetStreamContent(ContentType contentType) {

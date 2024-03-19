@@ -73,10 +73,8 @@ namespace ServerCore.Pages.Events
             await _context.SaveChangesAsync();
 
             // Create base files for event content and style
-            await FileManager.UploadBlobAsync("global-styles.css", Event.ID, NewFileHelper.GetStreamContent(NewFileHelper.ContentType.GlobalCss), SharedResourceDirectoryName);
-            await FileManager.UploadBlobAsync("home-content.html", Event.ID, NewFileHelper.GetStreamContent(NewFileHelper.ContentType.HomeContent), SharedResourceDirectoryName);
-            await FileManager.UploadBlobAsync("faq-content.html", Event.ID, NewFileHelper.GetStreamContent(NewFileHelper.ContentType.FAQContent), SharedResourceDirectoryName);
-            await FileManager.UploadBlobAsync("rules-content.html", Event.ID, NewFileHelper.GetStreamContent(NewFileHelper.ContentType.RulesContent), SharedResourceDirectoryName);
+            // Fails silently if local Azure storage emulator isn't installed
+            NewFileCreationHelper.CreateNewEventFiles(Event.ID, SharedResourceDirectoryName);
 
             return RedirectToPage("./Index");
         }
