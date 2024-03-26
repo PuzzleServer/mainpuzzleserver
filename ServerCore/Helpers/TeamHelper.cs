@@ -46,6 +46,11 @@ namespace ServerCore.Helpers
                               select annotation;
             context.Annotations.RemoveRange(annotations);
 
+            IEnumerable<Message> messages = from message in context.Messages
+                                      where message.Team == team
+                                      select message;
+            context.Messages.RemoveRange(messages);
+
             var rooms = context.Rooms.Where(r => r.TeamID == team.ID).ToList();
             foreach(var r in rooms)
             {
