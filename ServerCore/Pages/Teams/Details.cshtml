@@ -110,53 +110,56 @@
                     @Model.Team.Name
                 </dd>
                 <!-- TODO: Add new room dropdown here and clean up custom room-->
-                <dt>
-                    Team room
-                </dt>
-                <dd>
-                    @if (Model.Team.CustomRoom == null)
-                    {
-                    @if (Model.Event.IsInternEvent)
-                    {
-                    <div>@Model.TeamRoom</div>
-                    }
-                    else
-                    {
-                    <div>(none - please enter this before the start of the event)</div>
-                    }
-                    }
-                    else
-                    {
-                    @Model.Team.CustomRoom
-                    }
-                </dd>
+                @if (!Model.Event.IsRemote)
+                {
+                    <dt>
+                        Team room
+                    </dt>
+                    <dd>
+                        @if (Model.Team.CustomRoom == null)
+                        {
+                            @if (Model.Event.IsInternEvent)
+                            {
+                                <div>@Model.TeamRoom</div>
+                            }
+                            else
+                            {
+                                <div>(none - please enter this before the start of the event)</div>
+                            }
+                        }
+                        else
+                        {
+                            @Model.Team.CustomRoom
+                        }
+                    </dd>
 
-                <dt>
-                    Primary phone number
-                </dt>
-                <dd>
-                    @if (Model.Team.PrimaryPhoneNumber == null)
-                    {
-                    <div>(none - please enter this before the start of the event)</div>
-                    }
-                    else
-                    {
-                    @Model.Team.PrimaryPhoneNumber
-                    }
-                </dd>
-                <dt>
-                    Secondary phone number (optional)
-                </dt>
-                <dd>
-                    @if (Model.Team.SecondaryPhoneNumber == null)
-                    {
-                    <div>(none)</div>
-                    }
-                    else
-                    {
-                    @Model.Team.SecondaryPhoneNumber
-                    }
-                </dd>
+                    <dt>
+                        Primary phone number
+                    </dt>
+                    <dd>
+                        @if (Model.Team.PrimaryPhoneNumber == null)
+                        {
+                            <div>(none - please enter this before the start of the event)</div>
+                        }
+                        else
+                        {
+                            @Model.Team.PrimaryPhoneNumber
+                        }
+                    </dd>
+                    <dt>
+                        Secondary phone number (optional)
+                    </dt>
+                    <dd>
+                        @if (Model.Team.SecondaryPhoneNumber == null)
+                        {
+                            <div>(none)</div>
+                        }
+                        else
+                        {
+                            @Model.Team.SecondaryPhoneNumber
+                        }
+                    </dd>
+                }
                 <dt>
                     Primary contact e-mail (optional)
                 </dt>

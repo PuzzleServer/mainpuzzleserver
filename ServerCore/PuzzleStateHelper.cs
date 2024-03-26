@@ -317,17 +317,26 @@ namespace ServerCore
             Team team)
         {
             DateTime expiry;
+            DateTime now = DateTime.UtcNow;
 
             lock (TimedUnlockExpiryCache)
             {
                 // throttle this by an expiry interval before we do anything even remotely expensive
-                if (TimedUnlockExpiryCache.TryGetValue(team.ID, out expiry) && expiry >= DateTime.UtcNow)
+                if (TimedUnlockExpiryCache.TryGetValue(team.ID, out expiry) && expiry >= now)
                 {
                     return;
                 }
             }
 
-            DateTime now = DateTime.UtcNow;
+            // unlock any puzzle with zero prerequisites
+            var zeroPrerequisitePuzzlesToUnlock = await PuzzleStateHelper.GetSparseQuery(context, eventObj, null, team)
+                .Where(state => state.UnlockedTime == null && state.Puzzle.MinPrerequisiteCount == 0)
+                .Select((state) => state.Puzzle)
+                .ToListAsync();
+            foreach (var puzzle in zeroPrerequisitePuzzlesToUnlock)
+            {
+                await PuzzleStateHelper.SetUnlockStateAsync(context, eventObj, puzzle, team, eventObj.EventBegin);
+            }
 
             // do the unlocks in a loop.
             // The loop will catch cascading unlocks, e.g. if someone does not hit the site between 11:59 and 12:31, catch up to the 12:30 unlocks immediately.
@@ -353,8 +362,8 @@ namespace ServerCore
 
             lock (TimedUnlockExpiryCache)
             {
-                // effectively, expiry = Math.Max(DateTime.UtcNow, LastGlobalExpiry) + ClosestExpirySpacing - if you could use Math.Max on DateTime
-                expiry = DateTime.UtcNow;
+                // effectively, expiry = Math.Max(now, LastGlobalExpiry) + ClosestExpirySpacing - if you could use Math.Max on DateTime
+                expiry = now;
                 if (expiry < LastGlobalExpiry)
                 {
                     expiry = LastGlobalExpiry;
@@ -401,9 +410,7 @@ namespace ServerCore
         /// <returns></returns>
         private static async Task UnlockAnyPuzzlesThatThisSolveUnlockedAsync(PuzzleServerContext context, Event eventObj, Puzzle puzzleJustSolved, Team team, DateTime unlockTime)
         {
-            // a simple query for all puzzle IDs in the event - will be used at least once below
-            IQueryable<int> allPuzzleIDsQ = context.Puzzles.Where(p => p.Event == eventObj).Select(p => p.ID);
-
+            var puzzlesInGroup = puzzleJustSolved.Group == null ? null : await context.Puzzles.Where(p => p.Event == eventObj && !p.IsForSinglePlayer && p.Group == puzzleJustSolved.Group).Select(p => new { PuzzleID = p.ID, MinInGroupCount = p.MinInGroupCount }).ToDictionaryAsync(p => p.PuzzleID);
 
             // get the prerequisites for all puzzles that need an update
             // information we get per puzzle: { id, min count, number of solved prereqs including this one }
@@ -435,7 +442,7 @@ namespace ServerCore
 
                 // Make a hash set out of them for easy lookup in case we have several prerequisites to chase
                 HashSet<int> unlockedPuzzleIDsForTeamT = new HashSet<int>();
-                HashSet<int> solvedPuzzleIDsForTeamT = new HashSet<int>();
+                int solveCountInGroup = 0;
 
                 foreach (var puzzleState in puzzleStateForTeamT)
                 {
@@ -444,9 +451,9 @@ namespace ServerCore
                         unlockedPuzzleIDsForTeamT.Add(puzzleState.PuzzleID);
                     }
 
-                    if (puzzleState.SolvedTime != null)
+                    if (puzzleState.SolvedTime != null && puzzlesInGroup != null && puzzlesInGroup.ContainsKey(puzzleState.PuzzleID))
                     {
-                        solvedPuzzleIDsForTeamT.Add(puzzleState.PuzzleID);
+                        solveCountInGroup++;
                     }
                 }
 
@@ -464,6 +471,21 @@ namespace ServerCore
                     {
                         PuzzleStatePerTeam state = await context.PuzzleStatePerTeam.Where(s => s.PuzzleID == puzzleToUpdate.PuzzleID && s.Team == t).FirstAsync();
                         state.UnlockedTime = unlockTime;
+                    }
+                }
+
+                if (puzzlesInGroup != null)
+                {
+                    foreach (var pair in puzzlesInGroup)
+                    {
+                        if (pair.Value.MinInGroupCount.HasValue &&
+                            solveCountInGroup >= pair.Value.MinInGroupCount.Value &&
+                            !unlockedPuzzleIDsForTeamT.Contains(pair.Key))
+                        {
+                            // enough puzzles unlocked in the same group? Let's unlock it
+                            PuzzleStatePerTeam state = await context.PuzzleStatePerTeam.Where(s => s.PuzzleID == pair.Key && s.Team == t).FirstAsync();
+                            state.UnlockedTime = unlockTime;
+                        }
                     }
                 }
             }

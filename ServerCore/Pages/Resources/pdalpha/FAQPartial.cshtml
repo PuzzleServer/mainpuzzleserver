@@ -1,0 +1,17 @@
+﻿@{
+    var eventPage = Model as ServerCore.ModelBases.EventSpecificPageModel;
+    var Event = eventPage?.Event;
+}
+
+@if (!string.IsNullOrEmpty(Event.FAQContent))
+{
+    @Html.Raw(Event.FAQContent)
+}
+else
+{
+
+    <div class="container">
+        <h2>FAQ for PDAlpha</h2>
+    </div>
+
+}

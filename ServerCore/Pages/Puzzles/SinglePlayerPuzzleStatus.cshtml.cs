@@ -57,7 +57,14 @@ namespace ServerCore.Pages.Puzzles
 
         public async Task<IActionResult> OnGetSolveStateAsync(int puzzleId, int? playerId, bool value, string sort)
         {
-            await SetSolveStateAsync(puzzleId, playerId, value);
+            var puzzle = await _context.Puzzles.FirstAsync(m => m.ID == puzzleId);
+
+            if (puzzle == null)
+            {
+                return NotFound();
+            }
+
+            await SetSolveStateAsync(puzzle, playerId, value);
 
             // redirect without the solve info to keep the URL clean
             return RedirectToPage(new { puzzleId, sort });

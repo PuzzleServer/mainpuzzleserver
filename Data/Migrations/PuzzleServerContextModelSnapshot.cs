@@ -642,6 +642,12 @@ namespace Data.Migrations
                     b.Property<int>("EventId")
                         .HasColumnType("int");
 
+                    b.Property<int>("HintCoinCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HintCoinsUsed")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsRemote")
                         .HasColumnType("bit");
 
@@ -700,6 +706,9 @@ namespace Data.Migrations
                     b.Property<string>("CustomAuthorText")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("CustomCSSFile")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("CustomSolutionURL")
                         .HasColumnType("nvarchar(max)");
 
@@ -749,6 +758,9 @@ namespace Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<int>("MaxAnnotationKey")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MinInGroupCount")
                         .HasColumnType("int");
 
                     b.Property<int>("MinPrerequisiteCount")

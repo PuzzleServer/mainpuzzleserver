@@ -39,6 +39,8 @@ namespace ServerCore.Pages.Puzzles
 
         public bool AllowFeedback { get; set; }
 
+        public bool AnyErrata { get; set; }
+
         public Team Team { get; set; }
 
         public async Task OnGetAsync(
@@ -71,6 +73,7 @@ namespace ServerCore.Pages.Puzzles
 
             VisibleSinglePlayerPuzzleViews = this.GetVisibleSinglePlayerPuzzleViews(singlePlayerPuzzleSort).ToList();
             this.PopulatePuzzleViewsWithFiles(VisibleSinglePlayerPuzzleViews, puzzleFiles, answerFiles);
+            AnyErrata = VisibleSinglePlayerPuzzleViews.Any(v => v.Errata != null);
 
             Team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
             if (Team != null)
@@ -78,6 +81,10 @@ namespace ServerCore.Pages.Puzzles
                 await PuzzleStateHelper.CheckForTimedUnlocksAsync(_context, Event, Team);
                 VisibleTeamPuzzleViews = (await this.GetVisibleTeamPlayerPuzzleViews(teamPuzzleSort, Team)).ToList();
                 this.PopulatePuzzleViewsWithFiles(VisibleTeamPuzzleViews, puzzleFiles, answerFiles);
+                if (!AnyErrata)
+                {
+                    AnyErrata = VisibleTeamPuzzleViews.Any(v => v.Errata != null);
+                }
             }
         }
 
@@ -131,6 +138,12 @@ namespace ServerCore.Pages.Puzzles
 
         private async Task<IEnumerable<PuzzleView>> GetVisibleTeamPlayerPuzzleViews(SortOrder? sortOrder, Team team)
         {
+            // If the event has not yet begun, no puzzles yet
+            if (DateTime.UtcNow < Event.EventBegin && !team.IsDisqualified)
+            {
+                return Enumerable.Empty<PuzzleView>();
+            }
+
             // all puzzles for this event that are real puzzles
             var puzzlesInEventQ = _context.Puzzles.Where(puzzle => puzzle.Event.ID == this.Event.ID && puzzle.IsPuzzle && !puzzle.IsForSinglePlayer);
 
@@ -188,7 +201,7 @@ namespace ServerCore.Pages.Puzzles
             }
 
             IEnumerable<PuzzleView> visibleSinglePlayerPuzzlesQ = singlePlayerPuzzleViewDict.Values.AsEnumerable().Where(puzzleView => ShowAnswers || puzzleView.UnlockedTime != null);
-            visibleSinglePlayerPuzzlesQ = this.GetSortedView(visibleSinglePlayerPuzzlesQ, sortOrder ?? DefaultSort);
+            visibleSinglePlayerPuzzlesQ = this.GetSortedView(visibleSinglePlayerPuzzlesQ, sortOrder);
             if (StateFilter == PuzzleStateFilter.Unsolved)
             {
                 visibleSinglePlayerPuzzlesQ = visibleSinglePlayerPuzzlesQ.Where(puzzles => puzzles.SolvedTime == null);
@@ -199,12 +212,9 @@ namespace ServerCore.Pages.Puzzles
 
         private IEnumerable<PuzzleView> GetSortedView(IEnumerable<PuzzleView> puzzleViews, SortOrder? sortOrder)
         {
-            if (sortOrder == null)
-            {
-                return puzzleViews;
-            }
+            SortOrder actualSortOrder = sortOrder.HasValue ? sortOrder.Value : DefaultSort;
 
-            switch (sortOrder)
+            switch (actualSortOrder)
             {
                 case SortOrder.PuzzleAscending:
                     return puzzleViews.OrderBy(pv => pv.Name);

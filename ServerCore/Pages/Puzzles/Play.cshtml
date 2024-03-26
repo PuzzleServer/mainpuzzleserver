@@ -9,7 +9,7 @@
     ViewData["AuthorRoute"] = "/Puzzles/Index";
 
     bool unsolvedFilter = Model.StateFilter == PlayModel.PuzzleStateFilter.Unsolved;
-    bool canSubmit = DateTime.UtcNow >= Model.Event.EventBegin;
+    bool canSubmit = DateTime.UtcNow >= Model.Event.EventBegin || Model.Team?.IsDisqualified == true;
 }
 <style>
     .radioButton {
@@ -33,7 +33,10 @@
     </div>
 }
 
-<p>Note: Puzzles with a &#x26A0; before the name have errata, which will be provided on that puzzle's answer submission page.</p>
+@if (Model.AnyErrata)
+{
+    <p>Note: Puzzles with a &#x26A0; before the name have errata, which will be provided on that puzzle's answer submission page.</p>
+}
 <div>
     <a asp-page="./Play"
        asp-route-singlePlayerPuzzleSort="@Model.SinglePlayerPuzzleSort"
@@ -130,13 +133,17 @@ else
             @foreach (var item in Model.VisibleTeamPuzzleViews)
             {
                 <tr>
-                    <td>
+                    <td class="puzzle-list-group-customizable">
                         @RawHtmlHelper.Display(item.Group, Model.Event.ID, Html)
                     </td>
-                    <td>
+                    <td class="puzzle-list-title-customizable">
                         @if (!string.IsNullOrWhiteSpace(item.Errata))
                         {
-                            <text>&#x26A0; </text>
+                            <span class="errata-symbol-customizable" title="This puzzle has errata">&#x26A0; </span>
+                        }
+                        @if (item.SolvedTime != null)
+                        {
+                            <span class="solved-symbol-customizable" title="This puzzle has been solved">&#10004; </span>
                         }
 
                         @if (!Model.Event.EmbedPuzzles)
@@ -166,7 +173,7 @@ else
                     </td>
                     @if (Model.ShowAnswers)
                     {
-                        <td>
+                        <td class="puzzle-list-answer-customizable">
                             @if (item.CustomSolutionUrl != null)
                             {
                                 <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.CustomSolutionUrl, item.ID, Model.Event.ID, Model.Team.Password)" target="_blank">View answer</a>
@@ -177,40 +184,36 @@ else
                             }
                         </td>
                     }
-                    <td>
-                        <a asp-page="/Submissions/Index" asp-route-puzzleId="@item.ID">
-                            @if (item.SolvedTime != null)
+                    <td class="puzzle-list-submit-customizable">
+                        @if (canSubmit)
+                        {
+                            @if (Model.Event.EmbedPuzzles)
                             {
-                                <text>Solved on </text>
-
-                                @Html.Raw(Model.LocalTime(item.SolvedTime))
-                            }
-                            else if (canSubmit)
-                            {
-                                @if (Model.Event.EmbedPuzzles)
-                                {
-                                    <text>View</text>
-                                }
-                                else
-                                {
-                                    <text>Submit Answer</text>
-                                }
+                                <a asp-page="/Submissions/Index" asp-route-puzzleId="@item.ID">View Puzzle</a>
                             }
                             else
                             {
-                                <text>Not yet available</text>
+                                <a asp-page="/Submissions/Index" asp-route-puzzleId="@item.ID">Submit Answer</a>
                             }
-                        </a>
+                        }
+                        else
+                        {
+                            <text>Not yet available</text>
+                        }
+                        @if (item.SolvedTime != null)
+                        {
+                            <text> (Solved on </text> @Html.Raw(Model.LocalTime(item.SolvedTime))<text>)</text>
+                        }
                     </td>
                     @if (!Model.Event.HideHints)
                     {
-                        <td>
-                            <a asp-page="./Hints" asp-route-puzzleid="@item.ID" asp-route-teamId="@Model.Team.ID">Hints</a>
+                        <td class="puzzle-list-hints-customizable">
+                            <a asp-page="/Teams/Hints" asp-route-puzzleid="@item.ID" asp-route-teamId="@Model.Team.ID">Hints</a>
                         </td>
                     }
                     @if (Model.AllowFeedback)
                     {
-                        <td>
+                        <td class="puzzle-list-feedback-customizable">
                             <a asp-Page="/Puzzles/SubmitFeedback" asp-route-puzzleid="@item.ID">Submit feedback</a>
                         </td>
                     }
@@ -300,13 +303,17 @@ else
                 @foreach (var item in Model.VisibleSinglePlayerPuzzleViews)
                 {
                     <tr>
-                        <td>
+                        <td class="puzzle-list-group-customizable">
                             @RawHtmlHelper.Display(item.Group, Model.Event.ID, Html)
                         </td>
-                        <td>
+                        <td class="puzzle-list-title-customizable">
                             @if (!string.IsNullOrWhiteSpace(item.Errata))
                             {
-                                <text>&#x26A0; </text>
+                                <span class="errata-symbol-customizable" title="This puzzle has errata">&#x26A0; </span>
+                            }
+                            @if (item.SolvedTime != null)
+                            {
+                                <span class="solved-symbol-customizable" title="This puzzle has been solved">&#10004; </span>
                             }
 
                             @if (!Model.Event.EmbedPuzzles)
@@ -336,7 +343,7 @@ else
                         </td>
                         @if (Model.ShowAnswers)
                         {
-                            <td>
+                            <td class="puzzle-list-answer-customizable">
                                 @if (item.CustomSolutionUrl != null)
                                 {
                                     <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.CustomSolutionUrl, item.ID, Model.Event.ID, teamPassword: null)" target="_blank">View answer</a>
@@ -347,7 +354,7 @@ else
                                 }
                             </td>
                         }
-                        <td>
+                        <td class="puzzle-list-submit-customizable">
                             <a asp-page="/Submissions/Index" asp-route-puzzleId="@item.ID">
                                 @if (item.SolvedTime != null)
                                 {
@@ -372,9 +379,15 @@ else
                                 }
                             </a>
                         </td>
+                        @if (!Model.Event.HideHints)
+                        {
+                            <td class="puzzle-list-hints-customizable">
+                                <a asp-page="/Puzzles/SinglePlayerPuzzleHints" asp-route-puzzleid="@item.ID">Hints</a>
+                            </td>
+                        }
                         @if (Model.AllowFeedback)
                         {
-                            <td>
+                            <td class="puzzle-list-feedback-customizable">
                                 <a asp-Page="/Puzzles/SubmitFeedback" asp-route-puzzleid="@item.ID">Submit feedback</a>
                             </td>
                         }

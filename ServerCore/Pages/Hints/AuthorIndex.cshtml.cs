@@ -19,7 +19,13 @@ namespace ServerCore.Pages.Hints
         {
         }
 
+        public bool ShouldShowTeamHints { get; set; }
+
         public List<HintView> HintViews { get; set; }
+
+        public bool ShouldShowSinglePlayerPuzzleHints { get; set; }
+
+        public List<SinglePlayerPuzzleHintView> SinglePlayerPuzzleHintViews { get; set; }
 
         public Puzzle Puzzle { get; set; }
 
@@ -35,6 +41,8 @@ namespace ServerCore.Pages.Hints
 
             if (puzzleId == null)
             {
+                ShouldShowTeamHints = true;
+                ShouldShowSinglePlayerPuzzleHints = true;
                 if (EventRole == EventRole.admin)
                 {
                     if (teamId == null)
@@ -49,6 +57,10 @@ namespace ServerCore.Pages.Hints
                             .Select(hspt => new HintView { TeamId = hspt.TeamID, TeamName = hspt.Team.Name, PuzzleId = hspt.Hint.Puzzle.ID, PuzzleName = hspt.Hint.Puzzle.Name, Description = hspt.Hint.Description, Cost = hspt.Hint.Cost, UnlockTime = hspt.UnlockTime })
                             .ToListAsync();
                     }
+
+                    SinglePlayerPuzzleHintViews = await _context.SinglePlayerPuzzleHintStatePerPlayer.Where((h) => h.UnlockTime != null && h.Hint.Puzzle.Event == Event)
+                            .Select(hspp => new SinglePlayerPuzzleHintView { PlayerId = hspp.PlayerID, PlayerName = hspp.Player.Name, PuzzleId = hspp.Hint.Puzzle.ID, PuzzleName = hspp.Hint.Puzzle.Name, Description = hspp.Hint.Description, Cost = hspp.Hint.Cost, UnlockTime = hspp.UnlockTime })
+                            .ToListAsync();
                 }
                 else
                 {
@@ -68,6 +80,12 @@ namespace ServerCore.Pages.Hints
                                            select new HintView { TeamId = hspt.TeamID, TeamName = hspt.Team.Name, PuzzleId = hspt.Hint.Puzzle.ID, PuzzleName = hspt.Hint.Puzzle.Name, Description = hspt.Hint.Description, Cost = hspt.Hint.Cost, UnlockTime = hspt.UnlockTime })
                                            .ToListAsync();
                     }
+
+                    SinglePlayerPuzzleHintViews = await (from p in UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser)
+                                                         join hspp in _context.SinglePlayerPuzzleHintStatePerPlayer on p.ID equals hspp.Hint.PuzzleID
+                                                         where hspp.UnlockTime != null
+                                                         select new SinglePlayerPuzzleHintView { PlayerId = hspp.PlayerID, PlayerName = hspp.Player.Name, PuzzleId = hspp.Hint.Puzzle.ID, PuzzleName = hspp.Hint.Puzzle.Name, Description = hspp.Hint.Description, Cost = hspp.Hint.Cost, UnlockTime = hspp.UnlockTime })
+                                                         .ToListAsync();
                 }
             }
             else
@@ -84,17 +102,32 @@ namespace ServerCore.Pages.Hints
                     return Forbid();
                 }
 
-                if (teamId == null)
+
+                ShouldShowSinglePlayerPuzzleHints = Puzzle.IsForSinglePlayer;
+                ShouldShowTeamHints = !ShouldShowSinglePlayerPuzzleHints;
+
+                if (Puzzle.IsForSinglePlayer)
                 {
-                    HintViews = await _context.HintStatePerTeam.Where((h) => h.UnlockTime != null && h.Hint.Puzzle == Puzzle)
-                            .Select(hspt => new HintView { TeamId = hspt.TeamID, TeamName = hspt.Team.Name, PuzzleId = hspt.Hint.Puzzle.ID, PuzzleName = hspt.Hint.Puzzle.Name, Description = hspt.Hint.Description, Cost = hspt.Hint.Cost, UnlockTime = hspt.UnlockTime })
+                    HintViews = new List<HintView>();
+                    SinglePlayerPuzzleHintViews = await _context.SinglePlayerPuzzleHintStatePerPlayer.Where((h) => h.UnlockTime != null && h.Hint.PuzzleID == puzzleId)
+                            .Select(hspp => new SinglePlayerPuzzleHintView { PlayerId = hspp.PlayerID, PlayerName = hspp.Player.Name, PuzzleId = hspp.Hint.Puzzle.ID, PuzzleName = hspp.Hint.Puzzle.Name, Description = hspp.Hint.Description, Cost = hspp.Hint.Cost, UnlockTime = hspp.UnlockTime })
                             .ToListAsync();
                 }
                 else
                 {
-                    HintViews = await _context.HintStatePerTeam.Where((h) => h.UnlockTime != null && h.TeamID == teamId && h.Hint.Puzzle == Puzzle)
-                            .Select(hspt => new HintView { TeamId = hspt.TeamID, TeamName = hspt.Team.Name, PuzzleId = hspt.Hint.Puzzle.ID, PuzzleName = hspt.Hint.Puzzle.Name, Description = hspt.Hint.Description, Cost = hspt.Hint.Cost, UnlockTime = hspt.UnlockTime })
-                            .ToListAsync();
+                    SinglePlayerPuzzleHintViews = new List<SinglePlayerPuzzleHintView>();
+                    if (teamId == null)
+                    {
+                        HintViews = await _context.HintStatePerTeam.Where((h) => h.UnlockTime != null && h.Hint.Puzzle == Puzzle)
+                                .Select(hspt => new HintView { TeamId = hspt.TeamID, TeamName = hspt.Team.Name, PuzzleId = hspt.Hint.Puzzle.ID, PuzzleName = hspt.Hint.Puzzle.Name, Description = hspt.Hint.Description, Cost = hspt.Hint.Cost, UnlockTime = hspt.UnlockTime })
+                                .ToListAsync();
+                    }
+                    else
+                    {
+                        HintViews = await _context.HintStatePerTeam.Where((h) => h.UnlockTime != null && h.TeamID == teamId && h.Hint.Puzzle == Puzzle)
+                                .Select(hspt => new HintView { TeamId = hspt.TeamID, TeamName = hspt.Team.Name, PuzzleId = hspt.Hint.Puzzle.ID, PuzzleName = hspt.Hint.Puzzle.Name, Description = hspt.Hint.Description, Cost = hspt.Hint.Cost, UnlockTime = hspt.UnlockTime })
+                                .ToListAsync();
+                    }
                 }
             }
 
@@ -110,35 +143,45 @@ namespace ServerCore.Pages.Hints
 
             switch (sort ?? DefaultSort)
             {
-                case SortOrder.TeamAscending:
+                case SortOrder.NameAscending:
                     HintViews.Sort((a, b) => a.TeamName.CompareTo(b.TeamName));
+                    SinglePlayerPuzzleHintViews.Sort((a, b) => a.PlayerName.CompareTo(b.PlayerName));
                     break;
-                case SortOrder.TeamDescending:
+                case SortOrder.NameDescending:
                     HintViews.Sort((a, b) => -a.TeamName.CompareTo(b.TeamName));
+                    SinglePlayerPuzzleHintViews.Sort((a, b) => -a.PlayerName.CompareTo(b.PlayerName));
                     break;
                 case SortOrder.PuzzleAscending:
                     HintViews.Sort((a, b) => a.PuzzleName.CompareTo(b.PuzzleName));
+                    SinglePlayerPuzzleHintViews.Sort((a, b) => a.PuzzleName.CompareTo(b.PuzzleName));
                     break;
                 case SortOrder.PuzzleDescending:
                     HintViews.Sort((a, b) => -a.PuzzleName.CompareTo(b.PuzzleName));
+                    SinglePlayerPuzzleHintViews.Sort((a, b) => -a.PuzzleName.CompareTo(b.PuzzleName));
                     break;
                 case SortOrder.DescriptionAscending:
                     HintViews.Sort((a, b) => a.Description.CompareTo(b.Description));
+                    SinglePlayerPuzzleHintViews.Sort((a, b) => a.Description.CompareTo(b.Description));
                     break;
                 case SortOrder.DescriptionDescending:
                     HintViews.Sort((a, b) => -a.Description.CompareTo(b.Description));
+                    SinglePlayerPuzzleHintViews.Sort((a, b) => -a.Description.CompareTo(b.Description));
                     break;
                 case SortOrder.CostAscending:
                     HintViews.Sort((a, b) => a.Cost.CompareTo(b.Cost));
+                    SinglePlayerPuzzleHintViews.Sort((a, b) => a.Cost.CompareTo(b.Cost));
                     break;
                 case SortOrder.CostDescending:
                     HintViews.Sort((a, b) => -a.Cost.CompareTo(b.Cost));
+                    SinglePlayerPuzzleHintViews.Sort((a, b) => -a.Cost.CompareTo(b.Cost));
                     break;
                 case SortOrder.TimeAscending:
                     HintViews.Sort((a, b) => a.UnlockTime.Value.CompareTo(b.UnlockTime.Value));
+                    SinglePlayerPuzzleHintViews.Sort((a, b) => a.UnlockTime.Value.CompareTo(b.UnlockTime.Value));
                     break;
                 case SortOrder.TimeDescending:
                     HintViews.Sort((a, b) => -a.UnlockTime.Value.CompareTo(b.UnlockTime.Value));
+                    SinglePlayerPuzzleHintViews.Sort((a, b) => -a.UnlockTime.Value.CompareTo(b.UnlockTime.Value));
                     break;
             }
 
@@ -162,10 +205,20 @@ namespace ServerCore.Pages.Hints
             return result;
         }
 
-        public class HintView
+        public class HintView : HintViewBase
         {
             public int TeamId { get; set; }
             public string TeamName { get; set; }
+        }
+
+        public class SinglePlayerPuzzleHintView : HintViewBase
+        {
+            public int PlayerId { get; set; }
+            public string PlayerName { get; set; }
+        }
+
+        public class HintViewBase
+        {
             public int PuzzleId { get; set; }
             public string PuzzleName { get; set; }
             public string Description { get; set; }
@@ -175,8 +228,8 @@ namespace ServerCore.Pages.Hints
 
         public enum SortOrder
         {
-            TeamAscending,
-            TeamDescending,
+            NameAscending,
+            NameDescending,
             PuzzleAscending,
             PuzzleDescending,
             DescriptionAscending,

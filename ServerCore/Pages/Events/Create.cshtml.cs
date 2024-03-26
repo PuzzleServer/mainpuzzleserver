@@ -37,6 +37,7 @@ namespace ServerCore.Pages.Events
             Event.AnswerSubmissionEnd= DateTime.UtcNow.AddDays(2);
             Event.AnswersAvailableBegin = DateTime.UtcNow.AddDays(2);
             Event.StandingsAvailableBegin = DateTime.UtcNow.AddDays(2);
+            Event.LunchReportDate = DateTime.UtcNow.AddDays(1);
             Event.LockoutIncorrectGuessLimit = 5;
             Event.LockoutIncorrectGuessPeriod = 15;
             Event.LockoutDurationMultiplier = 2;

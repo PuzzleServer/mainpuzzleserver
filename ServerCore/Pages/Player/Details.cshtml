@@ -8,11 +8,11 @@
 <h2>Details</h2>
 
 <div>
-    <h4>PlayerInEvent</h4>
+    <h4>@Html.DisplayFor(model => model.PlayerInEvent.Player.Name)</h4>
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.PlayerInEvent.Event)
+            Event Name
         </dt>
         <dd>
             @Html.DisplayFor(model => model.PlayerInEvent.Event.Name)
@@ -21,37 +21,37 @@
         @if (Model.Event.AllowsRemote)
         {
             <dt>
-                @Html.DisplayNameFor(model => model.PlayerInEvent.IsRemote)
+                Remote Attendee
             </dt>
             <dd>
                 @Html.DisplayFor(model => model.PlayerInEvent.IsRemote)
-        </dd>
+            </dd>
         }
 
         @if (Model.Event.HasIndividualLunch)
         {
             <dt>
-                @Html.DisplayNameFor(model => model.PlayerInEvent.Lunch)
+                Lunch Option
             </dt>
             <dd>
                 @Html.DisplayFor(model => model.PlayerInEvent.Lunch)
             </dd>
             <dt>
-                @Html.DisplayNameFor(model => model.PlayerInEvent.LunchModifications)
+                Lunch Modifications
             </dt>
             <dd>
                 @Html.DisplayFor(model => model.PlayerInEvent.LunchModifications)
-        </dd>
+            </dd>
         }
 
         @if (Model.Event.HasTShirts)
         {
             <dt>
-                @Html.DisplayNameFor(model => model.PlayerInEvent.ShirtSize)
+                T-Shirt Size
             </dt>
             <dd>
                 @Html.DisplayFor(model => model.PlayerInEvent.ShirtSize)
-        </dd>
+            </dd>
         }
     </dl>
 </div>

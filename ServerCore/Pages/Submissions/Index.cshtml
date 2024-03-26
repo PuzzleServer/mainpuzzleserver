@@ -108,7 +108,7 @@
         align-self: flex-end;
     }
     .flexwrapper img {
-        margin-top: 20px;
+        margin-top: 5px;
     }
     .inlinewrapper {
         display: inline;
@@ -161,6 +161,7 @@
         border: 1px solid;
         border-color: rgb(51, 51, 51);
         background-color: rgba(255,255,255,1);
+        cursor: auto;
     }
     .panelitem {
         padding: 3px;
@@ -172,6 +173,8 @@
     }
     #puzzle-frame {
         width: 100%;
+    }
+    #puzzle-frame.unsized {
         height: 100vh;
     }
     #pdf-frame {
@@ -180,6 +183,41 @@
     }
     #img-frame {
         width: 100%;
+    }
+
+    /* Host-side printing of an embedded puzzle only supports portrait orientation; 
+    puzzle-defined orientation when printing can only be done by clicking the link to print the puzzle file itself */
+    @@media print {
+        .no-print {
+            display: none;
+        }
+        .container {
+            padding: 0px;
+            margin: 0px;
+            width: 8in;
+        }
+        .twocolumn {
+            grid-template-columns: 5.5in 2.5in;
+        }
+        #puzzleNamePrintable {
+            text-transform: uppercase;
+            margin-top: -5px;
+        }
+        #dataConfirmationPrintable {
+            margin-top: 1px;
+            width: 25px;
+            height: 25px;
+        }
+        #puzzleAuthorPrintable {
+            font-size: 16px;
+            margin-top: -0.15in;
+        }
+        iframe {
+            margin: -0.5in -0.25in 0in -0.25in;
+            width: 8in;
+            padding: 0px 25px;
+            object-fit: none;
+        }
     }
 </style>
 
@@ -220,7 +258,7 @@
             </div>
         }
     }
-    else if (DateTime.UtcNow < Model.Event.EventBegin)
+    else if (DateTime.UtcNow < Model.Event.EventBegin && Model.Team?.IsDisqualified != true)
     {
         <div class="col-md-12" style="padding-bottom: 15px;">
             <h3>This event is not yet in session. No submissions will be accepted at this time.</h3>
@@ -350,21 +388,21 @@
                                         {
                                             if (Model.SubmissionViews[i].Submission.FreeformAccepted != null)
                                             {
-                                                @(Model.SubmissionViews[i].FreeformReponse);
+                                                    @(Model.SubmissionViews[i].FreeformReponse);
                                             }
                                             else if (Model.PuzzleState.SolvedTime == null)
                                             {
-                                                <text>Pending...</text>
+                                                    <text>Pending...</text>
                                             }
                                         }
                                         else
                                         {
-                                            <text>@IndexModel.IncorrectResponseText</text>
+                                                <text>@IndexModel.IncorrectResponseText</text>
                                         }
                                     }
                                     else
                                     {
-                                        @ServerCore.Helpers.RawHtmlHelper.Display(response.ResponseText, Model.Event.ID, Html);
+                                            @ServerCore.Helpers.RawHtmlHelper.Display(response.ResponseText, Model.Event.ID, Html);
                                     }
                                 }
                             </td>
@@ -423,26 +461,50 @@
 }
 else
 {
+    string cssFileName = String.IsNullOrEmpty(Model.Puzzle.CustomCSSFile) ? "" : Model.Puzzle.CustomCSSFile.Trim();
+    @if (cssFileName.Length > 0)
+    {
+        cssFileName += (!cssFileName.EndsWith(".css")) ? ".css" : "";
+        cssFileName = cssFileName.Replace('\\', '/');
+        if (cssFileName.Contains('/'))
+        {
+            if (cssFileName.StartsWith(".") && (embedType > 0))
+            {
+                // For relative urls, ASSUME THAT THE RULES DESCRIBED ON THE UPLOAD PAGE HAVE BEEN FOLLOWED
+                // This means that the leading . will be replaced with the puzzleFilePath variable above, minus the puzzle file itself
+                // If the file doesn't start with a ., it's assumed to be a full url that will be used as-is
+                cssFileName = puzzleFilePath.Substring(0, puzzleFilePath.LastIndexOf('/')) + cssFileName.Substring(1);
+            }
+            <link rel="stylesheet" href="@cssFileName" />
+        }
+        else
+        {
+            // Otherwise, assume that bare file names are in the shared resources folder 
+            // (FileStoragePrefix used to account for different urls between development and production)
+            <link rel="stylesheet" href="@(Model.FileStoragePrefix)/resources/@cssFileName" />
+        }
+    }
+
     <div class="twocolumn">
         <div class="flexwrapper">
-            <div><h2><b>@RawHtmlHelper.Display(Model.Puzzle.Name, Model.Event.ID, Html)</b></h2></div>&nbsp;&nbsp;
+            <div><h2 class="puzzle-title-customizable" id="puzzleNamePrintable"><b>@RawHtmlHelper.Display(Model.Puzzle.Name, Model.Event.ID, Html)</b></h2></div>&nbsp;&nbsp;
             @if (Model.Puzzle.HasDataConfirmation)
             {
-                <img src="~/images/DataConfirmationIcon.png" width="30" height="30" style="margin-bottom:3px" title="Reminder: This puzzle supports data confirmation" />
+                <img class="dc-icon-customizable" id="dataConfirmationPrintable" src="~/images/comic-dc.png" width="30" height="30" style="margin-bottom:3px" title="Reminder: This puzzle supports data confirmation" />
             }
         </div>
         <div class="inlinewrapper">
-            <br /><h4>@RawHtmlHelper.Display(Model.PuzzleAuthor, Model.Event.ID, Html)</h4>
+            <br /><h4 class="puzzle-author-customizable" id="puzzleAuthorPrintable">@RawHtmlHelper.Display(Model.PuzzleAuthor, Model.Event.ID, Html)</h4>
         </div>
     </div>
 
     @if (!string.IsNullOrEmpty(Model.Puzzle.Errata))
     {
-        <div><span style="color: red; font-weight:600;">&#x26A0; Errata: </span>@Model.Puzzle.Errata</div>
-        <br />
+        <div class="no-print"><span style="color: red; font-weight:600;">&#x26A0; Errata: </span>@Model.Puzzle.Errata</div>
+        <br class="no-print" />
     }
 
-    <div class="evencolumn">
+    <div class="evencolumn no-print">
         <div class="flexwrapper">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <label for="submissionText" class="marginright margintop">Answer:</label>
@@ -457,7 +519,18 @@ else
             }
         </div>
         <div class="inlinewrapper">
-            @if (!Model.PuzzleState.IsEmailOnlyMode)
+            @if (!Model.Event.HideHints)
+            {
+                if (Model.Puzzle.IsForSinglePlayer)
+                {
+                    <div><b>Need help?</b> <a asp-page="/Puzzles/SinglePlayerPuzzleHints" asp-route-puzzleid="Model.Puzzle.ID" target="_blank">Click this link</a> to access hints for this puzzle.</div>
+                }
+                else
+                {
+                    <div><b>Need help?</b> <a asp-page="/Teams/Hints" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-teamId="@Model.Team.ID" target="_blank">Click this link</a> to access hints for this puzzle.</div>
+                }
+            }
+            else if (!Model.PuzzleState.IsEmailOnlyMode)
             {
                 <div><b>Need help?</b> <a href="@mailtoUrl">Click this link</a> to send an email to the author.</div>
             }
@@ -469,7 +542,17 @@ else
 
             @if (embedType > 2) // HTML files or images
             {
-                <div><b>Want to print?</b> <a href="@puzzleFilePath" target="_blank">Click this link</a> for a printable version. Print in color!</div>
+                string urlSuffix = "";
+                if (puzzleFilePath.Contains('?')) 
+                {
+                    urlSuffix += "&";
+                }
+                else
+                {
+                    urlSuffix += "?";
+                }
+                urlSuffix += "print=true";
+                <div><b>Want to print?</b> <a href="@puzzleFilePath@urlSuffix" target="_blank">Click this link</a> for a printable version. Print in color!</div>
             }
             else if (embedType == 1) // PDFs
             {
@@ -477,8 +560,8 @@ else
             }
         </div>
     </div>
-    <br />
-    <div id="initialMessage">
+    <br class="no-print" />
+    <div id="initialMessage" class="no-print">
         @if (!string.IsNullOrEmpty(Model.AnswerToken))
         {
             <div class="alert alert-success" role="alert">
@@ -493,7 +576,7 @@ else
                 </div>
             }
         }
-        else if (DateTime.UtcNow < Model.Event.EventBegin)
+        else if (DateTime.UtcNow < Model.Event.EventBegin && Model.Team?.IsDisqualified != true)
         {
             <div class="col-md-12" style="padding-bottom: 15px;">
                 <h3>This event is not yet in session. No submissions will be accepted at this time.</h3>
@@ -552,10 +635,10 @@ else
             }
         }
     </div>
-    <div class="centerwrapper">
+    <div class="centerwrapper no-print">
         <div class="inlineblockwrapper">
             <div id="submissionHistory" style="display: @((Model.SubmissionViews.Count == 0) ? "none" : "block")" class="hideablepanel">
-                Click here to view previous submissions:<span class="caret"></span>
+                Click here to view previous submissions: 
                 <div class="panelcontents" style="display: none">
                     <div class="gridwrapper">
                         <div class="panelitem"><b>Time Submitted</b></div>
@@ -577,21 +660,21 @@ else
                                     {
                                         if (Model.SubmissionViews[i].Submission.FreeformAccepted != null)
                                         {
-                                            <div class="panelitem">@(Model.SubmissionViews[i].FreeformReponse)</div>
+                                                <div class="panelitem">@(Model.SubmissionViews[i].FreeformReponse)</div>
                                         }
                                         else if (Model.PuzzleState.SolvedTime == null)
                                         {
-                                            <div class="panelitem">Pending...</div>
+                                                <div class="panelitem">Pending...</div>
                                         }
                                     }
                                     else
                                     {
-                                        <div class="panelitem">@IndexModel.IncorrectResponseText</div>
+                                            <div class="panelitem">@IndexModel.IncorrectResponseText</div>
                                     }
                                 }
                                 else
                                 {
-                                    <div class="panelitem">@ServerCore.Helpers.RawHtmlHelper.Display(response.ResponseText, Model.Event.ID, Html)</div>
+                                        <div class="panelitem">@ServerCore.Helpers.RawHtmlHelper.Display(response.ResponseText, Model.Event.ID, Html)</div>
                                 }
                             }
                         </div>
@@ -613,16 +696,17 @@ else
             <div><b>This puzzle can't be displayed here.</b> <a href="@puzzleFilePath" download>Click this link</a> to download the file.</div>
             break;
         case 3: // HTML
+            string urlSuffix = "";
             if (puzzleFilePath.Contains('?'))
             {
-                puzzleFilePath += "&";
+                urlSuffix += "&";
             }
             else
             {
-                puzzleFilePath += "?";
+                urlSuffix += "?";
             }
-            puzzleFilePath += "embed=true";
-            <iframe id="puzzle-frame" title="@Model.Puzzle.Name" sandbox="allow-same-origin allow-scripts allow-popups" src="@puzzleFilePath"></iframe>
+            urlSuffix += "embed=true";
+            <iframe id="puzzle-frame" class="unsized" title="@Model.Puzzle.Name" sandbox="allow-same-origin allow-scripts allow-popups" src="@puzzleFilePath@urlSuffix"></iframe>
             break;
         case 4: // Images
             <img id="img-frame" src="@puzzleFilePath" alt="An image containing a puzzle" />
@@ -773,7 +857,7 @@ else
                         wrapper.appendChild(time);
                         const name = document.createElement("div");
                         name.classList.add("panelitem");
-                        name.innerText = "@Model.LoggedInUser.Name";
+                        name.innerHTML = "@Model.LoggedInUser.Name";
                         wrapper.appendChild(name);
                         const text = document.createElement("div");
                         text.classList.add("panelitem");
@@ -801,25 +885,49 @@ else
                     }
                 });
 
-                // Resize iframe so the frame has no scrollbars
+                // Resize iframe upon first load so the frame has no scrollbars
                 // By the time the window has loaded, the iframe contents should have as well, thus no iframe load listener
                 // Note that when the puzzle receives the message, it should remove any extraneous wrapping before reporting its size
-                const iframe = document.querySelector("iframe");
+                const iframe = document.querySelector("#puzzle-frame");
+                if ((iframe !== null) && (iframe !== undefined)) {
+                    iframe.contentWindow.postMessage("", "*");
+                }
+            });
+
+            // Resize the frame if the window width changes to maintain no double scrollbars
+            window.addEventListener("resize", (e) => {
+                const iframe = document.querySelector("#puzzle-frame");
                 if ((iframe !== null) && (iframe !== undefined)) {
                     iframe.contentWindow.postMessage("", "*");
                 }
             });
 
             // When the iframe response comes, use it to set the iframe's size
-            // Removing the iframe's id removes the hard-coded css size
-            // The extra 25px added to the size undoes the widths of the scrollbars themselves
+            // The extra 30px added to the size undoes the widths of the scrollbars themselves
+            // Keep the width at 100% by default so internal content can resize if needed
             window.addEventListener("message", (e) => {
                 if ((e.data.width > 0) && (e.data.height > 0)) {
-                    const iframe = document.querySelector("iframe");
-                    iframe.id = ""; 
-                    iframe.width = e.data.width + 25;
-                    iframe.height = e.data.height + 25;
+                    const iframe = document.querySelector("#puzzle-frame");
+                    iframe.classList.remove("unsized");
+                    iframe.height = e.data.height + 30;
                 }
+            });
+
+            // Intercept print calls since printing the embedded page doesn't work well
+            // Instead open the puzzle in a new tab and pop the print dialog automatically
+            // This will unfortunately leave the dialog still open in the parent page
+            window.addEventListener("beforeprint", (e) => {
+                let url = "@puzzleFilePath";
+                let urlSuffix = "";
+                if (url.includes('?')) {
+                    urlSuffix += "&";
+                }
+                else {
+                    urlSuffix += "?";
+                }
+                urlSuffix += "print=true";
+                url += urlSuffix;
+                window.open(url, "_blank");
             });
         </script>
     }

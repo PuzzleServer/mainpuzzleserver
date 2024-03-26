@@ -61,6 +61,16 @@ namespace ServerCore
             {
                 options.Conventions.AuthorizeFolder("/Pages");
                 options.Conventions.AuthorizeFolder("/ModelBases");
+            }).AddViewOptions(options =>
+            {
+                if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == Environments.Development)
+                {
+                    // Disables javascript validation of all fields when running in Development
+                    // Primary use case is to work around a bug in the current url validation used by jquery
+                    // Said bug causes false-positives with urls that are on localhost
+                    // Those are usually used when setting the custom url field of a puzzle to a storage emulator link
+                    options.HtmlHelperOptions.ClientValidationEnabled = false;
+                }
             });
 
             services.AddServerSideBlazor();
