@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using NuGet.Packaging;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
 using ServerCore.ModelBases;
@@ -63,7 +64,12 @@ namespace ServerCore.Pages.Threads
                 return NotFound();
             }
 
-            Team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
+            bool isFromGameControl = EventRole == EventRole.author || EventRole == EventRole.admin;
+            if (!isFromGameControl)
+            {
+                Team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
+            }
+
             Messages = this._context.Messages
                 .Where(message => message.PuzzleID.Value == puzzleId && message.TeamID.Value == Team.ID)
                 .ToList();
@@ -84,8 +90,8 @@ namespace ServerCore.Pages.Threads
                 Event = Event,
                 Subject = subject,
                 PuzzleID = this.Puzzle.ID,
-                TeamID = this.Team.ID,
-                IsFromGameControl = EventRole == EventRole.author || EventRole == EventRole.admin,
+                TeamID = this.Team?.ID,
+                IsFromGameControl = isFromGameControl,
                 SenderID = LoggedInUser.ID,
                 Sender = LoggedInUser,
             };
@@ -144,6 +150,8 @@ namespace ServerCore.Pages.Threads
                 transaction.Commit();
             }
 
+            this.SendEmailNotifications(m, puzzle);
+
             return await this.OnGetAsync(m.PuzzleID);
         }
 
@@ -159,11 +167,90 @@ namespace ServerCore.Pages.Threads
             return await this.OnGetAsync(puzzleId);
         }
 
-        private bool IsAllowedToDeleteMessage(Message message)
+        public async Task<IActionResult> OnPostClaimThreadAsync(int messageId, int puzzleId)
+        {
+            var message = await _context.Messages.Where(m => m.ID == messageId).FirstOrDefaultAsync();
+            if (message != null && IsAllowedToClaimMessage())
+            {
+                message.IsClaimed = true;
+                message.ClaimerID = LoggedInUser.ID;
+                message.Claimer = LoggedInUser;
+                _context.Messages.Update(message);
+                await _context.SaveChangesAsync();
+            }
+
+            return await this.OnGetAsync(puzzleId);
+        }
+
+        public async Task<IActionResult> OnPostUnclaimThreadAsync(int messageId, int puzzleId)
+        {
+            var message = await _context.Messages.Where(m => m.ID == messageId).FirstOrDefaultAsync();
+            if (message != null && IsAllowedToClaimMessage())
+            {
+                message.IsClaimed = false;
+                message.ClaimerID = null;
+                message.Claimer = null;
+                _context.Messages.Update(message);
+                await _context.SaveChangesAsync();
+            }
+
+            return await this.OnGetAsync(puzzleId);
+        }
+
+        public bool IsAllowedToClaimMessage()
+        {
+            return EventRole == EventRole.admin
+                || EventRole == EventRole.author;
+        }
+
+        public bool IsAllowedToDeleteMessage(Message message)
         {
             return EventRole == EventRole.admin
                 || EventRole == EventRole.author
                 || message.SenderID == LoggedInUser.ID;
+        }
+
+        private void SendEmailNotifications(Message newMessage, Puzzle puzzle)
+        {
+            // Send a notification email to further alert both authors and players.
+            var recipients = new HashSet<string>();
+
+            if (newMessage.IsFromGameControl)
+            {
+                // Send notification to team if message from game control.
+                Message messageFromPlayer = _context.Messages.Where(message => message.ThreadId == newMessage.ThreadId && !message.IsFromGameControl).FirstOrDefault();
+                if (messageFromPlayer != null)
+                {
+                    if (puzzle.IsForSinglePlayer)
+                    {
+                        recipients.Add(messageFromPlayer.Sender.Email);
+                    }
+                    else if (messageFromPlayer.TeamID != null)
+                    {
+                        recipients.AddRange(_context.TeamMembers
+                            .Where(teamMember => teamMember.Team.ID == messageFromPlayer.TeamID)
+                            .Select(teamMember => teamMember.Member.Email));
+                    }
+                }
+            }
+            else
+            {
+                // Send notification to authors and any game control person on the thread if message from player.
+                recipients.AddRange(_context.PuzzleAuthors
+                    .Where(pa => pa.Puzzle.ID == puzzle.ID)
+                    .Select(pa => pa.Author.Email));
+
+                recipients.AddRange(_context.Messages
+                    .Where(message => message.ThreadId == newMessage.ThreadId && message.IsFromGameControl)
+                    .Select(message => message.Sender.Email));
+            }
+
+            if (recipients.Any())
+            {
+                MailHelper.Singleton.SendPlaintextWithoutBcc(recipients,
+                    $"{newMessage.Subject} thread update!",
+                    "You have an update on your help message thread.");
+            }
         }
     }
 }

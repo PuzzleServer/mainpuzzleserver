@@ -1,4 +1,5 @@
 ﻿@page "/{eventId}/{eventRole}/Threads/PuzzleThread/{puzzleId}"
+@using ServerCore.DataModel
 @model ServerCore.Pages.Threads.PuzzleThreadModel
 
 @{
@@ -13,11 +14,11 @@
 <div>
     @if (Model.EventRole == ServerCore.ModelBases.EventRole.play)
     {
-        <a asp-page="/Puzzles/Play">Back to puzzle list</a>
+        <a asp-page="/Submissions/Index" asp-route-puzzleId="@Model.Puzzle.ID">Back to puzzle</a>
     }
     else
     {
-        <a asp-page="/Puzzles/Index">Back to puzzle list</a>
+        <a asp-page="/Threads/PuzzleThreads">Back to thread list</a>
     }
 </div>
 
@@ -49,9 +50,9 @@
         }
         <p>[@Html.Raw(Model.LocalTime(@message.DateTimeInUtc))] @senderName</p>
         <p>@message.Text</p>
-        @if (message.SenderID == Model.LoggedInUser.ID || Model.EventRole == ServerCore.ModelBases.EventRole.admin || Model.EventRole == ServerCore.ModelBases.EventRole.author)
+        @if (Model.IsAllowedToDeleteMessage(message))
         {
-            <a asp-page-handler="DeleteMessage" asp-route-messageId="@message.ID" asp-route-puzzleId="@message.PuzzleID">Delete</a>
+            <a asp-page-handler="DeleteMessage" asp-route-messageId="@message.ID" asp-route-puzzleId="@message.PuzzleID" onclick="return confirm('Are you sure you want to delete this message?')">Delete</a>
         }
     </div>
     shouldMakeDark = !shouldMakeDark;
@@ -78,6 +79,23 @@
         </form>
     </div>
 </div>
+@if (Model.IsAllowedToClaimMessage() && Model.Messages.Count > 0)
+{
+    Message lastMessage = Model.Messages.Last();
+    <form method="post">
+        @if (lastMessage.IsClaimed)
+        {
+            <br/>
+            <p>Question has already been claimed by @lastMessage.Claimer.Name</p>
+            <button type="submit" asp-page-handler="UnclaimThread" asp-route-messageId="@lastMessage.ID" asp-route-puzzleId="@lastMessage.PuzzleID">Unclaim question</button>
+        }
+        else
+        {
+            <br />
+            <button type="submit" asp-page-handler="ClaimThread" asp-route-messageId="@lastMessage.ID" asp-route-puzzleId="@lastMessage.PuzzleID">Claim question</button>
+        }
+    </form>
+}
 
 @section Scripts {
     @{
