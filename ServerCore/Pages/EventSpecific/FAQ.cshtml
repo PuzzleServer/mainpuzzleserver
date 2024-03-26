@@ -38,6 +38,14 @@ else
             if ((iframe !== null) && (iframe !== undefined)) {
                 iframe.contentWindow.postMessage("", "*");
             }
+            setTimeout(() => {
+                const iframe = document.querySelector("#faq-frame");
+                if ((iframe !== null) && (iframe !== undefined)) {
+                    if (iframe.classList.contains("unsized")) {
+                        iframe.style.display = "none";
+                    }
+                }
+            }, "1000");
         });
         window.addEventListener("resize", (e) => {
             const iframe = document.querySelector("#faq-frame");

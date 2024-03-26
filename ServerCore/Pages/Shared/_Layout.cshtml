@@ -74,18 +74,16 @@
 
     @{
         // Keep the old path for events prior to 2024 so they aren't broken
-        // For all future events, resources global to all pages for an event should be uploaded to the shared event resources page
-        // Note that the link for development may be different on your machine
-        if ((ev?.HomePartial != null) && ((ev.HomePartial.StartsWith("pd")) || (ev.HomePartial.StartsWith("nipd"))))
+        if ((ev?.HomePartial != null) && ((ev.HomePartial.StartsWith("pd")) || (ev.HomePartial.StartsWith("nipd"))) && (ev.EventBegin.Year < 2024))
         {
-            if (ev.EventBegin.Year < 2024)
-            {
-                <link rel="stylesheet" href="~/css/@(ev.HomePartial)/styles.min.css" />
-            }
-            else
-            {
-                <link rel="stylesheet" href="@(fileStoragePrefix)/resources/global-styles.css" />
-            }
+            <link rel="stylesheet" href="~/css/@(ev.HomePartial)/styles.min.css" />
+        }
+
+        // For all future events, resources global to all pages for an event should be uploaded to the shared event resources page
+        // (FileStoragePrefix used to account for different urls between development and production)
+        if (ev?.EventBegin.Year >= 2024)
+        {
+            <link rel="stylesheet" href="@(fileStoragePrefix)/resources/global-styles.css" />
         }
     }
 
