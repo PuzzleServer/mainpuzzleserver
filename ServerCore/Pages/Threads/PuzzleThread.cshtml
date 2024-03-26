@@ -1,0 +1,86 @@
+﻿@page "/{eventId}/{eventRole}/Threads/PuzzleThread/{puzzleId}"
+@model ServerCore.Pages.Threads.PuzzleThreadModel
+
+@{
+    ViewData["Title"] = "Puzzle thread";
+    ViewData["AdminRoute"] = "/Threads/PuzzleThread";
+    ViewData["AuthorRoute"] = "/Threads/PuzzleThread";
+    ViewData["PlayRoute"] = "/Threads/PuzzleThread";
+    ViewData["RoutingPuzzleId"] = ViewContext.RouteData.Values["puzzleId"];
+}
+
+<h2>Help thread</h2>
+<div>
+    @if (Model.EventRole == ServerCore.ModelBases.EventRole.play)
+    {
+        <a asp-page="/Puzzles/Play">Back to puzzle list</a>
+    }
+    else
+    {
+        <a asp-page="/Puzzles/Index">Back to puzzle list</a>
+    }
+</div>
+
+<h4>Thread for puzzle @Model.Puzzle.Name</h4>
+<hr />
+@{
+    bool shouldMakeDark = false;
+}
+@foreach (var message in Model.Messages)
+{
+    string classString = "message-container";
+    if (shouldMakeDark) {
+        classString += " message-darker";
+    }
+
+    if (message.IsFromGameControl) {
+        classString += " message-game-control";
+    }
+
+    <div class="@classString">
+        @{
+            string senderName = message.Sender.Name;
+            @if (message.IsFromGameControl)
+            {
+                senderName = Model.EventRole == ServerCore.ModelBases.EventRole.play
+                ? "Game control"
+                : $"Game control ({message.Sender.Name})";
+            }
+        }
+        <p>[@Html.Raw(Model.LocalTime(@message.DateTimeInUtc))] @senderName</p>
+        <p>@message.Text</p>
+        @if (message.SenderID == Model.LoggedInUser.ID || Model.EventRole == ServerCore.ModelBases.EventRole.admin || Model.EventRole == ServerCore.ModelBases.EventRole.author)
+        {
+            <a asp-page-handler="DeleteMessage" asp-route-messageId="@message.ID" asp-route-puzzleId="@message.PuzzleID">Delete</a>
+        }
+    </div>
+    shouldMakeDark = !shouldMakeDark;
+}
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="NewMessage.Text" class="control-label"></label>
+                <input asp-for="NewMessage.Text" class="form-control" placeholder="Type message here" value="" />
+                <span asp-validation-for="NewMessage.Text" class="text-danger"></span>
+                <input type="hidden" asp-for="NewMessage.ThreadId" value="@Model.NewMessage.ThreadId" />
+                <input type="hidden" asp-for="NewMessage.EventID" value="@Model.NewMessage.EventID" />
+                <input type="hidden" asp-for="NewMessage.Subject" value="@Model.NewMessage.Subject" />
+                <input type="hidden" asp-for="NewMessage.PuzzleID" value="@Model.NewMessage.PuzzleID" />
+                <input type="hidden" asp-for="NewMessage.TeamID" value="@Model.NewMessage.TeamID" />
+                <input type="hidden" asp-for="NewMessage.IsFromGameControl" value="@Model.NewMessage.IsFromGameControl" />
+                <input type="hidden" asp-for="NewMessage.SenderID" value="@Model.NewMessage.SenderID" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Send" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

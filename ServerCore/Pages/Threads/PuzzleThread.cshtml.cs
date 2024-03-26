@@ -14,9 +14,11 @@ using ServerCore.ModelBases;
 namespace ServerCore.Pages.Threads
 {
     [AllowAnonymous]
-    public class ThreadModel : EventSpecificPageModel
+    public class PuzzleThreadModel : EventSpecificPageModel
     {
-        public ThreadModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
+        public const int MessageCharacterLimit = 3000;
+
+        public PuzzleThreadModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
         }
 
@@ -34,11 +36,6 @@ namespace ServerCore.Pages.Threads
         public Team Team { get; set; }
 
         /// <summary>
-        /// Gets or sets the puzzle id.
-        /// </summary>
-        public int PuzzleId { get; set; }
-
-        /// <summary>
         /// Gets or sets the team.
         /// </summary>
         public Puzzle Puzzle { get; set; }
@@ -50,18 +47,22 @@ namespace ServerCore.Pages.Threads
 
         public async Task<IActionResult> OnGetAsync(int? puzzleId)
         {
+            if (LoggedInUser == null)
+            {
+                return Challenge();
+            }
+
             if (!puzzleId.HasValue)
             {
-                throw new ArgumentException("Missing puzzle id.");
+                return NotFound();
             }
 
             Puzzle = await _context.Puzzles.Where(m => m.ID == puzzleId).FirstOrDefaultAsync();
             if (Puzzle == null)
             {
-                throw new ArgumentException("Not a valid puzzle.");
+                return NotFound();
             }
 
-            PuzzleId = Puzzle.ID;
             Team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
             Messages = this._context.Messages
                 .Where(message => message.PuzzleID.Value == puzzleId && message.TeamID.Value == Team.ID)
@@ -94,15 +95,24 @@ namespace ServerCore.Pages.Threads
 
         public async Task<IActionResult> OnPostAsync()
         {
+            if (string.IsNullOrWhiteSpace(NewMessage.Text))
+            {
+                ModelState.AddModelError("NewMessage.Text", "Your message cannot be empty.");
+            }
+            else if (NewMessage.Text.Length > MessageCharacterLimit)
+            {
+                ModelState.AddModelError("NewMessage.Text", "Your message should not be longer than 3000 characters.");
+            }
+
             if (!ModelState.IsValid)
             {
-                return await this.OnGetAsync(PuzzleId);
+                return await this.OnGetAsync(NewMessage.PuzzleID);
             }
 
             var puzzle = await _context.Puzzles.Where(m => m.ID == NewMessage.PuzzleID).FirstOrDefaultAsync();
             if (puzzle == null)
             {
-                return Page();
+                return RedirectToPage("/Index");
             }
 
             Message m = new Message();
@@ -139,9 +149,21 @@ namespace ServerCore.Pages.Threads
 
         public async Task<IActionResult> OnGetDeleteMessageAsync(int messageId, int puzzleId)
         {
-            _context.Messages.Where(m => m.ID == messageId).ExecuteDelete();
+            var message = await _context.Messages.Where(m => m.ID == messageId).FirstOrDefaultAsync();
+            if (message != null && IsAllowedToDeleteMessage(message))
+            {
+                _context.Messages.Remove(message);
+                await _context.SaveChangesAsync();
+            }
 
             return await this.OnGetAsync(puzzleId);
+        }
+
+        private bool IsAllowedToDeleteMessage(Message message)
+        {
+            return EventRole == EventRole.admin
+                || EventRole == EventRole.author
+                || message.SenderID == LoggedInUser.ID;
         }
     }
 }
