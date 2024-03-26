@@ -62,7 +62,7 @@
         var evBase = Model as ServerCore.ModelBases.EventSpecificPageModel;
         if (evBase != null)
         {
-            fileStoragePrefix = await evBase.GetFileStoragePrefix();
+            fileStoragePrefix = evBase.GetFileStoragePrefix();
         }
     }
 

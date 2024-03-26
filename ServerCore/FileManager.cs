@@ -151,9 +151,10 @@ namespace ServerCore
         /// Gets the url that that all file storage for this event lives at
         /// </summary>
         /// <returns>The url as a string</returns>
-        public static async Task<string> GetFileStoragePrefix(int eventId, string puzzleDirectoryName) {
-            CloudBlobDirectory fileStorage = await FileManager.GetPuzzleDirectoryAsync(eventId, puzzleDirectoryName);
-            return fileStorage.Uri.AbsoluteUri;
+        public static string GetFileStoragePrefix(int eventId, string puzzleDirectoryName) {
+            CloudBlobClient blobClient = StorageAccount.CreateCloudBlobClient();
+            CloudBlobContainer eventContainer = blobClient.GetContainerReference($"evt{eventId}");
+            return eventContainer.Uri.AbsoluteUri;
         }
 
         /// <summary>
