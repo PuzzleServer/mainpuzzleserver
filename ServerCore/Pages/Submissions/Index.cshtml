@@ -416,6 +416,7 @@
     @if (!Model.PuzzleState.IsEmailOnlyMode)
     {
         <h3>Need some help?</h3>
+        <p><a asp-Page="/Threads/Thread" asp-route-puzzleid="@Model.Puzzle.ID">Click this link</a> to ask for help.</p>
         <p>While solving this puzzle, if you've run into a bug, think there's an error, or are not having fun anymore, <a href="@mailtoUrl">use this link to contact the author for @Model.Puzzle.PlaintextName</a>!</p>
         <p>A pre-populated email form will appear and you should add details to the message body. Remember: the author may only know specifics about this puzzle and not others in the event.</p>
     }
