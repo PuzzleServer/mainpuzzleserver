@@ -130,6 +130,9 @@ namespace ServerCore.Pages.Puzzles
                                                       join PuzzleStatePerTeam pspt in _context.PuzzleStatePerTeam on tm.Team equals pspt.Team
                                                       where pspt.PuzzleID == Puzzle.ID && pspt.UnlockedTime != null
                                                       select tm.Member.Email).ToListAsync();
+                    List<Team> teams = await (from PuzzleStatePerTeam pspt in _context.PuzzleStatePerTeam
+                                                      where pspt.PuzzleID == Puzzle.ID && pspt.UnlockedTime != null
+                                                      select pspt.Team).ToListAsync();
 
                     string subject, body;
                     string puzzleName = Puzzle.PlaintextName;
@@ -146,6 +149,10 @@ namespace ServerCore.Pages.Puzzles
                     }
 
                     MailHelper.Singleton.SendPlaintextBcc(teamMembers, subject, body);
+                    foreach (Team team in teams)
+                    {
+                        NotificationHelper.SendNotification(team, subject, body);
+                    }
                 }
             }
             catch (DbUpdateConcurrencyException)

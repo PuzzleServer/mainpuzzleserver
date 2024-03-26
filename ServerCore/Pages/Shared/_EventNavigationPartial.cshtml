@@ -319,3 +319,14 @@
     </nav>
 }
 <!--UNREGISTERED PLAYER NAV BAR END-->
+
+@if (Event?.AllowBlazor == true)
+{
+    <script>
+        window.displayNotification = (title, content) => {
+            window.alert(`${title}: ${content}`);
+        };
+    </script>
+
+    <component type="typeof(ServerCore.Components.NotificationComponent)" render-mode="ServerPrerendered" param-EventID="@Event?.ID" param-TeamID="@teamId" param-PlayerID="@playerEventId" />
+}

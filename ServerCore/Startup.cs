@@ -23,6 +23,7 @@ namespace ServerCore
             _hostEnv = env;
             Configuration = configuration;
             MailHelper.Initialize(Configuration, env.IsDevelopment());
+            NotificationHelper.Initialize(Configuration, env.IsDevelopment());
         }
 
         public Startup(IWebHostEnvironment env)
@@ -35,6 +36,7 @@ namespace ServerCore
                 .AddEnvironmentVariables();
             Configuration = configBuilder.Build();
             MailHelper.Initialize(Configuration, env.IsDevelopment());
+            NotificationHelper.Initialize(Configuration, env.IsDevelopment());
         }
 
         public IConfiguration Configuration { get; }
