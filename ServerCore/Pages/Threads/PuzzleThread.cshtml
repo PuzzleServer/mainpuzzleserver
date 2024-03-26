@@ -62,7 +62,7 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="NewMessage.Text" class="control-label"></label>
-                <input asp-for="NewMessage.Text" class="form-control" placeholder="Type message here" value="" />
+                <textarea asp-for="NewMessage.Text" class="form-control" rows="4" placeholder="Type message here" value="" autocomplete="off"></textarea>
                 <span asp-validation-for="NewMessage.Text" class="text-danger"></span>
                 <input type="hidden" asp-for="NewMessage.ThreadId" value="@Model.NewMessage.ThreadId" />
                 <input type="hidden" asp-for="NewMessage.EventID" value="@Model.NewMessage.EventID" />
