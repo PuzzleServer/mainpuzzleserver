@@ -627,6 +627,9 @@ namespace Data.Migrations
                     b.Property<bool>("IsFromGameControl")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("PlayerID")
+                        .HasColumnType("int");
+
                     b.Property<int?>("PuzzleID")
                         .HasColumnType("int");
 
@@ -650,6 +653,8 @@ namespace Data.Migrations
                     b.HasIndex("ClaimerID");
 
                     b.HasIndex("EventID");
+
+                    b.HasIndex("PlayerID");
 
                     b.HasIndex("PuzzleID");
 
@@ -1555,6 +1560,11 @@ namespace Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Player")
+                        .WithMany()
+                        .HasForeignKey("PlayerID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
                         .WithMany()
                         .HasForeignKey("PuzzleID")
@@ -1574,6 +1584,8 @@ namespace Data.Migrations
                     b.Navigation("Claimer");
 
                     b.Navigation("Event");
+
+                    b.Navigation("Player");
 
                     b.Navigation("Puzzle");
 

@@ -85,6 +85,7 @@ namespace ServerCore.DataModel
             modelBuilder.Entity<Message>().HasIndex(message => message.PuzzleID);
             modelBuilder.Entity<Message>().HasIndex(message => message.SenderID);
             modelBuilder.Entity<Message>().HasIndex(message => message.TeamID);
+            modelBuilder.Entity<Message>().HasIndex(message => message.PlayerID);
 
             // SQL doesn't allow multiple cacasding delete paths from one entity to another, so cut links that cause those
             // For more info, see https://learn.microsoft.com/en-us/ef/core/saving/cascade-delete
@@ -100,6 +101,7 @@ namespace ServerCore.DataModel
             modelBuilder.Entity<Message>().HasOne(message => message.Puzzle).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Message>().HasOne(message => message.Sender).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Message>().HasOne(message => message.Team).WithMany().OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Message>().HasOne(message => message.Player).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Message>().HasOne(message => message.Claimer).WithMany().OnDelete(DeleteBehavior.SetNull);
 
             base.OnModelCreating(modelBuilder);
