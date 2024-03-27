@@ -2,20 +2,15 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using ServerCore.Areas.Deployment;
+using ServerCore.Areas.Identity;
 using ServerCore.Areas.Identity.UserAuthorizationPolicy;
 using ServerCore.DataModel;
-using ServerCore.Areas.Identity;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Azure;
-using Azure.Storage.Queues;
-using Azure.Storage.Blobs;
-using Azure.Core.Extensions;
+using ServerCore.ServerMessages;
 
 namespace ServerCore
 {
@@ -126,6 +121,30 @@ namespace ServerCore
             services.AddScoped<IAuthorizationHandler, IsRegisteredForEventHandler_Player>();
             services.AddScoped<BackgroundFileUploader>();
             services.AddScoped<AuthorizationHelper>();
+
+            var signalRBuilder = services.AddSignalR();
+
+            // Azure SignalR free tier only allows 20 connections and each of the SignalR Hub and Blazor default to 5 connections per frontend.
+            // This is too small to be practical, so rely on a setting to decide whether to use it.
+            bool useAzureSignalR = Configuration.GetValue<bool>("UseAzureSignalR");
+            if (useAzureSignalR)
+            {
+                // This automatically reads the connection string from the "Azure:SignalR:ConnectionString" setting.
+                // To use this locally, add a connection string to your User Secrets file.
+                signalRBuilder.AddAzureSignalR(options =>
+                {
+                    // Ensure Blazor connections get back to the frontend they initially connected to
+                    options.ServerStickyMode = Microsoft.Azure.SignalR.ServerStickyMode.Required;
+
+                    // Lowered for local debugging to not run out of connections on free tier
+                    if (_hostEnv.IsDevelopment())
+                    {
+                        options.InitialHubServerConnectionCount = 1;
+                    }
+                });
+            }
+            services.AddSingleton<ServerMessageListener>();
+            services.AddSingleton<PresenceStore>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -176,6 +195,7 @@ namespace ServerCore
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapBlazorHub();
+                endpoints.MapHub<ServerMessageHub>("/serverMessage");
             });
 
             app.UseMvc();
