@@ -42,7 +42,12 @@ namespace ServerCore.DataModel
         /// <summary>
         /// Gets or sets the date time (in UTC) of when the message was sent.
         /// </summary>
-        public DateTime DateTimeInUtc { get; set; }
+        public DateTime CreatedDateTimeInUtc { get; set; }
+
+        /// <summary>
+        /// Gets or sets the date time (in UTC) of when the message was modified.
+        /// </summary>
+        public DateTime ModifiedDateTimeInUtc { get; set; }
 
         /// <summary>
         /// Gets or sets the actual message text.
@@ -90,11 +95,6 @@ namespace ServerCore.DataModel
         /// This is mainly used for messages associated with a player rather than a team (e.g. SinglePlayerPuzzles).
         /// </summary>
         public virtual PuzzleUser Player { get; set; }
-
-        /// <summary>
-        /// Gets or sets the value indicating whether the message has been claimed by someone in Game Control.
-        /// </summary>
-        public bool IsClaimed { get; set; }
 
         /// <summary>
         /// Gets or sets the id of the user that claimed the message.

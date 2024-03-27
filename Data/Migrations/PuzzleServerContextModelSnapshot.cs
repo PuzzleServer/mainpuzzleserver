@@ -615,17 +615,17 @@ namespace Data.Migrations
                     b.Property<int?>("ClaimerID")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("DateTimeInUtc")
+                    b.Property<DateTime>("CreatedDateTimeInUtc")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("EventID")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsClaimed")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsFromGameControl")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime>("ModifiedDateTimeInUtc")
+                        .HasColumnType("datetime2");
 
                     b.Property<int?>("PlayerID")
                         .HasColumnType("int");
