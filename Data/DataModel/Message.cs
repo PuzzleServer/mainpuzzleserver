@@ -70,14 +70,26 @@ namespace ServerCore.DataModel
         public virtual Puzzle Puzzle { get; set; }
 
         /// <summary>
-        /// Gets or sets the team id.
+        /// Gets or sets the team id of the team associated with the message.
         /// </summary>
         public int? TeamID { get; set; }
 
         /// <summary>
-        /// Gets or sets the team.
+        /// Gets or sets the team associated with the message.
         /// </summary>
         public virtual Team Team { get; set; }
+
+        /// <summary>
+        /// Gets or sets the player associated with the message.
+        /// This is mainly used for messages associated with a player rather than a team (e.g. SinglePlayerPuzzles).
+        /// </summary>
+        public int? PlayerID { get; set; }
+
+        /// <summary>
+        /// Gets or sets the player associated with the message.
+        /// This is mainly used for messages associated with a player rather than a team (e.g. SinglePlayerPuzzles).
+        /// </summary>
+        public virtual PuzzleUser Player { get; set; }
 
         /// <summary>
         /// Gets or sets the value indicating whether the message has been claimed by someone in Game Control.

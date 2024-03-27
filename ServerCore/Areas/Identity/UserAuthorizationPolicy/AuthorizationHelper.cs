@@ -193,6 +193,8 @@ namespace ServerCore.Areas.Identity
         public async Task PlayerCanSeePuzzleCheck(AuthorizationHandlerContext authContext, IAuthorizationRequirement requirement)
         {
             PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
+            if (puzzleUser == null) { return; }
+
             Puzzle puzzle = await GetPuzzleFromRoute();
             Event thisEvent = await GetEventFromRoute();
 

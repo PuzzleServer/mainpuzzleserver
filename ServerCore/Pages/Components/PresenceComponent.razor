@@ -1,0 +1,17 @@
+﻿@using Microsoft.AspNetCore.SignalR
+@using Microsoft.Extensions.Caching.Memory
+@using ServerCore;
+@using ServerCore.ServerMessages
+
+@inject ServerMessageListener MessageListener
+@inject IHubContext<ServerMessageHub> MessageHub
+@inject DataModel.PuzzleServerContext PuzzleServerContext
+@inject IMemoryCache MemoryCache
+@inject PresenceStore PresenceStore
+
+<div>
+    <span>
+        <b>Who&apos;s Here: </b>
+        @string.Join(" | ", PresentUsers.Select(u => u.Name))
+    </span>
+</div>

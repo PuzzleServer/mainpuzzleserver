@@ -106,6 +106,18 @@
     @if (Event != null && Event.AllowBlazor)
     {
         <script src="_framework/blazor.server.js"></script>
+        <script>
+            var lockResolver;
+            if (navigator && navigator.locks && navigator.locks.request) {
+                const promise = new Promise((res) => {
+                    lockResolver = res;
+                });
+
+                navigator.locks.request('browserSleepLock', { mode: "shared" }, () => {
+                    return promise;
+                });
+            }
+        </script>
     }
 
     @RenderSection("Scripts", required: false)

@@ -557,6 +557,13 @@ else
             {
                 <div><b>Want to print?</b> <a href="@puzzleFilePath" download>Click this link</a> to download the file. Print in color!</div>
             }
+
+            @if (!Model.IsPuzzleForSinglePlayer && Model.Event.AllowBlazor)
+            {
+                <div>
+                    <component type="typeof(ServerCore.Pages.Components.PresenceComponent)" render-mode="Server" param-PuzzleUserId="@Model.LoggedInUser.ID" param-TeamId="@Model.Team.ID" param-PuzzleId="@Model.Puzzle.ID" />
+                </div>
+            }
         </div>
     </div>
     <br class="no-print" />
