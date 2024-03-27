@@ -42,7 +42,12 @@ namespace ServerCore.DataModel
         /// <summary>
         /// Gets or sets the date time (in UTC) of when the message was sent.
         /// </summary>
-        public DateTime DateTimeInUtc { get; set; }
+        public DateTime CreatedDateTimeInUtc { get; set; }
+
+        /// <summary>
+        /// Gets or sets the date time (in UTC) of when the message was modified.
+        /// </summary>
+        public DateTime ModifiedDateTimeInUtc { get; set; }
 
         /// <summary>
         /// Gets or sets the actual message text.
