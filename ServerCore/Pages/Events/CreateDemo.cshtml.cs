@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using ServerCore.DataModel;
+using ServerCore.Helpers;
 
 namespace ServerCore.Pages.Events
 {
@@ -16,6 +17,7 @@ namespace ServerCore.Pages.Events
     {
         private readonly PuzzleServerContext _context;
         private readonly UserManager<IdentityUser> _userManager;
+        const string SharedResourceDirectoryName = "resources";
 
         [BindProperty]
         public Event Event { get; set; }
@@ -25,6 +27,9 @@ namespace ServerCore.Pages.Events
 
         [BindProperty]
         public bool AddCreatorToLoneWolfTeam { get; set; }
+
+        [BindProperty]
+        public bool AddSkeletonContentFiles { get; set; }
 
         public CreateDemoModel(PuzzleServerContext context, UserManager<IdentityUser> userManager)
         {
@@ -480,6 +485,13 @@ namespace ServerCore.Pages.Events
                 }
 
                 transaction.Commit();
+            }
+
+            // Create base files for event content and style
+            // Fails silently if local Azure storage emulator isn't installed
+            if (AddSkeletonContentFiles)
+            {
+                NewFileCreationHelper.CreateNewEventFiles(Event.ID, SharedResourceDirectoryName);
             }
 
             return RedirectToPage("./Index");

@@ -1,0 +1,59 @@
+﻿@{
+    var eventPage = Model as ServerCore.ModelBases.EventSpecificPageModel;
+    string fileStoragePrefix = "";
+    string pageType = "";
+    if (eventPage != null)
+    {
+        fileStoragePrefix = eventPage.GetFileStoragePrefix();
+        pageType = eventPage.pageType;
+    }
+}
+
+<style>
+    #@(pageType)-frame {
+        width: 100%;
+    }
+    #@(pageType)-frame.unsized {
+        height: 85vh;
+    }
+</style>
+<script type="text/javascript">
+    window.addEventListener("load", () => {
+        const iframe = document.querySelector("#@(pageType)-frame");
+        if ((iframe !== null) && (iframe !== undefined)) {
+            iframe.contentWindow.postMessage("", "*");
+        }
+        setTimeout(() => {
+            const iframe = document.querySelector("#@(pageType)-frame");
+            if ((iframe !== null) && (iframe !== undefined)) {
+                if (iframe.classList.contains("unsized")) {
+                    iframe.style.display = "none";
+                    iframe.nextElementSibling.style.display = "revert";
+                }
+            }
+        }, "1000");
+    });
+    window.addEventListener("resize", (e) => {
+        const iframe = document.querySelector("#@(pageType)-frame");
+        if ((iframe !== null) && (iframe !== undefined)) {
+            iframe.contentWindow.postMessage("", "*");
+        }
+    });
+    window.addEventListener("message", (e) => {
+        if ((e.data.width > 0) && (e.data.height > 0)) {
+            const iframe = document.querySelector("#@(pageType)-frame");
+            iframe.classList.remove("unsized");
+            iframe.height = e.data.height + 30;
+        }
+    });
+</script>
+<iframe id="@(pageType)-frame" class="unsized" title="@(pageType) content" sandbox="allow-same-origin allow-scripts allow-popups" src="@(fileStoragePrefix)/resources/@(pageType)-content.html"></iframe>
+<div style="display:none;">
+    <h3>Unable to load @(pageType) content file</h3>
+    <p>If you're seeing this message, it's because the website was unable to load the content expected to be here. If you're an admin or have the ability to upload shared resources, please check the following:</p>
+    <ul>
+        <li>First, make sure a file in the shared resources with the name &quot;@(pageType)-content.html&quot; exists. If it doesn't, please upload one.</li>
+        <li>If you're running a local development build and are unable to upload files, you likely need to install or enable the Azure Storage emulator on your machine. See <a href="https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite" target="_blank">Microsoft's documentation</a> for more details.</li>
+        <li>If the file exists, make sure it's formatted correctly. Specifically, it needs to reference &quot;embed-resize.js&quot; as shown on <a href="https://github.com/PuzzleServer/mainpuzzleserver/wiki/Event-Customization" target="_blank">our wiki</a>.</li>
+    </ul>
+</div>

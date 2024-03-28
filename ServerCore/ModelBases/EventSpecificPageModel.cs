@@ -208,9 +208,11 @@ namespace ServerCore.ModelBases
             }
         }
 
-        public async Task<string> GetFileStoragePrefix() {
-            return await FileManager.GetFileStoragePrefix(Event.ID, "");
-        } 
+        public string GetFileStoragePrefix() {
+            return FileManager.GetFileStoragePrefix(Event.ID, "");
+        }
+
+        public string pageType;
 
         public class RoleBinder : IModelBinder
         {
