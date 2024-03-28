@@ -324,9 +324,16 @@
 {
     <script>
         window.displayNotification = (title, content) => {
-            window.alert(`${title}: ${content}`);
+            let notificationList = document.querySelector("#notification-list");
+            notificationList.insertAdjacentHTML("beforeend", `<div class='toast' role='alert' aria-live='assertive' aria-atomic='true'><div class='toast-header'><img src='...' class='rounded me-2' alt = '...'><strong class='me-auto'>${title}</strong><small class='text-muted'>just now</small><button type='button' class='btn-close' data-bs-dismiss='toast' aria-label='Close'></button></div><div class='toast-body'>${content}</div></div>`);
+            let toast = new bootstrap.Toast(notificationList.lastElementChild, {animation: true});
+            toast.show();
         };
     </script>
+
+    <div aria-live="polite" aria-atomic="true" class="position-relative">
+        <div id="notification-list" class="toast-container position-absolute top-0 end-0 p-3"></div>
+    </div>
 
     <component type="typeof(ServerCore.Components.NotificationComponent)" render-mode="ServerPrerendered" param-EventID="@Event?.ID" param-TeamID="@teamId" param-PlayerID="@playerEventId" />
 }
