@@ -7,11 +7,6 @@
     ViewData["PlayRoute"] = "/EventSpecific/Index";
     var eventPage = Model as ServerCore.ModelBases.EventSpecificPageModel;
     var Event = eventPage?.Event;
-    string fileStoragePrefix = "";
-    if (eventPage != null)
-    {
-        fileStoragePrefix = eventPage.GetFileStoragePrefix();
-    }
 }
 
 @if (Event.EventBegin.Year < 2024)
@@ -24,42 +19,5 @@ else
     {
         @Html.Raw(Event.HomeContent);
     }
-    <style>
-        #home-frame {
-            width: 100%;
-        }
-        #home-frame.unsized {
-            height: 85vh;
-        }
-    </style>
-    <script type="text/javascript">
-        window.addEventListener("load", () => {
-            const iframe = document.querySelector("#home-frame");
-            if ((iframe !== null) && (iframe !== undefined)) {
-                iframe.contentWindow.postMessage("", "*");
-            }
-            setTimeout(() => {
-                const iframe = document.querySelector("#home-frame");
-                if ((iframe !== null) && (iframe !== undefined)) {
-                    if (iframe.classList.contains("unsized")) {
-                        iframe.style.display = "none";
-                    }
-                }
-            }, "1000");
-        });
-        window.addEventListener("resize", (e) => {
-            const iframe = document.querySelector("#home-frame");
-            if ((iframe !== null) && (iframe !== undefined)) {
-                iframe.contentWindow.postMessage("", "*");
-            }
-        });
-        window.addEventListener("message", (e) => {
-            if ((e.data.width > 0) && (e.data.height > 0)) {
-                const iframe = document.querySelector("#home-frame");
-                iframe.classList.remove("unsized");
-                iframe.height = e.data.height + 30;
-            }
-        });
-    </script>
-    <iframe id="home-frame" class="unsized" title="Home Content" sandbox="allow-same-origin allow-scripts allow-popups" src="@(fileStoragePrefix)/resources/home-content.html"></iframe>
+    <partial name="/Pages/Shared/_ContentFilePartial.cshtml" />
 }

@@ -210,7 +210,9 @@ namespace ServerCore.ModelBases
 
         public string GetFileStoragePrefix() {
             return FileManager.GetFileStoragePrefix(Event.ID, "");
-        } 
+        }
+
+        public string pageType;
 
         public class RoleBinder : IModelBinder
         {
