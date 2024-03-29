@@ -384,7 +384,7 @@ namespace ServerCore.Pages.Submissions
                 }
             }
 
-            FileStoragePrefix = await FileManager.GetFileStoragePrefix(Event.ID, "");
+            FileStoragePrefix = FileManager.GetFileStoragePrefix(Event.ID, "");
         }
 
         /// <summary>

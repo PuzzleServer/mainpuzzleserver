@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using ServerCore.DataModel;
 using ServerCore.ModelBases;
@@ -11,7 +10,7 @@ namespace ServerCore.Pages.EventSpecific
     {
         public IndexModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager): base(serverContext, userManager)
         {
-
+            pageType = "home";
         }
     }
 }

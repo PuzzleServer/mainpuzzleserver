@@ -95,7 +95,11 @@ namespace ServerCore.Pages
             mailInfo.TeamName = team.Name;
 
             // replace commas with semicolons for better email support
-            mailInfo.TeamContactEmail = team.PrimaryContactEmail?.Replace(',', ';');
+            mailInfo.TeamContactEmail = "";
+            if (!System.String.IsNullOrEmpty(team.PrimaryContactEmail))
+            {
+                mailInfo.TeamContactEmail = team.PrimaryContactEmail.Replace(',', ';');
+            }
 
             return mailInfo;
         }

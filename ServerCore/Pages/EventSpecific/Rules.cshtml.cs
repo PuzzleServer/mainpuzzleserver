@@ -10,7 +10,7 @@ namespace ServerCore.Pages.EventSpecific
     {
         public RulesModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager): base(serverContext, userManager)
         {
-
+            pageType = "rules";
         }
     }
 }
