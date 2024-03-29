@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -27,16 +28,6 @@ namespace ServerCore.Pages.Threads
         public Message NewMessage { get; set; }
 
         /// <summary>
-        /// Gets or sets the thread id.
-        /// </summary>
-        public string ThreadId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the team.
-        /// </summary>
-        public Team Team { get; set; }
-
-        /// <summary>
         /// Gets or sets the team.
         /// </summary>
         public Puzzle Puzzle { get; set; }
@@ -46,8 +37,9 @@ namespace ServerCore.Pages.Threads
         /// </summary>
         public List<Message> Messages { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int? puzzleId)
+        public async Task<IActionResult> OnGetAsync(int? puzzleId, int? teamId, int? playerId)
         {
+            // Validate parameters
             if (LoggedInUser == null)
             {
                 return Challenge();
@@ -59,39 +51,53 @@ namespace ServerCore.Pages.Threads
             }
 
             Puzzle = await _context.Puzzles.Where(m => m.ID == puzzleId).FirstOrDefaultAsync();
-            if (Puzzle == null)
+            if (Puzzle == null
+                || (Puzzle.IsForSinglePlayer && !playerId.HasValue)
+                || (!Puzzle.IsForSinglePlayer && !teamId.HasValue))
             {
                 return NotFound();
             }
 
-            bool isFromGameControl = EventRole == EventRole.author || EventRole == EventRole.admin;
-            if (!isFromGameControl)
+            Team team = null;
+            PuzzleUser singlePlayerPuzzlePlayer = null;
+            string subject = null;
+            string threadId = null;
+            if (Puzzle.IsForSinglePlayer)
             {
-                Team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
+                singlePlayerPuzzlePlayer = _context.PuzzleUsers.Where(user => user.ID == playerId).FirstOrDefault();
+                if (singlePlayerPuzzlePlayer == null)
+                {
+                    return NotFound();
+                }
+
+                subject = $"[{singlePlayerPuzzlePlayer.Name}]{Puzzle.Name}";
+                threadId = MessageHelper.GetSinglePlayerPuzzleThreadId(Puzzle.ID, playerId.Value);
+            }
+            else
+            {
+                team = await _context.Teams.Where(t => t.ID == teamId).FirstOrDefaultAsync();
+                if (team == null)
+                {
+                    return NotFound();
+                }
+
+                subject = $"[{team.Name}]{Puzzle.Name}";
+                threadId = MessageHelper.GetTeamPuzzleThreadId(Puzzle.ID, teamId.Value);
             }
 
             Messages = this._context.Messages
-                .Where(message => message.PuzzleID.Value == puzzleId && message.TeamID.Value == Team.ID)
+                .Where(message => message.ThreadId == threadId)
                 .ToList();
-
-            if (Messages.Count > 0)
-            {
-                this.ThreadId = Messages[0].ThreadId;
-            }
-
-            string subject = Puzzle.IsForSinglePlayer
-                ? $"[{LoggedInUser.Name}]{Puzzle.Name}"
-                : $"[{Team.Name}]{Puzzle.Name}";
 
             NewMessage = new Message()
             {
-                ThreadId = this.ThreadId,
+                ThreadId = threadId,
                 EventID = Event.ID,
                 Event = Event,
                 Subject = subject,
                 PuzzleID = this.Puzzle.ID,
-                TeamID = this.Team?.ID,
-                IsFromGameControl = isFromGameControl,
+                TeamID = teamId,
+                IsFromGameControl = IsGameControlRole(),
                 SenderID = LoggedInUser.ID,
                 Sender = LoggedInUser,
             };
@@ -112,7 +118,7 @@ namespace ServerCore.Pages.Threads
 
             if (!ModelState.IsValid)
             {
-                return await this.OnGetAsync(NewMessage.PuzzleID);
+                return await this.OnGetAsync(NewMessage.PuzzleID, NewMessage.TeamID, NewMessage.PlayerID);
             }
 
             var puzzle = await _context.Puzzles.Where(m => m.ID == NewMessage.PuzzleID).FirstOrDefaultAsync();
@@ -122,25 +128,15 @@ namespace ServerCore.Pages.Threads
             }
 
             Message m = new Message();
-
-            string threadId = NewMessage.ThreadId;
-            if (string.IsNullOrEmpty(threadId))
-            {
-                threadId = puzzle.IsForSinglePlayer
-                    ? $"SinglePlayerPuzzle_{NewMessage.PuzzleID}_{NewMessage.SenderID}"
-                    : $"Puzzle_{NewMessage.PuzzleID}_{NewMessage.TeamID}";
-            }
-
-            m.ThreadId = threadId;
+            m.ThreadId = NewMessage.ThreadId;
             m.IsFromGameControl = NewMessage.IsFromGameControl;
             m.Subject = NewMessage.Subject;
             m.EventID = NewMessage.EventID;
-            m.DateTimeInUtc = DateTime.UtcNow;
+            m.CreatedDateTimeInUtc = DateTime.UtcNow;
             m.Text = NewMessage.Text;
             m.SenderID = NewMessage.SenderID;
             m.PuzzleID = NewMessage.PuzzleID;
             m.TeamID = NewMessage.TeamID;
-            m.IsClaimed = NewMessage.IsClaimed;
             m.ClaimerID = NewMessage.ClaimerID;
 
             using (IDbContextTransaction transaction = _context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable))
@@ -152,10 +148,22 @@ namespace ServerCore.Pages.Threads
 
             this.SendEmailNotifications(m, puzzle);
 
-            return await this.OnGetAsync(m.PuzzleID);
+            return await this.OnGetAsync(m.PuzzleID, m.TeamID, m.PlayerID);
         }
 
-        public async Task<IActionResult> OnGetDeleteMessageAsync(int messageId, int puzzleId)
+        public async Task<IActionResult> OnGetEditMessageAsync(int messageId, int puzzleId, int? teamId, int? playerId)
+        {
+            var message = await _context.Messages.Where(m => m.ID == messageId).FirstOrDefaultAsync();
+            if (message != null && IsAllowedToEditMessage(message))
+            {
+                _context.Messages.Remove(message);
+                await _context.SaveChangesAsync();
+            }
+
+            return await this.OnGetAsync(puzzleId, teamId, playerId);
+        }
+
+        public async Task<IActionResult> OnGetDeleteMessageAsync(int messageId, int puzzleId, int? teamId, int? playerId)
         {
             var message = await _context.Messages.Where(m => m.ID == messageId).FirstOrDefaultAsync();
             if (message != null && IsAllowedToDeleteMessage(message))
@@ -164,43 +172,46 @@ namespace ServerCore.Pages.Threads
                 await _context.SaveChangesAsync();
             }
 
-            return await this.OnGetAsync(puzzleId);
+            return await this.OnGetAsync(puzzleId, teamId, playerId);
         }
 
-        public async Task<IActionResult> OnPostClaimThreadAsync(int messageId, int puzzleId)
+        public async Task<IActionResult> OnPostClaimThreadAsync(int messageId, int puzzleId, int? teamId, int? playerId)
         {
             var message = await _context.Messages.Where(m => m.ID == messageId).FirstOrDefaultAsync();
             if (message != null && IsAllowedToClaimMessage())
             {
-                message.IsClaimed = true;
                 message.ClaimerID = LoggedInUser.ID;
                 message.Claimer = LoggedInUser;
                 _context.Messages.Update(message);
                 await _context.SaveChangesAsync();
             }
 
-            return await this.OnGetAsync(puzzleId);
+            return await this.OnGetAsync(puzzleId, teamId, playerId);
         }
 
-        public async Task<IActionResult> OnPostUnclaimThreadAsync(int messageId, int puzzleId)
+        public async Task<IActionResult> OnPostUnclaimThreadAsync(int messageId, int puzzleId, int? teamId, int? playerId)
         {
             var message = await _context.Messages.Where(m => m.ID == messageId).FirstOrDefaultAsync();
             if (message != null && IsAllowedToClaimMessage())
             {
-                message.IsClaimed = false;
                 message.ClaimerID = null;
                 message.Claimer = null;
                 _context.Messages.Update(message);
                 await _context.SaveChangesAsync();
             }
 
-            return await this.OnGetAsync(puzzleId);
+            return await this.OnGetAsync(puzzleId, teamId, playerId);
         }
 
         public bool IsAllowedToClaimMessage()
         {
             return EventRole == EventRole.admin
                 || EventRole == EventRole.author;
+        }
+
+        public bool IsAllowedToEditMessage(Message message)
+        {
+            return message.SenderID == LoggedInUser.ID;
         }
 
         public bool IsAllowedToDeleteMessage(Message message)

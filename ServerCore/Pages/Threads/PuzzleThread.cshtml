@@ -9,7 +9,25 @@
     ViewData["PlayRoute"] = "/Threads/PuzzleThread";
     ViewData["RoutingPuzzleId"] = ViewContext.RouteData.Values["puzzleId"];
 }
+<script>
+    function EditText(id) {
+        let textAreaId = "TextAreaEdit_" + id;
+        let textAreaEditBox = document.getElementById(textAreaId);
+        textAreaEditBox.style.display = "block";
+        let originalTextId = "MessageText_" + id;
+        let originalText = document.getElementById(originalTextId);
+        originalText.style.display = "none";
+    }
 
+    function CancelEdit(id) {
+        let textAreaId = "TextAreaEdit_" + id;
+        let textAreaEditBox = document.getElementById(textAreaId);
+        textAreaEditBox.style.display = "none";
+        let originalTextId = "MessageText_" + id;
+        let originalText = document.getElementById(originalTextId);
+        originalText.style.display = "block";
+    }
+</script>
 <h2>Help thread</h2>
 <div>
     @if (Model.EventRole == ServerCore.ModelBases.EventRole.play)
@@ -48,12 +66,25 @@
                 : $"Game control ({message.Sender.Name})";
             }
         }
-        <p>[@Html.Raw(Model.LocalTime(@message.DateTimeInUtc))] @senderName</p>
-        <p>@message.Text</p>
-        @if (Model.IsAllowedToDeleteMessage(message))
-        {
-            <a asp-page-handler="DeleteMessage" asp-route-messageId="@message.ID" asp-route-puzzleId="@message.PuzzleID" onclick="return confirm('Are you sure you want to delete this message?')">Delete</a>
-        }
+        <p>[@Html.Raw(Model.LocalTime(@message.CreatedDateTimeInUtc))] @senderName</p>
+        <div id="TextAreaEdit_@message.ID" style="display:none">
+            <textarea asp-for="NewMessage.Text" class="form-control" rows="4" value="@message.Text" autocomplete="off"></textarea>
+            <a asp-page-handler="EditMessage" asp-route-messageId="@message.ID" asp-route-puzzleId="@message.PuzzleID" asp-route-teamId="@message.TeamID" asp-route-playerId="@message.PlayerID" onclick="EditText(@message.ID)">Save  </a>
+            <a onclick="CancelEdit(@message.ID)">Cancel</a>
+        </div>
+        <div id="MessageText_@message.ID">
+            <p>@message.Text</p>
+            <span>
+                @if (Model.IsAllowedToEditMessage(message))
+                {
+                    <a onclick="EditText(@message.ID)">Edit   </a>
+                }
+                @if (Model.IsAllowedToDeleteMessage(message))
+                {
+                    <a asp-page-handler="DeleteMessage" asp-route-messageId="@message.ID" asp-route-puzzleId="@message.PuzzleID" asp-route-teamId="@message.TeamID" asp-route-playerId="@message.PlayerID" onclick="return confirm('Are you sure you want to delete this message?')">Delete</a>
+                }
+            </span>
+        </div>
     </div>
     shouldMakeDark = !shouldMakeDark;
 }
@@ -83,16 +114,16 @@
 {
     Message lastMessage = Model.Messages.Last();
     <form method="post">
-        @if (lastMessage.IsClaimed)
+        @if (lastMessage.ClaimerID.HasValue)
         {
             <br/>
             <p>Question has already been claimed by @lastMessage.Claimer.Name</p>
-            <button type="submit" asp-page-handler="UnclaimThread" asp-route-messageId="@lastMessage.ID" asp-route-puzzleId="@lastMessage.PuzzleID">Unclaim question</button>
+            <button type="submit" asp-page-handler="UnclaimThread" asp-route-messageId="@lastMessage.ID" asp-route-puzzleId="@lastMessage.PuzzleID" asp-route-teamId="@lastMessage.TeamID" asp-route-playerId="@lastMessage.PlayerID">Unclaim question</button>
         }
         else
         {
             <br />
-            <button type="submit" asp-page-handler="ClaimThread" asp-route-messageId="@lastMessage.ID" asp-route-puzzleId="@lastMessage.PuzzleID">Claim question</button>
+            <button type="submit" asp-page-handler="ClaimThread" asp-route-messageId="@lastMessage.ID" asp-route-puzzleId="@lastMessage.PuzzleID" asp-route-teamId="@lastMessage.TeamID" asp-route-playerId="@lastMessage.PlayerID">Claim question</button>
         }
     </form>
 }

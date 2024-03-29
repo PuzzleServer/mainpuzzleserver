@@ -60,7 +60,7 @@ namespace ServerCore.Pages.Threads
 
             LatestMessagesFromEachThread = messages
                 .GroupBy(message => message.ThreadId)
-                .Select(group => group.OrderByDescending(message => message.DateTimeInUtc).First())
+                .Select(group => group.OrderByDescending(message => message.CreatedDateTimeInUtc).First())
                 .ToList();
 
             return Page();

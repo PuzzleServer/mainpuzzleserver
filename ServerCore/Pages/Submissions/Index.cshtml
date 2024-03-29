@@ -416,7 +416,7 @@
     @if (!Model.PuzzleState.IsEmailOnlyMode)
     {
         <h3>Need some help?</h3>
-        <p>While solving this puzzle, if you've run into a bug, think there's an error, or are not having fun anymore, <a asp-Page="/Threads/PuzzleThread" asp-route-puzzleid="@Model.Puzzle.ID">Click this link</a> to ask for help!</p>
+        <p>While solving this puzzle, if you've run into a bug, think there's an error, or are not having fun anymore, <a asp-Page="/Threads/PuzzleThread" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-teamId="@Model.Team?.ID" asp-route-playerId="@Model.LoggedInUser.ID">Click this link</a> to ask for help!</p>
     }
 
     @if (Model.Event.AllowFeedback)

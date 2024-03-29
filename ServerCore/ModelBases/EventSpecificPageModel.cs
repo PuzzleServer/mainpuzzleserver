@@ -191,6 +191,11 @@ namespace ServerCore.ModelBases
             return TimeHelper.LocalTime(date);
         }
 
+        public bool IsGameControlRole()
+        {
+            return EventRole == EventRole.admin || EventRole == EventRole.author;
+        }
+
         public class EventBinder : IModelBinder
         {
             public async Task BindModelAsync(ModelBindingContext bindingContext)

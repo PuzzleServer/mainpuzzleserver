@@ -60,10 +60,10 @@
                     }
                 </td>
                 <td>
-                    @Html.Raw(Model.LocalTime(@item.DateTimeInUtc))
+                    @Html.Raw(Model.LocalTime(@item.CreatedDateTimeInUtc))
                 </td>
                 <td>
-                    <a asp-page="/Threads/PuzzleThread" asp-route-puzzleId="@item.Puzzle.ID">@item.Subject</a>
+                    <a asp-page="/Threads/PuzzleThread" asp-route-puzzleId="@item.Puzzle.ID" asp-route-teamId="@item.TeamID" asp-route-playerId="@item.PlayerID">@item.Subject</a>
                 </td>
                 <td>
                     @(item.Text.Length > 93 ? $"{item.Text.Substring(0, 90)}..." : item.Text)
@@ -72,7 +72,7 @@
                     @item.Sender.Name
                 </td>
                 <td>
-                    @if (!item.IsClaimed && !item.IsFromGameControl)
+                    @if (!item.ClaimerID.HasValue && !item.IsFromGameControl)
                     {
                         <p>&#x26A0; Claim me!</p>
                     }
