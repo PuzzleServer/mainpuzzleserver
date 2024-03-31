@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using ServerCore.DataModel;
@@ -63,9 +64,9 @@ public class NotificationHelper
     private static NotificationHelper Singleton { get; set; }
 
     private bool IsDev;
-    private Dictionary<int, List<NotificationListener>> listenersByEvent = new Dictionary<int, List<NotificationListener>>();
-    private Dictionary<int, List<NotificationListener>> listenersByTeam = new Dictionary<int, List<NotificationListener>>();
-    private Dictionary<int, List<NotificationListener>> listenersByPlayer = new Dictionary<int, List<NotificationListener>>();
+    private ConcurrentDictionary<int, ConcurrentDictionary<NotificationListener, byte>> listenersByEvent = new ConcurrentDictionary<int, ConcurrentDictionary<NotificationListener, byte>>();
+    private ConcurrentDictionary<int, ConcurrentDictionary<NotificationListener, byte>> listenersByTeam = new ConcurrentDictionary<int, ConcurrentDictionary<NotificationListener, byte>>();
+    private ConcurrentDictionary<int, ConcurrentDictionary<NotificationListener, byte>> listenersByPlayer = new ConcurrentDictionary<int, ConcurrentDictionary<NotificationListener, byte>>();
 
     /// <summary>
     /// Initialize the notification engine.
@@ -150,7 +151,7 @@ public class NotificationHelper
     /// <param name="notification">The notification received</param>
     public void ReceiveNotification(Notification notification)
     {
-        List<NotificationListener> listeners = null;
+        ConcurrentDictionary<NotificationListener, byte> listeners = null;
         if (notification.TeamID.HasValue)
         {
             this.listenersByTeam.TryGetValue(notification.TeamID.Value, out listeners);
@@ -167,7 +168,7 @@ public class NotificationHelper
         if (listeners != null)
         {
             NotificationEventArgs args = new NotificationEventArgs() { Notification = notification };
-            foreach (var listener in listeners)
+            foreach (var listener in listeners.Keys)
             {
                 listener.NotificationRecieved(this, args);
             }
@@ -185,17 +186,15 @@ public class NotificationHelper
     public static IDisposable RegisterForNotifications(int? eventID, int? teamID, int? playerID, EventHandler<NotificationEventArgs> notificationRecieved)
     {
         // helper function for each of the three object types
-        void Register(NotificationListener listener, int? id, Dictionary<int, List<NotificationListener>> listenerDictionary)
+        void Register(NotificationListener listener, int? id, ConcurrentDictionary<int, ConcurrentDictionary<NotificationListener, byte>> listenerDictionary)
         {
             if (!id.HasValue) return;
 
-            listenerDictionary.TryGetValue(id.Value, out List<NotificationListener> listeners);
-            if (listeners == null)
+            ConcurrentDictionary<NotificationListener, byte> listeners = listenerDictionary.GetOrAdd(id.Value, (id) =>
             {
-                listeners = new List<NotificationListener>();
-                listenerDictionary.Add(id.Value, listeners);
-            }
-            listeners.Add(listener);
+                return new ConcurrentDictionary<NotificationListener, byte>();
+            });
+            listeners[listener] = 0;
         }
 
         // Blazor is turning nulls into -1's for some reason
@@ -217,9 +216,9 @@ public class NotificationHelper
     /// <param name="listener"></param>
     private void UnregisterForNotifications(NotificationListener listener)
     {
-        if (listener.EventID.HasValue) { this.listenersByEvent[listener.EventID.Value].Remove(listener); }
-        if (listener.TeamID.HasValue) { this.listenersByTeam[listener.TeamID.Value].Remove(listener); }
-        if (listener.PlayerID.HasValue) { this.listenersByPlayer[listener.PlayerID.Value].Remove(listener); }
+        if (listener.EventID.HasValue) { this.listenersByEvent[listener.EventID.Value].Remove(listener, out _); }
+        if (listener.TeamID.HasValue) { this.listenersByTeam[listener.TeamID.Value].Remove(listener, out _); }
+        if (listener.PlayerID.HasValue) { this.listenersByPlayer[listener.PlayerID.Value].Remove(listener, out _); }
     }
 
     /// <summary>
@@ -235,6 +234,11 @@ public class NotificationHelper
         public void Dispose()
         {
             NotificationHelper.Singleton.UnregisterForNotifications(this);
+        }
+
+        public override int GetHashCode()
+        {
+            return (EventID?.GetHashCode() ?? 0) ^ (TeamID?.GetHashCode() ?? 0) ^ (PlayerID?.GetHashCode() ?? 0);
         }
     }
 }

@@ -32,7 +32,7 @@ namespace ServerCore.Components
 
         private void OnNotification(object sender, NotificationEventArgs args)
         {
-            this.JS.InvokeVoidAsync("displayNotification", args.Notification);
+            _ = this.JS.InvokeVoidAsync("displayNotification", args.Notification);
         }
 
         public void Dispose()
