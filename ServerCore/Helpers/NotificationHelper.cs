@@ -8,6 +8,8 @@ using ServerCore.DataModel;
 /// </summary>
 public class Notification
 {
+    public string ID { get; } = Guid.NewGuid().ToString();
+
     /// <summary>
     /// The event the notification is for.
     /// </summary>

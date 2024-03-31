@@ -323,12 +323,51 @@
 @if (Event?.AllowBlazor == true)
 {
     <script>
-        window.displayNotification = (title, content) => {
+        var allEventToasts = {};
+
+        function popToast(notification, animate) {
             let notificationList = document.querySelector("#notification-list");
-            notificationList.insertAdjacentHTML("beforeend", `<div class='toast' role='alert' aria-live='assertive' aria-atomic='true'><div class='toast-header'><img src='...' class='rounded me-2' alt = '...'><strong class='me-auto'>${title}</strong><small class='text-muted'>just now</small><button type='button' class='btn-close' data-bs-dismiss='toast' aria-label='Close'></button></div><div class='toast-body'>${content}</div></div>`);
-            let toast = new bootstrap.Toast(notificationList.lastElementChild, {animation: true});
+            notificationList.insertAdjacentHTML("beforeend", `\
+                    <div class='toast' role='alert' aria-live='assertive' aria-atomic='true'> \
+                        <div class='toast-header'> \
+                            <img src='...' class='rounded me-2' alt = '...'> \
+                            <strong class='me-auto'>${notification.title}</strong> \
+                            <small class='text-muted'>just now</small> \
+                            <button type='button' class='btn-close' data-bs-dismiss='toast' aria-label='Close'></button> \
+                        </div> \
+                        <div class='toast-body'> \
+                            ${notification.linkurl ? ("<a href='" + notification.linkurl + "'>") : ""} \
+                            ${notification.content} \
+                            ${notification.linkurl ? "</a>" : ""} \
+                        </div> \
+                    </div>`);
+
+            notificationList.lastElementChild.addEventListener('hidden.bs.toast', () => { onDismissUserToast(notification.id); });
+
+            let toast = new bootstrap.Toast(notificationList.lastElementChild, { animation: animate, autohide: false });
             toast.show();
+        }
+
+        function onDismissUserToast(id) {
+            allEventToasts[id] = null;
+            localStorage.setItem("userToasts", JSON.stringify(allEventToasts));
+        }
+
+        function resetAllToasts() {
+            document.querySelector("#notification-list").innerHTML = "";
+            allEventToasts = JSON.parse(localStorage.getItem("userToasts"));
+            if (allEventToasts) { for (const [key, value] of Object.entries(allEventToasts)) { popToast(value, false); } }
+        }
+
+        window.displayNotification = (notification) => {
+            if (!allEventToasts) { allEventToasts = {}; }
+            allEventToasts[notification.id] = notification;
+            localStorage.setItem("userToasts", JSON.stringify(allEventToasts));
+            popToast(notification, true);
         };
+
+        document.addEventListener("DOMContentLoaded", function () { resetAllToasts(); });
+        document.addEventListener("visibilitychange", function () { if (!document.hidden) { resetAllToasts(); } });
     </script>
 
     <div aria-live="polite" aria-atomic="true" class="position-relative">
