@@ -1,5 +1,18 @@
 ﻿<!DOCTYPE html>
 <html lang="en-us">
+
+@{
+    // Using ev here so that it isn't the same as Event that we bind in the <body>
+    // Works fine if we use Event, but VS will yell at you with an error in the IDE
+    var evBase = Model as ServerCore.ModelBases.EventSpecificPageModel;
+    var ev = evBase?.Event;
+    string fileStoragePrefix = "";
+    if (evBase != null)
+    {
+        fileStoragePrefix = evBase.GetFileStoragePrefix();
+    }
+}
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -54,18 +67,6 @@
         }
     </style>
 
-    @{
-        // Using ev here so that it isn't the same as Event that we bind in the <body>
-        // Works fine if we use Event, but VS will yell at you with an error in the IDE
-        var ev = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Event;
-        string fileStoragePrefix = "";
-        var evBase = Model as ServerCore.ModelBases.EventSpecificPageModel;
-        if (evBase != null)
-        {
-            fileStoragePrefix = await evBase.GetFileStoragePrefix();
-        }
-    }
-
     @if (ev != null && ev.AllowBlazor)
     {
         <component type="typeof(Microsoft.AspNetCore.Components.Web.HeadOutlet)"
@@ -74,23 +75,21 @@
 
     @{
         // Keep the old path for events prior to 2024 so they aren't broken
-        // For all future events, resources global to all pages for an event should be uploaded to the shared event resources page
-        // Note that the link for development may be different on your machine
-        if ((ev?.HomePartial != null) && ((ev.HomePartial.StartsWith("pd")) || (ev.HomePartial.StartsWith("nipd"))))
+        if ((ev?.HomePartial != null) && ((ev.HomePartial.StartsWith("pd")) || (ev.HomePartial.StartsWith("nipd"))) && (ev.EventBegin.Year < 2024))
         {
-            if (ev.EventBegin.Year < 2024)
-            {
-                <link rel="stylesheet" href="~/css/@(ev.HomePartial)/styles.min.css" />
-            }
-            else
-            {
-                <link rel="stylesheet" href="@(fileStoragePrefix)/resources/global-styles.css" />
-            }
+            <link rel="stylesheet" href="~/css/@(ev.HomePartial)/styles.min.css" />
+        }
+
+        // For all future events, resources global to all pages for an event should be uploaded to the shared event resources page
+        // (FileStoragePrefix used to account for different urls between development and production)
+        if (ev?.EventBegin.Year >= 2024)
+        {
+            <link rel="stylesheet" href="@(fileStoragePrefix)/resources/global-styles.css" />
         }
     }
 
     @{
-        var refresh = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Refresh;
+        var refresh = evBase?.Refresh;
         if (refresh.HasValue)
         {
             <meta http-equiv="refresh" content="@refresh.Value" />
@@ -98,35 +97,33 @@
     }
 </head>
 <body class="body-customizable">
-    @{
-        var Event = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Event;
-        var EventRole = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.EventRole;
-    }
-
-    @if (Event != null && Event.AllowBlazor)
+    @if (ev != null && ev.AllowBlazor)
     {
         <script src="_framework/blazor.server.js"></script>
+        <script>
+            var lockResolver;
+            if (navigator && navigator.locks && navigator.locks.request) {
+                const promise = new Promise((res) => {
+                    lockResolver = res;
+                });
+
+                navigator.locks.request('browserSleepLock', { mode: "shared" }, () => {
+                    return promise;
+                });
+            }
+        </script>
     }
 
     @RenderSection("Scripts", required: false)
 
     <!--CURRENT NAV BAR-->
-    @if (Event == null)
+    @if (ev == null)
     {
         <nav class="navbar bg-dark navbar-custom static-top navbar-expand-sm no-print" data-bs-theme="dark">
             <div class="container-fluid">
-                @if (Event == null)
-                {
-                    <a asp-page="/Index" class="navbar-brand">
-                        Microsoft Puzzles
-                    </a>
-                }
-                else
-                {
-                    <a asp-page="/EventSpecific/Index" asp-route-eventId=@Event.EventID class="navbar-brand">
-                        @(Event.Name)
-                    </a>
-                }
+                <a asp-page="/Index" class="navbar-brand">
+                    Microsoft Puzzles
+                </a>
                 <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#topBarCollapsable" title="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -147,14 +144,14 @@
     }
 
     <div class="container body-content body-content-customizable">
-        @if (!string.IsNullOrEmpty(Event?.Announcement))
+        @if (!string.IsNullOrEmpty(ev?.Announcement))
             {
-            <p class="announcement announcement-customizable no-print">@Event.Announcement</p>
+            <p class="announcement announcement-customizable no-print">@ev?.Announcement</p>
             <hr class="no-print" />
             }
-        @if (!string.IsNullOrEmpty(Event?.TeamAnnouncement) && await (Model as ServerCore.ModelBases.EventSpecificPageModel)?.GetShowTeamAnnouncement())
+        @if (!string.IsNullOrEmpty(ev?.TeamAnnouncement) && await (Model as ServerCore.ModelBases.EventSpecificPageModel)?.GetShowTeamAnnouncement())
             {
-            <p class="announcement announcement-customizable no-print">@Event.TeamAnnouncement</p>
+            <p class="announcement announcement-customizable no-print">@ev?.TeamAnnouncement</p>
             <hr class="no-print" />
             }
         @RenderBody()
@@ -163,12 +160,12 @@
     <hr class="no-print" />
     <footer class="no-print footer-custom">
         <ul class="list-inline text-end">
-            <li class="list-inline-item"><a href="mailto:@(Event?.ContactEmail ?? "puzzhunt@microsoft.com")">Contact Us</a></li>
+            <li class="list-inline-item"><a href="mailto:@(ev?.ContactEmail ?? "puzzhunt@microsoft.com")">Contact Us</a></li>
             <li class="list-inline-item"><a href="mailto:puzztech@puzzlehunt.org">Website Emergency?</a></li>
             <li class="list-inline-item"><a href="https://go.microsoft.com/fwlink/?LinkID=206977">Terms Of Use</a></li>
             <li class="list-inline-item"><a href="https://go.microsoft.com/fwlink/?LinkId=506942">Trademarks</a></li>
             <li class="list-inline-item"><a href="http://go.microsoft.com/fwlink/?LinkId=521839">Privacy &amp; Cookies</a></li>
-            <li class="list-inline-item">&copy; @(DateTime.Now.Year) @(Event?.Copyright ?? "Puzzlehunt")</li>
+            <li class="list-inline-item">&copy; @(DateTime.Now.Year) @(ev?.Copyright ?? "Puzzlehunt")</li>
         </ul>
     </footer>
 </body>

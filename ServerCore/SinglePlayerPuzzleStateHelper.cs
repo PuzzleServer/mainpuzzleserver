@@ -217,7 +217,7 @@ namespace ServerCore
                                                          join unlockedBy in context.Prerequisites on possibleUnlock.PuzzleID equals unlockedBy.PuzzleID
                                                          join pspt in context.SinglePlayerPuzzleStatePerPlayer on unlockedBy.PrerequisiteID equals pspt.PuzzleID
                                                          join puz in context.Puzzles on unlockedBy.PrerequisiteID equals puz.ID
-                                                         where possibleUnlock.Prerequisite.ID == puzzleJustSolved.ID && pspt.SolvedTime != null
+                                                         where possibleUnlock.Prerequisite.ID == puzzleJustSolved.ID && pspt.SolvedTime != null && puz.IsForSinglePlayer
                                                          group puz by new { unlockedBy.PuzzleID, unlockedBy.Puzzle.MinPrerequisiteCount, pspt.PlayerID } into g
                                                          select new
                                                          {
