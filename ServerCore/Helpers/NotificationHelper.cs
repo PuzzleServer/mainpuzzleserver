@@ -1,46 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using Microsoft.Extensions.Configuration;
-using ServerCore.DataModel;
-
-/// <summary>
-/// Content of a notification, intended to be broadcast to all players in a specific event, all players on a specific team, or a specific player.
-/// </summary>
-public class Notification
-{
-    public string ID { get; } = Guid.NewGuid().ToString();
-
-    /// <summary>
-    /// The event the notification is for.
-    /// </summary>
-    public int? EventID { get; set; }
-
-    /// <summary>
-    /// The team the notification is for.
-    /// </summary>
-    public int? TeamID { get; set; }
-
-    /// <summary>
-    /// The player the notification is for.
-    /// </summary>
-    public int? PlayerID { get; set; }
-
-    /// <summary>
-    /// The title of the notification.
-    /// </summary>
-    public string Title { get; set; }
-
-    /// <summary>
-    /// The content of the notification.
-    /// </summary>
-    public string Content { get; set; }
-
-    /// <summary>
-    /// The link that should be followed if the notification is clicked.
-    /// </summary>
-    public string LinkUrl { get; set; }
-}
+using System.Threading.Tasks;
+using ServerCore.ServerMessages;
 
 /// <summary>
 /// EventArgs for callers that register for events.
@@ -58,98 +20,20 @@ public class NotificationEventArgs : EventArgs
 /// </summary>
 public class NotificationHelper
 {
-    /// <summary>
-    /// Singleton for the NotificationHelper object. TODO: Pattern copied from MailHelper; is there any actual reason for this or can it all just be static?
-    /// </summary>
-    private static NotificationHelper Singleton { get; set; }
-
-    private bool IsDev;
     private ConcurrentDictionary<int, ConcurrentDictionary<NotificationListener, byte>> listenersByEvent = new ConcurrentDictionary<int, ConcurrentDictionary<NotificationListener, byte>>();
     private ConcurrentDictionary<int, ConcurrentDictionary<NotificationListener, byte>> listenersByTeam = new ConcurrentDictionary<int, ConcurrentDictionary<NotificationListener, byte>>();
     private ConcurrentDictionary<int, ConcurrentDictionary<NotificationListener, byte>> listenersByPlayer = new ConcurrentDictionary<int, ConcurrentDictionary<NotificationListener, byte>>();
 
-    /// <summary>
-    /// Initialize the notification engine.
-    /// </summary>
-    /// <param name="configuration">Configuration object for the site (containing SignalR info)</param>
-    /// <param name="isDev">Whether this is a local dev deployment</param>
-    public static void Initialize(IConfiguration configuration, bool isDev)
+    public NotificationHelper(ServerMessageListener messageListener)
     {
-        Singleton = new NotificationHelper(configuration, isDev);
-    }
-
-    /// <summary>
-    /// Private constructor for the singleton.
-    /// </summary>
-    /// <param name="configuration">Configuration object for the site (containing SignalR info)</param>
-    /// <param name="isDev">Whether this is a local dev deployment</param>
-    private NotificationHelper(IConfiguration configuration, bool isDev)
-    {
-        if (!isDev)
-        {
-            // TODO: get SignalR info out of configuration
-        }
-        this.IsDev = isDev;
-    }
-
-    /// <summary>
-    /// Send a notification to all players in an event
-    /// </summary>
-    /// <param name="eventObj">The event</param>
-    /// <param name="title">Notification title</param>
-    /// <param name="content">Notification content</param>
-    /// <param name="linkUrl">Link for the notification if the player clicks it</param>
-    public static void SendNotification(Event eventObj, string title, string content, string linkUrl = null)
-    {
-        Singleton.SendNotification(new Notification() { EventID = eventObj.ID, Title = title, Content = content, LinkUrl = linkUrl });
-    }
-
-    /// <summary>
-    /// Send a notification to all players on a team
-    /// </summary>
-    /// <param name="team">The team</param>
-    /// <param name="title">Notification title</param>
-    /// <param name="content">Notification content</param>
-    /// <param name="linkUrl">Link for the notification if the player clicks it</param>
-    public static void SendNotification(Team team, string title, string content, string linkUrl = null)
-    {
-        Singleton.SendNotification(new Notification() { TeamID = team.ID, Title = title, Content = content, LinkUrl = linkUrl });
-    }
-
-    /// <summary>
-    /// Send a notification to an individual player
-    /// </summary>
-    /// <param name="player">The player</param>
-    /// <param name="title">Notification title</param>
-    /// <param name="content">Notification content</param>
-    /// <param name="linkUrl">Link for the notification if the player clicks it</param>
-    public static void SendNotification(PlayerInEvent player, string title, string content, string linkUrl = null)
-    {
-        Singleton.SendNotification(new Notification() { PlayerID = player.ID, Title = title, Content = content, LinkUrl = linkUrl });
-    }
-
-    /// <summary>
-    /// Notification sender
-    /// </summary>
-    /// <param name="notification">The notification to send</param>
-    private void SendNotification(Notification notification)
-    {
-        if (this.IsDev)
-        {
-            this.ReceiveNotification(notification);
-        }
-        else
-        {
-            // TODO: RPC this call via SignalR
-            this.ReceiveNotification(notification);
-        }
+        messageListener.OnNotification += ReceiveNotification;
     }
 
     /// <summary>
     /// Notification receiver, called by the sender (locally if isDev, via SignalR if deployed)
     /// </summary>
     /// <param name="notification">The notification received</param>
-    public void ReceiveNotification(Notification notification)
+    private Task ReceiveNotification(Notification notification)
     {
         ConcurrentDictionary<NotificationListener, byte> listeners = null;
         if (notification.TeamID.HasValue)
@@ -173,6 +57,8 @@ public class NotificationHelper
                 listener.NotificationRecieved(this, args);
             }
         }
+
+        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -183,7 +69,7 @@ public class NotificationHelper
     /// <param name="playerID">The player</param>
     /// <param name="notificationRecieved">The EventHandler that will listen to events for the client</param>
     /// <returns>an IDisposable object. The client must explicitly call Dispose() when the client is disposed.</returns>
-    public static IDisposable RegisterForNotifications(int? eventID, int? teamID, int? playerID, EventHandler<NotificationEventArgs> notificationRecieved)
+    public IDisposable RegisterForNotifications(int? eventID, int? teamID, int? playerID, EventHandler<NotificationEventArgs> notificationRecieved)
     {
         // helper function for each of the three object types
         void Register(NotificationListener listener, int? id, ConcurrentDictionary<int, ConcurrentDictionary<NotificationListener, byte>> listenerDictionary)
@@ -202,10 +88,10 @@ public class NotificationHelper
         if (teamID == -1) { teamID = null; }
         if (playerID == -1) { playerID = null; }
 
-        NotificationListener listener = new NotificationListener() { EventID = eventID, TeamID = teamID, PlayerID = playerID, NotificationRecieved = notificationRecieved };
-        Register(listener, listener.EventID, NotificationHelper.Singleton.listenersByEvent);
-        Register(listener, listener.TeamID, NotificationHelper.Singleton.listenersByTeam);
-        Register(listener, listener.PlayerID, NotificationHelper.Singleton.listenersByPlayer);
+        NotificationListener listener = new NotificationListener() { Helper = this, EventID = eventID, TeamID = teamID, PlayerID = playerID, NotificationRecieved = notificationRecieved };
+        Register(listener, listener.EventID, this.listenersByEvent);
+        Register(listener, listener.TeamID, this.listenersByTeam);
+        Register(listener, listener.PlayerID, this.listenersByPlayer);
 
         return listener;
     }
@@ -226,6 +112,7 @@ public class NotificationHelper
     /// </summary>
     private class NotificationListener : IDisposable
     {
+        public NotificationHelper Helper { get; set; }
         public int? EventID { get; set; }
         public int? TeamID { get; set; }
         public int? PlayerID { get; set; }
@@ -233,7 +120,7 @@ public class NotificationHelper
 
         public void Dispose()
         {
-            NotificationHelper.Singleton.UnregisterForNotifications(this);
+            Helper.UnregisterForNotifications(this);
         }
 
         public override int GetHashCode()

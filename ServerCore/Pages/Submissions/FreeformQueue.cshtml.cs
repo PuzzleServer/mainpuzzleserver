@@ -4,22 +4,28 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
 using ServerCore.ModelBases;
+using ServerCore.ServerMessages;
 
 namespace ServerCore.Pages.Submissions
 {
     [Authorize(Policy = "IsEventAdminOrEventAuthor")]
     public class FreeformQueueModel : EventSpecificPageModel
     {
-        public FreeformQueueModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager)
+        private IHubContext<ServerMessageHub> messageHub;
+
+        public FreeformQueueModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager, IHubContext<ServerMessageHub> messageHub)
             : base(serverContext, userManager)
         {
+            this.messageHub = messageHub;
         }
 
         public Puzzle Puzzle { get; set; }
@@ -171,7 +177,7 @@ namespace ServerCore.Pages.Submissions
             if (submission != null)
             {
                 MailHelper.Singleton.SendPlaintextOneAddress(submission.Submitter.Email, $"{submission.Puzzle.PlaintextName} Submission {Result}", $"Your submission for {submission.Puzzle.Name} has been {Result} with the response: {FreeformResponse}");
-                NotificationHelper.SendNotification(submission.Team, $"{submission.Puzzle.PlaintextName} Submission {Result}", $"Your submission for {submission.Puzzle.Name} has been {Result} with the response: {FreeformResponse}");
+                await this.messageHub.SendNotification(submission.Team, $"{submission.Puzzle.PlaintextName} Submission {Result}", $"Your submission for {submission.Puzzle.Name} has been {Result} with the response: {FreeformResponse}");
             }
 
             return RedirectToPage();

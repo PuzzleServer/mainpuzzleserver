@@ -18,6 +18,9 @@ namespace ServerCore.Components
         [Inject]
         protected IJSRuntime JS { get; set; } = default!;
 
+        [Inject]
+        protected NotificationHelper NotificationHelper { get; set; } = default!;
+
         private IDisposable listener = null;
 
         public NotificationComponent()

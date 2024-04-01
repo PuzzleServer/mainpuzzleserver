@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
+using ServerCore.DataModel;
 
 namespace ServerCore.ServerMessages
 {
@@ -34,6 +35,42 @@ namespace ServerCore.ServerMessages
         public static async Task SendAllPresenceState(this IHubContext<ServerMessageHub> hub, string client, PresenceMessage[] allPresence)
         {
             await hub.Clients.Clients(client).SendAsync(nameof(AllPresenceState), new AllPresenceState { AllPresence = allPresence });
+        }
+
+        /// <summary>
+        /// Send a notification to all players in an event
+        /// </summary>
+        /// <param name="eventObj">The event</param>
+        /// <param name="title">Notification title</param>
+        /// <param name="content">Notification content</param>
+        /// <param name="linkUrl">Link for the notification if the player clicks it</param>
+        public static async Task SendNotification(this IHubContext<ServerMessageHub> hub, Event eventObj, string title, string content, string linkUrl = null)
+        {
+            await hub.Clients.Groups(ServersGroup).SendAsync(nameof(Notification), new Notification() { EventID = eventObj.ID, Title = title, Content = content, LinkUrl = linkUrl });
+        }
+
+        /// <summary>
+        /// Send a notification to all players on a team
+        /// </summary>
+        /// <param name="team">The team</param>
+        /// <param name="title">Notification title</param>
+        /// <param name="content">Notification content</param>
+        /// <param name="linkUrl">Link for the notification if the player clicks it</param>
+        public static async Task SendNotification(this IHubContext<ServerMessageHub> hub, Team team, string title, string content, string linkUrl = null)
+        {
+            await hub.Clients.Groups(ServersGroup).SendAsync(nameof(Notification), new Notification() { TeamID = team.ID, Title = title, Content = content, LinkUrl = linkUrl });
+        }
+
+        /// <summary>
+        /// Send a notification to an individual player
+        /// </summary>
+        /// <param name="player">The player</param>
+        /// <param name="title">Notification title</param>
+        /// <param name="content">Notification content</param>
+        /// <param name="linkUrl">Link for the notification if the player clicks it</param>
+        public static async Task SendNotification(this IHubContext<ServerMessageHub> hub, PlayerInEvent player, string title, string content, string linkUrl = null)
+        {
+            await hub.Clients.Groups(ServersGroup).SendAsync(nameof(Notification), new Notification() { PlayerID = player.ID, Title = title, Content = content, LinkUrl = linkUrl });
         }
     }
 }

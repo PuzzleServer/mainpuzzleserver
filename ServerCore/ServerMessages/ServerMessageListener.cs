@@ -47,6 +47,8 @@ namespace ServerCore.ServerMessages
             subscriptionsToDispose.Add(HubConnection.On(nameof(GetPresenceState), onGetPresenceState));
             var onAllPresenceState = OnAllPresenceState;
             subscriptionsToDispose.Add(HubConnection.On(nameof(AllPresenceState), onAllPresenceState));
+            var onNotificationMessage = OnNotificationMessageAsync;
+            subscriptionsToDispose.Add(HubConnection.On(nameof(Notification), onNotificationMessage));
 
             // We can't wait for this in a constructor, so defer waiting to EnsureInitializedAsync
             initTracker = TryInitAsync(hub);
@@ -112,6 +114,11 @@ namespace ServerCore.ServerMessages
         /// </summary>
         public event Func<PresenceMessage, Task> OnPresence;
 
+        /// <summary>
+        /// Fires when any notification comes in
+        /// </summary>
+        public event Func<Notification, Task> OnNotification;
+
         private async Task OnPresenceMessageAsync(PresenceMessage message)
         {
             await OnPresence?.Invoke(message);
@@ -126,6 +133,11 @@ namespace ServerCore.ServerMessages
         private async Task OnAllPresenceState(AllPresenceState allPresenceState)
         {
             await ServiceProvider.GetRequiredService<PresenceStore>().MergePresenceState(allPresenceState.AllPresence);
+        }
+
+        private async Task OnNotificationMessageAsync(Notification notification)
+        {
+            await OnNotification?.Invoke(notification);
         }
 
         public void Dispose()

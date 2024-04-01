@@ -3,11 +3,14 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 using ServerCore.ModelBases;
+using ServerCore.ServerMessages;
 
 namespace ServerCore.Pages.Events
 {
@@ -47,8 +50,11 @@ namespace ServerCore.Pages.Events
 
         public string MailAddresses { get; set; }
 
-        public MailerModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
+        private IHubContext<ServerMessageHub> messageHub;
+
+        public MailerModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager, IHubContext<ServerMessageHub> messageHub) : base(serverContext, userManager)
         {
+            this.messageHub = messageHub;
         }
 
         public async Task<IActionResult> OnGetAsync(MailGroup group, int? puzzleId, int? teamId, int? smallTeamThreshold)
@@ -96,11 +102,11 @@ namespace ServerCore.Pages.Events
                 if (TeamID != null)
                 {
                     var team = await _context.Teams.FindAsync(TeamID);
-                    NotificationHelper.SendNotification(team, MailSubject, "Check your email for details.");
+                    await this.messageHub.SendNotification(team, MailSubject, "Check your email for details.");
                 }
                 else
                 {
-                    NotificationHelper.SendNotification(Event, MailSubject, "Check your email for details.");
+                    await this.messageHub.SendNotification(Event, MailSubject, "Check your email for details.");
                 }
             }
 

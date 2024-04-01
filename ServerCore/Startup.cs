@@ -23,7 +23,6 @@ namespace ServerCore
             _hostEnv = env;
             Configuration = configuration;
             MailHelper.Initialize(Configuration, env.IsDevelopment());
-            NotificationHelper.Initialize(Configuration, env.IsDevelopment());
         }
 
         public Startup(IWebHostEnvironment env)
@@ -36,7 +35,6 @@ namespace ServerCore
                 .AddEnvironmentVariables();
             Configuration = configBuilder.Build();
             MailHelper.Initialize(Configuration, env.IsDevelopment());
-            NotificationHelper.Initialize(Configuration, env.IsDevelopment());
         }
 
         public IConfiguration Configuration { get; }
@@ -147,6 +145,7 @@ namespace ServerCore
             }
             services.AddSingleton<ServerMessageListener>();
             services.AddSingleton<PresenceStore>();
+            services.AddSingleton<NotificationHelper>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

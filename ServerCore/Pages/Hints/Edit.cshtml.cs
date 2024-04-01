@@ -3,20 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
 using ServerCore.ModelBases;
+using ServerCore.ServerMessages;
 
 namespace ServerCore.Pages.Hints
 {
     [Authorize(Policy = "IsEventAdminOrAuthorOfPuzzle")]
     public class EditModel : EventSpecificPageModel
     {
-        public EditModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
+        private IHubContext<ServerMessageHub> messageHub;
+
+        public EditModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager, IHubContext<ServerMessageHub> messageHub) : base(serverContext, userManager)
         {
+            this.messageHub = messageHub;
         }
 
         [BindProperty]
@@ -74,7 +80,7 @@ namespace ServerCore.Pages.Hints
                                          select hspt.Team).ToListAsync();
                 foreach (Team team in teams)
                 {
-                    NotificationHelper.SendNotification(team, $"Hint updated for {puzzle.PlaintextName}", $"The new content for '{Hint.Description}' is: '{Hint.Content}'.");
+                    await this.messageHub.SendNotification(team, $"Hint updated for {puzzle.PlaintextName}", $"The new content for '{Hint.Description}' is: '{Hint.Content}'.");
                 }
             }
             catch (DbUpdateConcurrencyException)

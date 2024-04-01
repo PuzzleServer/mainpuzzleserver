@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
 using ServerCore.ModelBases;
+using ServerCore.ServerMessages;
 
 namespace ServerCore.Pages.Puzzles
 {
@@ -43,6 +46,9 @@ namespace ServerCore.Pages.Puzzles
         public List<Puzzle> PotentialPrerequisitesOf { get; set; }
 
         public List<Puzzle> CurrentPrerequisitesOf { get; set; }
+
+        [Inject]
+        protected IHubContext<ServerMessageHub> MessageHub { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int puzzleId)
         {
@@ -151,7 +157,7 @@ namespace ServerCore.Pages.Puzzles
                     MailHelper.Singleton.SendPlaintextBcc(teamMembers, subject, body);
                     foreach (Team team in teams)
                     {
-                        NotificationHelper.SendNotification(team, subject, body);
+                        await MessageHub.SendNotification(team, subject, body);
                     }
                 }
             }
