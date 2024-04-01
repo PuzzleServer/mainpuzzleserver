@@ -19,8 +19,11 @@ namespace ServerCore.Pages.Puzzles
     [Authorize(Policy = "IsEventAdminOrAuthorOfPuzzle")]
     public class EditModel : EventSpecificPageModel
     {
-        public EditModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
+        private IHubContext<ServerMessageHub> messageHub;
+
+        public EditModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager, IHubContext<ServerMessageHub> messageHub) : base(serverContext, userManager)
         {
+            this.messageHub = messageHub;
         }
 
         [BindProperty]
@@ -46,9 +49,6 @@ namespace ServerCore.Pages.Puzzles
         public List<Puzzle> PotentialPrerequisitesOf { get; set; }
 
         public List<Puzzle> CurrentPrerequisitesOf { get; set; }
-
-        [Inject]
-        protected IHubContext<ServerMessageHub> MessageHub { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int puzzleId)
         {
@@ -157,7 +157,7 @@ namespace ServerCore.Pages.Puzzles
                     MailHelper.Singleton.SendPlaintextBcc(teamMembers, subject, body);
                     foreach (Team team in teams)
                     {
-                        await MessageHub.SendNotification(team, subject, body);
+                        await this.messageHub.SendNotification(team, subject, body);
                     }
                 }
             }
