@@ -76,6 +76,8 @@ public class Notification
 {
     public string ID { get; } = Guid.NewGuid().ToString();
 
+    public DateTime Time { get; set; }
+
     /// <summary>
     /// The event the notification is for.
     /// </summary>

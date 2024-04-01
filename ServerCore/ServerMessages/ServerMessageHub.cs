@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using ServerCore.DataModel;
 
@@ -46,7 +47,7 @@ namespace ServerCore.ServerMessages
         /// <param name="linkUrl">Link for the notification if the player clicks it</param>
         public static async Task SendNotification(this IHubContext<ServerMessageHub> hub, Event eventObj, string title, string content, string linkUrl = null)
         {
-            await hub.Clients.Groups(ServersGroup).SendAsync(nameof(Notification), new Notification() { EventID = eventObj.ID, Title = title, Content = content, LinkUrl = linkUrl });
+            await hub.Clients.Groups(ServersGroup).SendAsync(nameof(Notification), new Notification() { Time = DateTime.UtcNow, EventID = eventObj.ID, Title = title, Content = content, LinkUrl = linkUrl });
         }
 
         /// <summary>
@@ -58,7 +59,7 @@ namespace ServerCore.ServerMessages
         /// <param name="linkUrl">Link for the notification if the player clicks it</param>
         public static async Task SendNotification(this IHubContext<ServerMessageHub> hub, Team team, string title, string content, string linkUrl = null)
         {
-            await hub.Clients.Groups(ServersGroup).SendAsync(nameof(Notification), new Notification() { TeamID = team.ID, Title = title, Content = content, LinkUrl = linkUrl });
+            await hub.Clients.Groups(ServersGroup).SendAsync(nameof(Notification), new Notification() { Time = DateTime.UtcNow, TeamID = team.ID, Title = title, Content = content, LinkUrl = linkUrl });
         }
 
         /// <summary>
@@ -70,7 +71,7 @@ namespace ServerCore.ServerMessages
         /// <param name="linkUrl">Link for the notification if the player clicks it</param>
         public static async Task SendNotification(this IHubContext<ServerMessageHub> hub, PlayerInEvent player, string title, string content, string linkUrl = null)
         {
-            await hub.Clients.Groups(ServersGroup).SendAsync(nameof(Notification), new Notification() { PlayerID = player.ID, Title = title, Content = content, LinkUrl = linkUrl });
+            await hub.Clients.Groups(ServersGroup).SendAsync(nameof(Notification), new Notification() { Time = DateTime.UtcNow, PlayerID = player.ID, Title = title, Content = content, LinkUrl = linkUrl });
         }
     }
 }
