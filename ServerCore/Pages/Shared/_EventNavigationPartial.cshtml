@@ -348,20 +348,20 @@
         }
 
         function onDismissUserToast(id) {
-            allEventToasts[id] = null;
-            localStorage.setItem("userToasts", JSON.stringify(allEventToasts));
+            delete allEventToasts[id];
+            localStorage.setItem("userToasts-@(Model.Event.ID)", JSON.stringify(allEventToasts));
         }
 
         function resetAllToasts() {
             document.querySelector("#notification-list").innerHTML = "";
-            allEventToasts = JSON.parse(localStorage.getItem("userToasts"));
+            allEventToasts = JSON.parse(localStorage.getItem("userToasts-@(Model.Event.ID)"));
             if (allEventToasts) { for (const [key, value] of Object.entries(allEventToasts)) { popToast(value, false); } }
         }
 
         window.displayNotification = (notification) => {
             if (!allEventToasts) { allEventToasts = {}; }
             allEventToasts[notification.id] = notification;
-            localStorage.setItem("userToasts", JSON.stringify(allEventToasts));
+            localStorage.setItem("userToasts-@(Model.Event.ID)", JSON.stringify(allEventToasts));
             popToast(notification, true);
         };
 
