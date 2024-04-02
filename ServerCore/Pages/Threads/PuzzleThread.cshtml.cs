@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -24,8 +23,17 @@ namespace ServerCore.Pages.Threads
         {
         }
 
+        /// <summary>
+        /// The newly created message when the user creates a message.
+        /// </summary>
         [BindProperty]
         public Message NewMessage { get; set; }
+
+        /// <summary>
+        /// The edited message.
+        /// </summary>
+        [BindProperty]
+        public Message EditMessage { get; set; }
 
         /// <summary>
         /// Gets or sets the team.
@@ -100,6 +108,8 @@ namespace ServerCore.Pages.Threads
                 IsFromGameControl = IsGameControlRole(),
                 SenderID = LoggedInUser.ID,
                 Sender = LoggedInUser,
+                PlayerID = playerId,
+                Player = singlePlayerPuzzlePlayer,
             };
 
             return Page();
@@ -138,6 +148,7 @@ namespace ServerCore.Pages.Threads
             m.PuzzleID = NewMessage.PuzzleID;
             m.TeamID = NewMessage.TeamID;
             m.ClaimerID = NewMessage.ClaimerID;
+            m.PlayerID = NewMessage.PlayerID;
 
             using (IDbContextTransaction transaction = _context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable))
             {
@@ -148,19 +159,19 @@ namespace ServerCore.Pages.Threads
 
             this.SendEmailNotifications(m, puzzle);
 
-            return await this.OnGetAsync(m.PuzzleID, m.TeamID, m.PlayerID);
+            return RedirectToPage("/Threads/PuzzleThread", new { puzzleId = m.PuzzleID, teamId = m.TeamID, playerId = m.PlayerID });
         }
 
-        public async Task<IActionResult> OnGetEditMessageAsync(int messageId, int puzzleId, int? teamId, int? playerId)
+        public async Task<IActionResult> OnPostEditMessageAsync()
         {
-            var message = await _context.Messages.Where(m => m.ID == messageId).FirstOrDefaultAsync();
+            var message = await _context.Messages.Where(m => m.ID == EditMessage.ID).FirstOrDefaultAsync();
             if (message != null && IsAllowedToEditMessage(message))
             {
-                _context.Messages.Remove(message);
+                message.Text = EditMessage.Text;
                 await _context.SaveChangesAsync();
             }
 
-            return await this.OnGetAsync(puzzleId, teamId, playerId);
+            return RedirectToPage("/Threads/PuzzleThread", new { puzzleId = EditMessage.PuzzleID, teamId = EditMessage.TeamID, playerId = EditMessage.PlayerID });
         }
 
         public async Task<IActionResult> OnGetDeleteMessageAsync(int messageId, int puzzleId, int? teamId, int? playerId)
@@ -172,7 +183,7 @@ namespace ServerCore.Pages.Threads
                 await _context.SaveChangesAsync();
             }
 
-            return await this.OnGetAsync(puzzleId, teamId, playerId);
+            return RedirectToPage("/Threads/PuzzleThread", new { puzzleId = puzzleId, teamId = teamId, playerId = playerId });
         }
 
         public async Task<IActionResult> OnPostClaimThreadAsync(int messageId, int puzzleId, int? teamId, int? playerId)
@@ -186,7 +197,7 @@ namespace ServerCore.Pages.Threads
                 await _context.SaveChangesAsync();
             }
 
-            return await this.OnGetAsync(puzzleId, teamId, playerId);
+            return RedirectToPage("/Threads/PuzzleThread", new { puzzleId = puzzleId, teamId = teamId, playerId = playerId });
         }
 
         public async Task<IActionResult> OnPostUnclaimThreadAsync(int messageId, int puzzleId, int? teamId, int? playerId)
@@ -200,7 +211,7 @@ namespace ServerCore.Pages.Threads
                 await _context.SaveChangesAsync();
             }
 
-            return await this.OnGetAsync(puzzleId, teamId, playerId);
+            return RedirectToPage("/Threads/PuzzleThread", new { puzzleId = puzzleId, teamId = teamId, playerId = playerId });
         }
 
         public bool IsAllowedToClaimMessage()

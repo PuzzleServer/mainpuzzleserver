@@ -68,18 +68,37 @@
         }
         <p>[@Html.Raw(Model.LocalTime(@message.CreatedDateTimeInUtc))] @senderName</p>
         <div id="TextAreaEdit_@message.ID" style="display:none">
-            <textarea asp-for="NewMessage.Text" class="form-control" rows="4" value="@message.Text" autocomplete="off"></textarea>
-            <a asp-page-handler="EditMessage" asp-route-messageId="@message.ID" asp-route-puzzleId="@message.PuzzleID" asp-route-teamId="@message.TeamID" asp-route-playerId="@message.PlayerID" onclick="EditText(@message.ID)">Save  </a>
-            <a onclick="CancelEdit(@message.ID)">Cancel</a>
+            <form asp-page-handler="EditMessage" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <textarea asp-for="EditMessage.Text" class="form-control" rows="4" placeholder="@message.Text" autocomplete="off">@message.Text</textarea>
+                    <span asp-validation-for="EditMessage.Text" class="text-danger"></span>
+                    <input type="hidden" asp-for="EditMessage.ID" value="@message.ID" />
+                    <input type="hidden" asp-for="EditMessage.PuzzleID" value="@message.PuzzleID" />
+                    <input type="hidden" asp-for="EditMessage.TeamID" value="@message.TeamID" />
+                    <input type="hidden" asp-for="EditMessage.PlayerID" value="@message.PlayerID" />
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Update" class="btn btn-default" /> | <a role="button" style="text-decoration:underline;color:blue" onclick="CancelEdit(@message.ID)">Cancel</a>
+                </div>
+            </form>
         </div>
         <div id="MessageText_@message.ID">
-            <p>@message.Text</p>
+            <p style="white-space: pre-wrap;">@message.Text</p>
             <span>
-                @if (Model.IsAllowedToEditMessage(message))
-                {
-                    <a onclick="EditText(@message.ID)">Edit   </a>
+                @{
+                    bool isAllowedToEditMessage = Model.IsAllowedToEditMessage(message);
+                    bool isAllowedToDeleteMessage = Model.IsAllowedToDeleteMessage(message);
                 }
-                @if (Model.IsAllowedToDeleteMessage(message))
+                @if (isAllowedToEditMessage)
+                {
+                    <a role="button" style="text-decoration:underline;color:blue" onclick="EditText(@message.ID)">Edit</a>
+                }
+                @if (isAllowedToEditMessage && isAllowedToDeleteMessage)
+                {
+                    <span>&nbsp;|&nbsp;</span>
+                }
+                @if (isAllowedToDeleteMessage)
                 {
                     <a asp-page-handler="DeleteMessage" asp-route-messageId="@message.ID" asp-route-puzzleId="@message.PuzzleID" asp-route-teamId="@message.TeamID" asp-route-playerId="@message.PlayerID" onclick="return confirm('Are you sure you want to delete this message?')">Delete</a>
                 }
@@ -94,7 +113,7 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="NewMessage.Text" class="control-label"></label>
-                <textarea asp-for="NewMessage.Text" class="form-control" rows="4" placeholder="Type message here" value="" autocomplete="off"></textarea>
+                <textarea asp-for="NewMessage.Text" class="form-control" rows="4" placeholder="Type message here" autocomplete="off"></textarea>
                 <span asp-validation-for="NewMessage.Text" class="text-danger"></span>
                 <input type="hidden" asp-for="NewMessage.ThreadId" value="@Model.NewMessage.ThreadId" />
                 <input type="hidden" asp-for="NewMessage.EventID" value="@Model.NewMessage.EventID" />
@@ -103,6 +122,7 @@
                 <input type="hidden" asp-for="NewMessage.TeamID" value="@Model.NewMessage.TeamID" />
                 <input type="hidden" asp-for="NewMessage.IsFromGameControl" value="@Model.NewMessage.IsFromGameControl" />
                 <input type="hidden" asp-for="NewMessage.SenderID" value="@Model.NewMessage.SenderID" />
+                <input type="hidden" asp-for="NewMessage.PlayerID" value="@Model.NewMessage.PlayerID" />
             </div>
             <div class="form-group">
                 <input type="submit" value="Send" class="btn btn-default" />
