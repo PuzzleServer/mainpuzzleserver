@@ -2,15 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.DependencyInjection;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
+using ServerCore.ServerMessages;
 
 namespace ServerCore
 {
     public class PuzzleStateHelper
     {
+        public static IServiceProvider ServiceProvider;
+
         /// <summary>
         /// Get a read-only query of puzzle state. You won't be able to write to these values, but the query will be resilient to state records that are missing on the server.
         /// </summary>
@@ -204,6 +209,12 @@ namespace ServerCore
             // if this puzzle got solved, look for others to unlock
             if (puzzle != null && value != null)
             {
+                // only send this notification when puzzles are embedded; otherwise, the notification is sent when there are no pages connected!
+                if (eventObj.EmbedPuzzles)
+                {
+                    await ServiceProvider.GetRequiredService<IHubContext<ServerMessageHub>>().SendNotification(team, "Puzzle solved!", $"{puzzle.Name} has been solved!");
+                }
+
                 await UnlockAnyPuzzlesThatThisSolveUnlockedAsync(context,
                     eventObj,
                     puzzle,
@@ -434,6 +445,8 @@ namespace ServerCore
             // Update teams one at a time
             foreach (Team t in teamsToUpdate)
             {
+                HashSet<int> puzzlesUnlocked = new HashSet<int>();
+
                 // Collect the IDs of all solved/unlocked puzzles for this team
                 // sparse lookup is fine since if the state is missing it isn't unlocked or solved!
                 var puzzleStateForTeamT = await PuzzleStateHelper.GetSparseQuery(context, eventObj, null, t)
@@ -471,6 +484,7 @@ namespace ServerCore
                     {
                         PuzzleStatePerTeam state = await context.PuzzleStatePerTeam.Where(s => s.PuzzleID == puzzleToUpdate.PuzzleID && s.Team == t).FirstAsync();
                         state.UnlockedTime = unlockTime;
+                        puzzlesUnlocked.Add(puzzleToUpdate.PuzzleID);
                     }
                 }
 
@@ -485,6 +499,25 @@ namespace ServerCore
                             // enough puzzles unlocked in the same group? Let's unlock it
                             PuzzleStatePerTeam state = await context.PuzzleStatePerTeam.Where(s => s.PuzzleID == pair.Key && s.Team == t).FirstAsync();
                             state.UnlockedTime = unlockTime;
+                            puzzlesUnlocked.Add(pair.Key);
+                        }
+                    }
+                }
+
+                // only send these notifications when puzzles are embedded; otherwise, the notifications are sent when there are no pages connected!
+                if (eventObj.EmbedPuzzles)
+                {
+                    if (puzzlesUnlocked.Count > 3)
+                    {
+                        await ServiceProvider.GetRequiredService<IHubContext<ServerMessageHub>>().SendNotification(t, "New puzzles!", $"{puzzlesUnlocked.Count} puzzles have been unlocked!");
+                    }
+                    else if (puzzlesUnlocked.Count > 0)
+                    {
+                        var puzzles = await context.Puzzles.Where(p => puzzlesUnlocked.Contains(p.ID)).ToListAsync();
+
+                        foreach (var puzzle in puzzles)
+                        {
+                            await ServiceProvider.GetRequiredService<IHubContext<ServerMessageHub>>().SendNotification(t, "New puzzle!", $"{puzzle.Name} has been unlocked!");
                         }
                     }
                 }
@@ -493,14 +526,13 @@ namespace ServerCore
             // after looping through all teams, send one update with all changes made
             await context.SaveChangesAsync();
         }
-
         public static async Task UpdateTeamsWhoSentResponse(PuzzleServerContext context, Response response)
         {
             using (IDbContextTransaction transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable))
             {
                 var submissionsThatMatchResponse = await (from pspt in context.PuzzleStatePerTeam
-                                                          join sub in context.Submissions on pspt.Team equals sub.Team
-                                                          where pspt.PuzzleID == response.PuzzleID &&
+                join sub in context.Submissions on pspt.Team equals sub.Team
+                where pspt.PuzzleID == response.PuzzleID &&
                                                           sub.PuzzleID == response.PuzzleID &&
                                                           sub.SubmissionText == response.SubmittedText
                                                           select new { State = pspt, Submission = sub }).ToListAsync();
@@ -535,7 +567,7 @@ namespace ServerCore
                         $"The new response for this submission is: '{response.GetPlaintextResponseText(puzzle?.EventID ?? 0)}'.");
                     foreach (Team team in teams)
                     {
-                        //NotificationHelper.SendNotification(team, $"{puzzle.PlaintextName} Response updated for '{response.SubmittedText}'", $"The new response for this submission is: '{response.GetPlaintextResponseText(puzzle?.EventID ?? 0)}'.");
+                        await ServiceProvider.GetRequiredService<IHubContext<ServerMessageHub>>().SendNotification(team, $"{puzzle.PlaintextName} Response updated for '{response.SubmittedText}'", $"The new response for this submission is: '{response.GetPlaintextResponseText(puzzle?.EventID ?? 0)}'.");
                     }
                 }
             }
