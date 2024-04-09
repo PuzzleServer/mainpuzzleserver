@@ -41,6 +41,11 @@ namespace ServerCore.Pages.Threads
         public Puzzle Puzzle { get; set; }
 
         /// <summary>
+        /// Gets or sets the puzzle state.
+        /// </summary>
+        public PuzzleStateBase PuzzleState { get; set; }
+
+        /// <summary>
         /// Gets or sets the list of messages in the thread.
         /// </summary>
         public List<Message> Messages { get; set; }
@@ -70,6 +75,7 @@ namespace ServerCore.Pages.Threads
             PuzzleUser singlePlayerPuzzlePlayer = null;
             string subject = null;
             string threadId = null;
+            bool isGameControl = IsGameControlRole();
             if (Puzzle.IsForSinglePlayer)
             {
                 singlePlayerPuzzlePlayer = _context.PuzzleUsers.Where(user => user.ID == playerId).FirstOrDefault();
@@ -78,8 +84,19 @@ namespace ServerCore.Pages.Threads
                     return NotFound();
                 }
 
+                if (!isGameControl && playerId != LoggedInUser.ID)
+                {
+                    // If is player, they can only see this thread if they match the single player puzzle player id.
+                    return NotFound();
+                }
+
                 subject = $"[{singlePlayerPuzzlePlayer.Name}]{Puzzle.Name}";
                 threadId = MessageHelper.GetSinglePlayerPuzzleThreadId(Puzzle.ID, playerId.Value);
+                PuzzleState = await SinglePlayerPuzzleStateHelper.GetOrAddStateIfNotThere(
+                    _context,
+                    Event,
+                    Puzzle,
+                    playerId.Value);
             }
             else
             {
@@ -89,8 +106,22 @@ namespace ServerCore.Pages.Threads
                     return NotFound();
                 }
 
+                if (!isGameControl 
+                    && (await GetTeamAsync())?.ID != team.ID)
+                {
+                    // If is player, they can only see this thread if they are on the team.
+                    return NotFound();
+                }
+
                 subject = $"[{team.Name}]{Puzzle.Name}";
                 threadId = MessageHelper.GetTeamPuzzleThreadId(Puzzle.ID, teamId.Value);
+                PuzzleState = await PuzzleStateHelper
+                    .GetFullReadOnlyQuery(
+                        _context,
+                        Event,
+                        Puzzle,
+                        team)
+                    .FirstAsync();
             }
 
             Messages = this._context.Messages
@@ -105,7 +136,7 @@ namespace ServerCore.Pages.Threads
                 Subject = subject,
                 PuzzleID = this.Puzzle.ID,
                 TeamID = teamId,
-                IsFromGameControl = IsGameControlRole(),
+                IsFromGameControl = isGameControl,
                 SenderID = LoggedInUser.ID,
                 Sender = LoggedInUser,
                 PlayerID = playerId,
@@ -138,11 +169,13 @@ namespace ServerCore.Pages.Threads
             }
 
             Message m = new Message();
+            DateTime now = DateTime.UtcNow;
             m.ThreadId = NewMessage.ThreadId;
             m.IsFromGameControl = NewMessage.IsFromGameControl;
             m.Subject = NewMessage.Subject;
             m.EventID = NewMessage.EventID;
-            m.CreatedDateTimeInUtc = DateTime.UtcNow;
+            m.CreatedDateTimeInUtc = now;
+            m.ModifiedDateTimeInUtc = now;
             m.Text = NewMessage.Text;
             m.SenderID = NewMessage.SenderID;
             m.PuzzleID = NewMessage.PuzzleID;
@@ -168,6 +201,7 @@ namespace ServerCore.Pages.Threads
             if (message != null && IsAllowedToEditMessage(message))
             {
                 message.Text = EditMessage.Text;
+                message.ModifiedDateTimeInUtc = DateTime.UtcNow;
                 await _context.SaveChangesAsync();
             }
 
@@ -189,12 +223,18 @@ namespace ServerCore.Pages.Threads
         public async Task<IActionResult> OnPostClaimThreadAsync(int messageId, int puzzleId, int? teamId, int? playerId)
         {
             var message = await _context.Messages.Where(m => m.ID == messageId).FirstOrDefaultAsync();
-            if (message != null && IsAllowedToClaimMessage())
+            if (message != null 
+                && IsAllowedToClaimMessage()
+                && !message.ClaimerID.HasValue)
             {
                 message.ClaimerID = LoggedInUser.ID;
                 message.Claimer = LoggedInUser;
                 _context.Messages.Update(message);
                 await _context.SaveChangesAsync();
+            }
+            else
+            {
+                throw new InvalidOperationException("You cannot claim this thread! It may have already been claimed.");
             }
 
             return RedirectToPage("/Threads/PuzzleThread", new { puzzleId = puzzleId, teamId = teamId, playerId = playerId });

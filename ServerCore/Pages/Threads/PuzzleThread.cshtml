@@ -13,19 +13,19 @@
     function EditText(id) {
         let textAreaId = "TextAreaEdit_" + id;
         let textAreaEditBox = document.getElementById(textAreaId);
-        textAreaEditBox.style.display = "block";
+        textAreaEditBox.classList.remove("hidden");
         let originalTextId = "MessageText_" + id;
         let originalText = document.getElementById(originalTextId);
-        originalText.style.display = "none";
+        originalText.classList.add("hidden");
     }
 
     function CancelEdit(id) {
         let textAreaId = "TextAreaEdit_" + id;
         let textAreaEditBox = document.getElementById(textAreaId);
-        textAreaEditBox.style.display = "none";
+        textAreaEditBox.classList.add("hidden");
         let originalTextId = "MessageText_" + id;
         let originalText = document.getElementById(originalTextId);
-        originalText.style.display = "block";
+        originalText.classList.remove("hidden");
     }
 </script>
 <h2>Help thread</h2>
@@ -67,7 +67,7 @@
             }
         }
         <p>[@Html.Raw(Model.LocalTime(@message.CreatedDateTimeInUtc))] @senderName</p>
-        <div id="TextAreaEdit_@message.ID" style="display:none">
+        <div id="TextAreaEdit_@message.ID" class="hidden">
             <form asp-page-handler="EditMessage" method="post">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group">
@@ -112,7 +112,15 @@
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="NewMessage.Text" class="control-label"></label>
+                <label asp-for="NewMessage.Text" class="control-label">Message</label>
+                @if (Model.PuzzleState.IsEmailOnlyMode)
+                {
+                    <p>Use this message to fully explain your thought process so we know you're not randomly spamming attempts!</p>
+                }
+                else
+                {
+                    <p>The more details you add here, the more helpful the responses you'll get will be!</p>
+                }
                 <textarea asp-for="NewMessage.Text" class="form-control" rows="4" placeholder="Type message here" autocomplete="off"></textarea>
                 <span asp-validation-for="NewMessage.Text" class="text-danger"></span>
                 <input type="hidden" asp-for="NewMessage.ThreadId" value="@Model.NewMessage.ThreadId" />

@@ -140,7 +140,7 @@ namespace ServerCore.ModelBases
             return Event.HasSwag;
         }
 
-        private async Task<Team> GetTeamAsync()
+        public async Task<Team> GetTeamAsync()
         {
             if (this.team == null)
             {

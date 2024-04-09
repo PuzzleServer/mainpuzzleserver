@@ -378,7 +378,7 @@ a.navbar-brand {
     margin: 10px 0;
 }
 
-.message-darker {
+.message-container:nth-child(2n) {
     border-color: #ccc;
     background-color: #ddd;
 }

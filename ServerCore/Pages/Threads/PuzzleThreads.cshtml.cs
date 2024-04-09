@@ -43,8 +43,10 @@ namespace ServerCore.Pages.Threads
 
             if (EventRole == EventRole.play)
             {
-                Team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
-                messages = messages.Where(message => message.TeamID.Value == Team.ID || message.SenderID == LoggedInUser.ID);
+                Team = await GetTeamAsync();
+                messages = messages.Where(message => 
+                    (Team != null && message.TeamID.Value == Team.ID) 
+                    || message.SenderID == LoggedInUser.ID);
             }
             else if (EventRole == EventRole.author)
             {
