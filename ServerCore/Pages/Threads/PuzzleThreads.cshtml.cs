@@ -8,6 +8,7 @@ using ServerCore.Helpers;
 using ServerCore.ModelBases;
 using System.Collections.Generic;
 using System;
+using Microsoft.EntityFrameworkCore;
 
 namespace ServerCore.Pages.Threads
 {
@@ -38,7 +39,7 @@ namespace ServerCore.Pages.Threads
                 return Challenge();
             }
 
-            IEnumerable<Message> messages = this._context.Messages.Where(message => message.Puzzle != null
+            IQueryable<Message> messages = this._context.Messages.Where(message => message.Puzzle != null
                     && message.Puzzle.EventID == Event.ID);
 
             if (EventRole == EventRole.play)
@@ -60,10 +61,10 @@ namespace ServerCore.Pages.Threads
                 throw new NotSupportedException($"EventRole [{EventRole}] is not supported in PuzzleThreads");
             }
 
-            LatestMessagesFromEachThread = messages
+            LatestMessagesFromEachThread = await messages
                 .GroupBy(message => message.ThreadId)
                 .Select(group => group.OrderByDescending(message => message.CreatedDateTimeInUtc).First())
-                .ToList();
+                .ToListAsync();
 
             return Page();
         }
