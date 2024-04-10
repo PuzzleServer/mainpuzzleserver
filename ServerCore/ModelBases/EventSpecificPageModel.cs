@@ -140,7 +140,7 @@ namespace ServerCore.ModelBases
             return Event.HasSwag;
         }
 
-        private async Task<Team> GetTeamAsync()
+        public async Task<Team> GetTeamAsync()
         {
             if (this.team == null)
             {
@@ -189,6 +189,11 @@ namespace ServerCore.ModelBases
         public string LocalTime(DateTime? date)
         {
             return TimeHelper.LocalTime(date);
+        }
+
+        public bool IsGameControlRole()
+        {
+            return EventRole == EventRole.admin || EventRole == EventRole.author;
         }
 
         public class EventBinder : IModelBinder

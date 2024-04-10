@@ -369,3 +369,21 @@ a.navbar-brand {
 .footer-custom ul {
     margin: 0px;
 }
+
+.message-container {
+    border: 2px solid #dedede;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+.message-container:nth-child(2n) {
+    border-color: #ccc;
+    background-color: #ddd;
+}
+
+.message-game-control {
+    border-color: #00FF00;
+    border-width: 5px;
+}
