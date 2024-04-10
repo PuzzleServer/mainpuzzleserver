@@ -44,7 +44,13 @@
 <hr />
 @foreach (var message in Model.Messages)
 {
-    <div class="message-container">
+    string classString = "message-container";
+    if (message.IsFromGameControl)
+    {
+        classString += " message-game-control";
+    }
+
+    <div class="@classString">
         @{
             string senderName = message.Sender.Name;
             @if (message.IsFromGameControl)
