@@ -107,7 +107,7 @@ namespace ServerCore.Pages.Threads
                 }
 
                 if (!isGameControl 
-                    && (await GetTeamAsync())?.ID != team.ID)
+                    && (await this.GetTeamId()) != team.ID)
                 {
                     // If is player, they can only see this thread if they are on the team.
                     return NotFound();
@@ -166,6 +166,16 @@ namespace ServerCore.Pages.Threads
             if (puzzle == null)
             {
                 return RedirectToPage("/Index");
+            }
+
+            // Validate to make sure user actually allowed to post
+            if (!this.IsGameControlRole())
+            {
+                if ((puzzle.IsForSinglePlayer && NewMessage.PlayerID != LoggedInUser.ID)
+                    || (!puzzle.IsForSinglePlayer && NewMessage.TeamID != (await this.GetTeamId())))
+                {
+                    throw new InvalidOperationException("You are not allowed to post to this thread.");
+                }
             }
 
             Message m = new Message();

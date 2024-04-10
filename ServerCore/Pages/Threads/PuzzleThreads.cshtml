@@ -50,10 +50,6 @@
                     {
                         <a asp-Page="/Puzzles/Edit" asp-route-puzzleid=@item.Puzzle.ID>@item.Puzzle.Name</a>
                     }
-                    else if (Model.Event.EmbedPuzzles)
-                    {
-                        <a asp-page="/Submissions/Index" asp-route-puzzleId="@item.Puzzle.ID">@item.Puzzle.Name</a>
-                    }
                     else
                     {
                         <a asp-page="/Submissions/Index" asp-route-puzzleId="@item.Puzzle.ID">@item.Puzzle.Name</a>

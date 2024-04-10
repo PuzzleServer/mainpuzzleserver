@@ -42,21 +42,9 @@
 
 <h4>Thread for puzzle @Model.Puzzle.Name</h4>
 <hr />
-@{
-    bool shouldMakeDark = false;
-}
 @foreach (var message in Model.Messages)
 {
-    string classString = "message-container";
-    if (shouldMakeDark) {
-        classString += " message-darker";
-    }
-
-    if (message.IsFromGameControl) {
-        classString += " message-game-control";
-    }
-
-    <div class="@classString">
+    <div class="message-container">
         @{
             string senderName = message.Sender.Name;
             @if (message.IsFromGameControl)
@@ -105,7 +93,6 @@
             </span>
         </div>
     </div>
-    shouldMakeDark = !shouldMakeDark;
 }
 <div class="row">
     <div class="col-md-4">

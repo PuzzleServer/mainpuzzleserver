@@ -42,6 +42,7 @@ namespace ServerCore.Pages.Threads
             IQueryable<Message> messages = this._context.Messages.Where(message => message.Puzzle != null
                     && message.Puzzle.EventID == Event.ID);
 
+            // Based on the event role, filter the messages further.
             if (EventRole == EventRole.play)
             {
                 Team = await GetTeamAsync();
@@ -56,7 +57,12 @@ namespace ServerCore.Pages.Threads
                     .ToHashSet();
                 messages = messages.Where(message => authorPuzzleIds.Contains(message.Puzzle.ID));
             }
-            else if (EventRole != EventRole.admin)
+            else if (EventRole == EventRole.admin)
+            {
+                // Admins should be able to see everything, so no further filterning needs to be done
+                // no-op;
+            }
+            else
             {
                 throw new NotSupportedException($"EventRole [{EventRole}] is not supported in PuzzleThreads");
             }
