@@ -8,6 +8,8 @@
     ViewData["AuthorRoute"] = "/Threads/PuzzleThread";
     ViewData["PlayRoute"] = "/Threads/PuzzleThread";
     ViewData["RoutingPuzzleId"] = ViewContext.RouteData.Values["puzzleId"];
+    ViewData["RoutingTeamId"] = ViewContext.RouteData.Values["teamId"];
+    ViewData["RoutingPlayerId"] = ViewContext.RouteData.Values["playerId"];
 }
 <script>
     function EditText(id) {
