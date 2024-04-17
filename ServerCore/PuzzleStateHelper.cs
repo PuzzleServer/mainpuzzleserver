@@ -531,8 +531,8 @@ namespace ServerCore
             using (IDbContextTransaction transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable))
             {
                 var submissionsThatMatchResponse = await (from pspt in context.PuzzleStatePerTeam
-                join sub in context.Submissions on pspt.Team equals sub.Team
-                where pspt.PuzzleID == response.PuzzleID &&
+                                                          join sub in context.Submissions on pspt.Team equals sub.Team
+                                                          where pspt.PuzzleID == response.PuzzleID &&
                                                           sub.PuzzleID == response.PuzzleID &&
                                                           sub.SubmissionText == response.SubmittedText
                                                           select new { State = pspt, Submission = sub }).ToListAsync();

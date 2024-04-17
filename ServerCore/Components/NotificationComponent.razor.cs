@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
@@ -7,13 +8,13 @@ namespace ServerCore.Components
     public partial class NotificationComponent : IDisposable
     {
         [Parameter]
-        public int EventID { get; set; }
+        public int? EventID { get; set; }
 
         [Parameter]
-        public int TeamID { get; set; }
+        public int? TeamID { get; set; }
 
         [Parameter]
-        public int PlayerID { get; set; }
+        public int? PlayerID { get; set; }
 
         [Inject]
         protected IJSRuntime JS { get; set; } = default!;
@@ -21,26 +22,24 @@ namespace ServerCore.Components
         [Inject]
         protected NotificationHelper NotificationHelper { get; set; } = default!;
 
-        private IDisposable listener = null;
-
         public NotificationComponent()
         {
         }
 
         protected override void OnInitialized()
         {
-            this.listener = NotificationHelper.RegisterForNotifications(EventID, TeamID, PlayerID, this.OnNotification);
+            NotificationHelper.RegisterForNotifications(EventID, TeamID, PlayerID, this.OnNotify);
             base.OnInitialized();
         }
 
-        private void OnNotification(object sender, NotificationEventArgs args)
+        private async Task OnNotify(Notification notification)
         {
-            _ = this.JS.InvokeVoidAsync("displayNotification", args.Notification);
+            await this.JS.InvokeVoidAsync("displayNotification", notification);
         }
 
         public void Dispose()
         {
-            this.listener?.Dispose();
+            NotificationHelper.UnregisterFromNotifications(EventID, TeamID, PlayerID, this.OnNotify);
         }
     }
 }
