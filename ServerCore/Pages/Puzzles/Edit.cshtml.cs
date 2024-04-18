@@ -120,6 +120,29 @@ namespace ServerCore.Pages.Puzzles
             {
                 await _context.SaveChangesAsync();
 
+                // Check to see if IsForSinglePlayer has changed.
+                // Delete appropriate rows if so
+                if (oldPuzzleView.IsForSinglePlayer != Puzzle.IsForSinglePlayer)
+                {
+                    if (oldPuzzleView.IsForSinglePlayer)
+                    {
+                        // If moving from SinglePlayerPuzzle to team puzzle, delete single player puzzle states
+                        await _context.SinglePlayerPuzzleHintStatePerPlayer.Where(hintState => hintState.Hint.PuzzleID == oldPuzzleView.ID).ExecuteDeleteAsync();
+                        await _context.SinglePlayerPuzzleStatePerPlayer.Where(puzzleState => puzzleState.PuzzleID == oldPuzzleView.ID).ExecuteDeleteAsync();
+                        await _context.SinglePlayerPuzzleSubmissions.Where(submissions => submissions.PuzzleID == oldPuzzleView.ID).ExecuteDeleteAsync();
+                        await _context.SinglePlayerPuzzleUnlockStates.Where(unlockState => unlockState.PuzzleID == oldPuzzleView.ID).ExecuteDeleteAsync();
+                    }
+                    else
+                    {
+                        // If moving from team puzzle to SinglePlayerPuzzle, delete team puzzle states
+                        await _context.HintStatePerTeam.Where(hintState => hintState.Hint.PuzzleID == oldPuzzleView.ID).ExecuteDeleteAsync();
+                        await _context.PuzzleStatePerTeam.Where(puzzleState => puzzleState.PuzzleID == oldPuzzleView.ID).ExecuteDeleteAsync();
+                        await _context.Submissions.Where(submissions => submissions.PuzzleID == oldPuzzleView.ID).ExecuteDeleteAsync();
+                    }
+
+                    await _context.SaveChangesAsync();
+                }
+
                 // Check if the errata was updated, and notify teams accordingly if so.
                 // Changing from null to an empty string or vice-versa doesn't count.
                 string oldErrata = oldPuzzleView.Errata;
