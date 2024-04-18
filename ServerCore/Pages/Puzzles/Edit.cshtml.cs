@@ -127,17 +127,29 @@ namespace ServerCore.Pages.Puzzles
                     if (oldPuzzleView.IsForSinglePlayer)
                     {
                         // If moving from SinglePlayerPuzzle to team puzzle, delete single player puzzle states
-                        await _context.SinglePlayerPuzzleHintStatePerPlayer.Where(hintState => hintState.Hint.PuzzleID == oldPuzzleView.ID).ExecuteDeleteAsync();
-                        await _context.SinglePlayerPuzzleStatePerPlayer.Where(puzzleState => puzzleState.PuzzleID == oldPuzzleView.ID).ExecuteDeleteAsync();
-                        await _context.SinglePlayerPuzzleSubmissions.Where(submissions => submissions.PuzzleID == oldPuzzleView.ID).ExecuteDeleteAsync();
-                        await _context.SinglePlayerPuzzleUnlockStates.Where(unlockState => unlockState.PuzzleID == oldPuzzleView.ID).ExecuteDeleteAsync();
+                        IEnumerable<SinglePlayerPuzzleHintStatePerPlayer> hintStatesToRemove = _context.SinglePlayerPuzzleHintStatePerPlayer.Where(hintState => hintState.Hint.PuzzleID == oldPuzzleView.ID);
+                        _context.SinglePlayerPuzzleHintStatePerPlayer.RemoveRange(hintStatesToRemove);
+
+                        IEnumerable<SinglePlayerPuzzleStatePerPlayer> puzzleStatesToRemove = _context.SinglePlayerPuzzleStatePerPlayer.Where(puzzleState => puzzleState.PuzzleID == oldPuzzleView.ID);
+                        _context.SinglePlayerPuzzleStatePerPlayer.RemoveRange(puzzleStatesToRemove);
+
+                        IEnumerable<SinglePlayerPuzzleSubmission> submissionsToRemove = _context.SinglePlayerPuzzleSubmissions.Where(submissions => submissions.PuzzleID == oldPuzzleView.ID);
+                        _context.SinglePlayerPuzzleSubmissions.RemoveRange(submissionsToRemove);
+
+                        IEnumerable<SinglePlayerPuzzleUnlockState> unlockStatesToRemove = _context.SinglePlayerPuzzleUnlockStates.Where(unlockState => unlockState.PuzzleID == oldPuzzleView.ID);
+                        _context.SinglePlayerPuzzleUnlockStates.RemoveRange(unlockStatesToRemove);
                     }
                     else
                     {
                         // If moving from team puzzle to SinglePlayerPuzzle, delete team puzzle states
-                        await _context.HintStatePerTeam.Where(hintState => hintState.Hint.PuzzleID == oldPuzzleView.ID).ExecuteDeleteAsync();
-                        await _context.PuzzleStatePerTeam.Where(puzzleState => puzzleState.PuzzleID == oldPuzzleView.ID).ExecuteDeleteAsync();
-                        await _context.Submissions.Where(submissions => submissions.PuzzleID == oldPuzzleView.ID).ExecuteDeleteAsync();
+                        IEnumerable<HintStatePerTeam> hintStatesToRemove = _context.HintStatePerTeam.Where(hintState => hintState.Hint.PuzzleID == oldPuzzleView.ID);
+                        _context.HintStatePerTeam.RemoveRange(hintStatesToRemove);
+
+                        IEnumerable<PuzzleStatePerTeam> puzzleStatesToRemove = _context.PuzzleStatePerTeam.Where(puzzleState => puzzleState.PuzzleID == oldPuzzleView.ID);
+                        _context.PuzzleStatePerTeam.RemoveRange(puzzleStatesToRemove);
+
+                        IEnumerable<Submission> submissionsToRemove = _context.Submissions.Where(submissions => submissions.PuzzleID == oldPuzzleView.ID);
+                        _context.Submissions.RemoveRange(submissionsToRemove);
                     }
 
                     await _context.SaveChangesAsync();
