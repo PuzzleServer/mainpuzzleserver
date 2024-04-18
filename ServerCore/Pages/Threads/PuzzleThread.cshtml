@@ -7,7 +7,9 @@
     ViewData["AdminRoute"] = "/Threads/PuzzleThread";
     ViewData["AuthorRoute"] = "/Threads/PuzzleThread";
     ViewData["PlayRoute"] = "/Threads/PuzzleThread";
-    ViewData["RoutingPuzzleId"] = ViewContext.RouteData.Values["puzzleId"];
+    ViewData["RoutingPuzzleId"] = Model.NewMessage.PuzzleID.ToString();
+    ViewData["RoutingTeamId"] = Model.NewMessage.TeamID.ToString();
+    ViewData["RoutingPlayerId"] = Model.NewMessage.PlayerID.ToString();
 }
 <script>
     function EditText(id) {
