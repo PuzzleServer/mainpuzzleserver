@@ -157,6 +157,7 @@ namespace ServerCore.Pages.Threads
                 ModelState.AddModelError("NewMessage.Text", "Your message should not be longer than 3000 characters.");
             }
 
+            ModelState.Remove("EventId");
             if (!ModelState.IsValid)
             {
                 return await this.OnGetAsync(NewMessage.PuzzleID, NewMessage.TeamID, NewMessage.PlayerID);
