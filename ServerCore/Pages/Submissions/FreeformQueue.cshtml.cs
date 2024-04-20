@@ -178,11 +178,7 @@ namespace ServerCore.Pages.Submissions
             {
                 MailHelper.Singleton.SendPlaintextOneAddress(submission.Submitter.Email, $"{submission.Puzzle.PlaintextName} Submission {Result}", $"Your submission for {submission.Puzzle.Name} has been {Result} with the response: {FreeformResponse}");
 
-                PlayerInEvent player = await (from PlayerInEvent p in _context.PlayerInEvent where p.PlayerId == submission.SubmitterID select p).FirstOrDefaultAsync();
-                if (player != null)
-                {
-                    await this.messageHub.SendNotification(player, $"{submission.Puzzle.PlaintextName} Submission {Result}", $"Your submission for {submission.Puzzle.Name} has been {Result} with the response: {FreeformResponse}");
-                }
+                await this.messageHub.SendNotification(submission.Submitter, $"{submission.Puzzle.PlaintextName} Submission {Result}", $"Your submission for {submission.Puzzle.Name} has been {Result} with the response: {FreeformResponse}");
             }
 
             return RedirectToPage();

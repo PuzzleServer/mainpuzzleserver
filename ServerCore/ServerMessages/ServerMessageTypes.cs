@@ -89,9 +89,9 @@ public class Notification
     public int? TeamID { get; set; }
 
     /// <summary>
-    /// The player the notification is for.
+    /// The user the notification is for.
     /// </summary>
-    public int? PlayerID { get; set; }
+    public int? UserID { get; set; }
 
     /// <summary>
     /// The title of the notification.

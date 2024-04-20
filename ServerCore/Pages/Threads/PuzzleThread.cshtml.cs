@@ -5,12 +5,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using NuGet.Packaging;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
 using ServerCore.ModelBases;
+using ServerCore.ServerMessages;
 
 namespace ServerCore.Pages.Threads
 {
@@ -19,8 +21,11 @@ namespace ServerCore.Pages.Threads
     {
         public const int MessageCharacterLimit = 3000;
 
-        public PuzzleThreadModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
+        private IHubContext<ServerMessageHub> messageHub;
+
+        public PuzzleThreadModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager, IHubContext<ServerMessageHub> messageHub) : base(serverContext, userManager)
         {
+            this.messageHub = messageHub;
         }
 
         /// <summary>
@@ -201,7 +206,7 @@ namespace ServerCore.Pages.Threads
                 transaction.Commit();
             }
 
-            this.SendEmailNotifications(m, puzzle);
+            await this.SendEmailNotifications(m, puzzle);
 
             return RedirectToPage("/Threads/PuzzleThread", new { puzzleId = m.PuzzleID, teamId = m.TeamID, playerId = m.PlayerID });
         }
@@ -283,10 +288,15 @@ namespace ServerCore.Pages.Threads
                 || message.SenderID == LoggedInUser.ID;
         }
 
-        private void SendEmailNotifications(Message newMessage, Puzzle puzzle)
+        private async Task SendEmailNotifications(Message newMessage, Puzzle puzzle)
         {
             // Send a notification email to further alert both authors and players.
-            var recipients = new HashSet<string>();
+            string emailTitle = $"{newMessage.Subject} thread update!";
+            string emailContent = "You have an update on your help message thread.";
+            string toastTitle = $"Help message from {(newMessage.IsFromGameControl ? "Game Control" : newMessage.Sender.Name)}";
+            string toastContent = $"{newMessage.Subject}";
+
+            var recipients = new HashSet<PuzzleUser>();
 
             if (newMessage.IsFromGameControl)
             {
@@ -296,33 +306,42 @@ namespace ServerCore.Pages.Threads
                 {
                     if (puzzle.IsForSinglePlayer)
                     {
-                        recipients.Add(messageFromPlayer.Sender.Email);
+                        recipients.Add(messageFromPlayer.Sender);
+                        await messageHub.SendNotification(messageFromPlayer.Sender, toastTitle, toastContent);
                     }
                     else if (messageFromPlayer.TeamID != null)
                     {
-                        recipients.AddRange(_context.TeamMembers
+                        recipients.AddRange(await _context.TeamMembers
                             .Where(teamMember => teamMember.Team.ID == messageFromPlayer.TeamID)
-                            .Select(teamMember => teamMember.Member.Email));
+                            .Select(teamMember => teamMember.Member).ToArrayAsync());
+                        await messageHub.SendNotification(messageFromPlayer.Team, toastTitle, toastContent);
                     }
                 }
             }
             else
             {
                 // Send notification to authors and any game control person on the thread if message from player.
-                recipients.AddRange(_context.PuzzleAuthors
-                    .Where(pa => pa.Puzzle.ID == puzzle.ID)
-                    .Select(pa => pa.Author.Email));
+                HashSet<PuzzleUser> staff = new HashSet<PuzzleUser>();
 
-                recipients.AddRange(_context.Messages
+                staff.AddRange(await _context.PuzzleAuthors
+                    .Where(pa => pa.Puzzle.ID == puzzle.ID)
+                    .Select(pa => pa.Author).ToArrayAsync());
+
+                staff.AddRange(await _context.Messages
                     .Where(message => message.ThreadId == newMessage.ThreadId && message.IsFromGameControl)
-                    .Select(message => message.Sender.Email));
+                    .Select(message => message.Sender).ToArrayAsync());
+
+                recipients.AddRange(staff);
+                
+                foreach (var staffer in staff)
+                {
+                    await messageHub.SendNotification(staffer, toastTitle, toastContent);
+                }
             }
 
             if (recipients.Any())
             {
-                MailHelper.Singleton.SendPlaintextWithoutBcc(recipients,
-                    $"{newMessage.Subject} thread update!",
-                    "You have an update on your help message thread.");
+                MailHelper.Singleton.SendPlaintextWithoutBcc(recipients.Select(r => r.Email), emailTitle, emailContent);
             }
         }
     }

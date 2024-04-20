@@ -14,7 +14,7 @@ namespace ServerCore.Components
         public int? TeamID { get; set; }
 
         [Parameter]
-        public int? PlayerID { get; set; }
+        public int? UserID { get; set; }
 
         [Inject]
         protected IJSRuntime JS { get; set; } = default!;
@@ -28,7 +28,7 @@ namespace ServerCore.Components
 
         protected override void OnInitialized()
         {
-            NotificationHelper.RegisterForNotifications(EventID, TeamID, PlayerID, this.OnNotify);
+            NotificationHelper.RegisterForNotifications(EventID, TeamID, UserID, this.OnNotify);
             base.OnInitialized();
         }
 
@@ -39,7 +39,7 @@ namespace ServerCore.Components
 
         public void Dispose()
         {
-            NotificationHelper.UnregisterFromNotifications(EventID, TeamID, PlayerID, this.OnNotify);
+            NotificationHelper.UnregisterFromNotifications(EventID, TeamID, UserID, this.OnNotify);
         }
     }
 }

@@ -6,12 +6,14 @@
     bool isOnTeam = false;
     int? teamId = null;
     int? playerEventId = null;
+    int? userId = null;
     if (eventPage != null)
     {
         IsRegistered = await eventPage.IsRegisteredUser();
         isOnTeam = await eventPage.PlayerHasTeamForEvent();
         teamId = await eventPage.GetTeamId();
         playerEventId = await eventPage.GetPlayerEventId();
+        userId = eventPage.LoggedInUser.ID;
     }
 }
 
@@ -373,5 +375,5 @@
         <div id="notification-list" class="toast-container position-absolute top-0 end-0 p-3"></div>
     </div>
 
-    <component type="typeof(ServerCore.Components.NotificationComponent)" render-mode="ServerPrerendered" param-EventID="@Event?.ID" param-TeamID="@teamId" param-PlayerID="@playerEventId" />
+    <component type="typeof(ServerCore.Components.NotificationComponent)" render-mode="ServerPrerendered" param-EventID="@Event?.ID" param-TeamID="@teamId" param-UserID="@userId" />
 }

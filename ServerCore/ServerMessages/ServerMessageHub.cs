@@ -69,9 +69,9 @@ namespace ServerCore.ServerMessages
         /// <param name="title">Notification title</param>
         /// <param name="content">Notification content</param>
         /// <param name="linkUrl">Link for the notification if the player clicks it</param>
-        public static async Task SendNotification(this IHubContext<ServerMessageHub> hub, PlayerInEvent player, string title, string content, string linkUrl = null)
+        public static async Task SendNotification(this IHubContext<ServerMessageHub> hub, PuzzleUser user, string title, string content, string linkUrl = null)
         {
-            await hub.Clients.Groups(ServersGroup).SendAsync(nameof(Notification), new Notification() { Time = DateTime.UtcNow, PlayerID = player.ID, Title = title, Content = content, LinkUrl = linkUrl });
+            await hub.Clients.Groups(ServersGroup).SendAsync(nameof(Notification), new Notification() { Time = DateTime.UtcNow, UserID = user.ID, Title = title, Content = content, LinkUrl = linkUrl });
         }
     }
 }

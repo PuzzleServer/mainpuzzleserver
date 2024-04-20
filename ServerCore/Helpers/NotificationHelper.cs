@@ -12,7 +12,7 @@ public class NotificationHelper
 {
     private ConcurrentDictionary<int, NotificationListener> listenersByEvent = new ConcurrentDictionary<int, NotificationListener>();
     private ConcurrentDictionary<int, NotificationListener> listenersByTeam = new ConcurrentDictionary<int, NotificationListener>();
-    private ConcurrentDictionary<int, NotificationListener> listenersByPlayer = new ConcurrentDictionary<int, NotificationListener>();
+    private ConcurrentDictionary<int, NotificationListener> listenersByUser = new ConcurrentDictionary<int, NotificationListener>();
 
     public NotificationHelper(ServerMessageListener messageListener)
     {
@@ -35,9 +35,9 @@ public class NotificationHelper
         {
             this.listenersByEvent.TryGetValue(notification.EventID.Value, out listener);
         }
-        else if (notification.PlayerID.HasValue)
+        else if (notification.UserID.HasValue)
         {
-            this.listenersByPlayer.TryGetValue(notification.PlayerID.Value, out listener);
+            this.listenersByUser.TryGetValue(notification.UserID.Value, out listener);
         }
 
         if (listener != null)
@@ -51,9 +51,9 @@ public class NotificationHelper
     /// </summary>
     /// <param name="eventID">The event the client is in</param>
     /// <param name="teamID">The team the client is in</param>
-    /// <param name="playerID">The player</param>
+    /// <param name="userID">The user</param>
     /// <param name="notificationRecieved">The EventHandler that will listen to events for the client</param>
-    public void RegisterForNotifications(int? eventID, int? teamID, int? playerID, Func<Notification, Task> onNotify)
+    public void RegisterForNotifications(int? eventID, int? teamID, int? userID, Func<Notification, Task> onNotify)
     {
         // helper function for each of the three object types
         void Register(int? id, ConcurrentDictionary<int, NotificationListener> listenerDictionary, Func<Notification, Task> onNotify)
@@ -70,7 +70,7 @@ public class NotificationHelper
 
         Register(eventID, this.listenersByEvent, onNotify);
         Register(teamID, this.listenersByTeam, onNotify);
-        Register(playerID, this.listenersByPlayer, onNotify);
+        Register(userID, this.listenersByUser, onNotify);
     }
 
     /// <summary>
@@ -78,9 +78,9 @@ public class NotificationHelper
     /// </summary>
     /// <param name="eventID">The event the client is in</param>
     /// <param name="teamID">The team the client is in</param>
-    /// <param name="playerID">The player</param>
+    /// <param name="userID">The user</param>
     /// <param name="notificationRecieved">The EventHandler that will listen to events for the client</param>
-    public void UnregisterFromNotifications(int? eventID, int? teamID, int? playerID, Func<Notification, Task> onNotify)
+    public void UnregisterFromNotifications(int? eventID, int? teamID, int? userID, Func<Notification, Task> onNotify)
     {
         // helper function for each of the three object types
         void Unregister(int? id, ConcurrentDictionary<int, NotificationListener> listenerDictionary, Func<Notification, Task> onNotify)
@@ -97,7 +97,7 @@ public class NotificationHelper
 
         Unregister(eventID, this.listenersByEvent, onNotify);
         Unregister(teamID, this.listenersByTeam, onNotify);
-        Unregister(playerID, this.listenersByPlayer, onNotify);
+        Unregister(userID, this.listenersByUser, onNotify);
     }
 
     private class NotificationListener
