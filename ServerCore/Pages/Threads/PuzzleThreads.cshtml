@@ -1,0 +1,79 @@
+﻿@page "/{eventId}/{eventRole}/Threads/PuzzleThreads"
+@model ServerCore.Pages.Threads.PuzzleThreadsModel
+@{
+    ViewData["Title"] = "Puzzle thread";
+    ViewData["AdminRoute"] = "/Threads/PuzzleThreads";
+    ViewData["AuthorRoute"] = "/Threads/PuzzleThreads";
+    ViewData["PlayRoute"] = "/Threads/PuzzleThreads";
+}
+
+<h2>Help thread</h2>
+<div>
+    @if (Model.EventRole == ServerCore.ModelBases.EventRole.play) {
+        <a asp-page="/Puzzles/Play">Back to puzzle list</a>
+    }
+    else
+    {
+        <a asp-page="/Puzzles/Index">Back to puzzle list</a>
+    }
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Puzzle
+            </th>
+            <th>
+                Timestamp
+            </th>
+            <th>
+                Subject
+            </th>
+            <th>
+                Last message
+            </th>
+            <th>
+                Last message sender
+            </th>
+            <th>
+                Is handled
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.LatestMessagesFromEachThread)
+        {
+            <tr>
+                <td>
+                    @if (Model.EventRole == ModelBases.EventRole.admin || Model.EventRole == ModelBases.EventRole.author)
+                    {
+                        <a asp-Page="/Puzzles/Edit" asp-route-puzzleid=@item.Puzzle.ID>@item.Puzzle.Name</a>
+                    }
+                    else
+                    {
+                        <a asp-page="/Submissions/Index" asp-route-puzzleId="@item.Puzzle.ID">@item.Puzzle.Name</a>
+                    }
+                </td>
+                <td>
+                    @Html.Raw(Model.LocalTime(@item.CreatedDateTimeInUtc))
+                </td>
+                <td>
+                    <a asp-page="/Threads/PuzzleThread" asp-route-puzzleId="@item.Puzzle.ID" asp-route-teamId="@item.TeamID" asp-route-playerId="@item.PlayerID">@item.Subject</a>
+                </td>
+                <td>
+                    @(item.Text.Length > 93 ? $"{item.Text.Substring(0, 90)}..." : item.Text)
+                </td>
+                <td>
+                    @item.Sender.Name
+                </td>
+                <td>
+                    @if (!item.ClaimerID.HasValue && !item.IsFromGameControl)
+                    {
+                        <p>&#x26A0; Has unanswered question!</p>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

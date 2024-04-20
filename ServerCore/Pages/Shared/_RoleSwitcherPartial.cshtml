@@ -21,6 +21,7 @@
             }
             var RoutingPuzzleId = ViewData["RoutingPuzzleId"] as string;
             var RoutingTeamId = ViewData["RoutingTeamId"] as string;
+            var RoutingPlayerId = ViewData["RoutingPlayerId"] as string;
             var cssValue = "player-menu";
             if (IsAdmin)
             {
@@ -33,13 +34,13 @@
             <ul class="dropdown-menu @cssValue">
                 @if (IsAdmin)
                 {
-                    <li><a class="dropdown-item" asp-page=@AdminRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.admin" asp-route-teamId=@RoutingTeamId asp-route-puzzleId=@RoutingPuzzleId>Admin mode</a></li>
+                    <li><a class="dropdown-item" asp-page=@AdminRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.admin" asp-route-teamId=@RoutingTeamId asp-route-puzzleId=@RoutingPuzzleId asp-route-playerId="@RoutingPlayerId">Admin mode</a></li>
                 }
                 @if (IsAuthor)
                 {
-                    <li><a class="dropdown-item" asp-page=@AuthorRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.author" asp-route-teamId=@RoutingTeamId asp-route-puzzleId=@RoutingPuzzleId>Author mode</a></li>
+                    <li><a class="dropdown-item" asp-page=@AuthorRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.author" asp-route-teamId=@RoutingTeamId asp-route-puzzleId=@RoutingPuzzleId asp-route-playerId="@RoutingPlayerId">Author mode</a></li>
                 }
-                <li><a class="dropdown-item" asp-page=@PlayRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play" asp-route-teamId=@RoutingTeamId asp-route-puzzleId=@RoutingPuzzleId>Player mode</a></li>
+                <li><a class="dropdown-item" asp-page=@PlayRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play" asp-route-teamId=@RoutingTeamId asp-route-puzzleId=@RoutingPuzzleId asp-route-playerId="@RoutingPlayerId">Player mode</a></li>
             </ul>
         }
     }
