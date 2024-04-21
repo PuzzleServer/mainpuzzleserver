@@ -329,7 +329,7 @@
 
         function popToast(notification, animate) {
             let notificationList = document.querySelector("#notification-list");
-            notificationList.insertAdjacentHTML("beforeend", `\
+            notificationList.insertAdjacentHTML("afterbegin", `\
                     <div class='toast' role='alert' aria-live='assertive' aria-atomic='true'> \
                         <div class='toast-header'> \
                             <strong class='me-auto'>${notification.title}</strong> \
@@ -337,15 +337,21 @@
                             <button type='button' class='btn-close' data-bs-dismiss='toast' aria-label='Close'></button> \
                         </div> \
                         <div class='toast-body'> \
-                            ${notification.linkurl ? ("<a href='" + notification.linkurl + "'>") : ""} \
+                            ${notification.linkUrl ? ("<a href='" + notification.linkUrl + "'>") : ""} \
                             ${notification.content} \
-                            ${notification.linkurl ? "</a>" : ""} \
+                            ${notification.linkUrl ? "</a>" : ""} \
                         </div> \
                     </div>`);
 
-            notificationList.lastElementChild.addEventListener('hidden.bs.toast', () => { onDismissUserToast(notification.id); });
+            if (notification.linkUrl) {
+                notificationList.firstElementChild.querySelector("a").addEventListener("click", (e) => {
+                    onDismissUserToast(notification.id);
+                });
+            }
 
-            let toast = new bootstrap.Toast(notificationList.lastElementChild, { animation: animate, autohide: false });
+            notificationList.firstElementChild.addEventListener('hidden.bs.toast', () => { onDismissUserToast(notification.id); });
+
+            let toast = new bootstrap.Toast(notificationList.firstElementChild, { animation: animate, autohide: false });
             toast.show();
         }
 

@@ -295,6 +295,7 @@ namespace ServerCore.Pages.Threads
             string emailContent = "You have an update on your help message thread.";
             string toastTitle = $"Help message from {(newMessage.IsFromGameControl ? "Game Control" : newMessage.Sender.Name)}";
             string toastContent = $"{newMessage.Subject}";
+            string threadUrlSuffix = $"Threads/PuzzleThread/{newMessage.PuzzleID}?teamId={newMessage.TeamID}&playerId={newMessage.PlayerID}";
 
             var recipients = new HashSet<PuzzleUser>();
 
@@ -307,22 +308,22 @@ namespace ServerCore.Pages.Threads
                     if (puzzle.IsForSinglePlayer)
                     {
                         recipients.Add(messageFromPlayer.Sender);
-                        await messageHub.SendNotification(messageFromPlayer.Sender, toastTitle, toastContent);
+                        await messageHub.SendNotification(messageFromPlayer.Sender, toastTitle, toastContent, $"/{newMessage.Event.ID}/play/{threadUrlSuffix}");
                     }
                     else if (messageFromPlayer.TeamID != null)
                     {
                         recipients.AddRange(await _context.TeamMembers
                             .Where(teamMember => teamMember.Team.ID == messageFromPlayer.TeamID)
                             .Select(teamMember => teamMember.Member).ToArrayAsync());
-                        await messageHub.SendNotification(messageFromPlayer.Team, toastTitle, toastContent);
+                        await messageHub.SendNotification(messageFromPlayer.Team, toastTitle, toastContent, $"/{newMessage.Event.ID}/play/{threadUrlSuffix}");
                     }
                 }
             }
             else
             {
                 // Send notification to authors and any game control person on the thread if message from player.
-                HashSet<PuzzleUser> staff = new HashSet<PuzzleUser>();
 
+                HashSet<PuzzleUser> staff = new HashSet<PuzzleUser>();
                 staff.AddRange(await _context.PuzzleAuthors
                     .Where(pa => pa.Puzzle.ID == puzzle.ID)
                     .Select(pa => pa.Author).ToArrayAsync());
@@ -331,11 +332,16 @@ namespace ServerCore.Pages.Threads
                     .Where(message => message.ThreadId == newMessage.ThreadId && message.IsFromGameControl)
                     .Select(message => message.Sender).ToArrayAsync());
 
+                HashSet<PuzzleUser> admins = new HashSet<PuzzleUser>();
+                admins.AddRange(await _context.EventAdmins
+                    .Where(ea => ea.EventID == Event.ID)
+                    .Select(ea => ea.Admin).ToArrayAsync());
+
                 recipients.AddRange(staff);
                 
                 foreach (var staffer in staff)
                 {
-                    await messageHub.SendNotification(staffer, toastTitle, toastContent);
+                    await messageHub.SendNotification(staffer, toastTitle, toastContent, $"/{newMessage.Event.ID}/{(admins.Contains(staffer) ? "admin" : "author")}/{threadUrlSuffix}");
                 }
             }
 

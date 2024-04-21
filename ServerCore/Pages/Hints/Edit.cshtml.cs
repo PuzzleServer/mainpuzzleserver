@@ -80,7 +80,7 @@ namespace ServerCore.Pages.Hints
                                          select hspt.Team).ToListAsync();
                 foreach (Team team in teams)
                 {
-                    await this.messageHub.SendNotification(team, $"Hint updated for {puzzle.PlaintextName}", $"The new content for '{Hint.Description}' is: '{Hint.Content}'.");
+                    await this.messageHub.SendNotification(team, $"Hint updated for {puzzle.PlaintextName}", $"The new content for '{Hint.Description}' is: '{Hint.Content}'.", $"/{this.Event.ID}/play/Hints/{puzzleId}");
                 }
             }
             catch (DbUpdateConcurrencyException)

@@ -157,7 +157,7 @@ namespace ServerCore.Pages.Puzzles
                     MailHelper.Singleton.SendPlaintextBcc(teamMembers, subject, body);
                     foreach (Team team in teams)
                     {
-                        await this.messageHub.SendNotification(team, subject, body);
+                        await this.messageHub.SendNotification(team, subject, body, $"/{this.Event.ID}/play/Submissions/{puzzleId}");
                     }
                 }
             }
