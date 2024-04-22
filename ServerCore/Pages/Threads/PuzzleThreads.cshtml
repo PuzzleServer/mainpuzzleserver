@@ -17,16 +17,22 @@
         <a asp-page="/Puzzles/Index">Puzzle list</a>@(" |")
     }
     <a asp-page="/Threads/PuzzleThreads">All threads</a> |
-    <a asp-page="/Threads/PuzzleThreads" asp-route-showUnclaimedOnly="true">Unclaimed only</a>
+    @if (Model.IsGameControlRole())
+    {
+        <a asp-page="/Threads/PuzzleThreads" asp-route-showUnclaimedOnly="true">Unclaimed only</a>
+    }
 </div>
 <h3>@Model.Title</h3>
 
 <table class="table">
     <thead>
         <tr>
-            <th>
-                Is handled
-            </th>
+            @if (Model.IsGameControlRole())
+            {
+                <th>
+                    Is handled
+                </th>
+            }
             <th>
                 Thread
             </th>
@@ -36,9 +42,12 @@
             <th>
                 Puzzle
             </th>
-            <th>
-                Team
-            </th>
+            @if (Model.IsGameControlRole())
+            {
+                <th>
+                    Team
+                </th>
+            }
             <th>
                 Last message
             </th>
@@ -51,12 +60,15 @@
         @foreach (var item in Model.LatestMessagesFromEachThread)
         {
             <tr>
-                <td>
-                    @if (Model.IsLatestMessageUnclaimed(item))
-                    {
-                        <p>&#x26A0; Has unanswered question!</p>
-                    }
-                </td>
+                @if (Model.IsGameControlRole())
+                {
+                    <td>
+                        @if (Model.IsLatestMessageUnclaimed(item))
+                        {
+                            <p>&#x26A0; Has unanswered question!</p>
+                        }
+                    </td>
+                }
                 <td>
                     <a asp-page="/Threads/PuzzleThread" asp-route-puzzleId="@item.Puzzle.ID" asp-route-teamId="@item.TeamID" asp-route-playerId="@item.PlayerID">@item.Subject</a>
                 </td>
@@ -73,16 +85,19 @@
                         <a asp-page="/Submissions/Index" asp-route-puzzleId="@item.Puzzle.ID">@item.Puzzle.Name</a>
                     }
                 </td>
-                <td>
-                    @if (item.TeamID.HasValue)
-                    {
-                        <a asp-page="/Teams/Status" asp-route-teamId="@item.TeamID.Value">@item.Team.Name</a>
-                    }
-                    else
-                    {
-                        <span>N/A</span>
-                    }
-                </td>
+                @if (Model.IsGameControlRole())
+                {
+                            <td>
+                                @if (item.TeamID.HasValue)
+                                {
+                                    <a asp-page="/Teams/Status" asp-route-teamId="@item.TeamID.Value">@item.Team.Name</a>
+                                }
+                                else
+                                {
+                                    <span>N/A</span>
+                                }
+                            </td>
+                }
                 <td>
                     @(item.Text.Length > 93 ? $"{item.Text.Substring(0, 90)}..." : item.Text)
                 </td>
