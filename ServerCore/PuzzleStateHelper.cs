@@ -509,7 +509,7 @@ namespace ServerCore
                 {
                     if (puzzlesUnlocked.Count > 3)
                     {
-                        await ServiceProvider.GetRequiredService<IHubContext<ServerMessageHub>>().SendNotification(t, "New puzzles!", $"{puzzlesUnlocked.Count} puzzles have been unlocked!");
+                        await ServiceProvider.GetRequiredService<IHubContext<ServerMessageHub>>().SendNotification(t, "New puzzles!", $"{puzzlesUnlocked.Count} puzzles have been unlocked!", $"/{eventObj.ID}/play/Play");
                     }
                     else if (puzzlesUnlocked.Count > 0)
                     {
@@ -517,7 +517,7 @@ namespace ServerCore
 
                         foreach (var puzzle in puzzles)
                         {
-                            await ServiceProvider.GetRequiredService<IHubContext<ServerMessageHub>>().SendNotification(t, "New puzzle!", $"{puzzle.Name} has been unlocked!");
+                            await ServiceProvider.GetRequiredService<IHubContext<ServerMessageHub>>().SendNotification(t, "New puzzle!", $"{puzzle.Name} has been unlocked!", $"/{eventObj.ID}/play/Submissions/{puzzle.ID}");
                         }
                     }
                 }
@@ -567,7 +567,7 @@ namespace ServerCore
                         $"The new response for this submission is: '{response.GetPlaintextResponseText(puzzle?.EventID ?? 0)}'.");
                     foreach (Team team in teams)
                     {
-                        await ServiceProvider.GetRequiredService<IHubContext<ServerMessageHub>>().SendNotification(team, $"{puzzle.PlaintextName} Response updated for '{response.SubmittedText}'", $"The new response for this submission is: '{response.GetPlaintextResponseText(puzzle?.EventID ?? 0)}'.");
+                        await ServiceProvider.GetRequiredService<IHubContext<ServerMessageHub>>().SendNotification(team, $"{puzzle.PlaintextName} Response updated for '{response.SubmittedText}'", $"The new response for this submission is: '{response.GetPlaintextResponseText(puzzle?.EventID ?? 0)}'.", $"/{puzzle.Event.ID}/play/Submissions/{puzzle.ID}");
                     }
                 }
             }
