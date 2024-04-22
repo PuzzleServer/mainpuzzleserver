@@ -92,6 +92,7 @@ namespace ServerCore.Pages.Threads
 
                 subject = $"[{singlePlayerPuzzlePlayer.Name}]{Puzzle.Name}";
                 threadId = MessageHelper.GetSinglePlayerPuzzleThreadId(Puzzle.ID, playerId.Value);
+                teamId = null;
                 PuzzleState = await SinglePlayerPuzzleStateHelper.GetOrAddStateIfNotThere(
                     _context,
                     Event,
@@ -115,6 +116,7 @@ namespace ServerCore.Pages.Threads
 
                 subject = $"[{team.Name}]{Puzzle.Name}";
                 threadId = MessageHelper.GetTeamPuzzleThreadId(Puzzle.ID, teamId.Value);
+                playerId = null;
                 PuzzleState = await PuzzleStateHelper
                     .GetFullReadOnlyQuery(
                         _context,

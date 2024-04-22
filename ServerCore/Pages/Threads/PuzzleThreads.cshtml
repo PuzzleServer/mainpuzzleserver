@@ -7,37 +7,43 @@
     ViewData["PlayRoute"] = "/Threads/PuzzleThreads";
 }
 
-<h2>Help thread</h2>
 <div>
-    @if (Model.EventRole == ServerCore.ModelBases.EventRole.play) {
-        <a asp-page="/Puzzles/Play">Back to puzzle list</a>
+    @if (Model.EventRole == ServerCore.ModelBases.EventRole.play) 
+    {
+        <a asp-page="/Puzzles/Play">Puzzle list</a>@(" |")
     }
     else
     {
-        <a asp-page="/Puzzles/Index">Back to puzzle list</a>
+        <a asp-page="/Puzzles/Index">Puzzle list</a>@(" |")
     }
+    <a asp-page="/Threads/PuzzleThreads">All threads</a> |
+    <a asp-page="/Threads/PuzzleThreads" asp-route-showUnclaimedOnly="true">Unclaimed only</a>
 </div>
+<h3>@Model.Title</h3>
 
 <table class="table">
     <thead>
         <tr>
             <th>
-                Puzzle
+                Is handled
+            </th>
+            <th>
+                Thread
             </th>
             <th>
                 Timestamp
             </th>
             <th>
-                Subject
+                Puzzle
+            </th>
+            <th>
+                Team
             </th>
             <th>
                 Last message
             </th>
             <th>
                 Last message sender
-            </th>
-            <th>
-                Is handled
             </th>
         </tr>
     </thead>
@@ -46,9 +52,21 @@
         {
             <tr>
                 <td>
+                    @if (Model.IsLatestMessageUnclaimed(item))
+                    {
+                        <p>&#x26A0; Has unanswered question!</p>
+                    }
+                </td>
+                <td>
+                    <a asp-page="/Threads/PuzzleThread" asp-route-puzzleId="@item.Puzzle.ID" asp-route-teamId="@item.TeamID" asp-route-playerId="@item.PlayerID">@item.Subject</a>
+                </td>
+                <td>
+                    @Html.Raw(Model.LocalTime(@item.CreatedDateTimeInUtc))
+                </td>
+                <td>
                     @if (Model.EventRole == ModelBases.EventRole.admin || Model.EventRole == ModelBases.EventRole.author)
                     {
-                        <a asp-Page="/Puzzles/Edit" asp-route-puzzleid=@item.Puzzle.ID>@item.Puzzle.Name</a>
+                        <a asp-Page="/Puzzles/Edit" asp-route-puzzleId=@item.Puzzle.ID>@item.Puzzle.Name</a>
                     }
                     else
                     {
@@ -56,22 +74,20 @@
                     }
                 </td>
                 <td>
-                    @Html.Raw(Model.LocalTime(@item.CreatedDateTimeInUtc))
-                </td>
-                <td>
-                    <a asp-page="/Threads/PuzzleThread" asp-route-puzzleId="@item.Puzzle.ID" asp-route-teamId="@item.TeamID" asp-route-playerId="@item.PlayerID">@item.Subject</a>
+                    @if (item.TeamID.HasValue)
+                    {
+                        <a asp-page="/Teams/Status" asp-route-teamId="@item.TeamID.Value">@item.Team.Name</a>
+                    }
+                    else
+                    {
+                        <span>N/A</span>
+                    }
                 </td>
                 <td>
                     @(item.Text.Length > 93 ? $"{item.Text.Substring(0, 90)}..." : item.Text)
                 </td>
                 <td>
                     @item.Sender.Name
-                </td>
-                <td>
-                    @if (!item.ClaimerID.HasValue && !item.IsFromGameControl)
-                    {
-                        <p>&#x26A0; Has unanswered question!</p>
-                    }
                 </td>
             </tr>
         }

@@ -18,6 +18,7 @@
         <a asp-page="/Hints/AuthorIndex" asp-route-teamId="@Model.Team.ID">Hints Taken</a>@(" |")
     }
     <a asp-page="/Teams/Status" asp-route-teamId="@Model.Team.ID">Status</a> |
+    <a asp-page="/Threads/PuzzleThreads" asp-route-teamId="@Model.Team.ID">Threads</a> |
     <a asp-page="/Teams/MergeInto" asp-route-teamId="@Model.Team.ID">Merge Into...</a>
 </div>
 }
@@ -30,7 +31,8 @@
     {
         <a asp-page="/Hints/AuthorIndex" asp-route-teamId="@Model.Team.ID">Hints Taken</a>@(" |")
     }
-    <a asp-page="/Teams/Status" asp-route-teamId="@Model.Team.ID">Status</a>
+    <a asp-page="/Teams/Status" asp-route-teamId="@Model.Team.ID">Status</a> |
+    <a asp-page="/Threads/PuzzleThreads" asp-route-teamId="@Model.Team.ID">Threads</a> |
 </div>
 }
 <!--Players don't have other options so they don't need any links-->
