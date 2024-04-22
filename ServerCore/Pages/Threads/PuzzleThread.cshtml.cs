@@ -308,14 +308,14 @@ namespace ServerCore.Pages.Threads
                     if (puzzle.IsForSinglePlayer)
                     {
                         recipients.Add(messageFromPlayer.Sender);
-                        await messageHub.SendNotification(messageFromPlayer.Sender, toastTitle, toastContent, $"/{newMessage.Event.ID}/play/{threadUrlSuffix}");
+                        await messageHub.SendNotification(messageFromPlayer.Sender, toastTitle, toastContent, $"/{newMessage.Event.EventID}/play/{threadUrlSuffix}");
                     }
                     else if (messageFromPlayer.TeamID != null)
                     {
                         recipients.AddRange(await _context.TeamMembers
                             .Where(teamMember => teamMember.Team.ID == messageFromPlayer.TeamID)
                             .Select(teamMember => teamMember.Member).ToArrayAsync());
-                        await messageHub.SendNotification(messageFromPlayer.Team, toastTitle, toastContent, $"/{newMessage.Event.ID}/play/{threadUrlSuffix}");
+                        await messageHub.SendNotification(messageFromPlayer.Team, toastTitle, toastContent, $"/{newMessage.Event.EventID}/play/{threadUrlSuffix}");
                     }
                 }
             }
@@ -341,7 +341,7 @@ namespace ServerCore.Pages.Threads
                 
                 foreach (var staffer in staff)
                 {
-                    await messageHub.SendNotification(staffer, toastTitle, toastContent, $"/{newMessage.Event.ID}/{(admins.Contains(staffer) ? "admin" : "author")}/{threadUrlSuffix}");
+                    await messageHub.SendNotification(staffer, toastTitle, toastContent, $"/{newMessage.Event.EventID}/{(admins.Contains(staffer) ? "admin" : "author")}/{threadUrlSuffix}");
                 }
             }
 

@@ -212,7 +212,7 @@ namespace ServerCore
                 // only send this notification when puzzles are embedded; otherwise, the notification is sent when there are no pages connected!
                 if (eventObj.EmbedPuzzles)
                 {
-                    await ServiceProvider.GetRequiredService<IHubContext<ServerMessageHub>>().SendNotification(team, "Puzzle solved!", $"{puzzle.Name} has been solved!");
+                    await ServiceProvider.GetRequiredService<IHubContext<ServerMessageHub>>().SendNotification(team, "Puzzle solved!", $"{puzzle.Name} has been solved!", $"/{puzzle.Event.EventID}/play/Submissions/{puzzle.ID}");
                 }
 
                 await UnlockAnyPuzzlesThatThisSolveUnlockedAsync(context,
@@ -509,7 +509,7 @@ namespace ServerCore
                 {
                     if (puzzlesUnlocked.Count > 3)
                     {
-                        await ServiceProvider.GetRequiredService<IHubContext<ServerMessageHub>>().SendNotification(t, "New puzzles!", $"{puzzlesUnlocked.Count} puzzles have been unlocked!", $"/{eventObj.ID}/play/Play");
+                        await ServiceProvider.GetRequiredService<IHubContext<ServerMessageHub>>().SendNotification(t, "New puzzles!", $"{puzzlesUnlocked.Count} puzzles have been unlocked!", $"/{eventObj.EventID}/play/Play");
                     }
                     else if (puzzlesUnlocked.Count > 0)
                     {
@@ -517,7 +517,7 @@ namespace ServerCore
 
                         foreach (var puzzle in puzzles)
                         {
-                            await ServiceProvider.GetRequiredService<IHubContext<ServerMessageHub>>().SendNotification(t, "New puzzle!", $"{puzzle.Name} has been unlocked!", $"/{eventObj.ID}/play/Submissions/{puzzle.ID}");
+                            await ServiceProvider.GetRequiredService<IHubContext<ServerMessageHub>>().SendNotification(t, "New puzzle!", $"{puzzle.Name} has been unlocked!", $"/{eventObj.EventID}/play/Submissions/{puzzle.ID}");
                         }
                     }
                 }
@@ -567,7 +567,7 @@ namespace ServerCore
                         $"The new response for this submission is: '{response.GetPlaintextResponseText(puzzle?.EventID ?? 0)}'.");
                     foreach (Team team in teams)
                     {
-                        await ServiceProvider.GetRequiredService<IHubContext<ServerMessageHub>>().SendNotification(team, $"{puzzle.PlaintextName} Response updated for '{response.SubmittedText}'", $"The new response for this submission is: '{response.GetPlaintextResponseText(puzzle?.EventID ?? 0)}'.", $"/{puzzle.Event.ID}/play/Submissions/{puzzle.ID}");
+                        await ServiceProvider.GetRequiredService<IHubContext<ServerMessageHub>>().SendNotification(team, $"{puzzle.PlaintextName} Response updated for '{response.SubmittedText}'", $"The new response for this submission is: '{response.GetPlaintextResponseText(puzzle?.EventID ?? 0)}'.", $"/{puzzle.Event.EventID}/play/Submissions/{puzzle.ID}");
                     }
                 }
             }
