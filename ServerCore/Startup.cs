@@ -145,6 +145,7 @@ namespace ServerCore
             }
             services.AddSingleton<ServerMessageListener>();
             services.AddSingleton<PresenceStore>();
+            services.AddSingleton<NotificationHelper>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
