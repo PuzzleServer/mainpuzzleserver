@@ -87,12 +87,10 @@ public class NotificationHelper
         {
             if (!id.HasValue) return;
 
-            NotificationListener listener = listenerDictionary.GetOrAdd(id.Value, (id) =>
+            if (listenerDictionary.TryGetValue(id.Value, out NotificationListener listener))
             {
-                return new NotificationListener();
-            });
-
-            listenerDictionary[id.Value].OnNotify -= onNotify;
+                listener.OnNotify -= onNotify;
+            }
         }
 
         Unregister(eventID, this.listenersByEvent, onNotify);
