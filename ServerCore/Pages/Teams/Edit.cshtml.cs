@@ -70,7 +70,7 @@ namespace ServerCore.Pages.Teams
                 return Page();
             }
 
-            if (Team.Name != existingTeam.Name && await TeamHelper.IsTeamNameTakenAsync(_context, Event, Team.Name))
+            if (Team.Name != existingTeam.Name && TeamHelper.IsTeamNameTaken(_context, Event.ID, Team.Name))
             {
                 ModelState.AddModelError("Team.Name", "Another team has this name.");
                 return Page();

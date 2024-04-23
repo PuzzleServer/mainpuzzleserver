@@ -1,0 +1,83 @@
+<h4>Create a New Team</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        @if (!EventFull)
+        {
+            <EditForm Model="TeamModel" OnValidSubmit="OnSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <input type="hidden" @bind="TeamModel.EventId" />
+                <div class="form-group">
+                    <label>
+                        Team name
+                        <InputText @bind-Value="TeamModel.Name" class="form-control" />
+                    </label>
+                </div>
+                @* TODO morganb: handle puzzleday room assignment and check hunt/safari requirements *@
+                @if (!Event?.IsRemote == true)
+                {
+                    @if (!(Event.IsInternEvent && EventRole == ModelBases.EventRole.play))
+                    {
+                        <div class="form-group">
+                            <label class="control-label">
+                                Team room
+                                <InputText @bind-Value="TeamModel.CustomRoom" class="form-control" />
+                            </label>
+                        </div>
+                    }
+                }
+                <div class="form-group">
+                    <label>
+                        Primary contact e-mail
+                        <InputText @bind-Value="TeamModel.PrimaryContactEmail" class="form-control" />
+                    </label>
+                </div>
+                @if (!Event?.IsRemote == true)
+                {
+                    <div class="form-group">
+                        <label>
+                            Primary phone number
+                            <InputText @bind-Value="TeamModel.PrimaryPhoneNumber" class="form-control" />
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            Secondary phone number (optional)
+                            <InputText @bind-Value="TeamModel.SecondaryPhoneNumber" class="form-control" />
+                        </label>
+                    </div>
+                }
+                <div class="form-group">
+                    <label>
+                        Allow unsolicited applications
+                        <table>
+                            <tr>
+                                <td style="width:50px;vertical-align:top;">
+                                    <InputCheckbox @bind-Value="TeamModel.IsLookingForTeammates" />
+                                </td>
+                                <td>
+                                    <p>Checking this box will cause your team to show up in the list of teams that players who are looking for a team can request to join. If you want to manually invite your teammates instead, do not check this box. You will have the opportunity to approve all requests on the website.</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </label>
+                </div>
+                @if (TeamModel.IsLookingForTeammates)
+                {
+                    <div class="form-group">
+                        <label>
+                            Bio for unsolicited applications (visible to applicants)
+                            <InputText @bind-Value="TeamModel.Bio" class="form-control" />
+                        </label>
+                    </div>
+                }
+                <input type="submit" />
+            </EditForm>
+        }
+        else
+        {
+            <p>Registration is full. No further teams may be created at the present time.</p>
+        }
+    </div>
+</div>

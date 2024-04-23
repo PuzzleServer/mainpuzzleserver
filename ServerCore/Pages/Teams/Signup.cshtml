@@ -1,4 +1,16 @@
-﻿@page
+﻿@page "/{eventId}/{eventRole}/Teams/Signup"
 @model ServerCore.Pages.Teams.SignupModel
 
-<component type="typeof(SignupHub)" render-mode="ServerPrerendered" />
+@{
+    ViewData["Title"] = "Create or Join a Team";
+    ViewData["AdminRoute"] = "/Teams/Signup";
+    ViewData["AuthorRoute"] = "/Teams/Index";
+    ViewData["PlayRoute"] = "/Teams/Signup";
+}
+
+<div>
+    <component type="typeof(ServerCore.Pages.Teams.SignupHub)" render-mode="Server"
+        param-EventId="@Model.Event.ID"
+        param-EventRole="@Model.EventRole"
+        param-LoggedInUserId="@Model.LoggedInUser.ID" />
+</div>

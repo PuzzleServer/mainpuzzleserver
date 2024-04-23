@@ -73,6 +73,14 @@ namespace ServerCore.Pages.Teams
                 return NotFound();
             }
 
+            if (await (from member in _context.TeamMembers
+                       where member.Member == LoggedInUser &&
+                       member.Team.Event == Event
+                       select member).AnyAsync())
+            {
+                return NotFound("You are already on a team. Leave that team before creating a new one.");
+            }
+
             if (string.IsNullOrWhiteSpace(Team.PrimaryContactEmail))
             {
                 ModelState.AddModelError("Team.PrimaryContactEmail", "An email is required.");
@@ -87,7 +95,7 @@ namespace ServerCore.Pages.Teams
                 ModelState.AddModelError("Team.Name", "Team names cannot be left blank.");
             }
 
-            if (await TeamHelper.IsTeamNameTakenAsync(_context, Event, Team.Name))
+            if (TeamHelper.IsTeamNameTaken(_context, Event.ID, Team.Name))
             {
                 ModelState.AddModelError("Team.Name", "Another team has this name.");
             }
@@ -98,57 +106,12 @@ namespace ServerCore.Pages.Teams
                 return Page();
             }
 
-            Team.Event = Event;
-
-            Team.Password = Guid.NewGuid().ToString();
-
-            using (IDbContextTransaction transaction = _context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable))
+            if (EventRole != EventRole.admin && await _context.Teams.Where((t) => t.Event == Event).CountAsync() >= Event.MaxNumberOfTeams)
             {
-                if (EventRole != EventRole.admin && await _context.Teams.Where((t) => t.Event == Event).CountAsync() >= Event.MaxNumberOfTeams)
-                {
-                    return NotFound("Registration is full. No further teams may be created at the present time.");
-                }
-
-                _context.Teams.Add(Team);
-
-                if (EventRole == EventRole.play)
-                {
-                    if (await (from member in _context.TeamMembers
-                               where member.Member == LoggedInUser &&
-                               member.Team.Event == Event
-                               select member).AnyAsync())
-                    {
-                        return NotFound("You are already on a team. Leave that team before creating a new one.");
-                    }
-
-                    TeamMembers teamMember = new TeamMembers()
-                    {
-                        Team = Team,
-                        Member = LoggedInUser
-                    };
-                    _context.TeamMembers.Add(teamMember);
-                }
-
-                var teamHints = await (from hint in _context.Hints
-                            where hint.Puzzle.Event == Event && !hint.Puzzle.IsForSinglePlayer
-                            select hint).ToListAsync();
-
-                foreach (Hint hint in teamHints)
-                {
-                    _context.HintStatePerTeam.Add(new HintStatePerTeam() { Hint = hint, Team = Team });
-                }
-
-                var teamPuzzleIDs = await (from puzzle in _context.Puzzles
-                                where puzzle.Event == Event && !puzzle.IsForSinglePlayer
-                                select puzzle.ID).ToListAsync();
-                foreach (int puzzleID in teamPuzzleIDs)
-                {
-                    _context.PuzzleStatePerTeam.Add(new PuzzleStatePerTeam() { PuzzleID = puzzleID, Team = Team });
-                }
-
-                await _context.SaveChangesAsync();
-                transaction.Commit();
+                return NotFound("Registration is full. No further teams may be created at the present time.");
             }
+
+            await TeamHelper.CreateTeamAsync(_context, Team, Event, LoggedInUser.ID, EventRole == EventRole.play);
 
             int teamId = await GetTeamId();
             if (EventRole == ModelBases.EventRole.play)

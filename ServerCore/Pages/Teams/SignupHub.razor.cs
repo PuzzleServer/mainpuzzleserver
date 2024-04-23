@@ -1,7 +1,13 @@
-﻿namespace ServerCore.Pages.Teams
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components;
+using ServerCore.DataModel;
+using ServerCore.ModelBases;
+
+namespace ServerCore.Pages.Teams
 {
     public enum SignupStrategy
     {
+        None,
         Create,
         Join,
         Auto
@@ -9,20 +15,20 @@
 
     public partial class SignupHub
     {
-        public string TestString { get; set; } = "OrigValue";
+        [Parameter]
+        public int EventId { get; set; }
 
-        private string strategy;
+        [Parameter]
+        public EventRole EventRole { get; set; }
 
-        public string Strategy
+        [Parameter]
+        public int LoggedInUserId { get; set; }
+
+        public SignupStrategy Strategy { get; set; } = SignupStrategy.None;
+
+        protected override void OnParametersSet()
         {
-            get
-            {
-                return strategy;
-            }
-            set
-            {
-                strategy = value;
-            }
+            base.OnParametersSet();
         }
     }
 }
