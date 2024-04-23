@@ -30,19 +30,21 @@
         originalText.classList.remove("hidden");
     }
 </script>
-<h2>Help thread</h2>
 <div>
-    @if (Model.EventRole == ServerCore.ModelBases.EventRole.play)
-    {
-        <a asp-page="/Submissions/Index" asp-route-puzzleId="@Model.Puzzle.ID">Back to puzzle</a>
-    }
-    else
-    {
-        <a asp-page="/Threads/PuzzleThreads">Back to thread list</a>
-    }
+    <span>
+        @if (Model.EventRole == ServerCore.ModelBases.EventRole.play)
+        {
+            <a asp-page="/Submissions/Index" asp-route-puzzleId="@Model.Puzzle.ID">Go to puzzle</a>@(" |")
+        }
+        else
+        {
+            <a asp-page="/Puzzles/Edit" asp-route-puzzleId="@Model.Puzzle.ID">Go to puzzle</a>@(" |")
+        }
+        <a asp-page="/Threads/PuzzleThreads">See all threads</a>
+    </span>
 </div>
 
-<h4>Thread for puzzle @Model.Puzzle.Name</h4>
+<h3>Thread for puzzle @Model.Puzzle.Name</h3>
 <hr />
 @foreach (var message in Model.Messages)
 {
