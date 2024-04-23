@@ -47,7 +47,7 @@
         }
     });
 </script>
-<iframe id="@(pageType)-frame" class="unsized" title="@(pageType) content" sandbox="allow-same-origin allow-scripts allow-popups" src="@(fileStoragePrefix)/resources/@(pageType)-content.html"></iframe>
+<iframe id="@(pageType)-frame" class="unsized" title="@(pageType) content" sandbox="allow-same-origin allow-scripts allow-popups allow-top-navigation" src="@(fileStoragePrefix)/resources/@(pageType)-content.html"></iframe>
 <div style="display:none;">
     <h3>Unable to load @(pageType) content file</h3>
     <p>If you're seeing this message, it's because the website was unable to load the content expected to be here. If you're an admin or have the ability to upload shared resources, please check the following:</p>
