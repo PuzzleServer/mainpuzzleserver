@@ -1,15 +1,13 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using ServerCore.DataModel;
-using ServerCore.Helpers;
-using ServerCore.ModelBases;
-using System.Collections.Generic;
-using System;
 using Microsoft.EntityFrameworkCore;
-using System.Numerics;
+using ServerCore.DataModel;
+using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Threads
 {
@@ -65,7 +63,9 @@ namespace ServerCore.Pages.Threads
             }
             else if (puzzleId.HasValue)
             {
-                Puzzle puzzle = this._context.Puzzles.Where(puzzle => puzzle.EventID == this.Event.ID && puzzle.ID == puzzleId.Value).FirstOrDefault();
+                Puzzle puzzle = await this._context.Puzzles
+                    .Where(puzzle => puzzle.EventID == this.Event.ID && puzzle.ID == puzzleId.Value)
+                    .FirstOrDefaultAsync();
                 if (puzzle == null)
                 {
                     return NotFound();
@@ -76,7 +76,9 @@ namespace ServerCore.Pages.Threads
             }
             else if (teamId.HasValue)
             {
-                Team team = this._context.Teams.Where(team => team.EventID == this.Event.ID && team.ID == teamId.Value).FirstOrDefault();
+                Team team = await this._context.Teams
+                    .Where(team => team.EventID == this.Event.ID && team.ID == teamId.Value)
+                    .FirstOrDefaultAsync();
                 if (team == null)
                 {
                     return NotFound();
@@ -87,7 +89,9 @@ namespace ServerCore.Pages.Threads
             }
             else if (playerId.HasValue)
             {
-                PuzzleUser player = this._context.PuzzleUsers.Where(user => user.ID == playerId.Value).FirstOrDefault();
+                PuzzleUser player = await this._context.PuzzleUsers
+                    .Where(user => user.ID == playerId.Value)
+                    .FirstOrDefaultAsync();
                 if (player == null)
                 {
                     return NotFound();
@@ -115,18 +119,19 @@ namespace ServerCore.Pages.Threads
             }
 
             // Filter down to only latest messages
-            IEnumerable<Message> latestMessages = messages
+            LatestMessagesFromEachThread = await messages
                 .GroupBy(message => message.ThreadId)
                 .Select(group => group.OrderByDescending(message => message.CreatedDateTimeInUtc).First())
-                .AsEnumerable();
+                .ToListAsync();
 
             if (showUnclaimedOnly.HasValue && showUnclaimedOnly.Value)
             {
                 this.Title += " (unclaimed only)";
-                latestMessages = latestMessages.Where(this.IsLatestMessageUnclaimed);
+                LatestMessagesFromEachThread = LatestMessagesFromEachThread
+                    .Where(IsLatestMessageUnclaimed)
+                    .ToList();
             }
 
-            LatestMessagesFromEachThread = latestMessages.ToList();
             return Page();
         }
 

@@ -10,16 +10,16 @@
 <div>
     @if (Model.EventRole == ServerCore.ModelBases.EventRole.play) 
     {
-        <a asp-page="/Puzzles/Play">Puzzle list</a>@(" |")
+        <a asp-page="/Puzzles/Play">Puzzle list</a>
     }
     else
     {
-        <a asp-page="/Puzzles/Index">Puzzle list</a>@(" |")
+        <a asp-page="/Puzzles/Index">Puzzle list</a>
     }
-    <a asp-page="/Threads/PuzzleThreads">All threads</a> |
+    @(" | ")<a asp-page="/Threads/PuzzleThreads">All threads</a>
     @if (Model.IsGameControlRole())
     {
-        <a asp-page="/Threads/PuzzleThreads" asp-route-showUnclaimedOnly="true">Unclaimed only</a>
+        @(" | ")<a asp-page="/Threads/PuzzleThreads" asp-route-showUnclaimedOnly="true">Unclaimed only</a>
     }
 </div>
 <h3>@Model.Title</h3>
