@@ -66,6 +66,11 @@ namespace ServerCore.DataModel
         public DateTime TeamRegistrationEnd { get; set; }
 
         /// <summary>
+        /// True if we should show puzzle help messages only to the authors of that puzzle (along with their support and admins).
+        /// </summary>
+        public bool ShouldShowHelpMessageOnlyToAuthor { get; set; }
+
+        /// <summary>
         /// Returns whether or not team registration is active.
         /// </summary>
         /// <returns>True if the current date is between the team registration begin and end times.</returns>
