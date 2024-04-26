@@ -31,23 +31,42 @@ namespace ServerCore.Pages.Threads
         public List<Message> LatestMessagesFromEachThread { get; set; }
 
         /// <summary>
+        /// Gets or sets the input parameters passed to GET.
+        /// This is needed so that we can replay requests for things like refresh.
+        /// </summary>
+        public InputGetParameters InputParameters { get; set; }
+
+        /// <summary>
         /// Gets the view for list of all applicable puzzle threads.
         /// 
-        /// Note: the puzzleId, teamId, and playerId are only used for admina and author views and only one will ever be set at one time.
+        /// Note: the puzzleId, teamId, playerId, showUnclaimedOnly, and refreshInterval are only used for admin and author views and only one will ever be set at one time.
         /// Players will always see all messages they are allowed to see.
         /// </summary>
         /// <param name="puzzleId">The puzzle id to filter to if applicable.</param>
         /// <param name="teamId">The team id to filter to if applicable.</param>
         /// <param name="playerId">The player id to filter to if applicable.</param>
         /// <param name="showUnclaimedOnly">True if we want to filter only to unclaimed messages.</param>
+        /// <param name="refreshInterval">Determines the interval in seconds that we should wait before we refresh the page.</param>
         /// <returns>The Puzzle threads page view.</returns>
         /// <exception cref="NotSupportedException">Thrown when we receive an unexpected event role.</exception>
-        public async Task<IActionResult> OnGetAsync(int? puzzleId, int? teamId, int? playerId, bool? showUnclaimedOnly)
+        public async Task<IActionResult> OnGetAsync(int? puzzleId, int? teamId, int? playerId, bool? showUnclaimedOnly, int? refreshInterval)
         {
             if (LoggedInUser == null)
             {
                 return Challenge();
             }
+
+            if (refreshInterval.HasValue)
+            {
+                Refresh = refreshInterval;
+            }
+
+            this.InputParameters = new InputGetParameters(
+                puzzleId: puzzleId,
+                teamId: teamId,
+                playerId: playerId,
+                showUnclaimedOnly: showUnclaimedOnly,
+                refreshInterval: refreshInterval);
 
             IQueryable<Message> messages = this._context.Messages.Where(message => message.Puzzle != null
                     && message.Puzzle.EventID == Event.ID);
@@ -138,6 +157,40 @@ namespace ServerCore.Pages.Threads
         public bool IsLatestMessageUnclaimed(Message message)
         {
             return !message.IsFromGameControl && !message.ClaimerID.HasValue;
+        }
+
+        /// <summary>
+        /// The input parameters passed to GET.
+        /// </summary>
+        public class InputGetParameters
+        {
+            public InputGetParameters(
+                int? puzzleId,
+                int? playerId,
+                int? teamId,
+                bool? showUnclaimedOnly,
+                int? refreshInterval)
+            {
+                this.PuzzleId = puzzleId;
+                this.PlayerId = playerId;
+                this.TeamId = teamId;
+                this.ShowUnclaimedOnly = showUnclaimedOnly;
+                this.RefreshInterval = refreshInterval;
+            }
+
+            public int? TeamId { get; }
+            public int? PlayerId { get; }
+            public int? PuzzleId { get; }
+            public bool? ShowUnclaimedOnly { get; }
+            public int? RefreshInterval { get; }
+
+            public bool HasFilterApplied()
+            {
+                return this.TeamId.HasValue
+                    || this.PlayerId.HasValue
+                    || this.PuzzleId.HasValue
+                    || (this.ShowUnclaimedOnly.HasValue && this.ShowUnclaimedOnly.Value);
+            }
         }
     }
 }

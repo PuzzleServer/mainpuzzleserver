@@ -180,6 +180,7 @@
                             {
                                 <a asp-page="/Hints/AuthorIndex" asp-route-puzzleid=@item.Puzzle.ID>Hints Taken</a><br />
                             }
+                            <a asp-Page="/Threads/PuzzleThreads" asp-route-puzzleid=@item.Puzzle.ID>Help threads</a><br />
                             <a asp-Page="./Feedback" asp-route-puzzleid=@item.Puzzle.ID>Feedback</a><br />
                             ------<br />
                             <a asp-Page="./Delete" asp-route-puzzleid="@item.Puzzle.ID">Delete</a>
