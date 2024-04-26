@@ -56,6 +56,7 @@
             <a asp-page="/Threads/PuzzleThreads" asp-route-refreshInterval="60" asp-route-puzzleId="@Model.InputParameters.PuzzleId" asp-route-playerId="@Model.InputParameters.PlayerId" asp-route-teamId="@Model.InputParameters.TeamId" asp-route-showUnclaimedOnly="@Model.InputParameters.ShowUnclaimedOnly">1 min</a>
         }
 
+        @(" | ")
         @if (Model.InputParameters.RefreshInterval == 120)
         {
             <span>2 min</span>
