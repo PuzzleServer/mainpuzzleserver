@@ -75,7 +75,7 @@
                 <form asp-page-handler="EditMessage" method="post">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <div class="form-group">
-                        <textarea asp-for="EditMessage.Text" class="form-control" rows="4" placeholder="@message.Text" autocomplete="off" maxlength="@PuzzleThreadModel.MessageCharacterLimit">@message.Text</textarea>
+                        <textarea id="@Html.IdFor(model => model.EditMessage.Text)" name="@Html.NameFor(model => model.EditMessage.Text)" class="form-control" rows="4" autocomplete="off" maxlength="@PuzzleThreadModel.MessageCharacterLimit">@message.Text</textarea>
                         <span asp-validation-for="EditMessage.Text" class="text-danger"></span>
                         <input type="hidden" asp-for="EditMessage.ID" value="@message.ID" />
                         <input type="hidden" asp-for="EditMessage.PuzzleID" value="@message.PuzzleID" />
