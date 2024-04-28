@@ -30,21 +30,26 @@ namespace ServerCore.Pages.Teams
         [Required]
         public AutoTeamType? PlayerType { get; set; } = null;
 
+        bool CantCreateTeam { get; set; }
+
         public async Task OnSubmit()
         {
-            int existingAutoTeam = await (from teamMember in _context.TeamMembers
-                                           join team in _context.Teams on teamMember.Team equals team
+            CantCreateTeam = false;
+
+            int existingAutoTeam = await (from team in _context.Teams
+                                           join tempTeamMember in _context.TeamMembers on team.ID equals tempTeamMember.Team.ID into teamMembers
+                                           from teamMember in teamMembers.DefaultIfEmpty()
                                            where team.Event == Event && team.AutoTeamType == PlayerType
-                                           group teamMember by team.ID into teamMembers
-                                           where teamMembers.Count() < Event.MaxTeamSize
-                                           select teamMembers.Key).FirstOrDefaultAsync();
+                                           group teamMember by team.ID into teamGroup
+                                           where teamGroup.Count() < Event.MaxTeamSize
+                                           select teamGroup.Key).FirstOrDefaultAsync();
 
             // Found a team, put the player on it
             if (existingAutoTeam != 0)
             {
                 await TeamHelper.AddMemberAsync(_context, Event, EventRole, existingAutoTeam, LoggedInUserId);
             }
-            else
+            else if (Event.IsTeamRegistrationActive && Event.MaxNumberOfTeams > await _context.Teams.Where(team => team.Event == Event).CountAsync())
             {
                 PuzzleUser captain = await (from user in _context.PuzzleUsers
                                              where user.ID == LoggedInUserId
@@ -69,6 +74,11 @@ namespace ServerCore.Pages.Teams
                 };
 
                 await TeamHelper.CreateTeamAsync(_context, team, Event, LoggedInUserId, EventRole == EventRole.play);
+            }
+            else
+            {
+                CantCreateTeam = true;
+                return;
             }
 
             Team newTeam = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUserId);

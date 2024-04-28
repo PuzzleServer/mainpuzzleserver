@@ -15,6 +15,11 @@
         playerEventId = await eventPage.GetPlayerEventId();
         userId = eventPage.LoggedInUser?.ID;
     }
+    string teamSignupUrl = "/Teams/List";
+    if (Event.AllowBlazor)
+    {
+        teamSignupUrl = "/Teams/Signup";
+    }
 }
 
 <!--ADMIN NAV BAR-->
@@ -187,7 +192,7 @@
                         }
                         @if (Event.IsTeamMembershipChangeActive)
                         {
-                            <li class="nav-item"><a style="color:yellow" asp-page="/Teams/List"> Join or Create a Team!</a></li>
+                            <li class="nav-item"><a style="color:yellow" asp-page="@(teamSignupUrl)"> Join or Create a Team!</a></li>
                         }
                     }
                     else
@@ -224,7 +229,7 @@
                             <ul class="dropdown-menu player-menu">
                                 @if (!isOnTeam)
                                 {
-                                    <li><a class="dropdown-item" asp-page="/Teams/List"> Join or Create a Team!</a></li>
+                                    <li><a class="dropdown-item" asp-page="@(teamSignupUrl)"> Join or Create a Team!</a></li>
                                 }
                                 else
                                 {

@@ -2,11 +2,36 @@
 <h1>Create or Join A Team</h1>
 <EditForm Model="this">
     <InputRadioGroup Name="SignupPicker" @bind-Value="Strategy">
-        <label><InputRadio Name="SignupPicker" Value="@SignupStrategy.Create.ToString()" />Create a team</label>
-        <label><InputRadio Name="SignupPicker" Value="@SignupStrategy.Join.ToString()" />Apply for an existing team</label>
-        <label><InputRadio Name="SignupPicker" Value="@SignupStrategy.Auto.ToString()" />Choose a team for me</label>
+        <div class="btn-group" role="group">
+        @if (CanCreateTeam)
+        {
+            <InputRadio Name="SignupPicker" Value="@SignupStrategy.Create.ToString()" class="btn-check" id="create" />
+            <label class="btn btn-outline-primary" for="create">
+                Create a team
+            </label>
+        }
+        @if (CanJoinTeam)
+        {
+            <InputRadio Name="SignupPicker" Value="@SignupStrategy.Join.ToString()" class="btn-check" id="join" />
+            <label class="btn btn-outline-primary" for="join">
+                Apply for an existing team
+            </label>
+
+            <InputRadio Name="SignupPicker" Value="@SignupStrategy.Auto.ToString()" class="btn-check" id="auto" />
+            <label class="btn btn-outline-primary" for="auto">
+                Choose a team for me
+            </label>
+        }
+        </div>
+
+        @if (!CanCreateTeam && !CanJoinTeam)
+        {
+            <h3>Registration is not currently available.</h3>
+        }
     </InputRadioGroup>
 </EditForm>
+
+<hr />
 
 @switch(Strategy)
 {

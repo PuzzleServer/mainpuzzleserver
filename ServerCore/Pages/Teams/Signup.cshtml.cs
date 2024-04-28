@@ -28,15 +28,10 @@ namespace ServerCore.Pages.Teams
                 return Forbid();
             }
 
-            if (EventRole == EventRole.play && GetTeamId().Result != -1)
+            int existingTeamId = await GetTeamId();
+            if (EventRole == EventRole.play && existingTeamId != -1)
             {
-                return NotFound("You are already on a team and cannot create a new one.");
-            }
-
-            // todo: figure out teamregistrationactie vs teammembershipchangeactive
-            if (!Event.IsTeamRegistrationActive && EventRole != EventRole.admin)
-            {
-                return NotFound();
+                return RedirectToPage("/Teams/Details", new { teamId = existingTeamId });
             }
 
             return Page();

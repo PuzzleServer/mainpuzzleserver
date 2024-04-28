@@ -28,7 +28,7 @@ namespace ServerCore.Pages.Player
 
             if(player != null)
             {
-                return RedirectToPage("/Teams/List");
+                return RedirectToPage(Event.AllowBlazor ? "/Teams/Signup" : "/Teams/List");
             }
 
             return Page();
@@ -55,14 +55,7 @@ namespace ServerCore.Pages.Player
             _context.PlayerInEvent.Add(PlayerInEvent);
             await _context.SaveChangesAsync();
 
-            if (Event.AllowBlazor)
-            {
-                return RedirectToPage("/Teams/Signup");
-            }
-            else
-            {
-                return RedirectToPage("/Teams/List");
-            }
+            return RedirectToPage(Event.AllowBlazor ? "/Teams/Signup" : "/Teams/List");
         }
     }
 }
