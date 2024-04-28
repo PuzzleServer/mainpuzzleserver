@@ -1,1 +1,19 @@
-<h1>Finding a team for you...</h1>
+@using ServerCore.DataModel;
+
+<h2>Finding a team for you</h2>
+
+<p>I&apos;m a...</p>
+<EditForm Model="this" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <InputRadioGroup Name="PlayerTypeSelector" @bind-Value="PlayerType">
+        <label><InputRadio Name="PlayerTypeSelector" Value="@AutoTeamType.Beginner.ToString()"></InputRadio> Beginner</label>
+        <label><InputRadio Name="PlayerTypeSelector" Value="@AutoTeamType.Intermediate.ToString()"></InputRadio> Intermediate Puzzler</label>
+        <label><InputRadio Name="PlayerTypeSelector" Value="@AutoTeamType.Serious.ToString()"></InputRadio> Serious Puzzler</label>        
+    </InputRadioGroup>
+
+    <br />
+
+    <input type="submit" value="Place me on a team" />
+</EditForm>

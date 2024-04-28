@@ -1,7 +1,6 @@
 ﻿
 <h1>Create or Join A Team</h1>
 <EditForm Model="this">
-
     <InputRadioGroup Name="SignupPicker" @bind-Value="Strategy">
         <label><InputRadio Name="SignupPicker" Value="@SignupStrategy.Create.ToString()" />Create a team</label>
         <label><InputRadio Name="SignupPicker" Value="@SignupStrategy.Join.ToString()" />Apply for an existing team</label>
@@ -18,7 +17,7 @@
         <JoinTeam Event="@Event" EventRole="@EventRole" LoggedInUserId="@LoggedInUserId" />
         break;
     case SignupStrategy.Auto:
-        @* <AutoTeam Event="@Event" /> *@
+        <AutoTeam Event="@Event" EventRole="@EventRole" LoggedInUserId="@LoggedInUserId" />
         break;
     case SignupStrategy.None:
         break;

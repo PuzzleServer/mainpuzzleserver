@@ -60,6 +60,7 @@ namespace ServerCore.Pages.Teams
             public int NonMicrosoftCount { get; set; }
             public int Total { get; set; }
             public List<string> PossibleEmployeeAliases { get; set; }
+            public AutoTeamType? AutoTeamType { get; set; }
         }
 
         public IEnumerable<TeamComposition> TeamCompositions { get; set; }
@@ -69,6 +70,14 @@ namespace ServerCore.Pages.Teams
         public int TotalNonMicrosoftCount { get; set; }
         public int TotalTotal { get; set; }
         public int TotalPossibleEmployeeAliasesCount { get; set; }
+        
+        public int TotalAutoTeamCount { get; set; }
+        public int TotalManualTeamCount { get; set; }
+        public int TotalAutoPlayerCount { get; set; }
+        public int TotalManualPlayerCount { get; set; }
+        public int TotalBeginnerPlayerCount { get; set; }
+        public int TotalIntermediatePlayerCount { get; set; }
+        public int TotalSeriousPlayerCount { get; set; }
 
         public SortEnum SortBy { get; set; }
 
@@ -89,6 +98,7 @@ namespace ServerCore.Pages.Teams
                         TeamID = team.ID,
                         TeamName = team.Name,
                         TeamPrimaryContactEmail = team.PrimaryContactEmail,
+                        AutoTeamType = team.AutoTeamType,
                         TeamMember = teamMember.Member
                     })
                 .ToList()
@@ -102,6 +112,30 @@ namespace ServerCore.Pages.Teams
                 TotalInternCount += t.InternCount;
                 TotalEmployeeCount += t.EmployeeCount;
                 TotalPossibleEmployeeAliasesCount += t.PossibleEmployeeAliases.Count;
+
+                if (t.AutoTeamType != null)
+                {
+                    TotalAutoTeamCount += 1;
+                    TotalAutoPlayerCount += t.Total;
+
+                    switch (t.AutoTeamType)
+                    {
+                        case AutoTeamType.Beginner:
+                            TotalBeginnerPlayerCount += t.Total;
+                            break;
+                        case AutoTeamType.Intermediate:
+                            TotalIntermediatePlayerCount += t.Total;
+                            break;
+                        case AutoTeamType.Serious:
+                            TotalSeriousPlayerCount += t.Total;
+                            break;
+                    }
+                }
+                else
+                {
+                    TotalManualTeamCount += 1;
+                    TotalManualPlayerCount += t.Total;
+                }
             }
 
             this.SortTeamComposition();
@@ -160,6 +194,7 @@ namespace ServerCore.Pages.Teams
             {
                 toReturn.TeamName = groupMember.TeamName;
                 toReturn.TeamPrimaryContactEmail = groupMember.TeamPrimaryContactEmail;
+                toReturn.AutoTeamType = groupMember.AutoTeamType;
                 toReturn.Total += 1;
 
                 string email = groupMember.TeamMember.Email;
@@ -193,6 +228,7 @@ namespace ServerCore.Pages.Teams
             public int TeamID { get; set; }
             public string TeamName { get; set; }
             public string TeamPrimaryContactEmail { get; set; }
+            public AutoTeamType? AutoTeamType { get; set; }
             public PuzzleUser TeamMember { get; set; }
         }
     }

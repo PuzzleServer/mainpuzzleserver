@@ -253,6 +253,13 @@
             }
         </div>
         <div class="column">
+            @if (Model.Team.AutoTeamType != null)
+            {
+                <div class="alert alert-warning" role="alert">
+                    This team was automatically created and more members will be automatically added. You can still invite friends if you want.
+                </div>
+            }
+
             <div>
                 <h3>Current members (@(Model.Members.Count))</h3>
                 @{ bool canAdd = Model.EventRole == ModelBases.EventRole.admin; }

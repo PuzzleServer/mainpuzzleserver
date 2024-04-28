@@ -55,7 +55,14 @@ namespace ServerCore.Pages.Player
             _context.PlayerInEvent.Add(PlayerInEvent);
             await _context.SaveChangesAsync();
 
-            return RedirectToPage("/Teams/List");
+            if (Event.AllowBlazor)
+            {
+                return RedirectToPage("/Teams/Signup");
+            }
+            else
+            {
+                return RedirectToPage("/Teams/List");
+            }
         }
     }
 }

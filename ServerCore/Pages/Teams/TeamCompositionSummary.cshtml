@@ -45,6 +45,9 @@
                     Primary Contact
                 </th>
                 <th>
+                    Automatically Team Type
+                </th>
+                <th>
                     Total
                 </th>
                 <th>
@@ -70,6 +73,9 @@
                     </td>
                     <td>
                         @teamComp.TeamPrimaryContactEmail
+                    </td>
+                    <td>
+                        @teamComp.AutoTeamType
                     </td>
                     <td>
                         @teamComp.Total
@@ -100,6 +106,8 @@
                 <td>
                 </td>
                 <td>
+                </td>
+                <td>
                     <b>@Model.TotalTotal</b>
                 </td>
                 <td>
@@ -114,6 +122,32 @@
                 <td>
                     <b>@Model.TotalPossibleEmployeeAliasesCount</b>
                 </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Automatic Team Summary</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Total Automatic Teams</th>
+                <th>Total Manual Teams</th>
+                <th>Total Automatic Players</th>
+                <th>Total Manual Players</th>
+                <th>Automatic Beginner Players</th>
+                <th>Automatic Intermediate Players</th>
+                <th>Automatic Serious Players</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@Model.TotalAutoTeamCount</td>
+                <td>@Model.TotalManualTeamCount</td>
+                <td>@Model.TotalAutoPlayerCount</td>
+                <td>@Model.TotalManualPlayerCount</td>
+                <td>@Model.TotalBeginnerPlayerCount</td>
+                <td>@Model.TotalIntermediatePlayerCount</td>
+                <td>@Model.TotalSeriousPlayerCount</td>
             </tr>
         </tbody>
     </table>
