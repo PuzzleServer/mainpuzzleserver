@@ -5,6 +5,8 @@
     ViewData["AdminRoute"] = "/Threads/PuzzleThreads";
     ViewData["AuthorRoute"] = "/Threads/PuzzleThreads";
     ViewData["PlayRoute"] = "/Threads/PuzzleThreads";
+
+    bool isGameControlRole = Model.IsGameControlRole();
 }
 
 <div>
@@ -16,13 +18,76 @@
     {
         <a asp-page="/Puzzles/Index">Puzzle list</a>
     }
-    @(" | ")<a asp-page="/Threads/PuzzleThreads">All threads</a>
-    @if (Model.IsGameControlRole())
+
+    @if (isGameControlRole)
     {
-        @(" | ")<a asp-page="/Threads/PuzzleThreads" asp-route-showUnclaimedOnly="true">Unclaimed only</a>
+        @(" | ")
+        @if (Model.InputParameters.HasFilterApplied())
+        {
+            <a asp-page="/Threads/PuzzleThreads" asp-route-refreshInterval="@Model.InputParameters.RefreshInterval">All threads</a>
+        }
+        else
+        {
+            <span>All threads</span>
+        }
+
+        @(" | ")
+        @if (Model.InputParameters.ShowUnclaimedOnly.HasValue && Model.InputParameters.ShowUnclaimedOnly.Value)
+        {
+            <span>Unclaimed only</span>
+        }
+        else
+        {
+            <a asp-page="/Threads/PuzzleThreads" asp-route-showUnclaimedOnly="true" asp-route-puzzleId="@Model.InputParameters.PuzzleId" asp-route-playerId="@Model.InputParameters.PlayerId" asp-route-teamId="@Model.InputParameters.TeamId" asp-route-refreshInterval="@Model.InputParameters.RefreshInterval">Unclaimed only</a>
+        }
     }
 </div>
 <h3>@Model.Title</h3>
+@if (isGameControlRole)
+{
+    <div>
+        Refresh every:
+        @if (Model.InputParameters.RefreshInterval == 60)
+        {
+            <span>1 min</span>
+        }
+        else
+        {
+            <a asp-page="/Threads/PuzzleThreads" asp-route-refreshInterval="60" asp-route-puzzleId="@Model.InputParameters.PuzzleId" asp-route-playerId="@Model.InputParameters.PlayerId" asp-route-teamId="@Model.InputParameters.TeamId" asp-route-showUnclaimedOnly="@Model.InputParameters.ShowUnclaimedOnly">1 min</a>
+        }
+
+        @(" | ")
+        @if (Model.InputParameters.RefreshInterval == 120)
+        {
+            <span>2 min</span>
+        }
+        else
+        {
+            <a asp-page="/Threads/PuzzleThreads" asp-route-refreshInterval="120" asp-route-puzzleId="@Model.InputParameters.PuzzleId" asp-route-playerId="@Model.InputParameters.PlayerId" asp-route-teamId="@Model.InputParameters.TeamId" asp-route-showUnclaimedOnly="@Model.InputParameters.ShowUnclaimedOnly">2 min</a>
+        }
+
+        @(" | ")
+        @if (Model.InputParameters.RefreshInterval == 300)
+        {
+            <span>5 min</span>
+        }
+        else
+        {
+            <a asp-page="/Threads/PuzzleThreads" asp-route-refreshInterval="300" asp-route-puzzleId="@Model.InputParameters.PuzzleId" asp-route-playerId="@Model.InputParameters.PlayerId" asp-route-teamId="@Model.InputParameters.TeamId" asp-route-showUnclaimedOnly="@Model.InputParameters.ShowUnclaimedOnly">5 min</a>
+        }
+
+        @(" | ")
+        @if (Model.InputParameters.RefreshInterval.HasValue)
+        {
+            <a asp-page="/Threads/PuzzleThreads" asp-route-puzzleId="@Model.InputParameters.PuzzleId" asp-route-playerId="@Model.InputParameters.PlayerId" asp-route-teamId="@Model.InputParameters.TeamId" asp-route-showUnclaimedOnly="@Model.InputParameters.ShowUnclaimedOnly">off</a>
+        }
+        else
+        {
+            <span>off</span>
+        }
+
+    </div>
+}
 
 <table class="table">
     <thead>

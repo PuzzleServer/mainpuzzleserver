@@ -1,5 +1,6 @@
 ﻿@page "/{eventId}/{eventRole}/Threads/PuzzleThread/{puzzleId}"
 @using ServerCore.DataModel
+@using ServerCore.Pages.Threads;
 @model ServerCore.Pages.Threads.PuzzleThreadModel
 
 @{
@@ -54,6 +55,9 @@
         classString += " message-game-control";
     }
 
+    bool isAllowedToEditMessage = Model.IsAllowedToEditMessage(message);
+    bool isAllowedToDeleteMessage = Model.IsAllowedToDeleteMessage(message);
+
     <div class="@classString">
         @{
             string senderName = message.Sender.Name;
@@ -65,29 +69,28 @@
             }
         }
         <p>[@Html.Raw(Model.LocalTime(@message.CreatedDateTimeInUtc))] @senderName</p>
-        <div id="TextAreaEdit_@message.ID" class="hidden">
-            <form asp-page-handler="EditMessage" method="post">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="form-group">
-                    <textarea asp-for="EditMessage.Text" class="form-control" rows="4" placeholder="@message.Text" autocomplete="off">@message.Text</textarea>
-                    <span asp-validation-for="EditMessage.Text" class="text-danger"></span>
-                    <input type="hidden" asp-for="EditMessage.ID" value="@message.ID" />
-                    <input type="hidden" asp-for="EditMessage.PuzzleID" value="@message.PuzzleID" />
-                    <input type="hidden" asp-for="EditMessage.TeamID" value="@message.TeamID" />
-                    <input type="hidden" asp-for="EditMessage.PlayerID" value="@message.PlayerID" />
-                </div>
-                <div class="form-group">
-                    <input type="submit" value="Update" class="btn btn-default" /> | <a role="button" style="text-decoration:underline;color:blue" onclick="CancelEdit(@message.ID)">Cancel</a>
-                </div>
-            </form>
-        </div>
+        @if (isAllowedToEditMessage)
+        {
+            <div id="TextAreaEdit_@message.ID" class="hidden">
+                <form asp-page-handler="EditMessage" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group">
+                        <textarea asp-for="EditMessage.Text" class="form-control" rows="4" placeholder="@message.Text" autocomplete="off" maxlength="@PuzzleThreadModel.MessageCharacterLimit">@message.Text</textarea>
+                        <span asp-validation-for="EditMessage.Text" class="text-danger"></span>
+                        <input type="hidden" asp-for="EditMessage.ID" value="@message.ID" />
+                        <input type="hidden" asp-for="EditMessage.PuzzleID" value="@message.PuzzleID" />
+                        <input type="hidden" asp-for="EditMessage.TeamID" value="@message.TeamID" />
+                        <input type="hidden" asp-for="EditMessage.PlayerID" value="@message.PlayerID" />
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Update" class="btn btn-default" /> | <a role="button" style="text-decoration:underline;color:blue" onclick="CancelEdit(@message.ID)">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        }
         <div id="MessageText_@message.ID">
             <p style="white-space: pre-wrap;">@message.Text</p>
             <span>
-                @{
-                    bool isAllowedToEditMessage = Model.IsAllowedToEditMessage(message);
-                    bool isAllowedToDeleteMessage = Model.IsAllowedToDeleteMessage(message);
-                }
                 @if (isAllowedToEditMessage)
                 {
                     <a role="button" style="text-decoration:underline;color:blue" onclick="EditText(@message.ID)">Edit</a>
@@ -104,36 +107,44 @@
         </div>
     </div>
 }
-<div class="row">
-    <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                @if (Model.PuzzleState.IsEmailOnlyMode)
-                {
-                    <p>Use this message to fully explain your thought process so we know you're not randomly spamming attempts!</p>
-                }
-                else
-                {
-                    <p>The more details you add here, the more helpful the responses you'll get will be!</p>
-                }
-                <textarea asp-for="NewMessage.Text" class="form-control" rows="4" placeholder="Type message here" autocomplete="off"></textarea>
-                <span asp-validation-for="NewMessage.Text" class="text-danger"></span>
-                <input type="hidden" asp-for="NewMessage.ThreadId" value="@Model.NewMessage.ThreadId" />
-                <input type="hidden" asp-for="NewMessage.EventID" value="@Model.NewMessage.EventID" />
-                <input type="hidden" asp-for="NewMessage.Subject" value="@Model.NewMessage.Subject" />
-                <input type="hidden" asp-for="NewMessage.PuzzleID" value="@Model.NewMessage.PuzzleID" />
-                <input type="hidden" asp-for="NewMessage.TeamID" value="@Model.NewMessage.TeamID" />
-                <input type="hidden" asp-for="NewMessage.IsFromGameControl" value="@Model.NewMessage.IsFromGameControl" />
-                <input type="hidden" asp-for="NewMessage.SenderID" value="@Model.NewMessage.SenderID" />
-                <input type="hidden" asp-for="NewMessage.PlayerID" value="@Model.NewMessage.PlayerID" />
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Send" class="btn btn-default" />
-            </div>
-        </form>
+@if (Model.Event.AreAnswersAvailableNow)
+{
+    <div>No help is needed because answers are now available!</div>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    @if (Model.PuzzleState.IsEmailOnlyMode)
+                    {
+                        <p>Use this message to fully explain your thought process so we know you're not randomly spamming attempts!</p>
+                    }
+                    else
+                    {
+                        <p>The more details you add here, the more helpful the responses you'll get will be!</p>
+                    }
+                    <textarea asp-for="NewMessage.Text" class="form-control" rows="4" placeholder="Type message here" autocomplete="off" maxlength="@PuzzleThreadModel.MessageCharacterLimit"></textarea>
+                    <span asp-validation-for="NewMessage.Text" class="text-danger"></span>
+                    <input type="hidden" asp-for="NewMessage.ThreadId" value="@Model.NewMessage.ThreadId" />
+                    <input type="hidden" asp-for="NewMessage.EventID" value="@Model.NewMessage.EventID" />
+                    <input type="hidden" asp-for="NewMessage.Subject" value="@Model.NewMessage.Subject" />
+                    <input type="hidden" asp-for="NewMessage.PuzzleID" value="@Model.NewMessage.PuzzleID" />
+                    <input type="hidden" asp-for="NewMessage.TeamID" value="@Model.NewMessage.TeamID" />
+                    <input type="hidden" asp-for="NewMessage.IsFromGameControl" value="@Model.NewMessage.IsFromGameControl" />
+                    <input type="hidden" asp-for="NewMessage.SenderID" value="@Model.NewMessage.SenderID" />
+                    <input type="hidden" asp-for="NewMessage.PlayerID" value="@Model.NewMessage.PlayerID" />
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Send" class="btn btn-default" />
+                </div>
+            </form>
+        </div>
     </div>
-</div>
+}
+
 @if (Model.IsAllowedToClaimMessage() && Model.Messages.Count > 0)
 {
     Message lastMessage = Model.Messages.Last();

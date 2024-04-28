@@ -155,13 +155,15 @@ namespace ServerCore.Pages.Threads
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (string.IsNullOrWhiteSpace(NewMessage.Text))
+            if (Event.AreAnswersAvailableNow)
             {
-                ModelState.AddModelError("NewMessage.Text", "Your message cannot be empty.");
+                ModelState.AddModelError("NewMessage.Text", "Answers are already available.");
             }
-            else if (NewMessage.Text.Length > MessageCharacterLimit)
+
+            ValidationResult validationResult = IsMessageTextValid(NewMessage.Text);
+            if (!validationResult.IsValid)
             {
-                ModelState.AddModelError("NewMessage.Text", "Your message should not be longer than 3000 characters.");
+                ModelState.AddModelError("NewMessage.Text", validationResult.FailureReason);
             }
 
             ModelState.Remove("EventId");
@@ -215,6 +217,23 @@ namespace ServerCore.Pages.Threads
 
         public async Task<IActionResult> OnPostEditMessageAsync()
         {
+            if (Event.AreAnswersAvailableNow)
+            {
+                ModelState.AddModelError("EditMessage.Text", $"Edit failed because no updates can be made after answers are available");
+            }
+
+            ValidationResult validationResult = IsMessageTextValid(EditMessage.Text);
+            if (!validationResult.IsValid)
+            {
+                ModelState.AddModelError("EditMessage.Text", $"Edit failed because {validationResult.FailureReason}");
+            }
+
+            ModelState.Remove("EventId");
+            if (!ModelState.IsValid)
+            {
+                return await this.OnGetAsync(EditMessage.PuzzleID, EditMessage.TeamID, EditMessage.PlayerID);
+            }
+
             var message = await _context.Messages.Where(m => m.ID == EditMessage.ID).FirstOrDefaultAsync();
             if (message != null && IsAllowedToEditMessage(message))
             {
@@ -280,14 +299,13 @@ namespace ServerCore.Pages.Threads
 
         public bool IsAllowedToEditMessage(Message message)
         {
-            return message.SenderID == LoggedInUser.ID;
+            return !Event.AreAnswersAvailableNow && message.SenderID == LoggedInUser.ID;
         }
 
         public bool IsAllowedToDeleteMessage(Message message)
         {
-            return EventRole == EventRole.admin
-                || EventRole == EventRole.author
-                || message.SenderID == LoggedInUser.ID;
+            return !Event.AreAnswersAvailableNow 
+                && (IsGameControlRole() || message.SenderID == LoggedInUser.ID);
         }
 
         private async Task SendEmailNotifications(Message newMessage, Puzzle puzzle)
@@ -350,6 +368,39 @@ namespace ServerCore.Pages.Threads
             if (recipients.Any())
             {
                 MailHelper.Singleton.SendPlaintextWithoutBcc(recipients.Select(r => r.Email), emailTitle, emailContent);
+            }
+        }
+
+        private ValidationResult IsMessageTextValid(string messageText)
+        {
+            if (string.IsNullOrWhiteSpace(messageText))
+            {
+                return ValidationResult.CreateFailure("Your message cannot be empty.");
+            }
+            else if (messageText.Length > MessageCharacterLimit)
+            {
+                return ValidationResult.CreateFailure($"Your message should not be longer than {MessageCharacterLimit} characters.");
+            }
+            else
+            {
+                return ValidationResult.CreateSuccess();
+            }
+        }
+
+        private class ValidationResult
+        {
+            public bool IsValid { get; set; }
+
+            public string FailureReason { get; set; }
+
+            public static ValidationResult CreateSuccess()
+            {
+                return new ValidationResult { IsValid = true };
+            }
+
+            public static ValidationResult CreateFailure(string failureReason)
+            {
+                return new ValidationResult { IsValid = false, FailureReason = failureReason };
             }
         }
     }
