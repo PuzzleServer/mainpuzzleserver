@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
+using ServerCore.Helpers;
 using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Threads
@@ -39,7 +40,7 @@ namespace ServerCore.Pages.Threads
         /// <summary>
         /// Gets the view for list of all applicable puzzle threads.
         /// 
-        /// Note: the puzzleId, teamId, playerId, showUnclaimedOnly, and refreshInterval are only used for admin and author views and only one will ever be set at one time.
+        /// Note: the puzzleId, teamId, playerId, showUnclaimedOnly, refreshInterval, and filterToSupportingPuzzlesOnly are only used for admin and author views and only one will ever be set at one time.
         /// Players will always see all messages they are allowed to see.
         /// </summary>
         /// <param name="puzzleId">The puzzle id to filter to if applicable.</param>
@@ -47,9 +48,16 @@ namespace ServerCore.Pages.Threads
         /// <param name="playerId">The player id to filter to if applicable.</param>
         /// <param name="showUnclaimedOnly">True if we want to filter only to unclaimed messages.</param>
         /// <param name="refreshInterval">Determines the interval in seconds that we should wait before we refresh the page.</param>
+        /// <param name="filterToSupportingPuzzlesOnly">True if we want to filter only to puzzles current user is supporting (listed as author or supporting).</param>
         /// <returns>The Puzzle threads page view.</returns>
         /// <exception cref="NotSupportedException">Thrown when we receive an unexpected event role.</exception>
-        public async Task<IActionResult> OnGetAsync(int? puzzleId, int? teamId, int? playerId, bool? showUnclaimedOnly, int? refreshInterval)
+        public async Task<IActionResult> OnGetAsync(
+            int? puzzleId,
+            int? teamId,
+            int? playerId,
+            bool? showUnclaimedOnly,
+            int? refreshInterval,
+            bool? filterToSupportingPuzzlesOnly)
         {
             if (LoggedInUser == null)
             {
@@ -66,7 +74,8 @@ namespace ServerCore.Pages.Threads
                 teamId: teamId,
                 playerId: playerId,
                 showUnclaimedOnly: showUnclaimedOnly,
-                refreshInterval: refreshInterval);
+                refreshInterval: refreshInterval,
+                filterToSupportingPuzzlesOnly: filterToSupportingPuzzlesOnly);
 
             IQueryable<Message> messages = this._context.Messages.Where(message => message.Puzzle != null
                     && message.Puzzle.EventID == Event.ID);
@@ -119,15 +128,20 @@ namespace ServerCore.Pages.Threads
                 messages = messages.Where(message => message.PlayerID == playerId.Value);
                 this.Title = $"Help threads for player {player.Name}";
             }
-            else if (EventRole == EventRole.author)
+            else if ((EventRole == EventRole.author && Event.ShouldShowHelpMessageOnlyToAuthor)
+                || (filterToSupportingPuzzlesOnly.HasValue && filterToSupportingPuzzlesOnly.Value))
             {
-                // TODO 969: For things like puzzlehunt, we don't want authors seeing each other's threads. We need to add an event level flag for this.
-                /*HashSet<int> authorPuzzleIds = UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser)
+                HashSet<int> authorPuzzleIds = UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser)
                     .Select(puzzle => puzzle.ID)
                     .ToHashSet();
-                messages = messages.Where(message => authorPuzzleIds.Contains(message.Puzzle.ID));*/
+                messages = messages.Where(message => authorPuzzleIds.Contains(message.Puzzle.ID));
+
+                if (!Event.ShouldShowHelpMessageOnlyToAuthor && filterToSupportingPuzzlesOnly.Value)
+                {
+                    this.Title = $"Help threads for puzzles you authored or are supporting";
+                }
             }
-            else if (EventRole == EventRole.admin)
+            else if (EventRole == EventRole.admin || EventRole == EventRole.author)
             {
                 // Admins should be able to see everything, so no further filterning needs to be done
                 // no-op;
@@ -169,13 +183,15 @@ namespace ServerCore.Pages.Threads
                 int? playerId,
                 int? teamId,
                 bool? showUnclaimedOnly,
-                int? refreshInterval)
+                int? refreshInterval,
+                bool? filterToSupportingPuzzlesOnly)
             {
                 this.PuzzleId = puzzleId;
                 this.PlayerId = playerId;
                 this.TeamId = teamId;
                 this.ShowUnclaimedOnly = showUnclaimedOnly;
                 this.RefreshInterval = refreshInterval;
+                this.FilterToSupportingPuzzlesOnly = filterToSupportingPuzzlesOnly;
             }
 
             public int? TeamId { get; }
@@ -183,13 +199,15 @@ namespace ServerCore.Pages.Threads
             public int? PuzzleId { get; }
             public bool? ShowUnclaimedOnly { get; }
             public int? RefreshInterval { get; }
+            public bool? FilterToSupportingPuzzlesOnly { get; }
 
             public bool HasFilterApplied()
             {
                 return this.TeamId.HasValue
                     || this.PlayerId.HasValue
                     || this.PuzzleId.HasValue
-                    || (this.ShowUnclaimedOnly.HasValue && this.ShowUnclaimedOnly.Value);
+                    || (this.ShowUnclaimedOnly.HasValue && this.ShowUnclaimedOnly.Value)
+                    || (this.FilterToSupportingPuzzlesOnly.HasValue && this.FilterToSupportingPuzzlesOnly.Value);
             }
         }
     }
