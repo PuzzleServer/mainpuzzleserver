@@ -379,7 +379,7 @@ namespace ServerCore.Pages.Threads
             }
             else if (messageText.Length > MessageCharacterLimit)
             {
-                return ValidationResult.CreateFailure("Your message should not be longer than 3000 characters.");
+                return ValidationResult.CreateFailure($"Your message should not be longer than {MessageCharacterLimit} characters.");
             }
             else
             {

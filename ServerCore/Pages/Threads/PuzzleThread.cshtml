@@ -1,5 +1,6 @@
 ﻿@page "/{eventId}/{eventRole}/Threads/PuzzleThread/{puzzleId}"
 @using ServerCore.DataModel
+@using ServerCore.Pages.Threads;
 @model ServerCore.Pages.Threads.PuzzleThreadModel
 
 @{
@@ -74,7 +75,7 @@
                 <form asp-page-handler="EditMessage" method="post">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <div class="form-group">
-                        <textarea asp-for="EditMessage.Text" class="form-control" rows="4" placeholder="@message.Text" autocomplete="off">@message.Text</textarea>
+                        <textarea asp-for="EditMessage.Text" class="form-control" rows="4" placeholder="@message.Text" autocomplete="off" maxlength="@PuzzleThreadModel.MessageCharacterLimit">@message.Text</textarea>
                         <span asp-validation-for="EditMessage.Text" class="text-danger"></span>
                         <input type="hidden" asp-for="EditMessage.ID" value="@message.ID" />
                         <input type="hidden" asp-for="EditMessage.PuzzleID" value="@message.PuzzleID" />
@@ -125,7 +126,7 @@ else
                     {
                         <p>The more details you add here, the more helpful the responses you'll get will be!</p>
                     }
-                    <textarea asp-for="NewMessage.Text" class="form-control" rows="4" placeholder="Type message here" autocomplete="off"></textarea>
+                    <textarea asp-for="NewMessage.Text" class="form-control" rows="4" placeholder="Type message here" autocomplete="off" maxlength="@PuzzleThreadModel.MessageCharacterLimit"></textarea>
                     <span asp-validation-for="NewMessage.Text" class="text-danger"></span>
                     <input type="hidden" asp-for="NewMessage.ThreadId" value="@Model.NewMessage.ThreadId" />
                     <input type="hidden" asp-for="NewMessage.EventID" value="@Model.NewMessage.EventID" />
