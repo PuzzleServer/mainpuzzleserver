@@ -26,6 +26,9 @@ namespace ServerCore.Pages.Teams
         [Parameter]
         public int LoggedInUserId { get; set; }
 
+        [Parameter]
+        public bool IsMicrosoft { get; set; }
+
         [Inject]
         public PuzzleServerContext _context { get; set; }
 

@@ -10,6 +10,8 @@ namespace ServerCore.Pages.Teams
 {
     public class SignupModel : EventSpecificPageModel
     {
+        public bool IsMicrosoft { get; set; }
+
         public SignupModel(PuzzleServerContext serverContext, UserManager<IdentityUser> manager) : base(serverContext, manager)
         {
         }
@@ -32,6 +34,15 @@ namespace ServerCore.Pages.Teams
             if (EventRole == EventRole.play && existingTeamId != -1)
             {
                 return RedirectToPage("/Teams/Details", new { teamId = existingTeamId });
+            }
+
+            if (LoggedInUser.Email.EndsWith("@microsoft.com"))
+            {
+                IsMicrosoft = true;
+            }
+            else if (!string.IsNullOrWhiteSpace(LoggedInUser.EmployeeAlias))
+            {
+                IsMicrosoft = true;
             }
 
             return Page();
