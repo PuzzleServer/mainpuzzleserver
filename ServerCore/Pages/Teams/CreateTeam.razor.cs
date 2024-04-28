@@ -79,9 +79,7 @@ namespace ServerCore.Pages.Teams
     public partial class CreateTeam
     {
         [Parameter]
-        public int EventId { get; set; }
-
-        Event Event { get; set; }
+        public Event Event { get; set; }
 
         [Parameter]
         public EventRole EventRole { get; set; }
@@ -101,10 +99,9 @@ namespace ServerCore.Pages.Teams
 
         protected override async Task OnParametersSetAsync()
         {
-            TeamModel.EventId = EventId;
-            Event = await _context.Events.Where(ev => ev.ID == EventId).SingleAsync();
+            TeamModel.EventId = Event.ID;
 
-            if (EventRole == EventRole.play && await _context.Teams.Where((t) => t.EventID == EventId).CountAsync() >= Event.MaxNumberOfTeams)
+            if (EventRole == EventRole.play && await _context.Teams.Where((t) => t.EventID == Event.ID).CountAsync() >= Event.MaxNumberOfTeams)
             {
                 EventFull = true;
             }
@@ -116,7 +113,7 @@ namespace ServerCore.Pages.Teams
         {
             Team team = new Team
             {
-                EventID = EventId,
+                EventID = Event.ID,
                 Name = TeamModel.Name,
                 CustomRoom = TeamModel.CustomRoom,
                 PrimaryContactEmail = TeamModel.PrimaryContactEmail,
@@ -128,7 +125,7 @@ namespace ServerCore.Pages.Teams
 
             await TeamHelper.CreateTeamAsync(_context, team, Event, LoggedInUserId, EventRole == EventRole.play);
             Team newTeam = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUserId);
-            NavigationManager.NavigateTo($"./Details/{newTeam.ID}");
+            NavigationManager.NavigateTo($"/{Event.EventID}/{EventRole}/Teams/{newTeam.ID}/Details", true);
         }
     }
 }

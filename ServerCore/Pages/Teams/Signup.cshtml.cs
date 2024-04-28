@@ -33,6 +33,7 @@ namespace ServerCore.Pages.Teams
                 return NotFound("You are already on a team and cannot create a new one.");
             }
 
+            // todo: figure out teamregistrationactie vs teammembershipchangeactive
             if (!Event.IsTeamRegistrationActive && EventRole != EventRole.admin)
             {
                 return NotFound();
