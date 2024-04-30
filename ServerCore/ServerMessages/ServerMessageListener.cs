@@ -35,7 +35,10 @@ namespace ServerCore.ServerMessages
             }
             else
             {
-                localhostSignalRUrl = "http://localhost/serverMessage";
+                // Workaround for the Azure server failing to connect to itself via localhost.
+                // This means it can connect to a different instance if there are multiple instances,
+                // but if there are, the Azure SignalR service will handle the message distribution.
+                localhostSignalRUrl = "https://puzzlehunt.azurewebsites.net/serverMessage";
             }
 
             HubConnection = new HubConnectionBuilder().WithUrl(localhostSignalRUrl).WithAutomaticReconnect().Build();
