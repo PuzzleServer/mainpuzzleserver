@@ -1,6 +1,8 @@
 ﻿// Write your Javascript code.
-$("time").each(function (elem) {
-    var utctimeval = $(this).html();
-    var date = new Date(utctimeval);
-    $(this).html(date.toLocaleString());
+document.addEventListener("DOMContentLoaded", e => {
+    document.querySelectorAll("time").forEach(t => {
+        var utctimeval = t.innerText;
+        var date = new Date(utctimeval);
+        t.innerText = date.toLocaleString();
+    });
 });
