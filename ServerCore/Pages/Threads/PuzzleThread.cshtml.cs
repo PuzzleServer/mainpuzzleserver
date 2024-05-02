@@ -81,6 +81,15 @@ namespace ServerCore.Pages.Threads
             string subject = null;
             string threadId = null;
             bool isGameControl = IsGameControlRole();
+            if (Event.ShouldShowHelpMessageOnlyToAuthor && EventRole == EventRole.author)
+            {
+                PuzzleAuthors author = _context.PuzzleAuthors.Where(puzzleAuthor => puzzleAuthor.PuzzleID == puzzleId && puzzleAuthor.AuthorID == LoggedInUser.ID).FirstOrDefault();
+                if (author == null)
+                {
+                    throw new InvalidOperationException("You are not an author of this puzzle.");
+                }
+            }
+
             if (Puzzle.IsForSinglePlayer)
             {
                 singlePlayerPuzzlePlayer = _context.PuzzleUsers.Where(user => user.ID == playerId).FirstOrDefault();
