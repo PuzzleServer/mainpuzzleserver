@@ -313,8 +313,7 @@ namespace ServerCore.Pages.Threads
 
         public bool IsAllowedToDeleteMessage(Message message)
         {
-            return !Event.AreAnswersAvailableNow 
-                && (IsGameControlRole() || message.SenderID == LoggedInUser.ID);
+            return !Event.AreAnswersAvailableNow && message.SenderID == LoggedInUser.ID;
         }
 
         private async Task SendEmailNotifications(Message newMessage, Puzzle puzzle)

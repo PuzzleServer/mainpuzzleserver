@@ -371,19 +371,29 @@ a.navbar-brand {
 }
 
 .message-container {
-    border: 2px solid #dedede;
+    border: 0px solid #dedede;
     background-color: #f1f1f1;
     border-radius: 5px;
-    padding: 10px;
-    margin: 10px 0;
-}
-
-.message-container:nth-child(2n) {
-    border-color: #ccc;
-    background-color: #ddd;
+    padding: 10px 20px;
+    margin: 22px 0;
+    font-size: 14pt;
+    font-family: Verdana;
+    box-shadow: 5px 5px 10px 5px #d4d2d2;
 }
 
 .message-game-control {
-    border-color: #00FF00;
-    border-width: 5px;
+    border-color: #03d65f;
+    background-color: #03d65f;
+    color: #F8FFFF;
+    box-shadow: 5px 5px 10px 3px rgba(2, 161, 71, 0.8);
+}
+
+.message-main-content {
+    padding-top: 18px;
+    padding-bottom: 15px;
+    font-size: 16pt;
+}
+
+.message-subtitle {
+    font-size: 12pt;
 }
