@@ -13,7 +13,7 @@
         isOnTeam = await eventPage.PlayerHasTeamForEvent();
         teamId = await eventPage.GetTeamId();
         playerEventId = await eventPage.GetPlayerEventId();
-        userId = eventPage.LoggedInUser.ID;
+        userId = eventPage.LoggedInUser?.ID;
     }
 }
 
