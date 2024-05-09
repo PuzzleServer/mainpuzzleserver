@@ -143,6 +143,11 @@
     #img-frame {
         width: 100%;
     }
+    #puzzleGroupPrintable {
+        margin-left: 20px;
+        margin-top: 4px;
+        margin-bottom: 0px;
+    }
 
     /* Host-side printing of an embedded puzzle only supports portrait orientation; 
     puzzle-defined orientation when printing can only be done by clicking the link to print the puzzle file itself */
@@ -170,6 +175,9 @@
         #puzzleAuthorPrintable {
             font-size: 16px;
             margin-top: -0.15in;
+        }
+        #puzzleGroupPrintable {
+            margin-top: -2px;
         }
         iframe {
             margin: -0.5in -0.25in 0in -0.25in;
@@ -348,21 +356,21 @@
                                         {
                                             if (Model.SubmissionViews[i].Submission.FreeformAccepted != null)
                                             {
-                                                    @(Model.SubmissionViews[i].FreeformReponse);
+                                                            @(Model.SubmissionViews[i].FreeformReponse);
                                             }
                                             else if (Model.PuzzleState.SolvedTime == null)
                                             {
-                                                    <text>Pending...</text>
+                                                            <text>Pending...</text>
                                             }
                                         }
                                         else
                                         {
-                                                <text>@IndexModel.IncorrectResponseText</text>
+                                                        <text>@IndexModel.IncorrectResponseText</text>
                                         }
                                     }
                                     else
                                     {
-                                            @ServerCore.Helpers.RawHtmlHelper.Display(response.ResponseText, Model.Event.ID, Html);
+                                                    @ServerCore.Helpers.RawHtmlHelper.Display(response.ResponseText, Model.Event.ID, Html);
                                     }
                                 }
                             </td>
@@ -446,7 +454,11 @@ else
 
     <div class="twocolumn">
         <div class="flexwrapper">
-            <div><h2 class="puzzle-title-customizable" id="puzzleNamePrintable"><b>@RawHtmlHelper.Display(Model.Puzzle.Name, Model.Event.ID, Html)</b></h2></div>&nbsp;&nbsp;
+            <div><h2 class="puzzle-title-customizable" id="puzzleNamePrintable"><b>@RawHtmlHelper.Display(Model.Puzzle.Name, Model.Event.ID, Html)</b></h2>&nbsp;&nbsp;</div>
+            @if (!string.IsNullOrEmpty(Model.Puzzle.Group))
+            {
+                <div><h3 class="puzzle-group-customizable" id="puzzleGroupPrintable">@RawHtmlHelper.Display(Model.Puzzle.Group, Model.Event.ID, Html)</h3>&nbsp;&nbsp;</div>
+            }
             @if (Model.Puzzle.HasDataConfirmation)
             {
                 <img class="dc-icon-customizable" id="dataConfirmationPrintable" src="~/images/comic-dc.png" width="30" height="30" style="margin-bottom:3px" title="Reminder: This puzzle supports data confirmation" />
@@ -626,21 +638,21 @@ else
                                     {
                                         if (Model.SubmissionViews[i].Submission.FreeformAccepted != null)
                                         {
-                                                <div class="panelitem">@(Model.SubmissionViews[i].FreeformReponse)</div>
+                                                        <div class="panelitem">@(Model.SubmissionViews[i].FreeformReponse)</div>
                                         }
                                         else if (Model.PuzzleState.SolvedTime == null)
                                         {
-                                                <div class="panelitem">Pending...</div>
+                                                        <div class="panelitem">Pending...</div>
                                         }
                                     }
                                     else
                                     {
-                                            <div class="panelitem">@IndexModel.IncorrectResponseText</div>
+                                                    <div class="panelitem">@IndexModel.IncorrectResponseText</div>
                                     }
                                 }
                                 else
                                 {
-                                        <div class="panelitem">@ServerCore.Helpers.RawHtmlHelper.Display(response.ResponseText, Model.Event.ID, Html)</div>
+                                                <div class="panelitem">@ServerCore.Helpers.RawHtmlHelper.Display(response.ResponseText, Model.Event.ID, Html)</div>
                                 }
                             }
                         </div>
@@ -850,13 +862,16 @@ else
                         document.querySelector("#submitButton").click();
                     }
                 });
+            });
 
-                // Resize iframe upon first load so the frame has no scrollbars
-                // By the time the window has loaded, the iframe contents should have as well, thus no iframe load listener
-                // Note that when the puzzle receives the message, it should remove any extraneous wrapping before reporting its size
+            // Resize iframe whenever it loads content
+            // Note that when the puzzle receives the message, it should remove any extraneous wrapping before reporting its size
+            document.addEventListener("DOMContentLoaded", (e) => { 
                 const iframe = document.querySelector("#puzzle-frame");
                 if ((iframe !== null) && (iframe !== undefined)) {
-                    iframe.contentWindow.postMessage("", "*");
+                    iframe.addEventListener("load", (e) => {
+                        e.target.contentWindow.postMessage("", "*");
+                    });
                 }
             });
 
