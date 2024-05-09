@@ -73,6 +73,11 @@
                     </a>
                 </th>
                 <th>
+                    <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-hideFreeform="@Model.HideFreeform" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.IsSolutionDescending, AuthorIndexModel.SortOrder.IsSolutionAscending))">
+                        ✅?
+                    </a>
+                </th>
+                <th>
                     <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-hideFreeform="@Model.HideFreeform" asp-route-sort="@(Model.SortForColumnLink(AuthorIndexModel.SortOrder.SubmissionAscending, AuthorIndexModel.SortOrder.SubmissionDescending))">
                         SubmissionText
                     </a>
@@ -100,6 +105,9 @@
                 </td>
                 <td>
                     @ServerCore.Helpers.RawHtmlHelper.Display(item.ResponseText, Model.Event.ID, Html)
+                </td>
+                <td>
+                    @(item.IsSolution ? "✅" : "❌")
                 </td>
                 <td style="max-width: 500px; word-wrap: break-word">
                     @if (item.Linkify)
