@@ -3,21 +3,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
 using ServerCore.ModelBases;
+using ServerCore.ServerMessages;
 
 namespace ServerCore.Pages.Puzzles
 {
     [Authorize(Policy = "IsEventAdminOrAuthorOfPuzzle")]
     public class EditModel : EventSpecificPageModel
     {
-        public EditModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
+        private IHubContext<ServerMessageHub> messageHub;
+
+        public EditModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager, IHubContext<ServerMessageHub> messageHub) : base(serverContext, userManager)
         {
+            this.messageHub = messageHub;
         }
 
         [BindProperty]
@@ -130,6 +136,9 @@ namespace ServerCore.Pages.Puzzles
                                                       join PuzzleStatePerTeam pspt in _context.PuzzleStatePerTeam on tm.Team equals pspt.Team
                                                       where pspt.PuzzleID == Puzzle.ID && pspt.UnlockedTime != null
                                                       select tm.Member.Email).ToListAsync();
+                    List<Team> teams = await (from PuzzleStatePerTeam pspt in _context.PuzzleStatePerTeam
+                                                      where pspt.PuzzleID == Puzzle.ID && pspt.UnlockedTime != null
+                                                      select pspt.Team).ToListAsync();
 
                     string subject, body;
                     string puzzleName = Puzzle.PlaintextName;
@@ -146,6 +155,10 @@ namespace ServerCore.Pages.Puzzles
                     }
 
                     MailHelper.Singleton.SendPlaintextBcc(teamMembers, subject, body);
+                    foreach (Team team in teams)
+                    {
+                        await this.messageHub.SendNotification(team, subject, body, $"/{this.Event.EventID}/play/Submissions/{puzzleId}");
+                    }
                 }
             }
             catch (DbUpdateConcurrencyException)

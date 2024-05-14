@@ -5,12 +5,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using NuGet.Packaging;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
 using ServerCore.ModelBases;
+using ServerCore.ServerMessages;
 
 namespace ServerCore.Pages.Threads
 {
@@ -19,8 +21,11 @@ namespace ServerCore.Pages.Threads
     {
         public const int MessageCharacterLimit = 3000;
 
-        public PuzzleThreadModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
+        private IHubContext<ServerMessageHub> messageHub;
+
+        public PuzzleThreadModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager, IHubContext<ServerMessageHub> messageHub) : base(serverContext, userManager)
         {
+            this.messageHub = messageHub;
         }
 
         /// <summary>
@@ -76,6 +81,15 @@ namespace ServerCore.Pages.Threads
             string subject = null;
             string threadId = null;
             bool isGameControl = IsGameControlRole();
+            if (Event.ShouldShowHelpMessageOnlyToAuthor && EventRole == EventRole.author)
+            {
+                PuzzleAuthors author = _context.PuzzleAuthors.Where(puzzleAuthor => puzzleAuthor.PuzzleID == puzzleId && puzzleAuthor.AuthorID == LoggedInUser.ID).FirstOrDefault();
+                if (author == null)
+                {
+                    throw new InvalidOperationException("You are not an author of this puzzle.");
+                }
+            }
+
             if (Puzzle.IsForSinglePlayer)
             {
                 singlePlayerPuzzlePlayer = _context.PuzzleUsers.Where(user => user.ID == playerId).FirstOrDefault();
@@ -92,6 +106,7 @@ namespace ServerCore.Pages.Threads
 
                 subject = $"[{singlePlayerPuzzlePlayer.Name}]{Puzzle.Name}";
                 threadId = MessageHelper.GetSinglePlayerPuzzleThreadId(Puzzle.ID, playerId.Value);
+                teamId = null;
                 PuzzleState = await SinglePlayerPuzzleStateHelper.GetOrAddStateIfNotThere(
                     _context,
                     Event,
@@ -115,6 +130,7 @@ namespace ServerCore.Pages.Threads
 
                 subject = $"[{team.Name}]{Puzzle.Name}";
                 threadId = MessageHelper.GetTeamPuzzleThreadId(Puzzle.ID, teamId.Value);
+                playerId = null;
                 PuzzleState = await PuzzleStateHelper
                     .GetFullReadOnlyQuery(
                         _context,
@@ -148,13 +164,15 @@ namespace ServerCore.Pages.Threads
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (string.IsNullOrWhiteSpace(NewMessage.Text))
+            if (Event.AreAnswersAvailableNow)
             {
-                ModelState.AddModelError("NewMessage.Text", "Your message cannot be empty.");
+                ModelState.AddModelError("NewMessage.Text", "Answers are already available.");
             }
-            else if (NewMessage.Text.Length > MessageCharacterLimit)
+
+            ValidationResult validationResult = IsMessageTextValid(NewMessage.Text);
+            if (!validationResult.IsValid)
             {
-                ModelState.AddModelError("NewMessage.Text", "Your message should not be longer than 3000 characters.");
+                ModelState.AddModelError("NewMessage.Text", validationResult.FailureReason);
             }
 
             ModelState.Remove("EventId");
@@ -201,13 +219,30 @@ namespace ServerCore.Pages.Threads
                 transaction.Commit();
             }
 
-            this.SendEmailNotifications(m, puzzle);
+            await this.SendEmailNotifications(m, puzzle);
 
             return RedirectToPage("/Threads/PuzzleThread", new { puzzleId = m.PuzzleID, teamId = m.TeamID, playerId = m.PlayerID });
         }
 
         public async Task<IActionResult> OnPostEditMessageAsync()
         {
+            if (Event.AreAnswersAvailableNow)
+            {
+                ModelState.AddModelError("EditMessage.Text", $"Edit failed because no updates can be made after answers are available");
+            }
+
+            ValidationResult validationResult = IsMessageTextValid(EditMessage.Text);
+            if (!validationResult.IsValid)
+            {
+                ModelState.AddModelError("EditMessage.Text", $"Edit failed because {validationResult.FailureReason}");
+            }
+
+            ModelState.Remove("EventId");
+            if (!ModelState.IsValid)
+            {
+                return await this.OnGetAsync(EditMessage.PuzzleID, EditMessage.TeamID, EditMessage.PlayerID);
+            }
+
             var message = await _context.Messages.Where(m => m.ID == EditMessage.ID).FirstOrDefaultAsync();
             if (message != null && IsAllowedToEditMessage(message))
             {
@@ -273,20 +308,24 @@ namespace ServerCore.Pages.Threads
 
         public bool IsAllowedToEditMessage(Message message)
         {
-            return message.SenderID == LoggedInUser.ID;
+            return !Event.AreAnswersAvailableNow && message.SenderID == LoggedInUser.ID;
         }
 
         public bool IsAllowedToDeleteMessage(Message message)
         {
-            return EventRole == EventRole.admin
-                || EventRole == EventRole.author
-                || message.SenderID == LoggedInUser.ID;
+            return !Event.AreAnswersAvailableNow && message.SenderID == LoggedInUser.ID;
         }
 
-        private void SendEmailNotifications(Message newMessage, Puzzle puzzle)
+        private async Task SendEmailNotifications(Message newMessage, Puzzle puzzle)
         {
             // Send a notification email to further alert both authors and players.
-            var recipients = new HashSet<string>();
+            string emailTitle = $"{newMessage.Subject} thread update!";
+            string emailContent = "You have an update on your help message thread.";
+            string toastTitle = $"Help message from {(newMessage.IsFromGameControl ? "Game Control" : newMessage.Sender.Name)}";
+            string toastContent = $"{newMessage.Subject}";
+            string threadUrlSuffix = $"Threads/PuzzleThread/{newMessage.PuzzleID}?teamId={newMessage.TeamID}&playerId={newMessage.PlayerID}";
+
+            var recipients = new HashSet<PuzzleUser>();
 
             if (newMessage.IsFromGameControl)
             {
@@ -296,33 +335,80 @@ namespace ServerCore.Pages.Threads
                 {
                     if (puzzle.IsForSinglePlayer)
                     {
-                        recipients.Add(messageFromPlayer.Sender.Email);
+                        recipients.Add(messageFromPlayer.Sender);
+                        await messageHub.SendNotification(messageFromPlayer.Sender, toastTitle, toastContent, $"/{newMessage.Event.EventID}/play/{threadUrlSuffix}");
                     }
                     else if (messageFromPlayer.TeamID != null)
                     {
-                        recipients.AddRange(_context.TeamMembers
+                        recipients.AddRange(await _context.TeamMembers
                             .Where(teamMember => teamMember.Team.ID == messageFromPlayer.TeamID)
-                            .Select(teamMember => teamMember.Member.Email));
+                            .Select(teamMember => teamMember.Member).ToArrayAsync());
+                        await messageHub.SendNotification(messageFromPlayer.Team, toastTitle, toastContent, $"/{newMessage.Event.EventID}/play/{threadUrlSuffix}");
                     }
                 }
             }
             else
             {
                 // Send notification to authors and any game control person on the thread if message from player.
-                recipients.AddRange(_context.PuzzleAuthors
-                    .Where(pa => pa.Puzzle.ID == puzzle.ID)
-                    .Select(pa => pa.Author.Email));
 
-                recipients.AddRange(_context.Messages
+                HashSet<PuzzleUser> staff = new HashSet<PuzzleUser>();
+                staff.AddRange(await _context.PuzzleAuthors
+                    .Where(pa => pa.Puzzle.ID == puzzle.ID)
+                    .Select(pa => pa.Author).ToArrayAsync());
+
+                staff.AddRange(await _context.Messages
                     .Where(message => message.ThreadId == newMessage.ThreadId && message.IsFromGameControl)
-                    .Select(message => message.Sender.Email));
+                    .Select(message => message.Sender).ToArrayAsync());
+
+                HashSet<PuzzleUser> admins = new HashSet<PuzzleUser>();
+                admins.AddRange(await _context.EventAdmins
+                    .Where(ea => ea.EventID == Event.ID)
+                    .Select(ea => ea.Admin).ToArrayAsync());
+
+                recipients.AddRange(staff);
+                
+                foreach (var staffer in staff)
+                {
+                    await messageHub.SendNotification(staffer, toastTitle, toastContent, $"/{newMessage.Event.EventID}/{(admins.Contains(staffer) ? "admin" : "author")}/{threadUrlSuffix}");
+                }
             }
 
             if (recipients.Any())
             {
-                MailHelper.Singleton.SendPlaintextWithoutBcc(recipients,
-                    $"{newMessage.Subject} thread update!",
-                    "You have an update on your help message thread.");
+                MailHelper.Singleton.SendPlaintextWithoutBcc(recipients.Select(r => r.Email), emailTitle, emailContent);
+            }
+        }
+
+        private ValidationResult IsMessageTextValid(string messageText)
+        {
+            if (string.IsNullOrWhiteSpace(messageText))
+            {
+                return ValidationResult.CreateFailure("Your message cannot be empty.");
+            }
+            else if (messageText.Length > MessageCharacterLimit)
+            {
+                return ValidationResult.CreateFailure($"Your message should not be longer than {MessageCharacterLimit} characters.");
+            }
+            else
+            {
+                return ValidationResult.CreateSuccess();
+            }
+        }
+
+        private class ValidationResult
+        {
+            public bool IsValid { get; set; }
+
+            public string FailureReason { get; set; }
+
+            public static ValidationResult CreateSuccess()
+            {
+                return new ValidationResult { IsValid = true };
+            }
+
+            public static ValidationResult CreateFailure(string failureReason)
+            {
+                return new ValidationResult { IsValid = false, FailureReason = failureReason };
             }
         }
     }

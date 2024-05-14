@@ -43,7 +43,8 @@
        asp-route-teamPuzzleSort="@Model.TeamPuzzleSort"
        asp-route-stateFilter=@(unsolvedFilter ? PlayModel.PuzzleStateFilter.All : PlayModel.PuzzleStateFilter.Unsolved)>
         Show @(unsolvedFilter ? "All" : "only unsolved") puzzles
-    </a>
+    </a> |
+    <a asp-page="/Threads/PuzzleThreads">View help threads</a>
 </div>
 
 <h2>Team puzzles</h2>

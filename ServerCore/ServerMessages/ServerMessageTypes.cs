@@ -68,3 +68,43 @@ public class AllPresenceState
     /// </summary>
     public PresenceMessage[] AllPresence { get; set; }
 }
+
+/// <summary>
+/// Content of a notification, intended to be broadcast to all players in a specific event, all players on a specific team, or a specific player.
+/// </summary>
+public class Notification
+{
+    public string ID { get; } = Guid.NewGuid().ToString();
+
+    public DateTime Time { get; set; }
+
+    /// <summary>
+    /// The event the notification is for.
+    /// </summary>
+    public int? EventID { get; set; }
+
+    /// <summary>
+    /// The team the notification is for.
+    /// </summary>
+    public int? TeamID { get; set; }
+
+    /// <summary>
+    /// The user the notification is for.
+    /// </summary>
+    public int? UserID { get; set; }
+
+    /// <summary>
+    /// The title of the notification.
+    /// </summary>
+    public string Title { get; set; }
+
+    /// <summary>
+    /// The content of the notification.
+    /// </summary>
+    public string Content { get; set; }
+
+    /// <summary>
+    /// The link that should be followed if the notification is clicked.
+    /// </summary>
+    public string LinkUrl { get; set; }
+}
