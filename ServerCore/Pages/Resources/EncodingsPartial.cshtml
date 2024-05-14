@@ -4,28 +4,33 @@
         border: 1px solid black;
         padding: 2px;
     }
-    td:nth-child(1) {
-        font-size: 24px;
-        font-weight: bold;
-    }
+
+        td:nth-child(1) {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
     table.pictoral-table td:nth-child(7),
     table.textual-table td:nth-child(8) {
         font-size: 24px;
         font-weight: bold;
         border-left: 3px solid black;
     }
+
     table.textual-table td:nth-child(4),
     table.textual-table td:nth-child(6),
     table.textual-table td:nth-child(7),
     table.textual-table td:nth-child(11),
     table.textual-table td:nth-child(13),
     table.textual-table td:nth-child(14) {
-        font-family: monospace;  
+        font-family: monospace;
     }
+
     tr:nth-child(even) {
         background-color: #cccccc;
     }
-    table.pictoral-table thead tr.table-header td, 
+
+    table.pictoral-table thead tr.table-header td,
     table.textual-table thead tr.table-header td,
     table.numerical-table thead tr.table-header td {
         font-family: Tahoma, Verdana, sans-serif;
@@ -34,25 +39,31 @@
         background-color: #cccccc;
         border-bottom: 3px solid black;
     }
+
     th {
         padding: 2px;
     }
+
     .shrink-wrap {
         display: inline-block;
     }
+
     .center-container {
         text-align: center;
     }
+
     .grid-3 {
         display: grid;
         grid-template-columns: 0.33fr 0.33fr 0.33fr;
         gap: 10px;
     }
+
     .grid-2 {
         display: grid;
         grid-template-columns: 0.5fr 0.5fr;
         gap: 10px;
     }
+
     .morse-background {
         background-image: url(/images/MorseCode.png);
         background-repeat: no-repeat;
@@ -60,17 +71,20 @@
         width: 116px;
         color: transparent;
     }
+
     .morse-number-background {
         width: 131px;
     }
+
     .semaphore-background {
         background-image: url(/images/Semaphore.png);
         background-repeat: no-repeat;
         height: 64px;
         width: 74px;
-        color: transparent; 
+        color: transparent;
         margin-left: 3px;
     }
+
     .braille-background {
         background-image: url(/images/braille-alphabet-and-braille-numbers.png);
         background-repeat: no-repeat;
@@ -78,6 +92,7 @@
         width: 48px;
         color: transparent;
     }
+
     .maritime-background {
         background-image: url(/images/nautical-flags.jpg);
         background-repeat: no-repeat;
@@ -85,10 +100,12 @@
         width: 68px;
         color: transparent;
     }
+
     .maritime-number-background {
         height: 46px;
         width: 134px;
     }
+
     .nato-number-background {
         background-image: url(/images/nato-flags.jpg);
         background-repeat: no-repeat;
@@ -97,6 +114,7 @@
         color: transparent;
         margin-left: 26px;
     }
+
     .asl-background {
         background-image: url(/images/asl-alphabet.jpg);
         background-repeat: no-repeat;
@@ -104,6 +122,7 @@
         width: 140px;
         color: transparent;
     }
+
     .asl-number-background {
         background-image: url(/images/asl-numbers-1-10.jpg);
         background-repeat: no-repeat;
@@ -111,6 +130,7 @@
         width: 180px;
         color: transparent;
     }
+
     .moon-background {
         background-image: url(/images/Moonalphabet.png);
         background-repeat: no-repeat;
@@ -131,22 +151,23 @@
 
     <div class="center-container">
         <h3>Pictoral encodings</h3>
+        <div>To view an image that contains every letter for a particular encoding, click the heading for that encoding.</div>
         <div class="shrink-wrap">
             <table class="pictoral-table">
                 <thead>
                     <tr class="table-header">
                         <td>Letter</td>
-                        <td><a href="https://en.wikipedia.org/wiki/Morse_code" target="_blank">Morse Code</a></td>
-                        <td><a href="https://en.wikipedia.org/wiki/Flag_semaphore" target="_blank">Semaphore</a></td>
-                        <td><a href="https://en.wikipedia.org/wiki/Braille" target="_blank">Braille</a></td>
-                        <td><a href="https://en.wikipedia.org/wiki/International_Code_of_Signals#Standards" target="_blank">Maritime<br />flags</a></td>
-                        <td><a href="https://en.wikipedia.org/wiki/American_Sign_Language#Fingerspelling" target="_blank">American Sign<br />Language</a></td>
+                        <td><a href="/images/MorseCode.png" target="_blank">Morse Code</a></td>
+                        <td><a href="/images/Semaphore.png" target="_blank">Semaphore</a></td>
+                        <td><a href="/images/braille-alphabet-and-braille-numbers.png" target="_blank">Braille</a></td>
+                        <td><a href="/images/nautical-flags.jpg" target="_blank">Maritime<br />flags</a></td>
+                        <td><a href="/images/asl-alphabet.jpg" target="_blank">American Sign<br />Language</a></td>
                         <td>Letter</td>
-                        <td><a href="https://en.wikipedia.org/wiki/Morse_code" target="_blank">Morse Code</a></td>
-                        <td><a href="https://en.wikipedia.org/wiki/Flag_semaphore" target="_blank">Semaphore</a></td>
-                        <td><a href="https://en.wikipedia.org/wiki/Braille" target="_blank">Braille</a></td>
-                        <td><a href="https://en.wikipedia.org/wiki/International_Code_of_Signals#Standards" target="_blank">Maritime<br />flags</a></td>
-                        <td><a href="https://en.wikipedia.org/wiki/American_Sign_Language#Fingerspelling" target="_blank">American Sign<br />Language</a></td>
+                        <td><a href="/images/MorseCode.png" target="_blank">Morse Code</a></td>
+                        <td><a href="/images/Semaphore.png" target="_blank">Semaphore</a></td>
+                        <td><a href="/images/braille-alphabet-and-braille-numbers.png" target="_blank">Braille</a></td>
+                        <td><a href="/images/nautical-flags.jpg" target="_blank">Maritime<br />flags</a></td>
+                        <td><a href="/images/asl-alphabet.jpg" target="_blank">American Sign<br />Language</a></td>
                     </tr>
                 </thead>
                 <tbody>
@@ -335,6 +356,11 @@
                 </tbody>
             </table>
         </div>
+        <div>Learn more about <a href="https://en.wikipedia.org/wiki/Morse_code" target="_blank">Morse Code</a></div>
+        <div>Learn more about <a href="https://en.wikipedia.org/wiki/Flag_semaphore" target="_blank">Semaphore</a></div>
+        <div>Learn more about <a href="https://en.wikipedia.org/wiki/Braille" target="_blank">Braille</a></div>
+        <div>Learn more about <a href="https://en.wikipedia.org/wiki/International_Code_of_Signals#Standards" target="_blank">Maritime flags</a></div>
+        <div>Learn more about <a href="https://en.wikipedia.org/wiki/American_Sign_Language#Fingerspelling" target="_blank">American Sign Language</a></div>
         <br />
         <h3>Textual Encodings</h3>
         <div class="shrink-wrap">
@@ -582,24 +608,25 @@
                 </ul>
             </p>
             <div class="shrink-wrap">
-                Sometimes, pictoral encodings will just use letters for A = 1, B = 2, etc. with a prefix to show that they're numbers and not letters.<br />For example, 
-                <img src="/images/Semaphore.png"  style="object-fit:none;object-position:-260px -530px;width:64px;height:74px" alt="Semaphore symbol for a number" /> is the sign for a number in semaphore, and
+                Sometimes, pictoral encodings will just use letters for A = 1, B = 2, etc. with a prefix to show that they're numbers and not letters.<br />For example,
+                <img src="/images/Semaphore.png" style="object-fit:none;object-position:-260px -530px;width:64px;height:74px" alt="Semaphore symbol for a number" /> is the sign for a number in semaphore, and
                 <img src="/images/braille-alphabet-and-braille-numbers.png" style="object-fit:none;object-position:0px -253px;width:48px;height:76px" alt="Braille symbol for a number" /> is the sign for a number in braille.
             </div>
         </div>
     </div>
     <div class="center-container">
         <h3>Numerical encodings</h3>
+        <div>To view an image that contains every letter for a particular encoding, click the heading for that encoding.</div>
         <div class="shrink-wrap">
             <table class="numerical-table">
                 <thead>
                     <tr class="table-header">
                         <td>Letter</td>
-                        <td><a href="https://en.wikipedia.org/wiki/Telephone_keypad#Layout" target="_blank">Telephone<br />digits</a></td>
-                        <td><a href="https://en.wikipedia.org/wiki/Morse_code" target="_blank">Morse Code</a></td>
-                        <td><a href="https://en.wikipedia.org/wiki/International_Code_of_Signals#Standards" target="_blank">Maritime<br />flags (ICS)</a></td>
-                        <td><a href="https://en.wikipedia.org/wiki/Naval_flag_signalling#Numerals" target="_blank">Maritime<br />flags (NATO)</a></td>
-                        <td><a href="https://en.wikipedia.org/wiki/American_Sign_Language#Fingerspelling" target="_blank">American Sign<br />Language</a></td>
+                        <td>Telephone<br />digits</td>
+                        <td><a href="/images/MorseCode.png" target="_blank">Morse Code</a></td>
+                        <td><a href="/images/nautical-flags.jpg" target="_blank">Maritime<br />flags (ICS)</a></td>
+                        <td><a href="/images/nato-flags.jpg" target="_blank">Maritime<br />flags (NATO)</a></td>
+                        <td><a href="/images/asl-numbers-1-10.jpg" target="_blank">American Sign<br />Language</a></td>
                     </tr>
                 </thead>
                 <tbody>
@@ -685,6 +712,11 @@
                     </tr>
                 </tbody>
             </table>
+            <div>Learn more about <a href="https://en.wikipedia.org/wiki/Telephone_keypad#Layout" target="_blank">Telephone digits</a></div>
+            <div>Learn more about <a href="https://en.wikipedia.org/wiki/Morse_code" target="_blank">Morse Code</a></div>
+            <div>Learn more about <a href="https://en.wikipedia.org/wiki/International_Code_of_Signals#Standards" target="_blank">Maritime flags (ICS)</a></div>
+            <div>Learn more about <a href="https://en.wikipedia.org/wiki/Naval_flag_signalling#Numerals" target="_blank">Maritime flags (NATO)</a></div>
+            <div>Learn more about <a href="https://en.wikipedia.org/wiki/American_Sign_Language#Fingerspelling" target="_blank">American Sign Language</a></div>
         </div>
     </div>
 
@@ -1094,7 +1126,7 @@
         </div>
         <div class="center-container">
             <p style="text-align:left;">
-                Light, on the other hand, combines to create white.  
+                Light, on the other hand, combines to create white.
             </p>
             <img src="/images/rgb-color-mixture.png" width="400" height="400" alt="Light combination" />
         </div>

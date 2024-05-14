@@ -133,7 +133,7 @@ else
         <tbody>
             @foreach (var item in Model.VisibleTeamPuzzleViews)
             {
-                <tr>
+                <tr id="@item.Name.Replace(" ", "")">
                     <td class="puzzle-list-group-customizable">
                         @RawHtmlHelper.Display(item.Group, Model.Event.ID, Html)
                     </td>
