@@ -214,7 +214,7 @@ namespace ServerCore.ModelBases
         }
 
         public string GetFileStoragePrefix() {
-            return FileManager.GetFileStoragePrefix(Event.ID, "");
+            return FileManager.GetFileStoragePrefix((Event?.ID ?? 0), "");
         }
 
         public string pageType;

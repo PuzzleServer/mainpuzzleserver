@@ -202,8 +202,10 @@ namespace ServerCore.Pages.Events
 
         private async Task updateSinglePlayerPuzzleStats(HashSet<int> authorPuzzleIds)
         {
-            if (!Event.ShouldShowSinglePlayerPuzzles)
+            bool isRegisteredUser = await this.IsRegisteredUser();
+            if ((!Event.ShouldShowSinglePlayerPuzzles) || (EventRole == EventRole.play && !isRegisteredUser))
             {
+                this.SinglePlayerPuzzleSectionNotShowMessage = "Please register for the event to see puzzle counts.";
                 this.SinglePlayerPuzzles = new List<SinglePlayerPuzzleStats>();
                 return;
             }

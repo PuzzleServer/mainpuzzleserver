@@ -148,6 +148,12 @@
         margin-top: 4px;
         margin-bottom: 0px;
     }
+    #dataConfirmationPrintable {
+        margin-left: 20px;
+    }
+    #puzzleAuthorPrintable {
+        margin-top: 4px;
+    }
 
     /* Host-side printing of an embedded puzzle only supports portrait orientation; 
     puzzle-defined orientation when printing can only be done by clicking the link to print the puzzle file itself */
@@ -454,10 +460,10 @@ else
 
     <div class="twocolumn">
         <div class="flexwrapper">
-            <div><h2 class="puzzle-title-customizable" id="puzzleNamePrintable"><b>@RawHtmlHelper.Display(Model.Puzzle.Name, Model.Event.ID, Html)</b></h2>&nbsp;&nbsp;</div>
+            <div><h2 class="puzzle-title-customizable" id="puzzleNamePrintable"><b>@RawHtmlHelper.Display(Model.Puzzle.Name, Model.Event.ID, Html)</b></h2></div>
             @if (!string.IsNullOrEmpty(Model.Puzzle.Group))
             {
-                <div><h3 class="puzzle-group-customizable" id="puzzleGroupPrintable">@RawHtmlHelper.Display(Model.Puzzle.Group, Model.Event.ID, Html)</h3>&nbsp;&nbsp;</div>
+                <div><h3 class="puzzle-group-customizable" id="puzzleGroupPrintable">@RawHtmlHelper.Display(Model.Puzzle.Group, Model.Event.ID, Html)</h3></div>
             }
             @if (Model.Puzzle.HasDataConfirmation)
             {
@@ -465,7 +471,7 @@ else
             }
         </div>
         <div class="inlinewrapper">
-            <br /><h4 class="puzzle-author-customizable" id="puzzleAuthorPrintable">@RawHtmlHelper.Display(Model.PuzzleAuthor, Model.Event.ID, Html)</h4>
+            <h4 class="puzzle-author-customizable" id="puzzleAuthorPrintable">@RawHtmlHelper.Display(Model.PuzzleAuthor, Model.Event.ID, Html)</h4>
         </div>
     </div>
 
