@@ -121,6 +121,11 @@
                 <span asp-validation-for="EditableEvent.DefaultLunch" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="EditableEvent.LunchOptions" class="control-label"></label>
+                <input asp-for="EditableEvent.LunchOptions" class="form-control" />
+                <span asp-validation-for="EditableEvent.LunchOptions" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <div class="checkbox">
                     <label>
                         <input asp-for="EditableEvent.EventHasTeamSwag" /> EventHasTeamSwag

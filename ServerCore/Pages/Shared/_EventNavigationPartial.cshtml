@@ -194,7 +194,7 @@
                     {
                         <li class="nav-item"><a asp-page="/Puzzles/Play">Puzzles</a></li>
                     }
-                    @if (Event.HasSwag)
+                    @if ((Event.HasSwag) && (!Event.HasIndividualLunch))
                     {
                         if (DateTime.UtcNow > Event.TeamMiscDataChangeEnd || await Model.HasSwag())
                         {
