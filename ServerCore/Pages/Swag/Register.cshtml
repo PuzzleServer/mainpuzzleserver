@@ -58,7 +58,7 @@ else
                       <div class="food-option-description">Rosemary and Balsamic Roasted Portobello, Pickled Peppadew Peppers on a Plain Wrap. Includes chips.</div>
                 <br /><input asp-for="PlayerInEvent.Lunch" type="radio" class="choice" value="remote-participant" /> I will participate remotely
                     <div class="food-option-description"></div>
-                <br /><input asp-for="PlayerInEvent.Lunch" type="radio" class="choice" value="none-of-the-above" /> I cannot eat any of these
+                <br /><input asp-for="PlayerInEvent.Lunch" type="radio" class="choice" value="noneoftheabove" /> I cannot eat any of these
                     <div class="food-option-description">If you cannot have any of the options offered due to dietary restrictions, please describe them in the box below and we'll reach out to you about an alternative. If modifying one of the above options will work for you, please select that option and describe the required changes in the box below.</div>
                 <br /><input asp-for="PlayerInEvent.Lunch" type="radio" class="choice" value="no-food" /> I do not want any food, thanks
                     <div class="food-option-description">If you choose this option you will NOT get food on the day of the event.</div>
@@ -71,11 +71,12 @@ else
                     let radios = document.getElementsByClassName("choice");
                     for (let radio of radios) {
                         radio.addEventListener("click", function(event) {
-                            if ((this.value === "none-of-the-above") && (this.checked)) {
+                            if ((this.value === "noneoftheabove") && (this.checked)) {
                                 order.hidden = false;
                             }
                             else {
                                 order.hidden = true;
+                                document.querySelector("#custom-order textarea").value = "";
                             }
                         });
                     }
