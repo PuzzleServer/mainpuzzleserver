@@ -13,7 +13,7 @@
                     </label>
                 </div>
                 @* TODO: Handle puzzleday room assignment and check hunt/safari requirements *@
-                @if (!Event?.IsRemote == true)
+                @if (!Event.IsRemote)
                 {
                     @if (!(Event.IsInternEvent && EventRole == ModelBases.EventRole.play))
                     {

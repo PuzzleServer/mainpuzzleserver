@@ -18,7 +18,8 @@
             </label>
 
             @* Limit auto teams to FTEs and interns if there's a minimum so it always builds teams that meet the minimums *@
-            @if ((Event != null && Event.MaxExternalsPerTeam >= Event.MaxTeamSize) || IsMicrosoft)
+            @if (EventRole == ModelBases.EventRole.play && 
+            ((Event != null && Event.MaxExternalsPerTeam >= Event.MaxTeamSize) || IsMicrosoft))
             {
                 <InputRadio Name="SignupPicker" Value="@SignupStrategy.Auto.ToString()" class="btn-check" id="auto" />
                 <label class="btn btn-outline-primary" for="auto">

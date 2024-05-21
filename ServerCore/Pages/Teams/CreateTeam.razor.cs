@@ -52,6 +52,9 @@ namespace ServerCore.Pages.Teams
         }
     }
 
+    /// <summary>
+    /// Team signup class based off of <see cref="Team"/>
+    /// </summary>
     public class TeamModel
     {
         public int EventId { get; set; }

@@ -40,10 +40,6 @@ namespace ServerCore.Pages.Teams
             {
                 IsMicrosoft = true;
             }
-            else if (!string.IsNullOrWhiteSpace(LoggedInUser.EmployeeAlias))
-            {
-                IsMicrosoft = true;
-            }
 
             return Page();
         }

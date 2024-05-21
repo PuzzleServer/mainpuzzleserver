@@ -36,13 +36,15 @@ namespace ServerCore.Pages.Teams
         {
             CantCreateTeam = false;
 
+            int maxAutoTeamSize = (int)Math.Round(0.8 * Event.MaxTeamSize);
+
             int existingAutoTeam = await (from team in _context.Teams
-                                           join tempTeamMember in _context.TeamMembers on team.ID equals tempTeamMember.Team.ID into teamMembers
-                                           from teamMember in teamMembers.DefaultIfEmpty()
-                                           where team.Event == Event && team.AutoTeamType == PlayerType
-                                           group teamMember by team.ID into teamGroup
-                                           where teamGroup.Count() < Event.MaxTeamSize
-                                           select teamGroup.Key).FirstOrDefaultAsync();
+                                          join tempTeamMember in _context.TeamMembers on team.ID equals tempTeamMember.Team.ID into teamMembers
+                                          from teamMember in teamMembers.DefaultIfEmpty()
+                                          where team.Event == Event && team.AutoTeamType == PlayerType
+                                          group teamMember by team.ID into teamGroup
+                                          where teamGroup.Count() < maxAutoTeamSize
+                                          select teamGroup.Key).FirstOrDefaultAsync();
 
             // Found a team, put the player on it
             if (existingAutoTeam != 0)
@@ -52,16 +54,27 @@ namespace ServerCore.Pages.Teams
             else if (Event.IsTeamRegistrationActive && Event.MaxNumberOfTeams > await _context.Teams.Where(team => team.Event == Event).CountAsync())
             {
                 PuzzleUser captain = await (from user in _context.PuzzleUsers
-                                             where user.ID == LoggedInUserId
-                                             select user).SingleAsync();
+                                            where user.ID == LoggedInUserId
+                                            select user).SingleAsync();
 
                 string name = string.Empty;
 
                 do
                 {
                     string adjective = adjectives[Random.Shared.Next(adjectives.Length)];
+                    string color = colors[Random.Shared.Next(colors.Length)];
                     string noun = nouns[Random.Shared.Next(nouns.Length)];
-                    name = $"{adjective} {noun}";
+
+                    // Try generating a name without a color first since they're catchier
+                    name = string.Format($"{adjective} {noun}");
+
+                    if (TeamHelper.IsTeamNameTaken(_context, Event.ID, name))
+                    {
+                        // If that name is taken, try again with a color
+                        name = string.Format($"{adjective} {color} {noun}");
+                    }
+
+                // If we're incredibly unlucky, reroll everything
                 } while (TeamHelper.IsTeamNameTaken(_context, Event.ID, name));
 
                 // Create a new auto team
@@ -73,7 +86,7 @@ namespace ServerCore.Pages.Teams
                     PrimaryContactEmail = captain.Email,
                 };
 
-                await TeamHelper.CreateTeamAsync(_context, team, Event, LoggedInUserId, EventRole == EventRole.play);
+                await TeamHelper.CreateTeamAsync(_context, team, Event, LoggedInUserId, isPlay: true);
             }
             else
             {
@@ -85,7 +98,7 @@ namespace ServerCore.Pages.Teams
             NavigationManager.NavigateTo($"/{Event.EventID}/{EventRole}/Teams/{newTeam.ID}/Details", true);
         }
 
-        private string[] adjectives = new string[]
+        private static string[] adjectives = new string[]
         {
             "Adventurous",
             "Brave",
@@ -115,7 +128,7 @@ namespace ServerCore.Pages.Teams
             "Zealous"
         };
 
-        private string[] nouns = new string[]
+        private static string[] nouns = new string[]
         {
             "Axlotls",
             "Bears",
@@ -143,6 +156,36 @@ namespace ServerCore.Pages.Teams
             "Xerus",
             "Yaks",
             "Zebras"
+        };
+
+        private static string[] colors = new string[]
+        {
+            "Aquamarine",
+            "Bronze",
+            "Cerulean",
+            "Dandelion",
+            "Ecru",
+            "Fuchsia",
+            "Goldenrod",
+            "Heliotrope",
+            "Indigo",
+            "Jade",
+            "Khaki",
+            "Lavender",
+            "Malachite",
+            "Neon",
+            "Ochre",
+            "Periwinkle",
+            "Quartz",
+            "Razzmatazz",
+            "Scarlet",
+            "Teal",
+            "Umber",
+            "Veridian",
+            "Wisteria",
+            "Xanthic",
+            "Yellow",
+            "Zinc"
         };
     }
 }
