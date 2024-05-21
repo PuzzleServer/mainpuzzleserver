@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
@@ -10,6 +12,7 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Events
 {
+    [Authorize]
     public class FastestSolvesModel : EventSpecificPageModel
     {
         public string TeamSectionNotShowMessage { get; private set; }
@@ -202,8 +205,10 @@ namespace ServerCore.Pages.Events
 
         private async Task updateSinglePlayerPuzzleStats(HashSet<int> authorPuzzleIds)
         {
-            if (!Event.ShouldShowSinglePlayerPuzzles)
+            bool isRegisteredUser = await this.IsRegisteredUser();
+            if ((!Event.ShouldShowSinglePlayerPuzzles) || (EventRole == EventRole.play && !isRegisteredUser))
             {
+                this.SinglePlayerPuzzleSectionNotShowMessage = "Please register for the event to see puzzle counts.";
                 this.SinglePlayerPuzzles = new List<SinglePlayerPuzzleStats>();
                 return;
             }

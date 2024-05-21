@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -17,10 +18,13 @@ namespace ServerCore.ModelBases
 {
     public abstract class EventSpecificPageModel : PageModel
     {
+        [Required]
         [FromRoute]
         [ModelBinder(typeof(EventBinder))]
         public Event Event { get; set; }
 
+        [Required]
+        [Range((int)EventRole.admin, (int)EventRole.play)]
         [FromRoute]
         [ModelBinder(typeof(RoleBinder))]
         public EventRole EventRole { get; set; }
@@ -32,6 +36,12 @@ namespace ServerCore.ModelBases
         /// </summary>
         public override async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
         {
+            if (!context.ModelState.IsValid)
+            {
+                context.Result = NotFound();
+                return;
+            }
+
             LoggedInUser = await PuzzleUser.GetPuzzleUserForCurrentUser(_context, User, userManager);
 
             // Required to have the rest of page execution occur
@@ -235,10 +245,6 @@ namespace ServerCore.ModelBases
                 if (Enum.IsDefined(typeof(EventRole), eventRoleAsString))
                 {
                     bindingContext.Result = ModelBindingResult.Success(Enum.Parse(typeof(EventRole), eventRoleAsString));
-                }
-                else
-                {
-                    throw new Exception("Invalid route parameter '" + eventRoleAsString + "'. Please check your URL to make sure you are using the correct path. (code: InvalidRoleId)");
                 }
             }
         }
