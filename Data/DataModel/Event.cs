@@ -281,6 +281,13 @@ namespace ServerCore.DataModel
         public string DefaultLunch { get; set; }
 
         /// <summary>
+        /// List of lunch options to show on individual registration and/or team details page
+        /// Each option is composed of a "Lunch Name","Lunch Description" pair, including the quotes
+        /// Each option is delimited by a ; semicolon (whitespace outside of quotes is ignored)
+        /// </summary>
+        public string LunchOptions { get; set; }
+
+        /// <summary>
         /// Title for single player puzzles.
         /// Note: If this field is empty or null, the tab will not be shown.
         /// </summary>
