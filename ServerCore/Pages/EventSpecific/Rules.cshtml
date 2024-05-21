@@ -9,13 +9,13 @@
     var Event = eventPage?.Event;
 }
 
-@if (Event?.EventBegin.Year < 2024)
+@if (Event.EventBegin.Year < 2024)
 {
     <partial name="../Resources/@(Event.HomePartial ?? "Default")/RulesPartial.cshtml" />
 }
 else
 {
-    if (!string.IsNullOrEmpty(Event?.RulesContent))
+    if (!string.IsNullOrEmpty(Event.RulesContent))
     {
         @Html.Raw(Event.RulesContent);
     }
