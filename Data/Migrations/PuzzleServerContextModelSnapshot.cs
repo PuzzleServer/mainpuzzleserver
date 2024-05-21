@@ -370,9 +370,6 @@ namespace Data.Migrations
                     b.Property<double>("LockoutIncorrectGuessPeriod")
                         .HasColumnType("float");
 
-                    b.Property<string>("LunchOptions")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("LunchReportDate")
                         .HasColumnType("datetime2");
 
