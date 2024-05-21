@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
@@ -36,8 +37,13 @@ namespace ServerCore.Pages.Events
         {
         }
 
-        public async Task OnGetAsync(TeamPuzzleSortOrder? teamPuzzleSort, SinglePlayerPuzzleSortOrder? singlePlayerPuzzleSort, PuzzleStateFilter? stateFilter)
+        public async Task<IActionResult> OnGetAsync(TeamPuzzleSortOrder? teamPuzzleSort, SinglePlayerPuzzleSortOrder? singlePlayerPuzzleSort, PuzzleStateFilter? stateFilter)
         {
+            if (LoggedInUser == null)
+            {
+                return Challenge();
+            }
+
             this.TeamSectionNotShowMessage = string.Empty;
             this.SinglePlayerPuzzleSectionNotShowMessage = string.Empty;
             this.TeamPuzzleSort = teamPuzzleSort;
@@ -48,6 +54,8 @@ namespace ServerCore.Pages.Events
             HashSet<int> authorPuzzleIds = this.GetAuthorPuzzleIds();
             await this.updateTeamPuzzleStats(authorPuzzleIds);
             await this.updateSinglePlayerPuzzleStats(authorPuzzleIds);
+
+            return Page();
         }
 
         private async Task updateTeamPuzzleStats(HashSet<int> authorPuzzleIds)
@@ -202,8 +210,10 @@ namespace ServerCore.Pages.Events
 
         private async Task updateSinglePlayerPuzzleStats(HashSet<int> authorPuzzleIds)
         {
-            if (!Event.ShouldShowSinglePlayerPuzzles)
+            bool isRegisteredUser = await this.IsRegisteredUser();
+            if ((!Event.ShouldShowSinglePlayerPuzzles) || (EventRole == EventRole.play && !isRegisteredUser))
             {
+                this.SinglePlayerPuzzleSectionNotShowMessage = "Please register for the event to see puzzle counts.";
                 this.SinglePlayerPuzzles = new List<SinglePlayerPuzzleStats>();
                 return;
             }

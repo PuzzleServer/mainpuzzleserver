@@ -1,7 +1,7 @@
 ﻿@page "/{eventId}/{eventRole}"
 @model ServerCore.Pages.EventSpecific.IndexModel
 @{
-    ViewData["Title"] = Model.Event.Name;
+    ViewData["Title"] = Model?.Event?.Name;
     ViewData["AdminRoute"] = "/EventSpecific/Index";
     ViewData["AuthorRoute"] = "/EventSpecific/Index";
     ViewData["PlayRoute"] = "/EventSpecific/Index";
@@ -9,13 +9,13 @@
     var Event = eventPage?.Event;
 }
 
-@if (Event.EventBegin.Year < 2024)
+@if (Event?.EventBegin.Year < 2024)
 {
     <partial name="../Resources/@(Event.HomePartial ?? "Default")/HomePartial.cshtml" />
 }
 else
 {
-    if (!string.IsNullOrEmpty(Event.HomeContent))
+    if (!string.IsNullOrEmpty(Event?.HomeContent))
     {
         @Html.Raw(Event.HomeContent);
     }
