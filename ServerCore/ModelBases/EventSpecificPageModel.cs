@@ -130,7 +130,7 @@ namespace ServerCore.ModelBases
         public async Task<bool> HasSwag()
         {
             if (!Event.HasSwag) {
-                return false;
+                return true; // Player has technically filled out swag already if event has no swag
             }
             PlayerInEvent playerSwag = await _context.PlayerInEvent.Where(m => m.Event == Event && m.Player == LoggedInUser).FirstOrDefaultAsync();
             return (playerSwag != null) && !string.IsNullOrWhiteSpace(playerSwag.Lunch);
