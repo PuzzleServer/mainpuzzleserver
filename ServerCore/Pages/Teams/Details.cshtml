@@ -206,21 +206,21 @@
                 <div class="row">
                     <h2>Lunch</h2>
                     <p>
-                        Your team can currently have @Model.EditableLunches lunch(s). If your team wants to opt out of one of the lunches, select &quot;No Lunch&quot;. If you cannot have any of the options offered due to dietary restrictions, please email <a href="mailto:puzzhunt@microsoft.com">puzzhunt@microsoft.com</a> with details and we'll find an alternative.
+                        Your team can currently have @Model.EditableLunches item(s). If your team wants to opt out of one of the items, select &quot;Skip Item&quot;. If you cannot have any of the options offered due to dietary restrictions, please email <a href="mailto:puzzhunt@microsoft.com">puzzhunt@microsoft.com</a> with details and we'll find an alternative.
                         @if (Model.EditableLunches < Model.SoftMaxLunches && Model.Event.CanChangeLunch)
                         {
                             <span>
-                                Recruit @(Model.Event.PlayersPerLunch - ((Model.EligibleForLunch - 1) % Model.Event.PlayersPerLunch)) more in-person player(s) to get another lunch, up to @Model.GlobalMaxLunches lunches total!
+                                Recruit @(Model.Event.PlayersPerLunch - ((Model.EligibleForLunch - 1) % Model.Event.PlayersPerLunch)) more in-person player(s) to get another item, up to @Model.GlobalMaxLunches items total!
                             </span>
                         }
                     </p>
                     @if (Model.Lunches.Count < Model.EditableLunches && Model.Event.CanChangeLunch)
                     {
-                        <h3>Add a lunch</h3>
+                        <h3>Add an item</h3>
                         <form method="post">
                             <select asp-for="NewLunch">
                                 <option value="">Select an option</option>
-                                <option value="No Lunch">No Lunch</option>
+                                <option value="Skip Item">Skip Item</option>
                                 @foreach (var lunchOption in DetailsModel.LunchOptions)
                                 {
                                     <option value="@lunchOption">@lunchOption</option>
@@ -243,7 +243,7 @@
                     }
                     @if(Model.Lunches.Count < Model.EditableLunches)
                     {
-                        <div>You have not chosen @(Model.EditableLunches - Model.Lunches.Count) lunches(s) yet. If you do not choose, you will get @Model.Event.DefaultLunch.</div>
+                        <div>You have not chosen @(Model.EditableLunches - Model.Lunches.Count) item(s) yet. If you do not choose, each one will be @Model.Event.DefaultLunch.</div>
                     }
                 </div>
             }

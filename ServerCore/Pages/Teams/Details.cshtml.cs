@@ -147,6 +147,7 @@ namespace ServerCore.Pages.Teams
             LunchOptions = Event.LunchOptions.Split(";");
             for (int i = 0; i < LunchOptions.Length; i++) 
             {
+                // Note that the lunch details are not displayed for team lunches
                 LunchOptions[i] = LunchOptions[i].Split(":")[0];
                 LunchOptions[i] = LunchOptions[i].Substring(LunchOptions[i].IndexOf("\"") + 1, LunchOptions[i].LastIndexOf("\"") - LunchOptions[i].IndexOf("\"") - 1);
             }

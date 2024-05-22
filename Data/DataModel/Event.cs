@@ -287,6 +287,7 @@ namespace ServerCore.DataModel
         /// The Lunch Name is also used as the value that's written to the database
         /// A Lunch Name == "noneoftheabove" after removing spaces and converting to lowercase
         ///   will make the "Custom Order" textbox appear on the Swag Registration page
+        /// Lunch Details are not displayed for team lunches
         /// </summary>
         public string LunchOptions { get; set; }
 

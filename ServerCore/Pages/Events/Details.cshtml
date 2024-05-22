@@ -138,6 +138,25 @@
         </dt>
         <dd>
             @Model.Event.LunchOptions
+            <br />
+            <div style="margin-left:20px;font-size:11px">
+                @{
+                    // Parse lunch options the same way they are in Swag\Register.cshtml and Player\Create or Edit.cshtml
+                    // This will help ensure correct formatting without the need to test those pages as a player
+                    // If the parsing method in those 3 files is ever updated, this will need to be updated as well
+                    var lunchOptions = Model.Event.LunchOptions.Split(";");
+                    foreach (var lunch in lunchOptions)
+                    {
+                        if (!string.IsNullOrWhiteSpace(lunch))
+                        {
+                            string[] lunchParts = lunch.Split(":");
+                            string lunchVal = lunchParts[0].Substring(lunchParts[0].IndexOf("\"") + 1, lunchParts[0].LastIndexOf("\"") - lunchParts[0].IndexOf("\"") - 1);
+                            string lunchDesc = lunchParts[1].Substring(lunchParts[1].IndexOf("\"") + 1, lunchParts[1].LastIndexOf("\"") - lunchParts[1].IndexOf("\"") - 1);
+                            <div><b>@lunchVal</b>: <i>@lunchDesc</i></div>
+                        }
+                    }
+                }
+            </div>
         </dd>
         <dt>
             HideHints

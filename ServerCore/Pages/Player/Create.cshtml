@@ -43,6 +43,10 @@ else
 
             @if (Model.Event.HasIndividualLunch)
             {
+                // The following 3 components (first form-group, script block, custom-order form-group) have identical versions in:
+                //     Player\Edit.cshtml and Swag\Register.cshtml, and all 3 must be modified in identical ways in future edits.
+                //     They cannot be abstracted to a Partial since partials cannot modify underlying C# data.
+                //     The Event Details page also parses this data to ensure proper formatting, so also apply updates to it.
                 <div class="form-group">
                     <label asp-for="PlayerInEvent.Lunch" class="control-label"></label><br />
                     @{
@@ -52,10 +56,9 @@ else
                         {
                             if (!string.IsNullOrWhiteSpace(lunch))
                             {
-                                string lunchVal = lunch.Split(":")[0];
-                                string lunchDesc = lunch.Split(":")[1];
-                                lunchVal = lunchVal.Substring(lunchVal.IndexOf("\"") + 1, lunchVal.LastIndexOf("\"") - lunchVal.IndexOf("\"") - 1);
-                                lunchDesc = lunchDesc.Substring(lunchDesc.IndexOf("\"") + 1, lunchDesc.LastIndexOf("\"") - lunchDesc.IndexOf("\"") - 1);
+                                string[] lunchParts = lunch.Split(":");
+                                string lunchVal = lunchParts[0].Substring(lunchParts[0].IndexOf("\"") + 1, lunchParts[0].LastIndexOf("\"") - lunchParts[0].IndexOf("\"") - 1);
+                                string lunchDesc = lunchParts[1].Substring(lunchParts[1].IndexOf("\"") + 1, lunchParts[1].LastIndexOf("\"") - lunchParts[1].IndexOf("\"") - 1);
 
                                 if (!required)
                                 {
