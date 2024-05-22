@@ -282,8 +282,8 @@ namespace ServerCore.DataModel
 
         /// <summary>
         /// List of lunch options to show on individual registration and/or team details page
-        /// Each option is composed of a "Lunch Name","Lunch Description" pair, including the quotes
-        /// Each option is delimited by a ; semicolon (whitespace outside of quotes is ignored)
+        /// Each option is composed of a "Lunch Name":"Lunch Description"; pair, including the quotes
+        /// Each option is delimited by a ; semicolon, so whitespace outside of quotes is ignored
         /// The Lunch Name is also used as the value that's written to the database
         /// A Lunch Name == "noneoftheabove" after removing spaces and converting to lowercase
         ///   will make the "Custom Order" textbox appear on the Swag Registration page
