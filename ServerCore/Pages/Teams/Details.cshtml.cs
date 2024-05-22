@@ -10,9 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
 using ServerCore.ModelBases;
-using Microsoft.Extensions.Options;
-using System.Drawing;
-using System.ComponentModel.DataAnnotations;
 
 namespace ServerCore.Pages.Teams
 {
@@ -53,7 +50,7 @@ namespace ServerCore.Pages.Teams
         public string TeamRoom { get; set; }
         public IList<TeamLunch> Lunches { get; set; }
         public string NewLunch { get; set; }
-        public static readonly string[] PizzaOptions = { "Cheese", "Pepperoni", "Philly Steak", "Salami", "Meatballs", "Grilled Chicken", "Canadian Bacon", "Beef", "Sausage", "Spicy Italian Sausage", "Bacon", "Pineapple", "Green Peppers", "Spinach", "Jalapeños", "Olives", "Mushrooms", "Artichoke Hearts", "Banana Peppers", "Tomatoes", "Garlic", "Onions" };
+        public static string[] LunchOptions { get; set; }
 
         private async Task<(bool passed, IActionResult redirect)> AuthChecks(int teamId)
         {
@@ -146,6 +143,12 @@ namespace ServerCore.Pages.Teams
 
                 double possibleInPersonMembers = Event.MaxTeamSize - remoteMembers;
                 SoftMaxLunches = (int)Math.Ceiling(possibleInPersonMembers / (double)PlayersPerLunch);
+            }
+            LunchOptions = Event.LunchOptions.Split(";");
+            for (int i = 0; i < LunchOptions.Length; i++) 
+            {
+                LunchOptions[i] = LunchOptions[i].Split(":")[0];
+                LunchOptions[i] = LunchOptions[i].Substring(LunchOptions[i].IndexOf("\"") + 1, LunchOptions[i].LastIndexOf("\"") - LunchOptions[i].IndexOf("\"") - 1);
             }
 
             // Get team room

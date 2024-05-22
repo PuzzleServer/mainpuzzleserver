@@ -204,26 +204,26 @@
             @if (Model.Event.EventHasTeamSwag)
             {
                 <div class="row">
-                    <h2>Pizza</h2>
+                    <h2>Lunch</h2>
                     <p>
-                        Your team can currently have @Model.EditableLunches pizza(s). If your team wants to opt out of a pizza, select &quot;No Pizza&quot;. If you cannot have any of the options offered due to dietary restrictions, please email <a href="mailto:puzzhunt@microsoft.com">puzzhunt@microsoft.com</a> with details and we'll find an alternative.
+                        Your team can currently have @Model.EditableLunches lunch(s). If your team wants to opt out of one of the lunches, select &quot;No Lunch&quot;. If you cannot have any of the options offered due to dietary restrictions, please email <a href="mailto:puzzhunt@microsoft.com">puzzhunt@microsoft.com</a> with details and we'll find an alternative.
                         @if (Model.EditableLunches < Model.SoftMaxLunches && Model.Event.CanChangeLunch)
                         {
                             <span>
-                                Recruit @(Model.Event.PlayersPerLunch - ((Model.EligibleForLunch - 1) % Model.Event.PlayersPerLunch)) more in-person player(s) to get another pizza, up to @Model.GlobalMaxLunches pizzas total!
+                                Recruit @(Model.Event.PlayersPerLunch - ((Model.EligibleForLunch - 1) % Model.Event.PlayersPerLunch)) more in-person player(s) to get another lunch, up to @Model.GlobalMaxLunches lunches total!
                             </span>
                         }
                     </p>
                     @if (Model.Lunches.Count < Model.EditableLunches && Model.Event.CanChangeLunch)
                     {
-                        <h3>Add a pizza</h3>
+                        <h3>Add a lunch</h3>
                         <form method="post">
                             <select asp-for="NewLunch">
-                                <option value="">Select a topping</option>
-                                <option value="No Pizza">No Pizza</option>
-                                @foreach (var topping in DetailsModel.PizzaOptions)
+                                <option value="">Select an option</option>
+                                <option value="No Lunch">No Lunch</option>
+                                @foreach (var lunchOption in DetailsModel.LunchOptions)
                                 {
-                                    <option value="@topping">@topping</option>
+                                    <option value="@lunchOption">@lunchOption</option>
                                 }
                             </select>
                             <button type="submit" asp-page-handler="AddLunch" asp-route-teamId="@Model.Team.ID" asp-route-newLunch="@Model.NewLunch">Add</button>
@@ -243,7 +243,7 @@
                     }
                     @if(Model.Lunches.Count < Model.EditableLunches)
                     {
-                        <div>You have not chosen @(Model.EditableLunches - Model.Lunches.Count) pizza(s) yet. If you do not choose, you will get @Model.Event.DefaultLunch.</div>
+                        <div>You have not chosen @(Model.EditableLunches - Model.Lunches.Count) lunches(s) yet. If you do not choose, you will get @Model.Event.DefaultLunch.</div>
                     }
                 </div>
             }
