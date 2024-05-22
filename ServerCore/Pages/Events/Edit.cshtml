@@ -122,10 +122,10 @@
             </div>
             <div class="form-group">
                 <label asp-for="EditableEvent.LunchOptions" class="control-label"></label>
-                <input asp-for="EditableEvent.LunchOptions" class="form-control" />
+                <textarea asp-for="EditableEvent.LunchOptions" class="form-control"></textarea>
                 <span asp-validation-for="EditableEvent.LunchOptions" class="text-danger"></span>
-                <div style="font-size:11px;">Each option is composed of a "Lunch Name","Lunch Description" pair, including the quotes. Each option is delimited by a ; semicolon (whitespace outside of quotes is ignored). The Lunch Name is also used as the value that's written to the database. 
-                    A Lunch Name == "noneoftheabove" after removing spaces and converting to lowercase will make the "Custom Order" textbox appear on the Swag Registration page.
+                <div style="font-size:11px;">Each option is composed of a "Lunch Name":"Lunch Description"; pair, including the quotes. Each option is delimited by a ; semicolon, so whitespace outside of quotes is ignored. The Lunch Name is also used as the value that's written to the database. 
+                    A Lunch Name == "noneoftheabove" after removing spaces and converting to lowercase will make the "Custom Order" textbox appear on the Swag Registration page for events with single-player lunches.
                 </div>
             </div>
             <br />
