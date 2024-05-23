@@ -144,7 +144,7 @@ namespace ServerCore.Pages.Teams
                 double possibleInPersonMembers = Event.MaxTeamSize - remoteMembers;
                 SoftMaxLunches = (int)Math.Ceiling(possibleInPersonMembers / (double)PlayersPerLunch);
             }
-            LunchOptions = Event.LunchOptions.Split(";");
+            LunchOptions = (!string.IsNullOrWhiteSpace(Event.LunchOptions)) ? Event.LunchOptions.Split(";") : Array.Empty<string>();
             for (int i = 0; i < LunchOptions.Length; i++) 
             {
                 // Note that the lunch details are not displayed for team lunches

@@ -41,7 +41,7 @@ else
                 </div>
             }
 
-            @if (Model.Event.HasIndividualLunch)
+            @if ((Model.Event.HasIndividualLunch) && !string.IsNullOrWhiteSpace(Model.Event.LunchOptions))
             {
                 // The following 3 components (first form-group, script block, custom-order form-group) have identical versions in:
                 //     Player\Edit.cshtml and Swag\Register.cshtml, and all 3 must be modified in identical ways in future edits.
@@ -110,11 +110,11 @@ else
 
             @if (Model.Event.HasTShirts)
             {
-                    <div class="form-group">
-                        <label asp-for="PlayerInEvent.ShirtSize" class="control-label"></label>
-                        <input asp-for="PlayerInEvent.ShirtSize" class="form-control" />
-                        <span asp-validation-for="PlayerInEvent.ShirtSize" class="text-danger"></span>
-                    </div>
+                <div class="form-group">
+                    <label asp-for="PlayerInEvent.ShirtSize" class="control-label"></label>
+                    <input asp-for="PlayerInEvent.ShirtSize" class="form-control" />
+                    <span asp-validation-for="PlayerInEvent.ShirtSize" class="text-danger"></span>
+                </div>
             }
 
             <h4>Click Register to register and find a team or view your team details.</h4>
