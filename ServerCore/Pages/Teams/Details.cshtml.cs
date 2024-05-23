@@ -10,9 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
 using ServerCore.ModelBases;
-using Microsoft.Extensions.Options;
-using System.Drawing;
-using System.ComponentModel.DataAnnotations;
 
 namespace ServerCore.Pages.Teams
 {
@@ -53,7 +50,7 @@ namespace ServerCore.Pages.Teams
         public string TeamRoom { get; set; }
         public IList<TeamLunch> Lunches { get; set; }
         public string NewLunch { get; set; }
-        public static readonly string[] PizzaOptions = { "Cheese", "Pepperoni", "Philly Steak", "Salami", "Meatballs", "Grilled Chicken", "Canadian Bacon", "Beef", "Sausage", "Spicy Italian Sausage", "Bacon", "Pineapple", "Green Peppers", "Spinach", "Jalapeños", "Olives", "Mushrooms", "Artichoke Hearts", "Banana Peppers", "Tomatoes", "Garlic", "Onions" };
+        public static string[] LunchOptions { get; set; }
 
         private async Task<(bool passed, IActionResult redirect)> AuthChecks(int teamId)
         {
@@ -146,6 +143,15 @@ namespace ServerCore.Pages.Teams
 
                 double possibleInPersonMembers = Event.MaxTeamSize - remoteMembers;
                 SoftMaxLunches = (int)Math.Ceiling(possibleInPersonMembers / (double)PlayersPerLunch);
+            }
+            LunchOptions = (!string.IsNullOrWhiteSpace(Event.LunchOptions)) ? Event.LunchOptions.Split(";") : Array.Empty<string>();
+            for (int i = 0; i < LunchOptions.Length; i++) 
+            {
+                // Note that the lunch details are not displayed for team lunches
+                // These options are also used in Swag\Register.cshtml, Event\Details.cshtml, and Player\Create and Edit.cshtml
+                // If the way they're displayed ever changes, this needs to be made to match as well
+                LunchOptions[i] = LunchOptions[i].Split(":")[0];
+                LunchOptions[i] = LunchOptions[i].Trim().Trim('\"');
             }
 
             // Get team room

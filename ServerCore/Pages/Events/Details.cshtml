@@ -134,6 +134,35 @@
             @Model.Event.DefaultLunch
         </dd>
         <dt>
+            LunchOptions
+        </dt>
+        <dd>
+            @Model.Event.LunchOptions
+            @if (!string.IsNullOrWhiteSpace(Model.Event.LunchOptions))
+            {
+                <br />
+                <div style="margin-left:20px;font-size:11px">
+                    @{
+                        // Parse lunch options the same way they are in Swag\Register.cshtml and Player\Create or Edit.cshtml
+                        // This will help ensure correct formatting without the need to test those pages as a player
+                        // If the parsing method in those 3 files is ever updated, this will need to be updated as well
+                        // Team\Details.cshtml.cs also parses part of it to display team lunches and needs to match
+                        var lunchOptions = Model.Event.LunchOptions.Split(";");
+                        foreach (var lunch in lunchOptions)
+                        {
+                            if (!string.IsNullOrWhiteSpace(lunch))
+                            {
+                                string[] lunchParts = lunch.Split(":");
+                                string lunchVal = lunchParts[0].Trim().Trim('\"');
+                                string lunchDesc = lunchParts[1].Trim().Trim('\"');
+                                <div><b>@lunchVal</b>: <i>@lunchDesc</i></div>
+                            }
+                        }
+                    }
+                </div>
+            }
+        </dd>
+        <dt>
             HideHints
         </dt>
         <dd>

@@ -32,16 +32,70 @@
                 </div>
             }
 
-            @if (Model.Event.HasIndividualLunch)
+            @if ((Model.Event.HasIndividualLunch) && !string.IsNullOrWhiteSpace(Model.Event.LunchOptions))
             {
+                // The following 3 components (first form-group, script block, custom-order form-group) have identical versions in:
+                //     Player\Create.cshtml and Swag\Register.cshtml, and all 3 must be modified in identical ways in future edits.
+                //     They cannot be abstracted to a Partial since partials cannot modify underlying C# data.
+                //     The Event Details page also parses this data to ensure proper formatting, so also apply updates to it,
+                //     as well as Team\Details.cshtml.cs which uses the Name portion to display team lunches.
                 <div class="form-group">
-                    <label asp-for="PlayerInEvent.Lunch" class="control-label"></label>
-                    <input asp-for="PlayerInEvent.Lunch" class="form-control" />
+                    <label asp-for="PlayerInEvent.Lunch" class="control-label"></label><br />
+                    @{
+                        var lunchOptions = Model.Event.LunchOptions.Split(";");
+                        bool required = false;
+                        foreach (var lunch in lunchOptions)
+                        {
+                            if (!string.IsNullOrWhiteSpace(lunch))
+                            {
+                                string[] lunchParts = lunch.Split(":");
+                                string lunchVal = lunchParts[0].Trim().Trim('\"');
+                                string lunchDesc = lunchParts[1].Trim().Trim('\"');
+
+                                if (!required)
+                                {
+                                    <input asp-for="PlayerInEvent.Lunch" type="radio" class="choice" value="@lunchVal" required />
+                                    required = true;
+                                }
+                                else
+                                {
+                                    <input asp-for="PlayerInEvent.Lunch" type="radio" class="choice" value="@lunchVal" />
+                                }
+                                <text>@lunchVal</text>
+                                <div class="food-option-description">@lunchDesc</div>
+                            }
+                        }
+                    }
                     <span asp-validation-for="PlayerInEvent.Lunch" class="text-danger"></span>
                 </div>
-                <div class="form-group">
+                <script>
+                    document.addEventListener("DOMContentLoaded", function (event) {
+                        let order = document.getElementById("custom-order");
+                        let radios = document.getElementsByClassName("choice");
+                        let hideOrder = true;
+                        for (let radio of radios) {
+                            if ((radio.value.replaceAll(" ", "").toLowerCase() === "noneoftheabove") && (radio.checked)) {
+                                hideOrder = false;
+                            }
+                            radio.addEventListener("click", function (event) {
+                                if ((this.value.replaceAll(" ", "").toLowerCase() === "noneoftheabove") && (this.checked)) {
+                                    order.hidden = false;
+                                }
+                                else {
+                                    order.hidden = true;
+                                    document.querySelector("#custom-order textarea").value = "";
+                                }
+                            });
+                        }
+                        if (hideOrder) {
+                            order.hidden = true;
+                        }
+                    });
+                </script>
+                <br />
+                <div id="custom-order" class="form-group">
                     <label asp-for="PlayerInEvent.LunchModifications" class="control-label"></label>
-                    <input asp-for="PlayerInEvent.LunchModifications" class="form-control" />
+                    <textarea asp-for="PlayerInEvent.LunchModifications" class="form-control"></textarea>
                     <span asp-validation-for="PlayerInEvent.LunchModifications" class="text-danger"></span>
                 </div>
             }

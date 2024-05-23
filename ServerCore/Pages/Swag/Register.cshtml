@@ -30,71 +30,85 @@ else
     </div>
 }
 
-<div class="row">
-    <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="PlayerInEvent.Lunch" class="control-label"></label>
-                <br /><input asp-for="PlayerInEvent.Lunch" type="radio" class="choice" value="chicken-caesar" required /> Grilled Herb Crusted Chicken Caesar
-                    <div class="food-option-description">Marinated and Grilled Chicken Breast, Crisp Romaine, Parmesan and Vegetarian Caesar Dressing. Includes fruit and small dessert.</div>
-                <br /><input asp-for="PlayerInEvent.Lunch" type="radio" class="choice" value="garden-salad" /> Vegan Garden Salad
-                    <div class="food-option-description">Kale, Cucumbers, Tomatoes, Carrots, Edamame, Radishes, Pickled Red Onions and Champagne Vinaigrette. Includes fruit and small dessert.</div>
-                <br /><input asp-for="PlayerInEvent.Lunch" type="radio" class="choice" value="turkey-cobb" /> Arugula Turkey Cobb Salad
-                    <div class="food-option-description">Peppery Arugula, Hard-boiled Egg and Creamy Blue Cheese Dressing. Includes fruit and small dessert.</div>
-                <br /><input asp-for="PlayerInEvent.Lunch" type="radio" class="choice" value="roast-beef" /> Peppercorn Crusted Roast Beef Sandwich
-                      <div class="food-option-description">House-roasted Beef, Arugula and Horseradish Aioli on Onion Rye. Includes fruit, small dessert and chips.</div>
-                <br /><input asp-for="PlayerInEvent.Lunch" type="radio" class="choice" value="roasted-turkey" /> Lemon Pepper Roasted Turkey Sandwich
-                      <div class="food-option-description">Roasted Turkey Breast, Spring Mix and Sliced Tomato on Focaccia. Includes fruit, small dessert and chips.</div>
-                <br /><input asp-for="PlayerInEvent.Lunch" type="radio" class="choice" value="smoked-ham" /> Smoked Ham Sandwich
-                      <div class="food-option-description">Smoked Ham, Green Leaf Lettuce and Sliced Tomato on An Herb Torpedo Roll. Includes fruit, small dessert and chips.</div>
-                <br /><input asp-for="PlayerInEvent.Lunch" type="radio" class="choice" value="salmon-wrap" /> Blackened Salmon Wrap
-                      <div class="food-option-description">Salmon With Cajun Spice and Baby Kale on A Sundried Tomato Wrap. Includes fruit, small dessert and chips.</div>
-                <br /><input asp-for="PlayerInEvent.Lunch" type="radio" class="choice" value="beet-sandwich" /> Vegan Salt-Roasted Beet + Asparagus Sandwich
-                      <div class="food-option-description">Marinated Sliced Beets and Grilled Asparagus on A Potato Roll. Includes fruit, small dessert and chips.</div>
-                <br /><input asp-for="PlayerInEvent.Lunch" type="radio" class="choice" value="border-wrap" /> South of the Border Wrap
-                      <div class="food-option-description">Spicy Marinated Chicken, Charred Peppers, Roasted Corn Salsa, Chipotle Aioli in a Sundried Tomato Wrap. Includes chips.</div>
-                <br /><input asp-for="PlayerInEvent.Lunch" type="radio" class="choice" value="mushroom-wrap" /> Vegan Roasted Mushroom + Red Pepper Wrap
-                      <div class="food-option-description">Rosemary and Balsamic Roasted Portobello, Pickled Peppadew Peppers on a Plain Wrap. Includes chips.</div>
-                <br /><input asp-for="PlayerInEvent.Lunch" type="radio" class="choice" value="remote-participant" /> I will participate remotely
-                    <div class="food-option-description"></div>
-                <br /><input asp-for="PlayerInEvent.Lunch" type="radio" class="choice" value="none-of-the-above" /> I cannot eat any of these
-                    <div class="food-option-description">If you cannot have any of the options offered due to dietary restrictions, please describe them in the box below and we'll reach out to you about an alternative. If modifying one of the above options will work for you, please select that option and describe the required changes in the box below.</div>
-                <br /><input asp-for="PlayerInEvent.Lunch" type="radio" class="choice" value="no-food" /> I do not want any food, thanks
-                    <div class="food-option-description">If you choose this option you will NOT get food on the day of the event.</div>
-                <span asp-validation-for="PlayerInEvent.Lunch" class="text-danger"></span>
-            </div>
-            <script>
-                document.addEventListener("DOMContentLoaded", function(event) {
-                    let order = document.getElementById("custom-order");
-                    order.hidden = true;
-                    let radios = document.getElementsByClassName("choice");
-                    for (let radio of radios) {
-                        radio.addEventListener("click", function(event) {
-                            if ((this.value === "none-of-the-above") && (this.checked)) {
-                                order.hidden = false;
+@if (!string.IsNullOrWhiteSpace(Model.Event.LunchOptions)) {
+    <div class="row">
+        <div class="col-md-4">
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                @* The following 3 components (first form-group, script block, custom-order form-group) have identical versions in: *@
+                @*     Player\Edit.cshtml and Player\Create.cshtml, and all 3 must be modified in identical ways in future edits.   *@
+                @*     They cannot be abstracted to a Partial since partials cannot modify underlying C# data.                      *@
+                @*     The Event Details page also parses this data to ensure proper formatting, so also apply updates to it,       *@
+                @*     as well as Team\Details.cshtml.cs which uses the Name portion to display team lunches.                       *@
+                <div class="form-group">
+                    <label asp-for="PlayerInEvent.Lunch" class="control-label"></label><br />
+                    @{
+                        var lunchOptions = Model.Event.LunchOptions.Split(";");
+                        bool required = false;
+                        foreach (var lunch in lunchOptions)
+                        {
+                            if (!string.IsNullOrWhiteSpace(lunch)) 
+                            {
+                                string[] lunchParts = lunch.Split(":");
+                                string lunchVal = lunchParts[0].Trim().Trim('\"');
+                                string lunchDesc = lunchParts[1].Trim().Trim('\"');
+
+                                if (!required)
+                                {
+                                    <input asp-for="PlayerInEvent.Lunch" type="radio" class="choice" value="@lunchVal" required />
+                                    required = true;
+                                }
+                                else
+                                {
+                                    <input asp-for="PlayerInEvent.Lunch" type="radio" class="choice" value="@lunchVal" />
+                                }
+                                <text>@lunchVal</text>
+                                <div class="food-option-description">@lunchDesc</div>
                             }
-                            else {
-                                order.hidden = true;
-                            }
-                        });
+                        }
                     }
-                });
-            </script>
-            <div id="custom-order" class="form-group">
-                <label asp-for="PlayerInEvent.LunchModifications" class="control-label"></label>
-                <textarea asp-for="PlayerInEvent.LunchModifications" class="form-control"></textarea>
-                <span asp-validation-for="PlayerInEvent.LunchModifications" class="text-danger"></span>
-            </div>
-            @if (isEditable)
-            {
-            <div class="form-group">
-                <input type="submit" value="Update" class="btn btn-default" />
-            </div>
-            }
-        </form>
+                    <span asp-validation-for="PlayerInEvent.Lunch" class="text-danger"></span>
+                </div>
+                <script>
+                    document.addEventListener("DOMContentLoaded", function(event) {
+                        let order = document.getElementById("custom-order");
+                        let radios = document.getElementsByClassName("choice");
+                        let hideOrder = true;
+                        for (let radio of radios) {
+                            if ((radio.value.replaceAll(" ", "").toLowerCase() === "noneoftheabove") && (radio.checked)) {
+                                hideOrder = false;
+                            }
+                            radio.addEventListener("click", function(event) {
+                                if ((this.value.replaceAll(" ", "").toLowerCase() === "noneoftheabove") && (this.checked)) {
+                                    order.hidden = false;
+                                }
+                                else {
+                                    order.hidden = true;
+                                    document.querySelector("#custom-order textarea").value = "";
+                                }
+                            });
+                        }
+                        if (hideOrder) {
+                            order.hidden = true;
+                        }
+                    });
+                </script>
+                <br />
+                <div id="custom-order" class="form-group">
+                    <label asp-for="PlayerInEvent.LunchModifications" class="control-label"></label>
+                    <textarea asp-for="PlayerInEvent.LunchModifications" class="form-control"></textarea>
+                    <span asp-validation-for="PlayerInEvent.LunchModifications" class="text-danger"></span>
+                </div>
+                @if (isEditable)
+                {
+                <div class="form-group">
+                    <input type="submit" value="Update" class="btn btn-default" />
+                </div>
+                }
+            </form>
+        </div>
     </div>
-</div>
+}
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

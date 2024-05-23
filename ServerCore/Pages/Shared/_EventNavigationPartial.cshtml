@@ -194,7 +194,7 @@
                     {
                         <li class="nav-item"><a asp-page="/Puzzles/Play">Puzzles</a></li>
                     }
-                    @if (Event.HasSwag)
+                    @if (Event.HasSwag && Event.HasIndividualLunch)
                     {
                         if (DateTime.UtcNow > Event.TeamMiscDataChangeEnd || await Model.HasSwag())
                         {
@@ -203,6 +203,17 @@
                         else
                         {
                             <li class="nav-item"><a style="color:yellow" asp-page="/Swag/Register" title="Lunch">Pick Lunch by @(Event.TeamMiscDataChangeEnd.ToString("M/dd"))!</a></li>
+                        }
+                    }
+                    else if (Event.EventHasTeamSwag)
+                    {
+                        if (!Event.CanChangeLunch)
+                        {
+                            <li class="nav-item"><a asp-page="/Teams/Details" asp-route-teamId="@teamId" title="Lunch">Lunch</a></li>
+                        }
+                        else
+                        {
+                            <li class="nav-item"><a style="color:yellow" asp-page="/Teams/Details" asp-route-teamId="@teamId" title="Lunch">Pick Lunch by @(Event.LunchReportDate.ToString("M/dd"))!</a></li>
                         }
                     }
                     <li class="nav-item">

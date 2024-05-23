@@ -281,6 +281,17 @@ namespace ServerCore.DataModel
         public string DefaultLunch { get; set; }
 
         /// <summary>
+        /// List of lunch options to show on individual registration and/or team details page
+        /// Each option is composed of a "Lunch Name":"Lunch Description"; pair, including the quotes
+        /// Each option is delimited by a ; semicolon, so whitespace outside of quotes is ignored
+        /// The Lunch Name is also used as the value that's written to the database
+        /// A Lunch Name == "noneoftheabove" after removing spaces and converting to lowercase
+        ///   will make the "Custom Order" textbox appear on the Swag Registration and Player Create/Edit pages
+        /// Lunch Details are not displayed for team lunches
+        /// </summary>
+        public string LunchOptions { get; set; }
+
+        /// <summary>
         /// Title for single player puzzles.
         /// Note: If this field is empty or null, the tab will not be shown.
         /// </summary>
