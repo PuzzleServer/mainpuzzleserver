@@ -48,8 +48,8 @@
                             if (!string.IsNullOrWhiteSpace(lunch))
                             {
                                 string[] lunchParts = lunch.Split(":");
-                                string lunchVal = lunchParts[0].Substring(lunchParts[0].IndexOf("\"") + 1, lunchParts[0].LastIndexOf("\"") - lunchParts[0].IndexOf("\"") - 1);
-                                string lunchDesc = lunchParts[1].Substring(lunchParts[1].IndexOf("\"") + 1, lunchParts[1].LastIndexOf("\"") - lunchParts[1].IndexOf("\"") - 1);
+                                string lunchVal = lunchParts[0].Trim().Trim('\"');
+                                string lunchDesc = lunchParts[1].Trim().Trim('\"');
 
                                 if (!required)
                                 {
