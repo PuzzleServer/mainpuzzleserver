@@ -148,6 +148,8 @@ namespace ServerCore.Pages.Teams
             for (int i = 0; i < LunchOptions.Length; i++) 
             {
                 // Note that the lunch details are not displayed for team lunches
+                // These options are also used in Swag\Register.cshtml, Event\Details.cshtml, and Player\Create and Edit.cshtml
+                // If the way they're displayed ever changes, this needs to be made to match as well
                 LunchOptions[i] = LunchOptions[i].Split(":")[0];
                 LunchOptions[i] = LunchOptions[i].Trim().Trim('\"');
             }

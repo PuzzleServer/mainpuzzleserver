@@ -37,7 +37,8 @@
                 // The following 3 components (first form-group, script block, custom-order form-group) have identical versions in:
                 //     Player\Create.cshtml and Swag\Register.cshtml, and all 3 must be modified in identical ways in future edits.
                 //     They cannot be abstracted to a Partial since partials cannot modify underlying C# data.
-                //     The Event Details page also parses this data to ensure proper formatting, so also apply updates to it.
+                //     The Event Details page also parses this data to ensure proper formatting, so also apply updates to it,
+                //     as well as Team\Details.cshtml.cs which uses the Name portion to display team lunches.
                 <div class="form-group">
                     <label asp-for="PlayerInEvent.Lunch" class="control-label"></label><br />
                     @{

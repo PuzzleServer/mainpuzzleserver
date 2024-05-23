@@ -146,6 +146,7 @@
                         // Parse lunch options the same way they are in Swag\Register.cshtml and Player\Create or Edit.cshtml
                         // This will help ensure correct formatting without the need to test those pages as a player
                         // If the parsing method in those 3 files is ever updated, this will need to be updated as well
+                        // Team\Details.cshtml.cs also parses part of it to display team lunches and needs to match
                         var lunchOptions = Model.Event.LunchOptions.Split(";");
                         foreach (var lunch in lunchOptions)
                         {
