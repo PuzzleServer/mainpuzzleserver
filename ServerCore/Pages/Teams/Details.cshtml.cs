@@ -149,7 +149,7 @@ namespace ServerCore.Pages.Teams
             {
                 // Note that the lunch details are not displayed for team lunches
                 LunchOptions[i] = LunchOptions[i].Split(":")[0];
-                LunchOptions[i] = LunchOptions[i].Substring(LunchOptions[i].IndexOf("\"") + 1, LunchOptions[i].LastIndexOf("\"") - LunchOptions[i].IndexOf("\"") - 1);
+                LunchOptions[i] = LunchOptions[i].Trim().Trim('\"');
             }
 
             // Get team room
