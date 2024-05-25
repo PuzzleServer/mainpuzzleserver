@@ -311,8 +311,10 @@
                 <textarea asp-for="Event.LunchOptions" class="form-control"></textarea>
                 <span asp-validation-for="Event.LunchOptions" class="text-danger"></span>
             </div>
-            <div class="description-column">For team or individual lunches, each option is composed of a "Lunch Name":"Lunch Description"; pair, including the quotes. Each option is delimited by a ; semicolon, so whitespace outside of quotes is ignored. The description isn't used for team lunches. COLON AND SEMICOLON CANNOT BE USED INSIDE THE QUOTES.<br />
-                The Lunch Name is also used as the value that's written to the database. Lunch Name == "noneoftheabove" after removing spaces and converting to lowercase will make the "Custom Order" textbox appear on the Swag Registration and player edit pages for events with single-player lunches.</div>
+            <div class="description-column">
+                For team or individual lunches, each option is composed of a "Lunch Name":"Lunch Description"; pair, including the quotes. Each option is delimited by a ; semicolon, so whitespace outside of quotes is ignored. The description isn't used for team lunches. COLON AND SEMICOLON CANNOT BE USED INSIDE THE QUOTES.<br />
+                The Lunch Name is also used as the value that's written to the database. Lunch Name == "noneoftheabove" after removing spaces and converting to lowercase will make the "Custom Order" textbox appear on the Swag Registration and player edit pages for events with single-player lunches.
+            </div>
             <div class="form-group">
                 <label asp-for="Event.LunchDescription" class="control-label"></label>
                 <textarea asp-for="Event.LunchDescription" class="form-control"></textarea>
