@@ -8,261 +8,306 @@
     ViewData["PlayRoute"] = "/EventSpecific/Index";
 }
 
+<style>
+    .details-list>div:nth-child(odd) {
+        font-weight: bold;
+    }
+    .details-list>div:nth-child(even) {
+        margin-bottom: 15px;
+    }
+</style>
+
 <h2>@Model.Event.Name: Details</h2>
 <h3><span style="color: red">ALL TIMES UTC! Current time is @DateTime.UtcNow.ToShortTimeString()</span></h3>
 
 <a asp-page="./Edit">Edit</a> | <a asp-page="./Import">Import</a> | <a asp-page="./Delete">Delete</a>
 
-<div>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            Name
-        </dt>
-        <dd>
-            @Model.Event.Name
-        </dd>
-        <dt>
-            UrlString
-        </dt>
-        <dd>
-            @Model.Event.UrlString
-        </dd>
-        <dt>
-            HomePartial
-        </dt>
-        <dd>
-            @Model.Event.HomePartial
-        </dd>
-        <dt>
-            SinglePlayerPuzzleTitle
-        </dt>
-        @if (Model.Event.ShouldShowSinglePlayerPuzzles)
+<hr />
+<div class="details-list">
+    <h4>General Properties</h4><div></div>
+    <div>
+        Name
+    </div>
+    <div>
+        @Model.Event.Name
+    </div>
+    <div>
+        UrlString
+    </div>
+    <div>
+        @Model.Event.UrlString
+    </div>
+    <div>
+        ContactEmail
+    </div>
+    <div>
+        @Model.Event.ContactEmail
+    </div>
+    <div>
+        Copyright
+    </div>
+    <div>
+        @Model.Event.Copyright
+    </div>
+    <div>
+        ShowFastestSolves
+    </div>
+    <div>
+        @Model.Event.ShowFastestSolves
+    </div>
+    <div>
+        StandingsOverride
+    </div>
+    <div>
+        @Model.Event.StandingsOverride
+    </div>
+    <div>
+        AllowBlazor
+    </div>
+    <div>
+        @Model.Event.AllowBlazor
+    </div>
+    <div>
+        HomePartial
+    </div>
+    <div>
+        @Model.Event.HomePartial
+    </div>
+    <h4>Times</h4><div></div>
+    <div>
+        TeamRegistrationBegin
+    </div>
+    <div>
+        @Model.Event.TeamRegistrationBegin
+    </div>
+    <div>
+        TeamRegistrationEnd
+    </div>
+    <div>
+        @Model.Event.TeamRegistrationEnd
+    </div>
+    <div>
+        TeamNameChangeEnd
+    </div>
+    <div>
+        @Model.Event.TeamNameChangeEnd
+    </div>
+    <div>
+        TeamMembershipChangeEnd
+    </div>
+    <div>
+        @Model.Event.TeamMembershipChangeEnd
+    </div>
+    <div>
+        TeamMiscDataChangeEnd
+    </div>
+    <div>
+        @Model.Event.TeamMiscDataChangeEnd
+    </div>
+    <div>
+        LunchReportDate
+    </div>
+    <div>
+        @Model.Event.LunchReportDate
+    </div>
+    <div>
+        TeamDeleteEnd
+    </div>
+    <div>
+        @Model.Event.TeamDeleteEnd
+    </div>
+    <div>
+        EventBegin
+    </div>
+    <div>
+        @Model.Event.EventBegin
+    </div>
+    <div>
+        AnswerSubmissionEnd
+    </div>
+    <div>
+        @Model.Event.AnswerSubmissionEnd
+    </div>
+    <div>
+        AnswersAvailableBegin
+    </div>
+    <div>
+        @Model.Event.AnswersAvailableBegin
+    </div>
+    <div>
+        StandingsAvailableBegin
+    </div>
+    <div>
+        @Model.Event.StandingsAvailableBegin
+    </div>
+    <h4>Puzzle Options</h4><div></div>
+    <div>
+        SinglePlayerPuzzleTitle
+    </div>
+    <div>
+        @(Model.Event.ShouldShowSinglePlayerPuzzles ? @Model.Event.SinglePlayerPuzzleTitle : "NONE (if there is no title, SinglePlayerPuzzles will not be shown).")
+    </div>
+    <div>
+        TermForGroup
+    </div>
+    <div>
+        @Model.Event.TermForGroup
+    </div>
+    <div>
+        EmbedPuzzles
+    </div>
+    <div>
+        @Model.Event.EmbedPuzzles
+    </div>
+    <div>
+        HideHints
+    </div>
+    <div>
+        @Model.Event.HideHints
+    </div>
+    <div>
+        AllowFeedback
+    </div>
+    <div>
+        @Model.Event.AllowFeedback
+    </div>
+    <div>
+        ShouldShowHelpMessageOnlyToAuthor
+    </div>
+    <div>
+        @Model.Event.ShouldShowHelpMessageOnlyToAuthor
+    </div>
+    <div>
+        LockoutIncorrectGuessLimit
+    </div>
+    <div>
+        @Model.Event.LockoutIncorrectGuessLimit
+    </div>
+    <div>
+        LockoutIncorrectGuessPeriod
+    </div>
+    <div>
+        @Model.Event.LockoutIncorrectGuessPeriod
+    </div>
+    <div>
+        LockoutDurationMultiplier
+    </div>
+    <div>
+        @Model.Event.LockoutDurationMultiplier
+    </div>
+    <div>
+        MaxSubmissionCount
+    </div>
+    <div>
+        @Model.Event.MaxSubmissionCount
+    </div>
+    <h4>Team Options</h4><div></div>
+    <div>
+        MaxNumberOfTeams
+    </div>
+    <div>
+        @Model.Event.MaxNumberOfTeams
+    </div>
+    <div>
+        MaxTeamSize
+    </div>
+    <div>
+        @Model.Event.MaxTeamSize
+    </div>
+    <div>
+        MaxExternalsPerTeam
+    </div>
+    <div>
+        @Model.Event.MaxExternalsPerTeam
+    </div>
+    <div>
+        IsRemote
+    </div>
+    <div>
+        @Model.Event.IsRemote
+    </div>
+    <div>
+        AllowsRemote
+    </div>
+    <div>
+        @Model.Event.AllowsRemote
+    </div>
+    <div>
+        IsInternEvent
+    </div>
+    <div>
+        @Model.Event.IsInternEvent
+    </div>
+    <h4>Swag</h4><div></div>
+    <div>
+        HasSwag
+    </div>
+    <div>
+        @Model.Event.HasSwag
+    </div>
+    <div>
+        HasTShirts
+    </div>
+    <div>
+        @Model.Event.HasTShirts
+    </div>
+    <div>
+        HasIndividualLunch
+    </div>
+    <div>
+        @Model.Event.HasIndividualLunch
+    </div>
+    <div>
+        EventHasTeamSwag
+    </div>
+    <div>
+        @Model.Event.EventHasTeamSwag
+    </div>
+    <div>
+        PlayersPerLunch
+    </div>
+    <div>
+        @Model.Event.PlayersPerLunch
+    </div>
+    <div>
+        DefaultLunch
+    </div>
+    <div>
+        @Model.Event.DefaultLunch
+    </div>
+    <div>
+        LunchOptions
+    </div>
+    <div>
+        @Model.Event.LunchOptions
+        @if (!string.IsNullOrWhiteSpace(Model.Event.LunchOptions))
         {
-            <dd>
-                @Model.Event.SinglePlayerPuzzleTitle
-            </dd>
-        }
-        else
-        {
-            <dd>
-                NONE (if there is no title, SinglePlayerPuzzles will not be shown).
-            </dd>
-        }
-        <dt>
-            ContactEmail
-        </dt>
-        <dd>
-            @Model.Event.ContactEmail
-        </dd>
-        <dt>
-            MaxNumberOfTeams
-        </dt>
-        <dd>
-            @Model.Event.MaxNumberOfTeams
-        </dd>
-        <dt>
-            MaxTeamSize
-        </dt>
-        <dd>
-            @Model.Event.MaxTeamSize
-        </dd>
-        <dt>
-            MaxExternalsPerTeam
-        </dt>
-        <dd>
-            @Model.Event.MaxExternalsPerTeam
-        </dd>
-         <dt>
-            IsRemote
-        </dt>
-        <dd>
-            @Model.Event.IsRemote
-        </dd>
-        <dt>
-            AllowsRemote
-        </dt>
-        <dd>
-            @Model.Event.AllowsRemote
-        </dd>
-        <dt>
-            EmbedPuzzles
-        </dt>
-        <dd>
-            @Model.Event.EmbedPuzzles
-        </dd>
-        <dt>
-            IsInternEvent
-        </dt>
-        <dd>
-            @Model.Event.IsInternEvent
-        </dd>
-        <dt>
-            HasSwag
-        </dt>
-        <dd>
-            @Model.Event.HasSwag
-        </dd>
-        <dt>
-            HasTShirts
-        </dt>
-        <dd>
-            @Model.Event.HasTShirts
-        </dd>
-        <dt>
-            HasIndividualLunch
-        </dt>
-        <dd>
-            @Model.Event.HasIndividualLunch
-        </dd>
-        <dt>
-            EventHasTeamSwag
-        </dt>
-        <dd>
-            @Model.Event.EventHasTeamSwag
-        </dd>
-        <dt>
-            PlayersPerLunch
-        </dt>
-        <dd>
-            @Model.Event.PlayersPerLunch
-        </dd>
-        <dt>
-            DefaultLunch
-        </dt>
-        <dd>
-            @Model.Event.DefaultLunch
-        </dd>
-        <dt>
-            LunchOptions
-        </dt>
-        <dd>
-            @Model.Event.LunchOptions
-            @if (!string.IsNullOrWhiteSpace(Model.Event.LunchOptions))
-            {
-                <br />
-                <div style="margin-left:20px;font-size:11px">
-                    @{
-                        // Parse lunch options the same way they are in Swag\Register.cshtml and Player\Create or Edit.cshtml
-                        // This will help ensure correct formatting without the need to test those pages as a player
-                        // If the parsing method in those 3 files is ever updated, this will need to be updated as well
-                        // Team\Details.cshtml.cs also parses part of it to display team lunches and needs to match
-                        var lunchOptions = Model.Event.LunchOptions.Split(";");
-                        foreach (var lunch in lunchOptions)
+            <br />
+            <div style="margin-left:20px;font-size:11px">
+                @{
+                    // Parse lunch options the same way they are in Swag\Register.cshtml and Player\Create or Edit.cshtml
+                    // This will help ensure correct formatting without the need to test those pages as a player
+                    // If the parsing method in those 3 files is ever updated, this will need to be updated as well
+                    // Team\Details.cshtml.cs also parses part of it to display team lunches and needs to match
+                    var lunchOptions = Model.Event.LunchOptions.Split(";");
+                    foreach (var lunch in lunchOptions)
+                    {
+                        if (!string.IsNullOrWhiteSpace(lunch))
                         {
-                            if (!string.IsNullOrWhiteSpace(lunch))
-                            {
-                                string[] lunchParts = lunch.Split(":");
-                                string lunchVal = lunchParts[0].Trim().Trim('\"');
-                                string lunchDesc = lunchParts[1].Trim().Trim('\"');
-                                <div><b>@lunchVal</b>: <i>@lunchDesc</i></div>
-                            }
+                            string[] lunchParts = lunch.Split(":");
+                            string lunchVal = lunchParts[0].Trim().Trim('\"');
+                            string lunchDesc = lunchParts[1].Trim().Trim('\"');
+                            <div><b>@lunchVal</b>: <i>@lunchDesc</i></div>
                         }
                     }
-                </div>
-            }
-        </dd>
-        <dt>
-            HideHints
-        </dt>
-        <dd>
-            @Model.Event.HideHints
-        </dd>
-        <dt>
-            ShouldShowHelpMessageOnlyToAuthor
-        </dt>
-        <dd>
-            @Model.Event.ShouldShowHelpMessageOnlyToAuthor
-        </dd>
-        <dt>
-            TeamRegistrationBegin
-        </dt>
-        <dd>
-            @Model.Event.TeamRegistrationBegin
-        </dd>
-        <dt>
-            TeamRegistrationEnd
-        </dt>
-        <dd>
-            @Model.Event.TeamRegistrationEnd
-        </dd>
-        <dt>
-            TeamNameChangeEnd
-        </dt>
-        <dd>
-            @Model.Event.TeamNameChangeEnd
-        </dd>
-        <dt>
-            TeamMembershipChangeEnd
-        </dt>
-        <dd>
-            @Model.Event.TeamMembershipChangeEnd
-        </dd>
-        <dt>
-            TeamMiscDataChangeEnd
-        </dt>
-        <dd>
-            @Model.Event.TeamMiscDataChangeEnd
-        </dd>
-        <dt>
-            TeamDeleteEnd
-        </dt>
-        <dd>
-            @Model.Event.TeamDeleteEnd
-        </dd>
-        <dt>
-            LunchReportDate
-        </dt>
-        <dd>
-            @Model.Event.LunchReportDate
-        </dd>
-        <dt>
-            EventBegin
-        </dt>
-        <dd>
-            @Model.Event.EventBegin
-        </dd>
-        <dt>
-            AnswerSubmissionEnd
-        </dt>
-        <dd>
-            @Model.Event.AnswerSubmissionEnd
-        </dd>
-        <dt>
-            AnswersAvailableBegin
-        </dt>
-        <dd>
-            @Model.Event.AnswersAvailableBegin
-        </dd>
-        <dt>
-            StandingsAvailableBegin
-        </dt>
-        <dd>
-            @Model.Event.StandingsAvailableBegin
-        </dd>
-        <dt>
-            StandingsOverride
-        </dt>
-        <dd>
-            @Model.Event.StandingsOverride
-        </dd>
-        <dt>
-            ShowFastestSolves
-        </dt>
-        <dd>
-            @Model.Event.ShowFastestSolves
-        </dd>
-        <dt>
-            AllowFeedback
-        </dt>
-        <dd>
-            @Model.Event.AllowFeedback
-        </dd>
-        <dt>
-            AllowBlazor
-        </dt>
-        <dd>
-            @Model.Event.AllowBlazor
-        </dd>
-    </dl>
+                }
+            </div>
+        }
+    </div>
+    <div>
+        LunchDescription
+    </div>
+    <div>
+        @Model.Event.LunchDescription
+    </div>
 </div>

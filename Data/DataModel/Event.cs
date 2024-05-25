@@ -292,6 +292,11 @@ namespace ServerCore.DataModel
         public string LunchOptions { get; set; }
 
         /// <summary>
+        /// Paragraph of text shown on the Team Details page to describe lunch
+        /// </summary>
+        public string LunchDescription { get; set; }
+
+        /// <summary>
         /// Title for single player puzzles.
         /// Note: If this field is empty or null, the tab will not be shown.
         /// </summary>

@@ -5,273 +5,322 @@
     ViewData["Title"] = "Create event";
 }
 
+<style>
+    .property-grid form {
+        display: grid;
+        grid-template-columns: 50% 50%;
+        grid-column-gap: 15px;
+    }
+    .form-group {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        justify-items: start;
+        align-content: start;
+        margin-bottom: 5px;
+    }
+    .description-column {
+        font-size: 12px;
+        border-bottom: 1px solid #AAAAAA;
+        margin-bottom: 5px;
+    }
+    input,
+    textarea {
+        margin: 0px 8px;
+    }
+</style>
+
 <h2>Create a new event</h2>
 <h3><span style="color: red">ALL TIMES UTC! Current time is @DateTime.UtcNow.ToShortTimeString()</span></h3>
 
 <h4>Event</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="property-grid">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <h4>General Properties</h4><div></div>
             <div class="form-group">
                 <label asp-for="Event.Name" class="control-label"></label>
                 <input asp-for="Event.Name" class="form-control" />
                 <span asp-validation-for="Event.Name" class="text-danger"></span>
             </div>
+            <div class="description-column">The name of the event, as shown at the top of every page on the site.</div>
             <div class="form-group">
                 <label asp-for="Event.UrlString" class="control-label"></label>
                 <input asp-for="Event.UrlString" class="form-control" />
                 <span asp-validation-for="Event.UrlString" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Event.HomePartial" class="control-label"></label>
-                <input asp-for="Event.HomePartial" class="form-control" />
-                <span asp-validation-for="Event.HomePartial" class="text-danger"></span>
-            </div>
+            <div class="description-column">The url the event lives at, which can be used instead of the event id for navigating to any page on the site.</div>
             <div class="form-group">
                 <label asp-for="Event.ContactEmail" class="control-label"></label>
                 <input asp-for="Event.ContactEmail" class="form-control" />
                 <span asp-validation-for="Event.ContactEmail" class="text-danger"></span>
             </div>
+            <div class="description-column">Email address used in the "Contact Us" link at the bottom of every page on the site.</div>
             <div class="form-group">
-                <label asp-for="Event.MaxNumberOfTeams" class="control-label"></label>
-                <input asp-for="Event.MaxNumberOfTeams" class="form-control" />
-                <span asp-validation-for="Event.MaxNumberOfTeams" class="text-danger"></span>
+                <label asp-for="Event.Copyright" class="control-label"></label>
+                <input asp-for="Event.Copyright" class="form-control" />
+                <span asp-validation-for="Event.Copyright" class="text-danger"></span>
             </div>
+            <div class="description-column">The text shown after the copyright symbol at the bottom of every page on the site.</div>
             <div class="form-group">
-                <label asp-for="Event.MaxTeamSize" class="control-label"></label>
-                <input asp-for="Event.MaxTeamSize" class="form-control" />
-                <span asp-validation-for="Event.MaxTeamSize" class="text-danger"></span>
+                <label asp-for="Event.ShowFastestSolves"></label>
+                <input asp-for="Event.ShowFastestSolves" />
             </div>
+            <div class="description-column">Shows a second standings page for the top 3 fastest solves per puzzle.</div>
             <div class="form-group">
-                <label asp-for="Event.MaxExternalsPerTeam" class="control-label"></label>
-                <input asp-for="Event.MaxExternalsPerTeam" class="form-control" />
-                <span asp-validation-for="Event.MaxExternalsPerTeam" class="text-danger"></span>
+                <label asp-for="Event.StandingsOverride"></label>
+                <input asp-for="Event.StandingsOverride" />
             </div>
+            <div class="description-column">Allows admins to hide standings at any time, even if it's currently after the StandingsAvailableBegin date. Currently unimplemented.</div>
             <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        <input asp-for="Event.IsRemote" /> IsRemote
-                    </label>
-                </div>
+                <label asp-for="Event.AllowBlazor"></label>
+                <input asp-for="Event.AllowBlazor" />
             </div>
+            <div class="description-column">Enables new website functionality like realtime presence indication and automatic team creation.</div>
             <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        <input asp-for="Event.AllowsRemote" /> AllowsRemote
-                    </label>
-                </div>
+                <label asp-for="Event.HomePartial" class="control-label"></label>
+                <input asp-for="Event.HomePartial" class="form-control" />
+                <span asp-validation-for="Event.HomePartial" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        <input asp-for="Event.EmbedPuzzles" /> EmbedPuzzles
-                    </label>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        <input asp-for="Event.IsInternEvent" /> IsInternEvent
-                    </label>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        <input asp-for="Event.HasSwag" /> HasSwag
-                    </label>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        <input asp-for="Event.HasTShirts" /> HasTShirts
-                    </label>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        <input asp-for="Event.HasIndividualLunch" /> HasIndividualLunch
-                    </label>
-                </div>
-            </div>
-            <div class="form-group">
-                <label asp-for="Event.PlayersPerLunch" class="control-label"></label>
-                <input asp-for="Event.PlayersPerLunch" class="form-control" />
-                <span asp-validation-for="Event.PlayersPerLunch" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Event.DefaultLunch" class="control-label"></label>
-                <input asp-for="Event.DefaultLunch" class="form-control" />
-                <span asp-validation-for="Event.DefaultLunch" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Event.LunchOptions" class="control-label"></label>
-                <input asp-for="Event.LunchOptions" class="form-control" />
-                <span asp-validation-for="Event.LunchOptions" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        <input asp-for="Event.EventHasTeamSwag" /> EventHasTeamSwag
-                    </label>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        <input asp-for="Event.HideHints" /> HideHints
-                    </label>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        <input asp-for="Event.ShouldShowHelpMessageOnlyToAuthor" /> ShouldShowHelpMessageOnlyToAuthor
-                    </label>
-                </div>
-            </div>
+            <div class="description-column">DEPRECATED: DO NOT USE</div>
+            <h4>Times</h4><div></div>
             <div class="form-group">
                 <label asp-for="Event.TeamRegistrationBegin" class="control-label"></label>
                 <input asp-for="Event.TeamRegistrationBegin" class="form-control" />
                 <span asp-validation-for="Event.TeamRegistrationBegin" class="text-danger"></span>
             </div>
+            <div class="description-column">New teams can be created by players after this date and before the TeamRegistrationEnd date.</div>
             <div class="form-group">
                 <label asp-for="Event.TeamRegistrationEnd" class="control-label"></label>
                 <input asp-for="Event.TeamRegistrationEnd" class="form-control" />
                 <span asp-validation-for="Event.TeamRegistrationEnd" class="text-danger"></span>
             </div>
+            <div class="description-column">New teams can no longer be created by players after this date.</div>
             <div class="form-group">
                 <label asp-for="Event.TeamNameChangeEnd" class="control-label"></label>
                 <input asp-for="Event.TeamNameChangeEnd" class="form-control" />
                 <span asp-validation-for="Event.TeamNameChangeEnd" class="text-danger"></span>
             </div>
+            <div class="description-column">Existing teams cannot change their name after this date.</div>
             <div class="form-group">
                 <label asp-for="Event.TeamMembershipChangeEnd" class="control-label"></label>
                 <input asp-for="Event.TeamMembershipChangeEnd" class="form-control" />
                 <span asp-validation-for="Event.TeamMembershipChangeEnd" class="text-danger"></span>
             </div>
+            <div class="description-column">Existing teams cannot add or remove members after this date.</div>
             <div class="form-group">
                 <label asp-for="Event.TeamMiscDataChangeEnd" class="control-label"></label>
                 <input asp-for="Event.TeamMiscDataChangeEnd" class="form-control" />
                 <span asp-validation-for="Event.TeamMiscDataChangeEnd" class="text-danger"></span>
             </div>
+            <div class="description-column">For events with individual swag, members cannot change their lunch/T-shirt selections after this date.</div>
             <div class="form-group">
                 <label asp-for="Event.LunchReportDate" class="control-label"></label>
                 <input asp-for="Event.LunchReportDate" class="form-control" />
                 <span asp-validation-for="Event.LunchReportDate" class="text-danger"></span>
             </div>
+            <div class="description-column">For events with team lunches, lunch selections cannot be changed after this date.</div>
             <div class="form-group">
                 <label asp-for="Event.TeamDeleteEnd" class="control-label"></label>
                 <input asp-for="Event.TeamDeleteEnd" class="form-control" />
                 <span asp-validation-for="Event.TeamDeleteEnd" class="text-danger"></span>
             </div>
+            <div class="description-column">Existing teams cannot be deleted by players after this date.</div>
             <div class="form-group">
                 <label asp-for="Event.EventBegin" class="control-label"></label>
                 <input asp-for="Event.EventBegin" class="form-control" />
                 <span asp-validation-for="Event.EventBegin" class="text-danger"></span>
             </div>
+            <div class="description-column">Answer submission is active for both team and single player puzzles after this date and before the AnswerSubmissionEnd date.</div>
             <div class="form-group">
                 <label asp-for="Event.AnswerSubmissionEnd" class="control-label"></label>
                 <input asp-for="Event.AnswerSubmissionEnd" class="form-control" />
                 <span asp-validation-for="Event.AnswerSubmissionEnd" class="text-danger"></span>
             </div>
+            <div class="description-column">Answer submission is no longer possible after this time, locking in the final event standings.</div>
             <div class="form-group">
                 <label asp-for="Event.AnswersAvailableBegin" class="control-label"></label>
                 <input asp-for="Event.AnswersAvailableBegin" class="form-control" />
                 <span asp-validation-for="Event.AnswersAvailableBegin" class="text-danger"></span>
             </div>
+            <div class="description-column">If solution files are available, they are made available to players after this date.</div>
             <div class="form-group">
                 <label asp-for="Event.StandingsAvailableBegin" class="control-label"></label>
                 <input asp-for="Event.StandingsAvailableBegin" class="form-control" />
                 <span asp-validation-for="Event.StandingsAvailableBegin" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        <input asp-for="Event.StandingsOverride" /> StandingsOverride
-                    </label>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        <input asp-for="Event.ShowFastestSolves" /> ShowFastestSolves
-                    </label>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        <input asp-for="Event.AllowFeedback" /> AllowFeedback
-                    </label>
-                </div>
-            </div>
-            <div class="form-group">
-                <label asp-for="Event.LockoutIncorrectGuessLimit" class="control-label"></label>
-                <input asp-for="Event.LockoutIncorrectGuessLimit" class="form-control" />
-                <span asp-validation-for="Event.LockoutIncorrectGuessLimit" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Event.LockoutIncorrectGuessPeriod" class="control-label"></label>
-                <input asp-for="Event.LockoutIncorrectGuessPeriod" class="form-control" />
-                <span asp-validation-for="Event.LockoutIncorrectGuessPeriod" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Event.LockoutDurationMultiplier" class="control-label"></label>
-                <input asp-for="Event.LockoutDurationMultiplier" class="form-control" />
-                <span asp-validation-for="Event.LockoutDurationMultiplier" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Event.MaxSubmissionCount" class="control-label"></label>
-                <input asp-for="Event.MaxSubmissionCount" class="form-control" />
-                <span asp-validation-for="Event.MaxSubmissionCount" class="text-danger"></span>
-            </div>
+            <div class="description-column">Players can view event standings after this date, even if answer submission is still active.</div>
+            <h4>Content</h4><div></div>
             <div class="form-group">
                 <label asp-for="Event.Announcement" class="control-label"></label>
                 <textarea asp-for="Event.Announcement" class="form-control"></textarea>
                 <span asp-validation-for="Event.Announcement" class="text-danger"></span>
             </div>
+            <div class="description-column">The heading text shown below the navbar for every page on the site. Can be written using HTML for custom styling.</div>
             <div class="form-group">
                 <label asp-for="Event.TeamAnnouncement" class="control-label"></label>
                 <textarea asp-for="Event.TeamAnnouncement" class="form-control"></textarea>
                 <span asp-validation-for="Event.TeamAnnouncement" class="text-danger"></span>
             </div>
+            <div class="description-column">The heading text shown below the navbar for every page on the site once an admin has enabled a particular team to view it. Can be written using HTML for custom styling.</div>
             <div class="form-group">
                 <label asp-for="Event.HomeContent" class="control-label"></label>
                 <textarea asp-for="Event.HomeContent" class="form-control"></textarea>
                 <span asp-validation-for="Event.HomeContent" class="text-danger"></span>
             </div>
+            <div class="description-column">The contents of the event's homepage, shown above any home-content.html file uploaded to the Shared Resources. Can be written using HTML for custom styling.</div>
             <div class="form-group">
                 <label asp-for="Event.FAQContent" class="control-label"></label>
                 <textarea asp-for="Event.FAQContent" class="form-control"></textarea>
                 <span asp-validation-for="Event.FAQContent" class="text-danger"></span>
             </div>
+            <div class="description-column">The contents of the event's FAQ page, shown above any faq-content.html file uploaded to the Shared Resources. Can be written using HTML for custom styling.</div>
             <div class="form-group">
                 <label asp-for="Event.RulesContent" class="control-label"></label>
                 <textarea asp-for="Event.RulesContent" class="form-control"></textarea>
                 <span asp-validation-for="Event.RulesContent" class="text-danger"></span>
             </div>
+            <div class="description-column">The contents of the event's rules page, shown above any rules-content.html file uploaded to the Shared Resources. Can be written using HTML for custom styling.</div>
+            <h4>Puzzle Options</h4><div></div>
             <div class="form-group">
-                <label asp-for="Event.Copyright" class="control-label"></label>
-                <textarea asp-for="Event.Copyright" class="form-control"></textarea>
-                <span asp-validation-for="Event.Copyright" class="text-danger"></span>
+                <label asp-for="Event.SinglePlayerPuzzleTitle" class="control-label"></label>
+                <input asp-for="Event.SinglePlayerPuzzleTitle" class="form-control" />
+                <span asp-validation-for="Event.SinglePlayerPuzzleTitle" class="text-danger"></span>
             </div>
+            <div class="description-column">Term used as the heading for the section of puzzles that individuals can play without being on a team.  For events without single-player puzzles, leaving this empty will omit that section from the site entirely.</div>
             <div class="form-group">
                 <label asp-for="Event.TermForGroup" class="control-label"></label>
-                <textarea asp-for="Event.TermForGroup" class="form-control"></textarea>
+                <input asp-for="Event.TermForGroup" class="form-control" />
                 <span asp-validation-for="Event.TermForGroup" class="text-danger"></span>
             </div>
+            <div class="description-column">The text shown instead of the word "Group" on the list of puzzles. Used to categorize puzzles, for example into individual modules or days.</div>
             <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        <input asp-for="Event.AllowBlazor" /> AllowBlazor
-                    </label>
-                </div>
+                <label asp-for="Event.EmbedPuzzles"></label>
+                <input asp-for="Event.EmbedPuzzles" />
             </div>
+            <div class="description-column">When enabled, puzzle files are embedded on their corresponding answer submission page.</div>
+            <div class="form-group">
+                <label asp-for="Event.HideHints"></label>
+                <input asp-for="Event.HideHints" />
+            </div>
+            <div class="description-column">Hides the link for players to view hints and authors to manage hints. Also hides hint statistics from the event standings.</div>
+            <div class="form-group">
+                <label asp-for="Event.AllowFeedback"></label>
+                <input asp-for="Event.AllowFeedback" />
+            </div>
+            <div class="description-column">Allows players to submit feedback for puzzles.</div>
+            <div class="form-group">
+                <label asp-for="Event.ShouldShowHelpMessageOnlyToAuthor"></label>
+                <input asp-for="Event.ShouldShowHelpMessageOnlyToAuthor" />
+            </div>
+            <div class="description-column">Allows all non-players in an event to view help messages when disabled, and only allows a puzzle's author to answer help messages for that puzzle when enabled.</div>
+            <div class="form-group">
+                <label asp-for="Event.LockoutIncorrectGuessLimit" class="control-label"></label>
+                <input asp-for="Event.LockoutIncorrectGuessLimit" class="form-control" />
+                <span asp-validation-for="Event.LockoutIncorrectGuessLimit" class="text-danger"></span>
+            </div>
+            <div class="description-column">The number of incorrect submissions for a puzzle within a period of time that will trigger a temporary lockout.</div>
+            <div class="form-group">
+                <label asp-for="Event.LockoutIncorrectGuessPeriod" class="control-label"></label>
+                <input asp-for="Event.LockoutIncorrectGuessPeriod" class="form-control" />
+                <span asp-validation-for="Event.LockoutIncorrectGuessPeriod" class="text-danger"></span>
+            </div>
+            <div class="description-column">The time period in which a number of incorrect submissions for a puzzle will trigger a temporary lockout.</div>
+            <div class="form-group">
+                <label asp-for="Event.LockoutDurationMultiplier" class="control-label"></label>
+                <input asp-for="Event.LockoutDurationMultiplier" class="form-control" />
+                <span asp-validation-for="Event.LockoutDurationMultiplier" class="text-danger"></span>
+            </div>
+            <div class="description-column">The multiplier for consecutive temporary lockout periods for a puzzle.</div>
+            <div class="form-group">
+                <label asp-for="Event.MaxSubmissionCount" class="control-label"></label>
+                <input asp-for="Event.MaxSubmissionCount" class="form-control" />
+                <span asp-validation-for="Event.MaxSubmissionCount" class="text-danger"></span>
+            </div>
+            <div class="description-column">The maximum number of incorrect submissions allowed for a puzzle before an indefinite lockout is placed and the team enters email-only mode.</div>
+            <h4>Team Options</h4><div></div>
+            <div class="form-group">
+                <label asp-for="Event.MaxNumberOfTeams" class="control-label"></label>
+                <input asp-for="Event.MaxNumberOfTeams" class="form-control" />
+                <span asp-validation-for="Event.MaxNumberOfTeams" class="text-danger"></span>
+            </div>
+            <div class="description-column">The max number of teams that can be registered for this event.</div>
+            <div class="form-group">
+                <label asp-for="Event.MaxTeamSize" class="control-label"></label>
+                <input asp-for="Event.MaxTeamSize" class="form-control" />
+                <span asp-validation-for="Event.MaxTeamSize" class="text-danger"></span>
+            </div>
+            <div class="description-column">The max number of people allowed on a team, including remote attendees.</div>
+            <div class="form-group">
+                <label asp-for="Event.MaxExternalsPerTeam" class="control-label"></label>
+                <input asp-for="Event.MaxExternalsPerTeam" class="form-control" />
+                <span asp-validation-for="Event.MaxExternalsPerTeam" class="text-danger"></span>
+            </div>
+            <div class="description-column">For events designed only for Microsoft employees, this is the max number of non-employees allowed per team.</div>
+            <div class="form-group">
+                <label asp-for="Event.IsRemote"></label>
+                <input asp-for="Event.IsRemote" />
+            </div>
+            <div class="description-column">Specifies if an event will have a presence on Microsoft's campus. Non-remote events will allow teams to select a room to use as their base of operations.</div>
+            <div class="form-group">
+                <label asp-for="Event.AllowsRemote"></label>
+                <input asp-for="Event.AllowsRemote" />
+            </div>
+            <div class="description-column">Specifies if an event allows remote attendees.</div>
+            <div class="form-group">
+                <label asp-for="Event.IsInternEvent"></label>
+                <input asp-for="Event.IsInternEvent" />
+            </div>
+            <div class="description-column">Controls whether teams are able to edit their own team room. Intern events do not allow this because rooms are instead chosen by Puzzleday staff.</div>
+            <h4>Swag</h4><div></div>
+            <div class="form-group">
+                <label asp-for="Event.HasSwag"></label>
+                <input asp-for="Event.HasSwag" />
+            </div>
+            <div class="description-column">Specifies if an event has individual lunches and/or T-shirts. Without also selecting one of those two options below, this checkbox does nothing.</div>
+            <div class="form-group">
+                <label asp-for="Event.HasTShirts"></label>
+                <input asp-for="Event.HasTShirts" />
+            </div>
+            <div class="description-column">Lets individuals select their shirt size when registering for an event. Also requires the HasSwag flag above to be enabled.</div>
+            <div class="form-group">
+                <label asp-for="Event.HasIndividualLunch"></label>
+                <input asp-for="Event.HasIndividualLunch" />
+            </div>
+            <div class="description-column">Lets individuals select their lunch order when registering for an event. Also requires the HasSwag flag above to be enabled.</div>
+            <div class="form-group">
+                <label asp-for="Event.EventHasTeamSwag"></label>
+                <input asp-for="Event.EventHasTeamSwag" />
+            </div>
+            <div class="description-column">Specifies if an event has team lunches. The main Swag flag does not need to be enabled to use this flag. If for some reason the main Swag flag, the individual lunch flag, and this flag are all enabled, the website header will link to the individual lunch selection page, but the two lunch flags should not ever be enabled together.</div>
+            <div class="form-group">
+                <label asp-for="Event.PlayersPerLunch" class="control-label"></label>
+                <input asp-for="Event.PlayersPerLunch" class="form-control" />
+                <span asp-validation-for="Event.PlayersPerLunch" class="text-danger"></span>
+            </div>
+            <div class="description-column">For events with team lunches, specifies how many players are required to increment the number of lunches allocated toward a team.</div>
+            <div class="form-group">
+                <label asp-for="Event.DefaultLunch" class="control-label"></label>
+                <input asp-for="Event.DefaultLunch" class="form-control" />
+                <span asp-validation-for="Event.DefaultLunch" class="text-danger"></span>
+            </div>
+            <div class="description-column">For events with team lunches, specifies what the default option is for each unchosen lunch item on a team. Note that this will be marked with [Default] on reports, so even if the default option is identical to one of the options specified below for players, the number of unselected lunches will still be known.</div>
+            <div class="form-group">
+                <label asp-for="Event.LunchOptions" class="control-label"></label>
+                <textarea asp-for="Event.LunchOptions" class="form-control"></textarea>
+                <span asp-validation-for="Event.LunchOptions" class="text-danger"></span>
+            </div>
+            <div class="description-column">
+                For team or individual lunches, each option is composed of a "Lunch Name":"Lunch Description"; pair, including the quotes. Each option is delimited by a ; semicolon, so whitespace outside of quotes is ignored. The description isn't used for team lunches. COLON AND SEMICOLON CANNOT BE USED INSIDE THE QUOTES.<br />
+                The Lunch Name is also used as the value that's written to the database. Lunch Name == "noneoftheabove" after removing spaces and converting to lowercase will make the "Custom Order" textbox appear on the Swag Registration and player edit pages for events with single-player lunches.
+            </div>
+            <div class="form-group">
+                <label asp-for="Event.LunchDescription" class="control-label"></label>
+                <textarea asp-for="Event.LunchDescription" class="form-control"></textarea>
+                <span asp-validation-for="Event.LunchDescription" class="text-danger"></span>
+            </div>
+            <div class="description-column">For events with team lunches, describes in detail what lunch will be like on the Team Details page.</div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-default" />
             </div>
