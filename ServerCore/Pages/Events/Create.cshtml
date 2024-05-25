@@ -5,13 +5,21 @@
     ViewData["Title"] = "Create event";
 }
 
+<style>
+    .property-grid form {
+        display: grid;
+        grid-template-columns: 50% 50%;
+        grid-column-gap: 10px;
+    }
+</style>
+
 <h2>Create a new event</h2>
 <h3><span style="color: red">ALL TIMES UTC! Current time is @DateTime.UtcNow.ToShortTimeString()</span></h3>
 
 <h4>Event</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="property-grid">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
@@ -28,6 +36,12 @@
                 <label asp-for="Event.HomePartial" class="control-label"></label>
                 <input asp-for="Event.HomePartial" class="form-control" />
                 <span asp-validation-for="Event.HomePartial" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Event.SinglePlayerPuzzleTitle" class="control-label"></label>
+                <span>(no single player puzzles will be shown if this is empty)</span>
+                <input asp-for="Event.SinglePlayerPuzzleTitle" class="form-control" />
+                <span asp-validation-for="Event.SinglePlayerPuzzleTitle" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Event.ContactEmail" class="control-label"></label>
@@ -110,12 +124,12 @@
             </div>
             <div class="form-group">
                 <label asp-for="Event.LunchOptions" class="control-label"></label>
-                <input asp-for="Event.LunchOptions" class="form-control" />
+                <textarea asp-for="Event.LunchOptions" class="form-control"></textarea>
                 <span asp-validation-for="Event.LunchOptions" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Event.LunchDescription" class="control-label"></label>
-                <input asp-for="Event.LunchDescription" class="form-control" />
+                <textarea asp-for="Event.LunchDescription" class="form-control"></textarea>
                 <span asp-validation-for="Event.LunchDescription" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -262,12 +276,12 @@
             </div>
             <div class="form-group">
                 <label asp-for="Event.Copyright" class="control-label"></label>
-                <textarea asp-for="Event.Copyright" class="form-control"></textarea>
+                <input asp-for="Event.Copyright" class="form-control" />
                 <span asp-validation-for="Event.Copyright" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Event.TermForGroup" class="control-label"></label>
-                <textarea asp-for="Event.TermForGroup" class="form-control"></textarea>
+                <input asp-for="Event.TermForGroup" class="form-control" />
                 <span asp-validation-for="Event.TermForGroup" class="text-danger"></span>
             </div>
             <div class="form-group">

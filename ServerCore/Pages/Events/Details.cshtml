@@ -37,18 +37,9 @@
         <dt>
             SinglePlayerPuzzleTitle
         </dt>
-        @if (Model.Event.ShouldShowSinglePlayerPuzzles)
-        {
-            <dd>
-                @Model.Event.SinglePlayerPuzzleTitle
-            </dd>
-        }
-        else
-        {
-            <dd>
-                NONE (if there is no title, SinglePlayerPuzzles will not be shown).
-            </dd>
-        }
+        <dd>
+            @(Model.Event.ShouldShowSinglePlayerPuzzles ? @Model.Event.SinglePlayerPuzzleTitle : "NONE (if there is no title, SinglePlayerPuzzles will not be shown).")
+        </dd>
         <dt>
             ContactEmail
         </dt>
@@ -116,12 +107,6 @@
             @Model.Event.HasIndividualLunch
         </dd>
         <dt>
-            EventHasTeamSwag
-        </dt>
-        <dd>
-            @Model.Event.EventHasTeamSwag
-        </dd>
-        <dt>
             PlayersPerLunch
         </dt>
         <dd>
@@ -161,6 +146,18 @@
                     }
                 </div>
             }
+        </dd>
+        <dt>
+            LunchDescription
+        </dt>
+        <dd>
+            @Model.Event.LunchDescription
+        </dd>
+        <dt>
+            EventHasTeamSwag
+        </dt>
+        <dd>
+            @Model.Event.EventHasTeamSwag
         </dd>
         <dt>
             HideHints
@@ -205,16 +202,16 @@
             @Model.Event.TeamMiscDataChangeEnd
         </dd>
         <dt>
-            TeamDeleteEnd
-        </dt>
-        <dd>
-            @Model.Event.TeamDeleteEnd
-        </dd>
-        <dt>
             LunchReportDate
         </dt>
         <dd>
             @Model.Event.LunchReportDate
+        </dd>
+        <dt>
+            TeamDeleteEnd
+        </dt>
+        <dd>
+            @Model.Event.TeamDeleteEnd
         </dd>
         <dt>
             EventBegin
