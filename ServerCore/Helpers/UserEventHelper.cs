@@ -45,7 +45,25 @@ namespace ServerCore.Helpers
             {
                 return null;
             }
-            return await dbContext.TeamMembers.Where(t => t.Member.ID == user.ID && t.Team.Event.ID == thisEvent.ID).Select(t => t.Team).FirstOrDefaultAsync();
+
+            return await GetTeamForPlayer(dbContext, thisEvent, user.ID);
+        }
+
+        /// <summary>
+        /// Returns the the team for the given player
+        /// </summary>
+        /// <param name="dbContext">Current PuzzleServerContext</param>
+        /// <param name="thisEvent">The event that's being checked</param>
+        /// <param name="userId">The user id being checked</param>
+        /// <returns>The user's team for this event</returns>
+        public static async Task<Team> GetTeamForPlayer(PuzzleServerContext dbContext, Event thisEvent, int userId)
+        {
+            if (thisEvent == null)
+            {
+                return null;
+            }
+
+            return await dbContext.TeamMembers.Where(t => t.Member.ID == userId && t.Team.Event.ID == thisEvent.ID).Select(t => t.Team).FirstOrDefaultAsync();
         }
 
         /// <summary>
@@ -59,7 +77,7 @@ namespace ServerCore.Helpers
         public static async Task<Team> GetTeamForCurrentPlayer(PuzzleServerContext puzzleServerContext, Event thisEvent, ClaimsPrincipal user, UserManager<IdentityUser> userManager)
         {
             PuzzleUser pUser = await PuzzleUser.GetPuzzleUserForCurrentUser(puzzleServerContext, user, userManager);
-            return await GetTeamForPlayer(puzzleServerContext, thisEvent, pUser);
+            return await GetTeamForPlayer(puzzleServerContext, thisEvent, pUser.ID);
         }
 
         /// <summary>

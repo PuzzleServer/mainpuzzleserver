@@ -87,6 +87,9 @@
                 IsDisqualified
             </th>
             <th>
+                Automatic Team Type
+            </th>
+            <th>
                 Bio
             </th>
             <th>
@@ -136,6 +139,12 @@
                     @if(item.IsDisqualified)
                     {
                         <text>Disqualified</text>
+                    }
+                </td>
+                <td>
+                    @if (item.AutoTeamType != null)
+                    {
+                        <text>@item.AutoTeamType</text>
                     }
                 </td>
                 <td>

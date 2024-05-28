@@ -51,7 +51,7 @@
 @if (Model.Team == null)
 {
     <p>You cannot see team puzzles because you are not yet on a team!<br/>
-        Create or join a team <a asp-page="/Teams/List">HERE</a>.</p>
+        Create or join a team <a asp-page="/Player/Create">HERE</a>.</p>
 }
 else if (!Model.VisibleTeamPuzzleViews.Any())
 {

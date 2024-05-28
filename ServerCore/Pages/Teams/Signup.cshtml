@@ -1,0 +1,17 @@
+﻿@page "/{eventId}/{eventRole}/Teams/Signup"
+@model ServerCore.Pages.Teams.SignupModel
+
+@{
+    ViewData["Title"] = "Create or Join a Team";
+    ViewData["AdminRoute"] = "/Teams/Signup";
+    ViewData["AuthorRoute"] = "/Teams/Index";
+    ViewData["PlayRoute"] = "/Teams/Signup";
+}
+
+<div>
+    <component type="typeof(ServerCore.Pages.Teams.SignupHub)" render-mode="Server"
+        param-EventId="@Model.Event.ID"
+        param-EventRole="@Model.EventRole"
+        param-LoggedInUserId="@Model.LoggedInUser.ID" 
+        param-IsMicrosoft="@Model.IsMicrosoft" />
+</div>

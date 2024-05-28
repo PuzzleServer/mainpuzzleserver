@@ -1,0 +1,56 @@
+@using System.Collections.Generic;
+@using ServerCore.DataModel;
+
+<h4>Teams looking for players</h4>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Team name
+            </th>
+            <th>
+                Team bio
+            </th>
+            <th>
+                Current team size
+            </th>
+            <th>
+                Request to join
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Teams ?? new List<Team>())
+        {
+            PlayerCountByTeamID.TryGetValue(item.ID, out int count);
+            if (!item.IsLookingForTeammates || count >= Event.MaxTeamSize)
+            {
+                continue;
+            }
+
+            <tr>
+                <td>
+                    @(item.Name)
+                </td>
+                <td>
+                    @(item.Bio)
+                </td>
+                <td>
+                    @(count)
+                </td>
+                <td>
+                    @if (item.ID == AppliedTeamId)
+                    {
+                        <span><b>Request pending</b></span>
+                    }
+                    else
+                    {
+                        string applyLink = $"/{Event.ID}/{EventRole}/Teams/Apply?teamId={item.ID}";
+                        
+                        <a href="@applyLink">Request to join</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
