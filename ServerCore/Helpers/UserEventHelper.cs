@@ -41,6 +41,11 @@ namespace ServerCore.Helpers
         /// <returns>The user's team for this event</returns>
         public static async Task<Team> GetTeamForPlayer(PuzzleServerContext dbContext, Event thisEvent, PuzzleUser user)
         {
+            if (user == null)
+            {
+                return null;
+            }
+
             return await GetTeamForPlayer(dbContext, thisEvent, user.ID);
         }
 
@@ -53,6 +58,11 @@ namespace ServerCore.Helpers
         /// <returns>The user's team for this event</returns>
         public static async Task<Team> GetTeamForPlayer(PuzzleServerContext dbContext, Event thisEvent, int userId)
         {
+            if (thisEvent == null)
+            {
+                return null;
+            }
+
             return await dbContext.TeamMembers.Where(t => t.Member.ID == userId && t.Team.Event.ID == thisEvent.ID).Select(t => t.Team).FirstOrDefaultAsync();
         }
 

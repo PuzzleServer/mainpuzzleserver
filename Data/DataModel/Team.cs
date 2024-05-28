@@ -5,11 +5,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ServerCore.DataModel
 {
+    [Flags]
     public enum AutoTeamType
     {
-        Beginner,
-        Intermediate,
-        Serious
+        // Experience level
+        Beginner = 0x1,
+        Expert = 0x2,
+
+        // Commitment level
+        Casual = 0x4,
+        Serious = 0x8,
     }
 
     public class Team

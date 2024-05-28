@@ -14,7 +14,7 @@ namespace ServerCore.Helpers
     /// </summary>
     static class TeamHelper
     {
-        public static async Task CreateTeamAsync(PuzzleServerContext context, Team team, Event ev, int userId, bool isPlay)
+        public static async Task CreateTeamAsync(PuzzleServerContext context, Team team, Event ev, int? userId)
         {
             team.Event = ev;
             team.Password = Guid.NewGuid().ToString();
@@ -23,7 +23,7 @@ namespace ServerCore.Helpers
             {
                 context.Teams.Add(team);
 
-                if (isPlay)
+                if (userId.HasValue)
                 {
                     if (await (from member in context.TeamMembers
                                where member.Member.ID == userId &&

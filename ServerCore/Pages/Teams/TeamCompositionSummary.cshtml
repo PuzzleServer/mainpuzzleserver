@@ -45,7 +45,7 @@
                     Primary Contact
                 </th>
                 <th>
-                    Automatically Team Type
+                    Automatic Team Type
                 </th>
                 <th>
                     Total
@@ -75,7 +75,7 @@
                         @teamComp.TeamPrimaryContactEmail
                     </td>
                     <td>
-                        @teamComp.AutoTeamType
+                        @teamComp.AutoTeamTypeString
                     </td>
                     <td>
                         @teamComp.Total
@@ -135,7 +135,8 @@
                 <th>Total Automatic Players</th>
                 <th>Total Manual Players</th>
                 <th>Automatic Beginner Players</th>
-                <th>Automatic Intermediate Players</th>
+                <th>Automatic Expert Players</th>
+                <th>Automatic Casual Players</th>
                 <th>Automatic Serious Players</th>
             </tr>
         </thead>
@@ -146,7 +147,8 @@
                 <td>@Model.TotalAutoPlayerCount</td>
                 <td>@Model.TotalManualPlayerCount</td>
                 <td>@Model.TotalBeginnerPlayerCount</td>
-                <td>@Model.TotalIntermediatePlayerCount</td>
+                <td>@Model.TotalExpertPlayerCount</td>
+                <td>@Model.TotalCasualPlayerCount</td>
                 <td>@Model.TotalSeriousPlayerCount</td>
             </tr>
         </tbody>

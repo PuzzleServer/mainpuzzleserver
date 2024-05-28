@@ -28,7 +28,10 @@ namespace ServerCore.Pages.Teams
         public NavigationManager NavigationManager { get; set; }
 
         [Required]
-        public AutoTeamType? PlayerType { get; set; } = null;
+        public AutoTeamType? PlayerExperience { get; set; } = null;
+
+        [Required]
+        public AutoTeamType? PlayerCommitment { get; set; } = null;
 
         bool CantCreateTeam { get; set; }
 
@@ -36,12 +39,14 @@ namespace ServerCore.Pages.Teams
         {
             CantCreateTeam = false;
 
+            AutoTeamType playerType = PlayerExperience.Value | PlayerCommitment.Value;
+
             int maxAutoTeamSize = (int)Math.Round(0.8 * Event.MaxTeamSize);
 
             int existingAutoTeam = await (from team in _context.Teams
                                           join tempTeamMember in _context.TeamMembers on team.ID equals tempTeamMember.Team.ID into teamMembers
                                           from teamMember in teamMembers.DefaultIfEmpty()
-                                          where team.Event == Event && team.AutoTeamType == PlayerType
+                                          where team.Event == Event && team.AutoTeamType == playerType
                                           group teamMember by team.ID into teamGroup
                                           where teamGroup.Count() < maxAutoTeamSize
                                           select teamGroup.Key).FirstOrDefaultAsync();
@@ -81,12 +86,12 @@ namespace ServerCore.Pages.Teams
                 Team team = new()
                 {
                     Event = Event,
-                    AutoTeamType = PlayerType.Value,
+                    AutoTeamType = playerType,
                     Name = name,
                     PrimaryContactEmail = captain.Email,
                 };
 
-                await TeamHelper.CreateTeamAsync(_context, team, Event, LoggedInUserId, isPlay: true);
+                await TeamHelper.CreateTeamAsync(_context, team, Event, LoggedInUserId);
             }
             else
             {

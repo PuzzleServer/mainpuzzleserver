@@ -15,11 +15,8 @@
         playerEventId = await eventPage.GetPlayerEventId();
         userId = eventPage.LoggedInUser?.ID;
     }
-    string teamSignupUrl = "/Teams/List";
-    if (Event.AllowBlazor)
-    {
-        teamSignupUrl = "/Teams/Signup";
-    }
+
+    string teamSignupUrl = "/Teams/Signup";
 }
 
 <!--ADMIN NAV BAR-->

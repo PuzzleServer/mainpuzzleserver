@@ -5,13 +5,17 @@
     <DataAnnotationsValidator />
     <ValidationSummary />
 
-    <InputRadioGroup Name="PlayerTypeSelector" @bind-Value="PlayerType">
-        <label><InputRadio Name="PlayerTypeSelector" Value="@AutoTeamType.Beginner.ToString()"></InputRadio> Beginner</label><br />
-        <label><InputRadio Name="PlayerTypeSelector" Value="@AutoTeamType.Intermediate.ToString()"></InputRadio> Intermediate Puzzler</label><br />
-        <label><InputRadio Name="PlayerTypeSelector" Value="@AutoTeamType.Serious.ToString()"></InputRadio> Serious Puzzler</label><br />
+    <InputRadioGroup Name="PlayerExperienceSelector" @bind-Value="PlayerExperience">
+        <label><InputRadio Name="PlayerExperienceSelector" Value="@AutoTeamType.Beginner.ToString()"></InputRadio> Beginner Puzzler</label><br />
+        <label><InputRadio Name="PlayerExperienceSelector" Value="@AutoTeamType.Expert.ToString()"></InputRadio> Expert Puzzler</label><br />
     </InputRadioGroup>
 
     <br />
+    <p>... and I&apos;m feeling...</p>
+    <InputRadioGroup Name="PlayerCommitmentSelector" @bind-Value="PlayerCommitment">
+        <label><InputRadio Name="PlayerCommitmentSelector" Value="@AutoTeamType.Casual.ToString()"></InputRadio> Chill about the event -- I&apos;m just here to have fun</label><br />
+        <label><InputRadio Name="PlayerCommitmentSelector" Value="@AutoTeamType.Serious.ToString()"></InputRadio> Serious -- I&apos;m in it to win it</label><br />
+    </InputRadioGroup>
 
     <input type="submit" value="Place me on a team" />
 </EditForm>

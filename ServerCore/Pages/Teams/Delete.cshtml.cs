@@ -45,7 +45,7 @@ namespace ServerCore.Pages.Teams
             }
             else
             {
-                return RedirectToPage("./List");
+                return RedirectToPage("./Signup");
             }
         }
     }

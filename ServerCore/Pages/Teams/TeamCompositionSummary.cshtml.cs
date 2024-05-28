@@ -61,6 +61,7 @@ namespace ServerCore.Pages.Teams
             public int Total { get; set; }
             public List<string> PossibleEmployeeAliases { get; set; }
             public AutoTeamType? AutoTeamType { get; set; }
+            public string AutoTeamTypeString { get; set; }
         }
 
         public IEnumerable<TeamComposition> TeamCompositions { get; set; }
@@ -76,7 +77,8 @@ namespace ServerCore.Pages.Teams
         public int TotalAutoPlayerCount { get; set; }
         public int TotalManualPlayerCount { get; set; }
         public int TotalBeginnerPlayerCount { get; set; }
-        public int TotalIntermediatePlayerCount { get; set; }
+        public int TotalExpertPlayerCount { get; set; }
+        public int TotalCasualPlayerCount { get; set; }
         public int TotalSeriousPlayerCount { get; set; }
 
         public SortEnum SortBy { get; set; }
@@ -118,17 +120,28 @@ namespace ServerCore.Pages.Teams
                     TotalAutoTeamCount += 1;
                     TotalAutoPlayerCount += t.Total;
 
-                    switch (t.AutoTeamType)
+                    if ((t.AutoTeamType.Value & AutoTeamType.Beginner) == AutoTeamType.Beginner)
                     {
-                        case AutoTeamType.Beginner:
-                            TotalBeginnerPlayerCount += t.Total;
-                            break;
-                        case AutoTeamType.Intermediate:
-                            TotalIntermediatePlayerCount += t.Total;
-                            break;
-                        case AutoTeamType.Serious:
-                            TotalSeriousPlayerCount += t.Total;
-                            break;
+                        TotalBeginnerPlayerCount += t.Total;
+                        t.AutoTeamTypeString = "Beginner";
+                    }
+                    else if ((t.AutoTeamType.Value & AutoTeamType.Expert) == AutoTeamType.Expert)
+                    {
+                        TotalExpertPlayerCount += t.Total;
+                        t.AutoTeamTypeString = "Expert";
+                    }
+
+                    t.AutoTeamTypeString += " | ";
+
+                    if ((t.AutoTeamType.Value & AutoTeamType.Casual) == AutoTeamType.Casual)
+                    {
+                        TotalCasualPlayerCount += t.Total;
+                        t.AutoTeamTypeString += "Casual";
+                    }
+                    else if ((t.AutoTeamType.Value & AutoTeamType.Serious) == AutoTeamType.Serious)
+                    {
+                        TotalSeriousPlayerCount += t.Total;
+                        t.AutoTeamTypeString += "Serious";
                     }
                 }
                 else

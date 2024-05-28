@@ -126,7 +126,13 @@ namespace ServerCore.Pages.Teams
                 Bio = TeamModel.Bio,                
             };
 
-            await TeamHelper.CreateTeamAsync(_context, team, Event, LoggedInUserId, EventRole == EventRole.play);
+            int? idToAdd = null;
+            if (EventRole == EventRole.play)
+            {
+                idToAdd = LoggedInUserId;
+            }
+
+            await TeamHelper.CreateTeamAsync(_context, team, Event, idToAdd);
             Team newTeam = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUserId);
             NavigationManager.NavigateTo($"/{Event.EventID}/{EventRole}/Teams/{newTeam.ID}/Details", true);
         }

@@ -190,7 +190,13 @@ namespace ServerCore.Pages.Teams
             {
                 if (teamCount == 1)
                 {
-                    return NotFound("Cannot remove the last member of a team. Delete the team instead.");
+                    AutoTeamType? autoTeamType = await (from team in _context.Teams
+                                             where team.ID == teamId
+                                             select team.AutoTeamType).FirstOrDefaultAsync();
+                    if (!autoTeamType.HasValue)
+                    {
+                        return NotFound("Cannot remove the last member of a team. Delete the team instead.");
+                    }
                 }
             }
 
@@ -215,7 +221,7 @@ namespace ServerCore.Pages.Teams
 
             if (EventRole == EventRole.play && member.Member == LoggedInUser)
             {
-                return RedirectToPage("./List");
+                return RedirectToPage("./Signup");
             }
             return RedirectToPage("./Details", new { teamId = teamId });
         }

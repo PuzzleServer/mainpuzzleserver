@@ -111,7 +111,12 @@ namespace ServerCore.Pages.Teams
                 return NotFound("Registration is full. No further teams may be created at the present time.");
             }
 
-            await TeamHelper.CreateTeamAsync(_context, Team, Event, LoggedInUser.ID, EventRole == EventRole.play);
+            int? idToAdd = null;
+            if (EventRole == EventRole.play)
+            {
+                idToAdd = LoggedInUser.ID;
+            }
+            await TeamHelper.CreateTeamAsync(_context, Team, Event, idToAdd);
 
             int teamId = await GetTeamId();
             if (EventRole == ModelBases.EventRole.play)
