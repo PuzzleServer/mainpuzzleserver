@@ -43,9 +43,18 @@
        asp-route-teamPuzzleSort="@Model.TeamPuzzleSort"
        asp-route-stateFilter=@(unsolvedFilter ? PlayModel.PuzzleStateFilter.All : PlayModel.PuzzleStateFilter.Unsolved)>
         Show @(unsolvedFilter ? "All" : "only unsolved") puzzles
-    </a> |
-    <a asp-page="/Threads/PuzzleThreads">View help threads</a>
+    </a> | 
+    <a asp-page="/Threads/PuzzleThreads">View help threads</a> | 
+    @if ((Model.Team != null) && (Model.VisibleTeamPuzzleViews.Any()))
+    {
+        <a asp-page="/Teams/Answers" asp-route-teamId="@Model.Team.ID">View all correct team answers</a><text> | </text>
+    }
+    @if (Model.Event.ShowFastestSolves) 
+    {
+        <a asp-page="/Events/FastestSolves" asp-route-teamPuzzleSort="CountDescending" asp-route-stateFilter="Unsolved">Click here</a><text> if you're feeling stuck and want to see which puzzles other teams have solved.</text>
+    }
 </div>
+<br />
 
 <h2>Team puzzles</h2>
 @if (Model.Team == null)
@@ -66,22 +75,6 @@ else if (!Model.VisibleTeamPuzzleViews.Any())
 }
 else
 {
-    <div>
-        <a asp-page="/Teams/Answers" asp-route-teamId="@Model.Team.ID">View all correct team answers</a>
-    </div>
-    <br />
-    <a asp-page="/Events/FastestSolves"
-       asp-route-teamPuzzleSort="CountDescending"
-       asp-route-stateFilter="Unsolved">
-
-        Feeling stuck?
-    </a>
-    <br />
-    <span>
-        The link above will take you to a page where you can view puzzles, sorted by how many teams have solved them.
-    </span>
-    <br />
-    <br />
     <table class="table">
         <thead>
             <tr>
@@ -241,18 +234,6 @@ else
     }
     else
     {
-        <a asp-page="/Events/FastestSolves"
-           asp-route-teamPuzzleSort="CountDescending"
-           asp-route-stateFilter="Unsolved">
-
-            Feeling stuck?
-        </a>
-        <br />
-            <span>
-                The link above will take you to a page where you can view puzzles, sorted by how many players have solved them.
-            </span>
-            <br />
-            <br />
         <table class="table">
             <thead>
                 <tr>

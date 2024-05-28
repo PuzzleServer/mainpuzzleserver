@@ -226,6 +226,7 @@
                             </span>
                         }
                     </p>
+                    <br />
                     @if (Model.Lunches.Count < Model.EditableLunches && Model.Event.CanChangeLunch)
                     {
                         <h3>Add an item</h3>
@@ -240,6 +241,7 @@
                             </select>
                             <button type="submit" asp-page-handler="AddLunch" asp-route-teamId="@Model.Team.ID" asp-route-newLunch="@Model.NewLunch">Add</button>
                         </form>
+                        <br />
                     }
                     <h3>Order:</h3>
                     @foreach (TeamLunch lunch in Model.Lunches)
@@ -253,7 +255,7 @@
                             </span>
                         </p>
                     }
-                    @if(Model.Lunches.Count < Model.EditableLunches)
+                    @if ((Model.Lunches.Count < Model.EditableLunches) && !(string.IsNullOrWhiteSpace(Model.Event.DefaultLunch)))
                     {
                         <div>You have not chosen @(Model.EditableLunches - Model.Lunches.Count) item(s) yet. If you do not choose, each one will be @Model.Event.DefaultLunch.</div>
                     }
