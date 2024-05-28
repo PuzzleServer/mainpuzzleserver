@@ -12,7 +12,7 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Events
 {
-    [Authorize]
+    [Authorize(Policy = "IsRegisteredForEvent")]
     public class FastestSolvesModel : EventSpecificPageModel
     {
         public string TeamSectionNotShowMessage { get; private set; }
