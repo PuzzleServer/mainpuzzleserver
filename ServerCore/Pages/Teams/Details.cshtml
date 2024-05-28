@@ -82,7 +82,12 @@
                 <a asp-page="/Events/Mailer" asp-route-group="Players" asp-route-teamId="@Model.Team.ID">Mail Players</a> |
             </text>
         }
-        <a asp-page="./Delete" asp-route-teamId="@Model.Team.ID">Delete team</a> |
+        @if (!Model.Team.AutoTeamType.HasValue || Model.EventRole == ModelBases.EventRole.admin)
+        {
+            <text>
+                <a asp-page="./Delete" asp-route-teamId="@Model.Team.ID">Delete team</a> |
+            </text>
+        }
         @if (Model.EventRole == ModelBases.EventRole.admin)
         {
             <a asp-page="./Disqualify"
@@ -173,32 +178,35 @@
                     @Model.Team.PrimaryContactEmail
                     }
                 </dd>
-                <dt>
-                    Allow unsolicited applications
-                </dt>
-                <dd>
-                    @if (Model.Team.IsLookingForTeammates)
-                    {
-                    <div>Yes (this team shows up on the list of teams that anyone can apply to)</div>
-                    }
-                    else
-                    {
-                    <div>No (only people who are sent an application link directly will be able to apply)</div>
-                    }
-                </dd>
-                <dt>
-                    Bio for unsolicited applications (visible to applicants)
-                </dt>
-                <dd>
-                    @if (Model.Team.Bio == null)
-                    {
-                    <div>(none)</div>
-                    }
-                    else
-                    {
-                    @Model.Team.Bio
-                    }
-                </dd>
+                @if (!Model.Team.AutoTeamType.HasValue)
+                {
+                    <dt>
+                        Allow unsolicited applications
+                    </dt>
+                    <dd>
+                        @if (Model.Team.IsLookingForTeammates)
+                        {
+                        <div>Yes (this team shows up on the list of teams that anyone can apply to)</div>
+                        }
+                        else
+                        {
+                        <div>No (only people who are sent an application link directly will be able to apply)</div>
+                        }
+                    </dd>
+                    <dt>
+                        Bio for unsolicited applications (visible to applicants)
+                    </dt>
+                    <dd>
+                        @if (Model.Team.Bio == null)
+                        {
+                        <div>(none)</div>
+                        }
+                        else
+                        {
+                        @Model.Team.Bio
+                        }
+                    </dd>
+                }
             </dl>
             </div>
             @if (Model.Event.EventHasTeamSwag)
@@ -253,6 +261,13 @@
             }
         </div>
         <div class="column">
+            @if (Model.Team.AutoTeamType != null)
+            {
+                <div class="alert alert-warning" role="alert">
+                    This team was automatically created and more members will be automatically added. You can still invite friends if you want.
+                </div>
+            }
+
             <div>
                 <h3>Current members (@(Model.Members.Count))</h3>
                 @{ bool canAdd = Model.EventRole == ModelBases.EventRole.admin; }
@@ -302,7 +317,7 @@
                             </td>
                             @if (Model.EventRole == ModelBases.EventRole.admin || Model.Event.IsTeamMembershipChangeActive)
                             {
-                                if (Model.EventRole == ModelBases.EventRole.play && Model.Members.Count == 1)
+                                if (Model.EventRole == ModelBases.EventRole.play && Model.Members.Count == 1 && !Model.Team.AutoTeamType.HasValue)
                                 {
                                     <td>
                                         (Can't remove last member)
@@ -339,14 +354,18 @@
             {
                 <h3>Invite teammates</h3>
                 <p>Copy the sample e-mail below and send it to teammates to give them a direct link to join this team. The link in the mail has a special code that will auto-approve them for your team.</p>
-                @if (Model.Team.IsLookingForTeammates)
-                {
-                    <p>Note: Your team is currently marked as looking for unsolicited teammates. You may get applications from people who you did not send the link to, and you can approve or ignore those requests by visiting this page. To change this, edit your team details <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID"> here</a>.</p>
 
-                }
-                else
+                @if (!Model.Team.AutoTeamType.HasValue)
                 {
-                    <p>Note: Your team is currently marked as not looking for unsolicited teammates. Sending this link is the only way people will find your team. To change this, edit your team details <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID"> here</a>.</p>
+                    @if (Model.Team.IsLookingForTeammates)
+                    {
+                        <p>Note: Your team is currently marked as looking for unsolicited teammates. You may get applications from people who you did not send the link to, and you can approve or ignore those requests by visiting this page. To change this, edit your team details <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID"> here</a>.</p>
+
+                    }
+                    else
+                    {
+                        <p>Note: Your team is currently marked as not looking for unsolicited teammates. Sending this link is the only way people will find your team. To change this, edit your team details <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID"> here</a>.</p>
+                    }
                 }
 
                 <p id="emailContent">

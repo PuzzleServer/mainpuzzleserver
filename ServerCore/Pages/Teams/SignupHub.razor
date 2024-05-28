@@ -1,0 +1,55 @@
+﻿
+<h1>Create or Join A Team</h1>
+<EditForm Model="this">
+    <InputRadioGroup Name="SignupPicker" @bind-Value="Strategy">
+        <div class="btn-group" role="group">
+        @if (CanCreateTeam)
+        {
+            <InputRadio Name="SignupPicker" Value="@SignupStrategy.Create.ToString()" class="btn-check" id="create" />
+            <label class="btn btn-outline-primary" for="create">
+                Create a team
+            </label>
+        }
+        @if (CanJoinTeam)
+        {
+            <InputRadio Name="SignupPicker" Value="@SignupStrategy.Join.ToString()" class="btn-check" id="join" />
+            <label class="btn btn-outline-primary" for="join">
+                Apply for an existing team
+            </label>
+
+            @* Limit auto teams to FTEs and interns if there's a minimum so it always builds teams that meet the minimums *@
+            @if (EventRole == ModelBases.EventRole.play && 
+            ((Event != null && Event.MaxExternalsPerTeam >= Event.MaxTeamSize) || IsMicrosoft))
+            {
+                <InputRadio Name="SignupPicker" Value="@SignupStrategy.Auto.ToString()" class="btn-check" id="auto" />
+                <label class="btn btn-outline-primary" for="auto">
+                    Choose a team for me
+                </label>
+            }
+        }
+        </div>
+
+        @if (!CanCreateTeam && !CanJoinTeam)
+        {
+            <h3>Registration is not currently available.</h3>
+        }
+    </InputRadioGroup>
+</EditForm>
+
+<hr />
+
+@switch(Strategy)
+{
+    case SignupStrategy.Create:
+        <CreateTeam Event="@Event" EventRole="@EventRole" LoggedInUserId="@LoggedInUserId" />
+        break;
+    case SignupStrategy.Join:
+        <JoinTeam Event="@Event" EventRole="@EventRole" LoggedInUserId="@LoggedInUserId" />
+        break;
+    case SignupStrategy.Auto:
+        <AutoTeam Event="@Event" EventRole="@EventRole" LoggedInUserId="@LoggedInUserId" />
+        break;
+    case SignupStrategy.None:
+        break;
+}
+
