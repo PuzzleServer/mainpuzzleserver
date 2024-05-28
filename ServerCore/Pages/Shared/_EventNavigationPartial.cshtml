@@ -205,7 +205,7 @@
                             <li class="nav-item"><a style="color:yellow" asp-page="/Swag/Register" title="Lunch">Pick Lunch by @(Event.TeamMiscDataChangeEnd.ToString("M/dd"))!</a></li>
                         }
                     }
-                    else if (Event.EventHasTeamSwag)
+                    else if (Event.EventHasTeamSwag && isOnTeam)
                     {
                         if (!Event.CanChangeLunch)
                         {
