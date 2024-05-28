@@ -33,6 +33,11 @@ namespace ServerCore.ModelBases
         public override async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
         {
             LoggedInUser = await PuzzleUser.GetPuzzleUserForCurrentUser(_context, User, userManager);
+            if (Event == null)
+            {
+                context.Result = NotFound();
+                return;
+            }
 
             // Required to have the rest of page execution occur
             await next.Invoke();
@@ -236,10 +241,6 @@ namespace ServerCore.ModelBases
                 if (Enum.IsDefined(typeof(EventRole), eventRoleAsString))
                 {
                     bindingContext.Result = ModelBindingResult.Success(Enum.Parse(typeof(EventRole), eventRoleAsString));
-                }
-                else
-                {
-                    throw new Exception("Invalid route parameter '" + eventRoleAsString + "'. Please check your URL to make sure you are using the correct path. (code: InvalidRoleId)");
                 }
             }
         }
