@@ -39,6 +39,17 @@ namespace ServerCore.ModelBases
                 return;
             }
 
+            // Check permissions now that the role has been binded
+            await IsEventAdmin();
+            await IsEventAuthor();
+            if (((EventRole == EventRole.admin) && !isEventAdmin.Value) ||
+                ((EventRole == EventRole.author) && !isEventAuthor.Value) ||
+                ((EventRole != EventRole.admin) && (EventRole != EventRole.author) && (EventRole != EventRole.play)))
+            {
+                context.Result = Forbid();
+                return;
+            }
+
             // Required to have the rest of page execution occur
             await next.Invoke();
         }
@@ -235,7 +246,6 @@ namespace ServerCore.ModelBases
                 {
                     eventRoleAsString = ModelBases.EventRole.play.ToString();
                 }
-                // TODO: Add auth check to make sure the user has permissions for the given eventRole
                 eventRoleAsString = eventRoleAsString.ToLower();
 
                 if (Enum.IsDefined(typeof(EventRole), eventRoleAsString))
