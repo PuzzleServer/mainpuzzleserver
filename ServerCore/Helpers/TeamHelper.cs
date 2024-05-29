@@ -139,6 +139,7 @@ namespace ServerCore.Helpers
         {
             if (team.AutoTeamType != null)
             {
+                await context.SaveChangesAsync();
                 var currentTeamMemberNames = await context.TeamMembers.Where(members => members.Team.ID == team.ID).Select(m => m.Member.Email).ToListAsync();
                 team.PrimaryContactEmail = string.Join(';', currentTeamMemberNames);
                 await context.SaveChangesAsync();
