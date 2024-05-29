@@ -187,34 +187,49 @@ namespace ServerCore.Pages.Teams
             int teamCount = await (from count in _context.TeamMembers
                                    where count.Team.ID == teamId
                                    select count).CountAsync();
+            Team memberTeam = await (from team in _context.Teams where team.ID == teamId select team).FirstOrDefaultAsync();
+
             if (EventRole == EventRole.play)
             {
+                if (memberTeam.AutoTeamType.HasValue && member.Member != LoggedInUser)
+                {
+                    return NotFound("On a 'choose a team for me' team, you cannot remove other players. Ask them to remove themselves.");
+                }
+
                 if (teamCount == 1)
                 {
-                    AutoTeamType? autoTeamType = await (from team in _context.Teams
-                                             where team.ID == teamId
-                                             select team.AutoTeamType).FirstOrDefaultAsync();
-                    if (!autoTeamType.HasValue)
+                    if (!memberTeam.AutoTeamType.HasValue)
                     {
                         return NotFound("Cannot remove the last member of a team. Delete the team instead.");
+                    }
+                    else
+                    {
+                        // removing the last member of an auto team can remove the team
+                        await TeamHelper.DeleteTeamAsync(_context, memberTeam, false);
+                        memberTeam = null;
                     }
                 }
             }
 
-            _context.TeamMembers.Remove(member);
-
-            // If the team fell below eligibility for a lunch, remove the most recent one
-            if (Event.EventHasTeamSwag && Event.CanChangeLunch && ((Event.PlayersPerLunch ?? 0) != 0))
+            if (memberTeam != null)
             {
-                int newLunchesAllowed = (int)Math.Ceiling((double)(teamCount - 1) / (double)Event.PlayersPerLunch.Value);
-                List<TeamLunch> curLunches = await (from lunch in _context.TeamLunch
-                                 where lunch.TeamId == teamId
-                                 orderby lunch.ID descending
-                                 select lunch).ToListAsync();
+                _context.TeamMembers.Remove(member);
 
-                if (newLunchesAllowed < curLunches.Count)
+                await TeamHelper.OnTeamMemberChange(_context, memberTeam);
+
+                // If the team fell below eligibility for a lunch, remove the most recent one
+                if (Event.EventHasTeamSwag && Event.CanChangeLunch && ((Event.PlayersPerLunch ?? 0) != 0))
                 {
-                    _context.TeamLunch.Remove(curLunches[0]);
+                    int newLunchesAllowed = (int)Math.Ceiling((double)(teamCount - 1) / (double)Event.PlayersPerLunch.Value);
+                    List<TeamLunch> curLunches = await (from lunch in _context.TeamLunch
+                                                        where lunch.TeamId == teamId
+                                                        orderby lunch.ID descending
+                                                        select lunch).ToListAsync();
+
+                    if (newLunchesAllowed < curLunches.Count)
+                    {
+                        _context.TeamLunch.Remove(curLunches[0]);
+                    }
                 }
             }
 

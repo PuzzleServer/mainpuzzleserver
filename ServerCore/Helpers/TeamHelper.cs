@@ -46,6 +46,7 @@ namespace ServerCore.Helpers
                         Member = user
                     };
                     context.TeamMembers.Add(teamMember);
+                    await TeamHelper.OnTeamMemberChange(context, team);
                 }
 
                 var teamHints = await (from hint in context.Hints
@@ -129,6 +130,22 @@ namespace ServerCore.Helpers
         }
 
         /// <summary>
+        /// Performs any housekeeping tasks associated with adding or removing a team member.
+        /// </summary>
+        /// <param name="context">The context to update</param>
+        /// <param name="team">The team whose membership is changing</param>
+        /// <returns></returns>
+        public static async Task OnTeamMemberChange(PuzzleServerContext context, Team team)
+        {
+            if (team.AutoTeamType != null)
+            {
+                var currentTeamMemberNames = await context.TeamMembers.Where(members => members.Team.ID == team.ID).Select(m => m.Member.Email).ToListAsync();
+                team.PrimaryContactEmail = string.Join(';', currentTeamMemberNames);
+                await context.SaveChangesAsync();
+            }
+        }
+
+        /// <summary>
         /// Adds a user to a team after performing a number of checks to make sure that the change is valid
         /// </summary>
         /// <param name="context">The context to update</param>
@@ -186,6 +203,7 @@ namespace ServerCore.Helpers
             context.TeamApplications.RemoveRange(allApplications);
 
             context.TeamMembers.Add(Member);
+            await TeamHelper.OnTeamMemberChange(context, team);
             await context.SaveChangesAsync();
 
             MailHelper.Singleton.SendPlaintextWithoutBcc(new string[] { team.PrimaryContactEmail, user.Email },
