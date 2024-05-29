@@ -190,11 +190,16 @@ namespace ServerCore.Pages.Teams
 
             if (EventRole == EventRole.play)
             {
+                AutoTeamType? autoTeamType = await (from team in _context.Teams
+                                                    where team.ID == teamId
+                                                    select team.AutoTeamType).FirstOrDefaultAsync();
+                if (autoTeamType.HasValue && member.Member != LoggedInUser)
+                {
+                    return NotFound("On a 'choose a team for me' team, you cannot remove other players. Ask them to remove themselves.");
+                }
+
                 if (teamCount == 1)
                 {
-                    AutoTeamType? autoTeamType = await (from team in _context.Teams
-                                             where team.ID == teamId
-                                             select team.AutoTeamType).FirstOrDefaultAsync();
                     if (!autoTeamType.HasValue)
                     {
                         return NotFound("Cannot remove the last member of a team. Delete the team instead.");
