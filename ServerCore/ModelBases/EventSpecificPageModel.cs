@@ -40,10 +40,10 @@ namespace ServerCore.ModelBases
             }
 
             // Check permissions now that the role has been binded
-            await IsEventAdmin();
-            await IsEventAuthor();
-            if (((EventRole == EventRole.admin) && !isEventAdmin.Value) ||
-                ((EventRole == EventRole.author) && !isEventAuthor.Value) ||
+            bool isAdmin = await IsEventAdmin();
+            bool isAuthor = await IsEventAuthor();
+            if (((EventRole == EventRole.admin) && !isAdmin) ||
+                ((EventRole == EventRole.author) && !isAuthor) ||
                 ((EventRole != EventRole.admin) && (EventRole != EventRole.author) && (EventRole != EventRole.play)))
             {
                 context.Result = Forbid();
