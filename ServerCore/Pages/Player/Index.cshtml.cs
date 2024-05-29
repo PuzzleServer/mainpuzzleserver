@@ -24,6 +24,7 @@ namespace ServerCore.Pages.Player
                                    where t.EventID == Event.ID
                                    join tm in _context.TeamMembers on t.ID equals tm.Team.ID
                                    join p in _context.PlayerInEvent on tm.Member.ID equals p.Player.ID
+                                   where p.Event.ID == Event.ID
                                    orderby p.Player.Name
                                    select new PlayerWithTeamInEvent { Player = p, Team = tm.Team }
                 ).ToListAsync();

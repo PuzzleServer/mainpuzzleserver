@@ -130,6 +130,7 @@ namespace ServerCore.Pages.Teams
                 int remoteMembers = await (from player in _context.PlayerInEvent
                                            join member in _context.TeamMembers on player.PlayerId equals member.Member.ID
                                            where member.Team.ID == Team.ID &&
+                                           player.EventId == Event.ID &&
                                            player.IsRemote
                                            select player).CountAsync();
                 EligibleForLunch = totalMembers - remoteMembers;
