@@ -186,21 +186,18 @@ namespace ServerCore.Pages.Teams
             int teamCount = await (from count in _context.TeamMembers
                                    where count.Team.ID == teamId
                                    select count).CountAsync();
-            Team memberTeam = member.Team;
+            Team memberTeam = await (from team in _context.Teams where team.ID == teamId select team).FirstOrDefaultAsync();
 
             if (EventRole == EventRole.play)
             {
-                AutoTeamType? autoTeamType = await (from team in _context.Teams
-                                                    where team.ID == teamId
-                                                    select team.AutoTeamType).FirstOrDefaultAsync();
-                if (autoTeamType.HasValue && member.Member != LoggedInUser)
+                if (memberTeam.AutoTeamType.HasValue && member.Member != LoggedInUser)
                 {
                     return NotFound("On a 'choose a team for me' team, you cannot remove other players. Ask them to remove themselves.");
                 }
 
                 if (teamCount == 1)
                 {
-                    if (!autoTeamType.HasValue)
+                    if (!memberTeam.AutoTeamType.HasValue)
                     {
                         return NotFound("Cannot remove the last member of a team. Delete the team instead.");
                     }
