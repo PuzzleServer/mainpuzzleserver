@@ -19,7 +19,6 @@
 }
 else
 {
-    <br />
     <div>
         <a asp-page="./FastestSolves"
            asp-route-teamPuzzleSort="@Model.TeamPuzzleSort"
@@ -117,6 +116,7 @@ else
 
 @if (Model.Event.ShouldShowSinglePlayerPuzzles)
 {
+    <br />
     <h2>@Model.Event.SinglePlayerPuzzleTitle solve counts</h2>
     @if (!string.IsNullOrEmpty(Model.SinglePlayerPuzzleSectionNotShowMessage))
     {
@@ -124,7 +124,6 @@ else
     }
     else
     {
-        <br />
         <div>
             <a asp-page="./FastestSolves"
                asp-route-singlePlayerPuzzleSort="@Model.SinglePlayerPuzzleSort"

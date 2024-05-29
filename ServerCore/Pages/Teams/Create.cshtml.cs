@@ -95,6 +95,11 @@ namespace ServerCore.Pages.Teams
                 ModelState.AddModelError("Team.Name", "Team names cannot be left blank.");
             }
 
+            if (Team.Name.Length > 50) 
+            {
+                ModelState.AddModelError("Team.Name", "Team names must be fewer than 50 characters.");
+            }
+
             if (TeamHelper.IsTeamNameTaken(_context, Event.ID, Team.Name))
             {
                 ModelState.AddModelError("Team.Name", "Another team has this name.");

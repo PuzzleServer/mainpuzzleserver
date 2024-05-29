@@ -10,7 +10,7 @@ using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Events
 {
-    [Authorize]
+    [Authorize(Policy = "IsRegisteredForEvent")]
     public class StandingsModel : EventSpecificPageModel
     {
         public List<TeamStats> Teams { get; private set; }

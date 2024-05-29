@@ -1,8 +1,6 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ServerCore.DataModel;
@@ -41,6 +39,11 @@ namespace ServerCore.Pages.Teams
             if (string.IsNullOrWhiteSpace(name))
             {
                 return new ValidationResult("Team names cannot be left blank.");
+            }
+
+            if (name.Length > 50) 
+            {
+                return new ValidationResult("Team names must be fewer than 50 characters.");    
             }
 
             if (TeamHelper.IsTeamNameTaken(puzzleServerContext, teamModel.EventId, name))
