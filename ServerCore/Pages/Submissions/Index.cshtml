@@ -622,8 +622,8 @@ else
     <div class="centerwrapper no-print">
         <div class="inlineblockwrapper">
             <div id="submissionHistory" style="display: @((Model.SubmissionViews.Count == 0) ? "none" : "block")" class="hideablepanel">
-                Click here to view previous submissions: 
-                <div class="panelcontents" style="display: none">
+                Click here to view previous submissions:
+                <div class="panelcontents" style="display: @((Model.PuzzleState.SolvedTime == null) ? "none" : "block")">
                     <div class="gridwrapper">
                         <div class="panelitem"><b>Time Submitted</b></div>
                         <div class="panelitem"><b>Name</b></div>
@@ -736,10 +736,7 @@ else
                 for (const header of headers) {
                     header.addEventListener("click", (e) => {
                         let list = null;
-                        if (e.target.classList.contains("caret")) {
-                            list = e.target.nextElementSibling;
-                        }
-                        else if (e.target.classList.contains("hideablepanel")) {
+                        if (e.target.classList.contains("hideablepanel")) {
                             list = e.target.lastElementChild;
                         }
                         if (list !== null) {
