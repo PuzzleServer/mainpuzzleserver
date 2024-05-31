@@ -362,21 +362,21 @@
                                         {
                                             if (Model.SubmissionViews[i].Submission.FreeformAccepted != null)
                                             {
-                                                @(Model.SubmissionViews[i].FreeformReponse);
+                                                            @(Model.SubmissionViews[i].FreeformReponse);
                                             }
                                             else if (Model.PuzzleState.SolvedTime == null)
                                             {
-                                                <text>Pending...</text>
+                                                            <text>Pending...</text>
                                             }
                                         }
                                         else
                                         {
-                                            <text>@IndexModel.IncorrectResponseText</text>
+                                                        <text>@IndexModel.IncorrectResponseText</text>
                                         }
                                     }
                                     else
                                     {
-                                        @ServerCore.Helpers.RawHtmlHelper.Display(response.ResponseText, Model.Event.ID, Html);
+                                                    @ServerCore.Helpers.RawHtmlHelper.Display(response.ResponseText, Model.Event.ID, Html);
                                     }
                                 }
                             </td>
@@ -622,7 +622,7 @@ else
     <div class="centerwrapper no-print">
         <div class="inlineblockwrapper">
             <div id="submissionHistory" style="display: @((Model.SubmissionViews.Count == 0) ? "none" : "block")" class="hideablepanel">
-                Click here to view previous submissions:
+                Click here to <span id="panelHeaderAction">@((Model.PuzzleState.SolvedTime == null) ? "view" : "close")</span> previous submissions:
                 <div class="panelcontents" style="display: @((Model.PuzzleState.SolvedTime == null) ? "none" : "block")">
                     <div class="gridwrapper">
                         <div class="panelitem"><b>Time Submitted</b></div>
@@ -644,21 +644,21 @@ else
                                     {
                                         if (Model.SubmissionViews[i].Submission.FreeformAccepted != null)
                                         {
-                                            <div class="panelitem">@(Model.SubmissionViews[i].FreeformReponse)</div>
+                                                        <div class="panelitem">@(Model.SubmissionViews[i].FreeformReponse)</div>
                                         }
                                         else if (Model.PuzzleState.SolvedTime == null)
                                         {
-                                            <div class="panelitem">Pending...</div>
+                                                        <div class="panelitem">Pending...</div>
                                         }
                                     }
                                     else
                                     {
-                                        <div class="panelitem">@IndexModel.IncorrectResponseText</div>
+                                                    <div class="panelitem">@IndexModel.IncorrectResponseText</div>
                                     }
                                 }
                                 else
                                 {
-                                    <div class="panelitem">@ServerCore.Helpers.RawHtmlHelper.Display(response.ResponseText, Model.Event.ID, Html)</div>
+                                                <div class="panelitem">@ServerCore.Helpers.RawHtmlHelper.Display(response.ResponseText, Model.Event.ID, Html)</div>
                                 }
                             }
                         </div>
@@ -736,11 +736,19 @@ else
                 for (const header of headers) {
                     header.addEventListener("click", (e) => {
                         let list = null;
+                        const action = document.querySelector("#panelHeaderAction");
                         if (e.target.classList.contains("hideablepanel")) {
                             list = e.target.lastElementChild;
                         }
                         if (list !== null) {
-                            list.style.display = (list.style.display == "none") ? "block" : "none";
+                            if (list.style.display == "none") {
+                                list.style.display = "block";
+                                action.innerText = "close";
+                            }
+                            else {
+                                list.style.display = "none";
+                                action.innerText = "view";
+                            }
                         }
                     });
                 }
