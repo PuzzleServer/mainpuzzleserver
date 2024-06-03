@@ -362,21 +362,21 @@
                                         {
                                             if (Model.SubmissionViews[i].Submission.FreeformAccepted != null)
                                             {
-                                                        @(Model.SubmissionViews[i].FreeformReponse);
+                                                @(Model.SubmissionViews[i].FreeformReponse);
                                             }
                                             else if (Model.PuzzleState.SolvedTime == null)
                                             {
-                                                        <text>Pending...</text>
+                                                <text>Pending...</text>
                                             }
                                         }
                                         else
                                         {
-                                                    <text>@IndexModel.IncorrectResponseText</text>
+                                            <text>@IndexModel.IncorrectResponseText</text>
                                         }
                                     }
                                     else
                                     {
-                                                @ServerCore.Helpers.RawHtmlHelper.Display(response.ResponseText, Model.Event.ID, Html);
+                                        @ServerCore.Helpers.RawHtmlHelper.Display(response.ResponseText, Model.Event.ID, Html);
                                     }
                                 }
                             </td>
@@ -648,21 +648,21 @@ else
                                     {
                                         if (Model.SubmissionViews[i].Submission.FreeformAccepted != null)
                                         {
-                                                    <div class="panelitem">@(Model.SubmissionViews[i].FreeformReponse)</div>
+                                            <div class="panelitem">@(Model.SubmissionViews[i].FreeformReponse)</div>
                                         }
                                         else if (Model.PuzzleState.SolvedTime == null)
                                         {
-                                                    <div class="panelitem">Pending...</div>
+                                            <div class="panelitem">Pending...</div>
                                         }
                                     }
                                     else
                                     {
-                                                <div class="panelitem">@IndexModel.IncorrectResponseText</div>
+                                        <div class="panelitem">@IndexModel.IncorrectResponseText</div>
                                     }
                                 }
                                 else
                                 {
-                                            <div class="panelitem">@ServerCore.Helpers.RawHtmlHelper.Display(response.ResponseText, Model.Event.ID, Html)</div>
+                                    <div class="panelitem">@ServerCore.Helpers.RawHtmlHelper.Display(response.ResponseText, Model.Event.ID, Html)</div>
                                 }
                             }
                         </div>
