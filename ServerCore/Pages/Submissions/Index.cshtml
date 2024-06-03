@@ -491,8 +491,10 @@ else
             <span class="text-danger"><span class="field-validation-valid" data-valmsg-for="submissionText" data-valmsg-replace="true"></span></span>
             @if (Model.Puzzle.IsFreeform)
             {
-                <label for="allowFreeformSharing" class="marginright margintop">Sharing: </label>
-                <input class="checkboxfix" type="checkbox" name="allowFreeformSharing" asp-for="AllowFreeformSharing" title="Allow other players to see this after the event" />
+                <label class="marginright margintop">
+                    <input class="checkboxfix" type="checkbox" name="allowFreeformSharing" asp-for="AllowFreeformSharing" title="Allow other players to see this after the event" />
+                    Allow other players to see this after the event
+                </label>
             }
         </div>
         <div class="inlinewrapper">
