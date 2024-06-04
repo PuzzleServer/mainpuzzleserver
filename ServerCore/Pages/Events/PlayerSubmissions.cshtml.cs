@@ -49,7 +49,7 @@ namespace ServerCore.Pages.Events
         public async Task<IActionResult> OnGetAsync(int? puzzleId)
         {
             // Hide submissions from players until the event is over
-            if (EventRole != EventRole.admin && EventRole == EventRole.author && DateTime.UtcNow <= Event.AnswersAvailableBegin)
+            if (EventRole != EventRole.admin && EventRole != EventRole.author && DateTime.UtcNow <= Event.AnswersAvailableBegin)
             {
                 NoContent = true;
                 return Page();
