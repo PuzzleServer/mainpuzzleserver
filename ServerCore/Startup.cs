@@ -88,6 +88,7 @@ namespace ServerCore
                 options.AddPolicy("IsEventAdminOrEventAuthor", policy => policy.Requirements.Add(new IsEventAdminOrEventAuthorRequirement()));
                 options.AddPolicy("IsEventAdminOrPlayerOnTeam", policy => policy.Requirements.Add(new IsEventAdminOrPlayerOnTeamRequirement()));
                 options.AddPolicy("IsEventAdminOrAuthorOfPuzzle", policy => policy.Requirements.Add(new IsEventAdminOrAuthorOfPuzzleRequirement()));
+                options.AddPolicy("IsMicrosoftOrCommunity", policy => policy.Requirements.Add(new IsMicrosoftOrCommunityRequirement()));
                 options.AddPolicy("IsRegisteredForEvent", policy => policy.Requirements.Add(new IsRegisteredForEventRequirement()));
             });
 
@@ -119,6 +120,8 @@ namespace ServerCore
             services.AddScoped<IAuthorizationHandler, IsRegisteredForEventHandler_Admin>();
             services.AddScoped<IAuthorizationHandler, IsRegisteredForEventHandler_Author>();
             services.AddScoped<IAuthorizationHandler, IsRegisteredForEventHandler_Player>();
+            services.AddScoped<IAuthorizationHandler, IsMicrosoftOrCommunityHandler>();
+
             services.AddScoped<BackgroundFileUploader>();
             services.AddScoped<AuthorizationHelper>();
 
