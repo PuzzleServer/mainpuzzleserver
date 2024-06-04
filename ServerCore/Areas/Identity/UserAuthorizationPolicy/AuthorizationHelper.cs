@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
+using ServerCore.Areas.Identity.UserAuthorizationPolicy;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
 using ServerCore.ModelBases;
@@ -235,6 +235,29 @@ namespace ServerCore.Areas.Identity
                         }
                     }
                 }
+            }
+        }
+
+        internal async Task IsMicrosoftOrCommunityCheck(AuthorizationHandlerContext authContext, IsMicrosoftOrCommunityRequirement requirement)
+        {
+            var msaUser = await userManager.GetUserAsync(authContext.User);
+            if (msaUser?.Email?.EndsWith("@microsoft.com") == true)
+            {
+                // Allow Microsoft employees
+                authContext.Succeed(requirement);
+                return;
+            }
+
+            PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
+            if (puzzleUser == null)
+            {
+                return;
+            }
+
+            // Allow admins and authors of any event as part of the community
+            if (puzzleUser.MayBeAdminOrAuthor)
+            {
+                authContext.Succeed(requirement);
             }
         }
     }
