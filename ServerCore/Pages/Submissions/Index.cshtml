@@ -482,17 +482,21 @@ else
     }
 
     <div class="evencolumn no-print">
-        <div class="flexwrapper">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <label for="submissionText" class="marginright margintop">Answer:</label>
-            <input name="submissionText" id="submitBox" class="form-control marginright" data-val="true" data-val-required="Your answer cannot be empty" />
-            <input type="submit" id="submitButton" value="Submit" class="btn btn-default marginright" title="Submitted answers will automatically be capitalized and stripped of non-alphanumeric characters" />
-            @Html.ValidationSummary(true)
-            <span class="text-danger"><span class="field-validation-valid" data-valmsg-for="submissionText" data-valmsg-replace="true"></span></span>
+        <div>
+            <div class="flexwrapper">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <label for="submissionText" class="marginright margintop">Answer:</label>
+                <input name="submissionText" id="submitBox" class="form-control marginright" data-val="true" data-val-required="Your answer cannot be empty" />
+                <input type="submit" id="submitButton" value="Submit" class="btn btn-default marginright" title="Submitted answers will automatically be capitalized and stripped of non-alphanumeric characters" />
+                @Html.ValidationSummary(true)
+                <span class="text-danger"><span class="field-validation-valid" data-valmsg-for="submissionText" data-valmsg-replace="true"></span></span>
+            </div>
             @if (Model.Puzzle.IsFreeform)
             {
-                <label for="allowFreeformSharing" class="marginright margintop">Sharing: </label>
-                <input class="checkboxfix" type="checkbox" name="allowFreeformSharing" asp-for="AllowFreeformSharing" title="Allow other players to see this after the event" />
+                <label for="allowFreeformSharing" class="marginright margintop">
+                    <input class="checkboxfix" type="checkbox" name="allowFreeformSharing" asp-for="AllowFreeformSharing" title="Allow other players to see this after the event" />
+                    Allow other players to see this after the event
+                </label>
             }
         </div>
         <div class="inlinewrapper">
@@ -622,8 +626,8 @@ else
     <div class="centerwrapper no-print">
         <div class="inlineblockwrapper">
             <div id="submissionHistory" style="display: @((Model.SubmissionViews.Count == 0) ? "none" : "block")" class="hideablepanel">
-                Click here to view previous submissions: 
-                <div class="panelcontents" style="display: none">
+                Click here to <span id="panelHeaderAction">@((Model.PuzzleState.SolvedTime == null) ? "view" : "close")</span> previous submissions:
+                <div class="panelcontents" style="display: @((Model.PuzzleState.SolvedTime == null) ? "none" : "block")">
                     <div class="gridwrapper">
                         <div class="panelitem"><b>Time Submitted</b></div>
                         <div class="panelitem"><b>Name</b></div>
@@ -736,14 +740,19 @@ else
                 for (const header of headers) {
                     header.addEventListener("click", (e) => {
                         let list = null;
-                        if (e.target.classList.contains("caret")) {
-                            list = e.target.nextElementSibling;
-                        }
-                        else if (e.target.classList.contains("hideablepanel")) {
+                        const action = document.querySelector("#panelHeaderAction");
+                        if (e.target.classList.contains("hideablepanel")) {
                             list = e.target.lastElementChild;
                         }
                         if (list !== null) {
-                            list.style.display = (list.style.display == "none") ? "block" : "none";
+                            if (list.style.display == "none") {
+                                list.style.display = "block";
+                                action.innerText = "close";
+                            }
+                            else {
+                                list.style.display = "none";
+                                action.innerText = "view";
+                            }
                         }
                     });
                 }
@@ -791,13 +800,7 @@ else
                             updateVal = `<div class="alert alert-danger" role="alert"><h4>` + headerString + `</h4><span>Submission: ` + cleanedText + `</span></div>`;
                             break;
                         case 2: // Freeform
-                            updateVal = `<div class="alert alert-warning" role="alert"><h4>Your freeform submission has a response</h4><span>Freeform Submission: ` + cleanedText + `</span>`;
-                            if (responseString.length > 0) {
-                                updateVal += `<br /><span>Response: ` + responseString + `</span></div>`;
-                            }
-                            else { 
-                                updateVal += `</div>`;
-                            }
+                            updateVal = `<div class="alert alert-warning" role="alert"><h4>Your submission is pending. Watch your email for a response.</h4></div>`;
                             break;
                         case 3: // Partial
                             headerString = `This submission has a partial response`;
@@ -850,7 +853,12 @@ else
                         const resp = document.createElement("div");
                         resp.classList.add("panelitem");
                         resp.innerHTML = responseString;
-                        resp.innerHTML += ((responseString.length == 0) ? ((responseData.responseCode == 0) ? "Correct!" : "Incorrect") : "");
+                        if (responseData.responseCode == 2) { // Freeform
+                            resp.innerHTML = "Pending...";
+                        }
+                        else {
+                            resp.innerHTML += ((responseString.length == 0) ? ((responseData.responseCode == 0) ? "Correct!" : "Incorrect") : "");
+                        }
                         wrapper.appendChild(resp);
                         const answerPanel = document.querySelector("#submissionHistory div.panelcontents");
                         answerPanel.firstElementChild.after(wrapper);
