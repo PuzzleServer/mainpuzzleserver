@@ -1,4 +1,8 @@
-﻿<script>
+﻿<link rel="stylesheet" href="~/lib/puzzlejs-06-13-24/puzzle.css" />
+<link rel="stylesheet" href="~/lib/puzzlejs-06-13-24/puzzle-basic-colors.css" />
+<script src="~/lib/puzzlejs-06-13-24/puzzle.js"></script>
+
+<script>
     var numHintsSampleSpock = 3;
     var nextHintSampleSpock = 1;
     var numHintsSampleCrop = 6;
@@ -61,7 +65,7 @@
     <h3>
         Here is a puzzle titled <em>The Search for Spock</em>
     </h3>
-    <img src="~/images/samples/searchForSpock_puzzle.png" />
+    <div class="puzzle-entry" style="--puzzle-cell-size: 30px;" data-text="PPOCKKSCKCSOCOSCSPOCK|SPSKCSPPCKPKSPKKPKPOC|PKCPOPOCOSOCOPSPOCKSC|OSPOPOCKPCSCKSPOCPSOP|CSOPSKCCPCKPCKSPKCOPS|KCOPSKKOKSOKOPOSKCOPS|POCKPCSCSCSPOKSKCPKCP|SKKOSOOKOPSCPOPCOSPKO|PCCPOPPOKPOSKCKSPOCOC|OOCKSPOCOPSPPCOPSPOCK|SPOKKSCCSOPOCOSOCPOKC|KSPOCKKSKCSCOKCCSCSPO|POSCSPOKSPOKPSOKCOOSP|COPPKSCOPOPSCPPSKCOPS|SPOSOSPSOKCSPOCOPPKOK|KCCKPCSPPCKPSCPOCKCOC|KOSPOCKOSOPOCKOKPKOCS|CPCOPOCCPSCCKCCPCSPKP|OKSSCKOKKSPKPOKOPOOPS|PCOPSCPOCKOSCPPSKSOCK|SPOCOPSPOKCOSSOCOKCOS" data-drag-draw-spoke="true" data-edge-style="none" data-show-commands="true"></div>
     <h3>How to solve <em>The Search for Spock</em></h3>
     <button id="sample_spockHintButton" onclick="showHintSample('spock')">Show next hint</button>
     <ol>
@@ -70,7 +74,7 @@
         </li>
         <li id="sample_spockStep2" style="display:none">
             You do so and realize that some Spocks create contiguous shapes with other Spocks.<br />
-            <img src="~/images/samples/searchForSpock_solution.png" />
+            <div class="puzzle-entry" style="--puzzle-cell-size: 30px;" data-text="PPOCKKSCKCSOCOSCSPOCK|SPSKCSPPCKPKSPKKPKPOC|PKCPOPOCOSOCOPSPOCKSC|OSPOPOCKPCSCKSPOCPSOP|CSOPSKCCPCKPCKSPKCOPS|KCOPSKKOKSOKOPOSKCOPS|POCKPCSCSCSPOKSKCPKCP|SKKOSOOKOPSCPOPCOSPKO|PCCPOPPOKPOSKCKSPOCOC|OOCKSPOCOPSPPCOPSPOCK|SPOKKSCCSOPOCOSOCPOKC|KSPOCKKSKCSCOKCCSCSPO|POSCSPOKSPOKPSOKCOOSP|COPPKSCOPOPSCPPSKCOPS|SPOSOSPSOKCSPOCOPPKOK|KCCKPCSPPCKPSCPOCKCOC|KOSPOCKOSOPOCKOKPKOCS|CPCOPOCCPSCCKCCPCSPKP|OKSSCKOKKSPKPOKOPOOPS|PCOPSCPOCKOSCPPSKSOCK|SPOCOPSPOKCOSSOCOKCOS" data-fill-classes="white red orange yellow green blue violet" data-fills="000020300000003044444|100020030000030040000|100020003000304444400|100020000303000040000|100020000030000044444|111110606000000022222|000000060000000020002|050060606060000020002|050006000601000120002|050060606061100122222|050000060001010100002|055555606001001100002|003030000001050100002|000300000000055022222|003030040004050500000|030003044004050050000|303333340404050005000|300000340044050050000|300000340004050500000|300000300000055000000|300000300000050000000" data-edge-style="none"></div>
         <li id="sample_spockStep3" style="display:none">
             You arrive at the final answer, which involves completing the phrase, "Live long and ________"
         </li>
@@ -85,7 +89,7 @@
     <h3>
         Here is a puzzle titled <em>Crop Circles</em>
     </h3>
-    <img src="~/images/samples/cropCircles_puzzle.png" />
+    <img src="~/images/samples/cropCircles_puzzle.png" alt="four sets of concentric circular arcs, with a few extra lines between arcs. The hints below will describe this image in screenreader-friendly detail." />
     <h3>How to solve <em>Crop Circles</em></h3>
     <button id="sample_cropHintButton" onclick="showHintSample('crop')">Show next hint</button>
     <ol>
@@ -94,18 +98,18 @@
         </li>
         <li id="sample_cropStep2" style="display:none">
             You do so and realize that each circle looks a little bit like letters.<br />
-            <img src="~/images/samples/cropCircles_progress_1.png" />
+            <img src="~/images/samples/cropCircles_progress_1.png" alt="first set of arcs: letters P E A N U" />
         <li id="sample_cropStep3" style="display:none">
             You keep going.<br />
-            <img src="~/images/samples/cropCircles_progress_2.png" />
+            <img src="~/images/samples/cropCircles_progress_2.png" alt="second set of arcs: letters P A P A Y" />
         </li>
         <li id="sample_cropStep4" style="display:none">
             You keep going.<br />
-            <img src="~/images/samples/cropCircles_progress_3.png" />
+            <img src="~/images/samples/cropCircles_progress_3.png" alt="third set of arcs: letters P E P P E" />
         </li>
         <li id="sample_cropStep5" style="display:none">
             You keep going and realize that each set of letters will make a different crop with the addition of one letter at the end.<br />
-            <img src="~/images/samples/cropCircles_progress_4.png" />
+            <img src="~/images/samples/cropCircles_progress_4.png" alt="fourth set of arcs: letters B A M B O" />
         </li>
         <li id="sample_cropStep6" style="display:none">
             You arrive at the final answer, which is those four letters chained together.
