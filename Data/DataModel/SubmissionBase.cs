@@ -46,6 +46,7 @@ namespace ServerCore.DataModel
         /// The actual submission text
         /// </summary>
         [Required]
+        [MaxLength(100)]
         public string SubmissionText
         {
             get { return submissionText; }
@@ -86,6 +87,7 @@ namespace ServerCore.DataModel
         /// Submission text that should not be automatically formatted
         /// </summary>
         [NotMapped]
+        [MaxLength(100)]
         public string UnformattedSubmissionText
         {
             get { return submissionText; }
