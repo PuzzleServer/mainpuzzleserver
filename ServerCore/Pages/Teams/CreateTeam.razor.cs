@@ -36,14 +36,10 @@ namespace ServerCore.Pages.Teams
             PuzzleServerContext puzzleServerContext = validationContext.GetRequiredService<PuzzleServerContext>();
             TeamModel teamModel = (TeamModel)validationContext.ObjectInstance;
             string name = value as string;
+            name = TeamHelper.UnicodeSanitizeTeamName(name);
             if (string.IsNullOrWhiteSpace(name))
             {
                 return new ValidationResult("Team names cannot be left blank.");
-            }
-
-            if (name.Length > 50) 
-            {
-                return new ValidationResult("Team names must be fewer than 50 characters.");    
             }
 
             if (TeamHelper.IsTeamNameTaken(puzzleServerContext, teamModel.EventId, name))
@@ -63,22 +59,27 @@ namespace ServerCore.Pages.Teams
         public int EventId { get; set; }
 
         [Required]
-        [RegularExpression("\\S+.*")]
         [TeamUniquenessValidation]
+        [MaxLength(50)]
         public string Name { get; set; }
 
+        [MaxLength(20)]
         public string CustomRoom { get; set; }
 
         [Required]
         [EmailListValidation]
+        [MaxLength(50)]
         public string PrimaryContactEmail { get; set; }
 
         [Phone]
+        [MaxLength(20)]
         public string PrimaryPhoneNumber { get; set; }
         [Phone]
+        [MaxLength(20)]
         public string SecondaryPhoneNumber { get; set; }
 
         public bool IsLookingForTeammates { get; set; }
+        [MaxLength(500)]
         public string Bio { get; set; }
     }
 

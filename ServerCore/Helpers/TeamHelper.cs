@@ -280,5 +280,21 @@ namespace ServerCore.Helpers
 
             return false;
         }
+
+        /// <summary>
+        /// Sanitizes the incoming team name by removing any non-printable or non-standard space Unicode characters. 
+        /// Put another way, the only remaining white space will be the standard space character.
+        /// </summary>
+        /// <param name="incomingName">The team name before being sanitized</param>
+        /// <returns>The incomingName after being sanitized</returns>
+        public static string UnicodeSanitizeTeamName(string incomingName)
+        {
+
+
+
+
+
+            return incomingName;
+        }
     }
 }

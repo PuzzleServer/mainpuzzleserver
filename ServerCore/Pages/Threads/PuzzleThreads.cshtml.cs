@@ -15,8 +15,6 @@ namespace ServerCore.Pages.Threads
     [AllowAnonymous]
     public class PuzzleThreadsModel : EventSpecificPageModel
     {
-        public const int PreviewTextLength = 100;
-
         public PuzzleThreadsModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
         }

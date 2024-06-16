@@ -76,7 +76,7 @@
                 <form asp-page-handler="EditMessage" method="post">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <div class="form-group message-main-content">
-                        <textarea class="form-control message-subtitle" style="width:100%" id="@Html.IdFor(model => model.EditMessage.Text)" name="@Html.NameFor(model => model.EditMessage.Text)" rows="4" autocomplete="off" maxlength="@PuzzleThreadModel.MessageCharacterLimit">@message.Text</textarea>
+                        <textarea class="form-control message-subtitle" style="width:100%" id="@Html.IdFor(model => model.EditMessage.Text)" name="@Html.NameFor(model => model.EditMessage.Text)" rows="4" autocomplete="off">@message.Text</textarea>
                         <span asp-validation-for="EditMessage.Text" class="text-danger"></span>
                         <input type="hidden" asp-for="EditMessage.ID" value="@message.ID" />
                         <input type="hidden" asp-for="EditMessage.PuzzleID" value="@message.PuzzleID" />
@@ -127,7 +127,7 @@ else
                     {
                         <p>The more details you add here, the more helpful the responses you'll get will be!</p>
                     }
-                    <textarea asp-for="NewMessage.Text" class="form-control message-subtitle" rows="4" style="width:75%" placeholder="Type message here" autocomplete="off" maxlength="@PuzzleThreadModel.MessageCharacterLimit"></textarea>
+                    <textarea asp-for="NewMessage.Text" class="form-control message-subtitle" rows="4" style="width:75%" placeholder="Type message here" autocomplete="off"></textarea>
                     <span asp-validation-for="NewMessage.Text" class="text-danger"></span>
                     <input type="hidden" asp-for="NewMessage.ThreadId" value="@Model.NewMessage.ThreadId" />
                     <input type="hidden" asp-for="NewMessage.EventID" value="@Model.NewMessage.EventID" />

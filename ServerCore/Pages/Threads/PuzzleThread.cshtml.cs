@@ -19,8 +19,6 @@ namespace ServerCore.Pages.Threads
     [AllowAnonymous]
     public class PuzzleThreadModel : EventSpecificPageModel
     {
-        public const int MessageCharacterLimit = 3000;
-
         private IHubContext<ServerMessageHub> messageHub;
 
         public PuzzleThreadModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager, IHubContext<ServerMessageHub> messageHub) : base(serverContext, userManager)
@@ -384,10 +382,6 @@ namespace ServerCore.Pages.Threads
             if (string.IsNullOrWhiteSpace(messageText))
             {
                 return ValidationResult.CreateFailure("Your message cannot be empty.");
-            }
-            else if (messageText.Length > MessageCharacterLimit)
-            {
-                return ValidationResult.CreateFailure($"Your message should not be longer than {MessageCharacterLimit} characters.");
             }
             else
             {
