@@ -16,7 +16,7 @@
         userId = eventPage.LoggedInUser?.ID;
     }
 
-    string teamSignupUrl = "/Teams/Signup";
+    string teamSignupUrl = (Event.AllowBlazor) ? "/Teams/Signup" : "/Teams/List";
 }
 
 <!--ADMIN NAV BAR-->
