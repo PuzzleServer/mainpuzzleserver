@@ -121,7 +121,7 @@ namespace ServerCore.Pages.Teams
             Team team = new Team
             {
                 EventID = Event.ID,
-                Name = TeamModel.Name,
+                Name = TeamHelper.UnicodeSanitizeTeamName(TeamModel.Name),
                 CustomRoom = TeamModel.CustomRoom,
                 PrimaryContactEmail = TeamModel.PrimaryContactEmail,
                 PrimaryPhoneNumber = TeamModel.PrimaryPhoneNumber,
