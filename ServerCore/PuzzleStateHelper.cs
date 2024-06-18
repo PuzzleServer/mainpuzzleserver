@@ -430,19 +430,18 @@ namespace ServerCore
                                                         join pspt in context.PuzzleStatePerTeam on unlockedBy.PrerequisiteID equals pspt.PuzzleID
                                                         join puz in context.Puzzles on unlockedBy.PrerequisiteID equals puz.ID
                                                         where possibleUnlock.Prerequisite == puzzleJustSolved && !puz.IsForSinglePlayer && (team == null || pspt.TeamID == team.ID) && pspt.SolvedTime != null
-                                                        group puz by new { unlockedBy.PuzzleID, unlockedBy.Puzzle.MinPrerequisiteCount, pspt.TeamID } into g
+                                                        group puz by new { unlockedBy.PuzzleID, unlockedBy.Puzzle.MinPrerequisiteCount, unlockedBy.Puzzle.IsPuzzle, pspt.TeamID } into g
                                                         select new
                                                         {
                                                             PuzzleID = g.Key.PuzzleID,
                                                             TeamID = g.Key.TeamID,
                                                             g.Key.MinPrerequisiteCount,
+                                                            g.Key.IsPuzzle,
                                                             TotalPrerequisiteCount = g.Sum(p => (p.PrerequisiteWeight ?? 1))
                                                         }).ToList();
 
             // Are we updating one team or all teams?
             List<Team> teamsToUpdate = team == null ? await context.Teams.Where(t => t.Event == eventObj).ToListAsync() : new List<Team>() { team };
-
-            HashSet<int> isAPuzzleIDs = null;
 
             // Update teams one at a time
             foreach (Team t in teamsToUpdate)
@@ -487,13 +486,7 @@ namespace ServerCore
                         PuzzleStatePerTeam state = await context.PuzzleStatePerTeam.Where(s => s.PuzzleID == puzzleToUpdate.PuzzleID && s.Team == t).FirstAsync();
                         state.UnlockedTime = unlockTime;
 
-                        if (isAPuzzleIDs == null)
-                        {
-                            var list = await context.Puzzles.Where(p => p.EventID == eventObj.ID && p.IsPuzzle).Select(p => p.ID).ToListAsync();
-                            isAPuzzleIDs = new HashSet<int>(list);
-                        }
-
-                        if (isAPuzzleIDs.Contains(puzzleToUpdate.PuzzleID))
+                        if (puzzleToUpdate.IsPuzzle)
                         {
                             puzzlesUnlockedToNotify.Add(puzzleToUpdate.PuzzleID);
                         }
