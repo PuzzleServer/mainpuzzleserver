@@ -63,7 +63,7 @@ namespace ServerCore.Pages.Teams
         [MaxLength(100)]
         public string Name { get; set; }
 
-        [MaxLength(20)]
+        [MaxLength(200)]
         public string CustomRoom { get; set; }
 
         [Required]
