@@ -12,8 +12,8 @@ using ServerCore.DataModel;
 namespace Data.Migrations
 {
     [DbContext(typeof(PuzzleServerContext))]
-    [Migration("20240618035949_Constrain-Player-Input-Fields")]
-    partial class ConstrainPlayerInputFields
+    [Migration("20240618063133_Constrain-User-Inputs")]
+    partial class ConstrainUserInputs
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1282,8 +1282,8 @@ namespace Data.Migrations
                         .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("CustomRoom")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<int>("EventID")
                         .HasColumnType("int");

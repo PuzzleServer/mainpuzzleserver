@@ -40,7 +40,7 @@ namespace ServerCore.DataModel
         /// <summary>
         /// String formatted rooms for events that don't pre-reserve rooms
         /// </summary>
-        [MaxLength(20)]
+        [MaxLength(200)]
         public string CustomRoom { get; set; }
 
         public virtual List<Invitation> Invitations { get; set; }

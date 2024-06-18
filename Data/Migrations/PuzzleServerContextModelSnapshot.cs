@@ -1279,8 +1279,8 @@ namespace Data.Migrations
                         .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("CustomRoom")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<int>("EventID")
                         .HasColumnType("int");

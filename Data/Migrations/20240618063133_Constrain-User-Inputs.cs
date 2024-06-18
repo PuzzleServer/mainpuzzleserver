@@ -5,7 +5,7 @@
 namespace Data.Migrations
 {
     /// <inheritdoc />
-    public partial class ConstrainPlayerInputFields : Migration
+    public partial class ConstrainUserInputs : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -53,8 +53,8 @@ namespace Data.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "CustomRoom",
                 table: "Teams",
-                type: "nvarchar(20)",
-                maxLength: 20,
+                type: "nvarchar(200)",
+                maxLength: 200,
                 nullable: true,
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)",
@@ -247,8 +247,8 @@ namespace Data.Migrations
                 type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(20)",
-                oldMaxLength: 20,
+                oldType: "nvarchar(200)",
+                oldMaxLength: 200,
                 oldNullable: true);
 
             migrationBuilder.AlterColumn<string>(
