@@ -60,7 +60,7 @@ namespace ServerCore.Pages.Teams
 
         [Required]
         [TeamUniquenessValidation]
-        [MaxLength(50)]
+        [MaxLength(100)]
         public string Name { get; set; }
 
         [MaxLength(20)]
