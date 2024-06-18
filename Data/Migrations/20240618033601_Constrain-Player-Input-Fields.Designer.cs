@@ -12,8 +12,8 @@ using ServerCore.DataModel;
 namespace Data.Migrations
 {
     [DbContext(typeof(PuzzleServerContext))]
-    [Migration("20240618032027_Constrain-Database-Strings")]
-    partial class ConstrainDatabaseStrings
+    [Migration("20240618033601_Constrain-Player-Input-Fields")]
+    partial class ConstrainPlayerInputFields
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

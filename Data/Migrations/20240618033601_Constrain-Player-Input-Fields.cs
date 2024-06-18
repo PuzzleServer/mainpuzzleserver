@@ -5,7 +5,7 @@
 namespace Data.Migrations
 {
     /// <inheritdoc />
-    public partial class ConstrainDatabaseStrings : Migration
+    public partial class ConstrainPlayerInputFields : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -69,19 +69,6 @@ namespace Data.Migrations
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)",
                 oldNullable: true);
-
-            migrationBuilder.AddColumn<bool>(
-                name: "AutoApproveTeammates",
-                table: "Teams",
-                type: "bit",
-                nullable: false,
-                defaultValue: false);
-
-            migrationBuilder.AddColumn<int>(
-                name: "AutoTeamType",
-                table: "Teams",
-                type: "int",
-                nullable: true);
 
             migrationBuilder.AlterColumn<string>(
                 name: "LunchModifications",
@@ -216,14 +203,6 @@ namespace Data.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "AutoApproveTeammates",
-                table: "Teams");
-
-            migrationBuilder.DropColumn(
-                name: "AutoTeamType",
-                table: "Teams");
-
             migrationBuilder.AlterColumn<string>(
                 name: "SecondaryPhoneNumber",
                 table: "Teams",
