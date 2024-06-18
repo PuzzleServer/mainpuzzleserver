@@ -64,15 +64,10 @@ namespace ServerCore.Pages.Teams
                 Team.Name = existingTeam.Name;
             }
 
+            Team.Name = TeamHelper.UnicodeSanitizeTeamName(Team.Name);
             if (string.IsNullOrWhiteSpace(Team.Name))
             {
                 ModelState.AddModelError("Team.Name", "Team names cannot be left blank.");
-                return Page();
-            }
-
-            if (Team.Name.Length > 50)
-            {
-                ModelState.AddModelError("Team.Name", "Team names must be fewer than 50 characters.");
                 return Page();
             }
 

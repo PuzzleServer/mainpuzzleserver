@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -279,6 +281,49 @@ namespace ServerCore.Helpers
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Sanitizes the incoming team name by removing any non-printable or non-standard space Unicode characters. 
+        /// Put another way, the only remaining white space will be the standard space character.
+        /// </summary>
+        /// <param name="incomingName">The team name before being sanitized</param>
+        /// <returns>The incomingName after being sanitized</returns>
+        public static string UnicodeSanitizeTeamName(string incomingName)
+        {
+            StringBuilder newString = new();
+            StringRuneEnumerator nameEnumerator = incomingName.EnumerateRunes();
+            foreach (Rune rune in nameEnumerator)
+            {
+                switch (Rune.GetUnicodeCategory(rune))
+                {
+                    case UnicodeCategory.PrivateUse:
+                    case UnicodeCategory.ParagraphSeparator:
+                    case UnicodeCategory.OtherNotAssigned:
+                    case UnicodeCategory.LineSeparator:
+                    case UnicodeCategory.Control:
+                        // Disallow all of these characters
+                        break;
+                    case UnicodeCategory.Format:
+                        if (rune.Value != 0x200B && // Disallow zero-width space
+                            rune.Value != 0x2062 && // Disallow invisible times
+                            rune.Value != 0x2063 && // Disallow invisible separator
+                            rune.Value != 0x2064 && // Disallow invisible plus
+                            rune.Value != 0xFEFF) { // Disallow zero-width no-break space
+                            newString.Append(rune.ToString());
+                        }
+                        break;
+                    case UnicodeCategory.SpaceSeparator:
+                        if (rune.Value == 0x20) { // Allow regular spaces
+                            newString.Append(rune.ToString());
+                        }
+                        break;
+                    default: // Allow all other characters through
+                        newString.Append(rune.ToString());
+                        break;
+                }
+            }
+            return newString.ToString();
         }
     }
 }

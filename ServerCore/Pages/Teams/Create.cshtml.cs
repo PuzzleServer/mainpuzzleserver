@@ -1,12 +1,9 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
-using ServerCore.Areas.Identity;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
 using ServerCore.ModelBases;
@@ -90,14 +87,10 @@ namespace ServerCore.Pages.Teams
                 ModelState.AddModelError("Team.PrimaryContactEmail", "This email address is not valid.");
             }
 
+            Team.Name = TeamHelper.UnicodeSanitizeTeamName(Team.Name);
             if (string.IsNullOrWhiteSpace(Team.Name))
             {
                 ModelState.AddModelError("Team.Name", "Team names cannot be left blank.");
-            }
-
-            if (Team.Name.Length > 50) 
-            {
-                ModelState.AddModelError("Team.Name", "Team names must be fewer than 50 characters.");
             }
 
             if (TeamHelper.IsTeamNameTaken(_context, Event.ID, Team.Name))

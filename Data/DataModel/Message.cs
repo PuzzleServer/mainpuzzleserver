@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ServerCore.DataModel
@@ -27,6 +28,7 @@ namespace ServerCore.DataModel
         /// <summary>
         /// Gets or sets the subject.
         /// </summary>
+        [MaxLength(50)]
         public string Subject { get; set; }
 
         /// <summary>
@@ -52,6 +54,7 @@ namespace ServerCore.DataModel
         /// <summary>
         /// Gets or sets the actual message text.
         /// </summary>
+        [MaxLength(500)]
         public string Text { get; set; }
 
         /// <summary>

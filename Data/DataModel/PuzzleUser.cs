@@ -25,18 +25,26 @@ namespace ServerCore.DataModel
         public string IdentityUserId { get; set; }
 
         [PersonalData]
+        [Required]
+        [MaxLength(50)]
         public string Name { get; set; }
 
         [PersonalData]
+        [MaxLength(20)]
         public string EmployeeAlias { get; set; }
 
         [PersonalData]
+        [Required]
+        [MaxLength(50)]
         public string Email { get; set; }
         public bool IsGlobalAdmin { get; set; }
 
         [PersonalData]
+        [Phone]
+        [MaxLength(20)]
         public string PhoneNumber { get; set; }
         [PersonalData]
+        [MaxLength(20)]
         public string TShirtSize { get; set; }
         public bool VisibleToOthers { get; set; }
 

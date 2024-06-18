@@ -34,18 +34,25 @@ namespace ServerCore.DataModel
         public virtual Event Event { get; set; }
 
         [Required]
-        [RegularExpression("\\S+.*")]
+        [MaxLength(100)]
         public string Name { get; set; }
 
         /// <summary>
         /// String formatted rooms for events that don't pre-reserve rooms
         /// </summary>
+        [MaxLength(20)]
         public string CustomRoom { get; set; }
 
         public virtual List<Invitation> Invitations { get; set; }
 
+        [Required]
+        [MaxLength(500)] // Needs to be long enough to support adding every team member's email
         public string PrimaryContactEmail { get; set; }
+        [Phone]
+        [MaxLength(20)]
         public string PrimaryPhoneNumber { get; set; }
+        [Phone]
+        [MaxLength(20)]
         public string SecondaryPhoneNumber { get; set; }
         
         /// <summary>
@@ -86,6 +93,7 @@ namespace ServerCore.DataModel
         /// <summary>
         /// Team bio for the signups page
         /// </summary>
+        [MaxLength(500)]
         public string Bio { get; set; }
 
         /// <summary>
