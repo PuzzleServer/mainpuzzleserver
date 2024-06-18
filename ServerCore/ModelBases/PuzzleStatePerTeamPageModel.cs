@@ -116,7 +116,7 @@ namespace ServerCore.ModelBases
         {
             await PuzzleStateHelper.SetEmailOnlyModeAsync(
                 _context,
-                Event, 
+                Event,
                 puzzle,
                 team,
                 value,

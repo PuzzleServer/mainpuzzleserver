@@ -34,7 +34,7 @@ namespace ServerCore.Pages.Submissions
 
         public async Task<IActionResult> OnGetAsync(int? puzzleId)
         {
-            IQueryable<Submission> submissionsQ = null;
+            IQueryable<SubmissionBase> submissionsQ = null;
 
             if (puzzleId == null)
             {
@@ -72,7 +72,7 @@ namespace ServerCore.Pages.Submissions
                                              PuzzleName = submissionCounts.Key.Name,
                                              SubmissionText = submissionCounts.Key.SubmissionText,
                                              NumberOfTimesSubmitted = submissionCounts.Count()
-                                         }                                         
+                                         }
                                          ).ToListAsync();
             return Page();
         }

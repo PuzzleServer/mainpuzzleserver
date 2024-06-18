@@ -38,8 +38,8 @@ namespace ServerCore.Pages.Teams
         }
 
         public TeamCompositionSummaryModel(
-            PuzzleServerContext serverContext, 
-            UserManager<IdentityUser> userManager) 
+            PuzzleServerContext serverContext,
+            UserManager<IdentityUser> userManager)
             : base(serverContext, userManager)
         {
         }
@@ -60,9 +60,26 @@ namespace ServerCore.Pages.Teams
             public int NonMicrosoftCount { get; set; }
             public int Total { get; set; }
             public List<string> PossibleEmployeeAliases { get; set; }
+            public AutoTeamType? AutoTeamType { get; set; }
+            public string AutoTeamTypeString { get; set; }
         }
 
         public IEnumerable<TeamComposition> TeamCompositions { get; set; }
+
+        public int TotalEmployeeCount { get; set; }
+        public int TotalInternCount { get; set; }
+        public int TotalNonMicrosoftCount { get; set; }
+        public int TotalTotal { get; set; }
+        public int TotalPossibleEmployeeAliasesCount { get; set; }
+        
+        public int TotalAutoTeamCount { get; set; }
+        public int TotalManualTeamCount { get; set; }
+        public int TotalAutoPlayerCount { get; set; }
+        public int TotalManualPlayerCount { get; set; }
+        public int TotalBeginnerPlayerCount { get; set; }
+        public int TotalExpertPlayerCount { get; set; }
+        public int TotalCasualPlayerCount { get; set; }
+        public int TotalSeriousPlayerCount { get; set; }
 
         public SortEnum SortBy { get; set; }
 
@@ -83,11 +100,56 @@ namespace ServerCore.Pages.Teams
                         TeamID = team.ID,
                         TeamName = team.Name,
                         TeamPrimaryContactEmail = team.PrimaryContactEmail,
+                        AutoTeamType = team.AutoTeamType,
                         TeamMember = teamMember.Member
                     })
                 .ToList()
                 .GroupBy(intermediate => intermediate.TeamID)
                 .Select(this.MapToTeamComposition);
+
+            foreach (TeamComposition t in TeamCompositions)
+            {
+                TotalTotal += t.Total;
+                TotalNonMicrosoftCount += t.NonMicrosoftCount;
+                TotalInternCount += t.InternCount;
+                TotalEmployeeCount += t.EmployeeCount;
+                TotalPossibleEmployeeAliasesCount += t.PossibleEmployeeAliases.Count;
+
+                if (t.AutoTeamType != null)
+                {
+                    TotalAutoTeamCount += 1;
+                    TotalAutoPlayerCount += t.Total;
+
+                    if ((t.AutoTeamType.Value & AutoTeamType.Beginner) == AutoTeamType.Beginner)
+                    {
+                        TotalBeginnerPlayerCount += t.Total;
+                        t.AutoTeamTypeString = "Beginner";
+                    }
+                    else if ((t.AutoTeamType.Value & AutoTeamType.Expert) == AutoTeamType.Expert)
+                    {
+                        TotalExpertPlayerCount += t.Total;
+                        t.AutoTeamTypeString = "Expert";
+                    }
+
+                    t.AutoTeamTypeString += " | ";
+
+                    if ((t.AutoTeamType.Value & AutoTeamType.Casual) == AutoTeamType.Casual)
+                    {
+                        TotalCasualPlayerCount += t.Total;
+                        t.AutoTeamTypeString += "Casual";
+                    }
+                    else if ((t.AutoTeamType.Value & AutoTeamType.Serious) == AutoTeamType.Serious)
+                    {
+                        TotalSeriousPlayerCount += t.Total;
+                        t.AutoTeamTypeString += "Serious";
+                    }
+                }
+                else
+                {
+                    TotalManualTeamCount += 1;
+                    TotalManualPlayerCount += t.Total;
+                }
+            }
 
             this.SortTeamComposition();
             if (SortDirection == SortDirectionEnum.Descend)
@@ -101,7 +163,7 @@ namespace ServerCore.Pages.Teams
         public IActionResult OnPost(SortEnum sortBy, SortDirectionEnum sortDirection)
         {
             return RedirectToPage(
-                "./TeamCompositionSummary", 
+                "./TeamCompositionSummary",
                 new {
                     sortBy = sortBy,
                     sortDirection = sortDirection
@@ -145,6 +207,7 @@ namespace ServerCore.Pages.Teams
             {
                 toReturn.TeamName = groupMember.TeamName;
                 toReturn.TeamPrimaryContactEmail = groupMember.TeamPrimaryContactEmail;
+                toReturn.AutoTeamType = groupMember.AutoTeamType;
                 toReturn.Total += 1;
 
                 string email = groupMember.TeamMember.Email;
@@ -178,6 +241,7 @@ namespace ServerCore.Pages.Teams
             public int TeamID { get; set; }
             public string TeamName { get; set; }
             public string TeamPrimaryContactEmail { get; set; }
+            public AutoTeamType? AutoTeamType { get; set; }
             public PuzzleUser TeamMember { get; set; }
         }
     }

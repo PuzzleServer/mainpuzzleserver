@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.WindowsAzure.Storage.Blob;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
 
@@ -32,6 +33,22 @@ namespace ServerCore.ModelBases
         public override async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
         {
             LoggedInUser = await PuzzleUser.GetPuzzleUserForCurrentUser(_context, User, userManager);
+            if (Event == null)
+            {
+                context.Result = NotFound();
+                return;
+            }
+
+            // Check permissions now that the role has been binded
+            bool isAdmin = await IsEventAdmin();
+            bool isAuthor = await IsEventAuthor();
+            if (((EventRole == EventRole.admin) && !isAdmin) ||
+                ((EventRole == EventRole.author) && !isAuthor) ||
+                ((EventRole != EventRole.admin) && (EventRole != EventRole.author) && (EventRole != EventRole.play)))
+            {
+                context.Result = Forbid();
+                return;
+            }
 
             // Required to have the rest of page execution occur
             await next.Invoke();
@@ -42,6 +59,8 @@ namespace ServerCore.ModelBases
         protected readonly PuzzleServerContext _context;
         private readonly UserManager<IdentityUser> userManager;
 
+        private Team team;
+
         public EventSpecificPageModel(PuzzleServerContext serverContext, UserManager<IdentityUser> manager)
         {
             _context = serverContext;
@@ -49,6 +68,7 @@ namespace ServerCore.ModelBases
         }
 
         private bool? isRegisteredUser;
+
         public async Task<bool> IsRegisteredUser()
         {
             if (LoggedInUser == null)
@@ -68,8 +88,8 @@ namespace ServerCore.ModelBases
         public async Task<bool> PlayerHasTeamForEvent()
         {
             if(LoggedInUser == null) { return false; }
-            
-            if(playerIsOnTeam == null) 
+
+            if(playerIsOnTeam == null)
             {
                 playerIsOnTeam = await LoggedInUser.IsPlayerOnTeam(_context, Event);
             }
@@ -125,7 +145,8 @@ namespace ServerCore.ModelBases
         /// </summary>
         public async Task<bool> HasSwag()
         {
-            return Event.HasSwag && await _context.PlayerInEvent.Where(m => m.Event == Event && m.Player == LoggedInUser).AnyAsync();
+            PlayerInEvent playerSwag = await _context.PlayerInEvent.Where(m => m.Event == Event && m.Player == LoggedInUser).FirstOrDefaultAsync();
+            return (playerSwag != null) && !string.IsNullOrWhiteSpace(playerSwag.Lunch);
         }
 
         /// <summary>
@@ -136,16 +157,39 @@ namespace ServerCore.ModelBases
             return Event.HasSwag;
         }
 
+        public async Task<Team> GetTeamAsync()
+        {
+            if (this.team == null)
+            {
+                this.team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
+            }
+
+            return team;
+        }
+
         public async Task<int> GetTeamId()
         {
             if (EventRole == ModelBases.EventRole.play)
             {
-                Team team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
+                Team team = await this.GetTeamAsync();
                 return team != null ? team.ID : -1;
             }
             else
             {
                 return -1;
+            }
+        }
+
+        public async Task<bool> GetShowTeamAnnouncement()
+        {
+            if (EventRole == ModelBases.EventRole.play)
+            {
+                Team team = await this.GetTeamAsync();
+                return team != null ? team.ShowTeamAnnouncement : false;
+            }
+            else
+            {
+                return false;
             }
         }
 
@@ -162,6 +206,11 @@ namespace ServerCore.ModelBases
         public string LocalTime(DateTime? date)
         {
             return TimeHelper.LocalTime(date);
+        }
+
+        public bool IsGameControlRole()
+        {
+            return EventRole == EventRole.admin || EventRole == EventRole.author;
         }
 
         public class EventBinder : IModelBinder
@@ -181,6 +230,12 @@ namespace ServerCore.ModelBases
             }
         }
 
+        public string GetFileStoragePrefix() {
+            return FileManager.GetFileStoragePrefix(Event.ID, "");
+        }
+
+        public string pageType;
+
         public class RoleBinder : IModelBinder
         {
             // This doesn't actually run async but the compiler complains if I try to use BindModel :(
@@ -191,16 +246,11 @@ namespace ServerCore.ModelBases
                 {
                     eventRoleAsString = ModelBases.EventRole.play.ToString();
                 }
-                // TODO: Add auth check to make sure the user has permissions for the given eventRole
                 eventRoleAsString = eventRoleAsString.ToLower();
 
                 if (Enum.IsDefined(typeof(EventRole), eventRoleAsString))
                 {
                     bindingContext.Result = ModelBindingResult.Success(Enum.Parse(typeof(EventRole), eventRoleAsString));
-                }
-                else
-                {
-                    throw new Exception("Invalid route parameter '" + eventRoleAsString + "'. Please check your URL to make sure you are using the correct path. (code: InvalidRoleId)");
                 }
             }
         }

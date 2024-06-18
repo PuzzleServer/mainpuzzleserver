@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
+using ServerCore.Areas.Identity.UserAuthorizationPolicy;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
 using ServerCore.ModelBases;
@@ -76,7 +76,7 @@ namespace ServerCore.Areas.Identity
         }
 
         public async Task IsEventAdminCheck(AuthorizationHandlerContext authContext, IAuthorizationRequirement requirement)
-        {            
+        {
             EventRole role = GetEventRoleFromRoute();
             if (role != EventRole.admin)
             {
@@ -133,7 +133,24 @@ namespace ServerCore.Areas.Identity
             }
         }
 
-        public async Task IsEventPlayerCheck(AuthorizationHandlerContext authContext, IAuthorizationRequirement requirement)
+        public async Task IsPlayerRegisteredForEvent(AuthorizationHandlerContext authContext, IAuthorizationRequirement requirement)
+        {
+            EventRole role = GetEventRoleFromRoute();
+            if (role != EventRole.play)
+            {
+                return;
+            }
+
+            PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
+            Event thisEvent = await GetEventFromRoute();
+
+            if (thisEvent != null && await puzzleUser.IsRegisteredForEvent(dbContext, thisEvent))
+            {
+                authContext.Succeed(requirement);
+            }
+        }
+
+        public async Task IsEventPlayerOnTeamCheck(AuthorizationHandlerContext authContext, IAuthorizationRequirement requirement)
         {
             EventRole role = GetEventRoleFromRoute();
             if (role != EventRole.play)
@@ -176,6 +193,8 @@ namespace ServerCore.Areas.Identity
         public async Task PlayerCanSeePuzzleCheck(AuthorizationHandlerContext authContext, IAuthorizationRequirement requirement)
         {
             PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
+            if (puzzleUser == null) { return; }
+
             Puzzle puzzle = await GetPuzzleFromRoute();
             Event thisEvent = await GetEventFromRoute();
 
@@ -188,10 +207,18 @@ namespace ServerCore.Areas.Identity
                 else if (puzzle.IsForSinglePlayer)
                 {
                     IQueryable<SinglePlayerPuzzleUnlockState> statesQ = SinglePlayerPuzzleUnlockStateHelper.GetFullReadOnlyQuery(dbContext, thisEvent, puzzle.ID);
-                    
-                    if (statesQ.FirstOrDefault().UnlockedTime != null)
+
+                    if (statesQ.FirstOrDefault()?.UnlockedTime != null)
                     {
                         authContext.Succeed(requirement);
+                    }
+                    else
+                    {
+                        IQueryable<SinglePlayerPuzzleStatePerPlayer> statePerPlayerQ = SinglePlayerPuzzleStateHelper.GetFullReadOnlyQuery(dbContext, thisEvent, puzzle.ID, puzzleUser.ID);
+                        if (statePerPlayerQ.FirstOrDefault()?.UnlockedTime != null)
+                        {
+                            authContext.Succeed(requirement);
+                        }
                     }
                 }
                 else
@@ -202,12 +229,35 @@ namespace ServerCore.Areas.Identity
                     {
                         IQueryable<PuzzleStatePerTeam> statesQ = PuzzleStateHelper.GetFullReadOnlyQuery(dbContext, thisEvent, puzzle, team);
 
-                        if (statesQ.FirstOrDefault().UnlockedTime != null)
+                        if (statesQ.FirstOrDefault()?.UnlockedTime != null)
                         {
                             authContext.Succeed(requirement);
                         }
                     }
                 }
+            }
+        }
+
+        internal async Task IsMicrosoftOrCommunityCheck(AuthorizationHandlerContext authContext, IsMicrosoftOrCommunityRequirement requirement)
+        {
+            var msaUser = await userManager.GetUserAsync(authContext.User);
+            if (msaUser?.Email?.EndsWith("@microsoft.com") == true)
+            {
+                // Allow Microsoft employees
+                authContext.Succeed(requirement);
+                return;
+            }
+
+            PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
+            if (puzzleUser == null)
+            {
+                return;
+            }
+
+            // Allow admins and authors of any event as part of the community
+            if (puzzleUser.MayBeAdminOrAuthor)
+            {
+                authContext.Succeed(requirement);
             }
         }
     }

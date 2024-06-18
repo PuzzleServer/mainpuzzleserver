@@ -1,0 +1,64 @@
+﻿@page  "/{eventId}/{eventRole}/Puzzles/ResourceManagement/{handler?}"
+@model ServerCore.Pages.Puzzles.ResourceManagementModel
+
+@{
+    ViewData["Title"] = "Puzzle resource management";
+    ViewData["AdminRoute"] = "../Puzzles/ResourceManagement";
+    ViewData["AuthorRoute"] = "../Puzzles/ResourceManagement";
+    ViewData["PlayRoute"] = "/Puzzles/Play";
+}
+
+<script type="text/javascript">
+    window.addEventListener("load", () => {
+        const button = document.querySelector("#buttonSelectAllResources");
+        const checkboxes = document.querySelectorAll(".resourceFileCheckbox");
+        if (checkboxes.length == 0) {
+            button.disabled = true;
+        }
+        button.addEventListener("click", selectAllResources);
+    });
+
+    function selectAllResources () {
+        const checkboxes = document.querySelectorAll(".resourceFileCheckbox");
+        for (const checkbox of checkboxes) { 
+            checkbox.checked = true;
+        }
+    }
+</script>
+
+<h2>@Model.Event.Name: Resource management</h2>
+
+<div>
+    <hr />
+    <div class="form-group">
+        <form method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <p>
+                <input type="checkbox" asp-for="ExpandZipFiles" />
+                &lt;- Check this box to automatically extract the contents of zip files in materials or solve tokens into the same directory.
+            </p>
+            <p>
+                <button type="submit" asp-page-handler="DeleteSelected">Delete Selected</button>
+
+                <button type="submit" asp-page-handler="DeleteAll" onclick="return confirm('Are you sure you want to delete all shared resources for this event?')">Delete All</button>
+            </p>
+            <button id="buttonSelectAllResources" type="button">Select All</button>
+            <br />
+            @foreach (var resource in Model.Resources)
+            {
+                <p>
+                    <input class="resourceFileCheckbox" type="checkbox" name="SelectedFiles" value="@resource.Uri" />
+                    <span>@resource.Name</span>
+                    <a href="@resource.Uri">[Raw]</a>
+                    <button type="submit" asp-route-url="@resource.Uri" asp-page-handler="Delete">Delete</button>
+                </p>
+            }
+            <input asp-for="NewResourceFiles" class="form-control" style="height:auto" />
+            <span asp-validation-for="NewResourceFiles" class="text-danger"></span>
+
+            <div class="form-group">
+                <input type="submit" value="Upload" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>

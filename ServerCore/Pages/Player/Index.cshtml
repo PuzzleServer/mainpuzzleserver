@@ -14,33 +14,36 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.PlayerInEvent[0].Event)
+                Player
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.PlayerInEvent[0].Player)
+                Email
+            </th>
+            <th>
+                Team
             </th>
 
             @if (Model.Event.AllowsRemote)
             {
                 <th>
-                    @Html.DisplayNameFor(model => model.PlayerInEvent[0].IsRemote)
+                    Remote?
                 </th>
             }
 
             @if (Model.Event.HasIndividualLunch)
             {
                 <th>
-                    @Html.DisplayNameFor(model => model.PlayerInEvent[0].Lunch)
+                    Lunch
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.PlayerInEvent[0].LunchModifications)
+                    Lunch Modifications
                 </th>
             }
 
             @if (Model.Event.HasTShirts)
             {
                 <th>
-                    @Html.DisplayNameFor(model => model.PlayerInEvent[0].ShirtSize)
+                    T-Shirt Size
                 </th>
             }
             <th></th>
@@ -51,40 +54,43 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Player.Name)
+                    @Html.DisplayFor(modelItem => item.Player.Player.Name)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Player.Email)
+                    @Html.DisplayFor(modelItem => item.Player.Player.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Team.Name)
                 </td>
 
                 @if (Model.Event.AllowsRemote)
                 {
                     <td>
-                        @Html.DisplayFor(modelItem => item.IsRemote)
+                        @Html.DisplayFor(modelItem => item.Player.IsRemote)
                     </td>
                 }
 
                 @if (Model.Event.HasIndividualLunch)
                 {
                     <td>
-                        @Html.DisplayFor(modelItem => item.Lunch)
+                        @Html.DisplayFor(modelItem => item.Player.Lunch)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.LunchModifications)
+                        @Html.DisplayFor(modelItem => item.Player.LunchModifications)
                     </td>
                 }
 
                 @if (Model.Event.HasTShirts)
                 {
                     <td>
-                        @Html.DisplayFor(modelItem => item.ShirtSize)
+                        @Html.DisplayFor(modelItem => item.Player.ShirtSize)
                     </td>
                 }
 
                 <td>
-                    <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |
-                    <a asp-page="./Details" asp-route-id="@item.ID">Details</a> |
-                    <a asp-page="./Delete" asp-route-id="@item.ID">Delete</a>
+                    <a asp-page="./Edit" asp-route-id="@item.Player.ID">Edit</a> |
+                    <a asp-page="./Details" asp-route-id="@item.Player.ID">Details</a> |
+                    <a asp-page="./Delete" asp-route-id="@item.Player.ID">Delete</a>
                 </td>
             </tr>
         }

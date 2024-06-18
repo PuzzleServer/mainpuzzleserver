@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using ServerCore.DataModel;
+using ServerCore.Helpers;
 
 namespace ServerCore.Pages.Events
 {
@@ -13,6 +14,7 @@ namespace ServerCore.Pages.Events
     {
         private readonly PuzzleServerContext _context;
         private readonly UserManager<IdentityUser> _userManager;
+        const string SharedResourceDirectoryName = "resources";
 
         [BindProperty]
         public Event Event { get; set; }
@@ -37,6 +39,7 @@ namespace ServerCore.Pages.Events
             Event.AnswerSubmissionEnd= DateTime.UtcNow.AddDays(2);
             Event.AnswersAvailableBegin = DateTime.UtcNow.AddDays(2);
             Event.StandingsAvailableBegin = DateTime.UtcNow.AddDays(2);
+            Event.LunchReportDate = DateTime.UtcNow.AddDays(1);
             Event.LockoutIncorrectGuessLimit = 5;
             Event.LockoutIncorrectGuessPeriod = 15;
             Event.LockoutDurationMultiplier = 2;
@@ -44,6 +47,7 @@ namespace ServerCore.Pages.Events
             Event.MaxNumberOfTeams = 120;
             Event.MaxExternalsPerTeam = 9;
             Event.MaxTeamSize = 12;
+            Event.AllowBlazor = true;
 
             return Page();
         }
@@ -67,6 +71,10 @@ namespace ServerCore.Pages.Events
             }
 
             await _context.SaveChangesAsync();
+
+            // Create base files for event content and style
+            // Fails silently if local Azure storage emulator isn't installed
+            NewFileCreationHelper.CreateNewEventFiles(Event.ID, SharedResourceDirectoryName);
 
             return RedirectToPage("./Index");
         }

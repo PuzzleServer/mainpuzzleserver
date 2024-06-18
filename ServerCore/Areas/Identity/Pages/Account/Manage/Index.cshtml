@@ -43,13 +43,15 @@
             </div>
             <div class="form-group">
                 <label asp-for="Input.VisibleToOthers"></label>
-                <input asp-for="Input.VisibleToOthers" class="form-control" />
+                <input asp-for="Input.VisibleToOthers" />
                 <span asp-validation-for="Input.VisibleToOthers" class="text-danger"></span>
             </div>
             <input type="hidden" asp-for="Input.IdentityUserId" />
             <input type="hidden" asp-for="Input.IsGlobalAdmin" />
+            <input type="hidden" asp-for="Input.TShirtSize" />
+            <input type="hidden" asp-for="Input.MayBeAdminOrAuthor" />
 
-            <button type="submit" class="btn btn-default">Save</button>
+            <button type="submit">Save</button>
         </form>
     </div>
 </div>

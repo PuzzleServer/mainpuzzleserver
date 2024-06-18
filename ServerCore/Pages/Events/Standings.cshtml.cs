@@ -31,6 +31,8 @@ namespace ServerCore.Pages.Events
                 .Where(p => p.Event == Event)
                 .ToDictionaryAsync(p => p.ID, p => new { p.SolveValue, p.IsCheatCode, p.IsPuzzle, p.IsFinalPuzzle });
 
+            int finalMetaCount = puzzleData.Where(p => p.Value.IsFinalPuzzle).Count();
+
             DateTime submissionEnd = Event.AnswerSubmissionEnd;
             var stateData = await PuzzleStateHelper.GetSparseQuery(_context, this.Event, null, null)
                 .Where(pspt => pspt.SolvedTime != null && pspt.SolvedTime <= submissionEnd)
@@ -67,7 +69,16 @@ namespace ServerCore.Pages.Events
                 }
                 if (p.IsFinalPuzzle && !ts.Cheated)
                 {
-                    ts.FinalMetaSolveTime = s.SolvedTime.Value;
+                    if (ts.LatestFinalMetaSolveTime < s.SolvedTime.Value)
+                    {
+                        ts.LatestFinalMetaSolveTime = s.SolvedTime.Value;
+                    }
+                    ts.FinalMetaSolveCount++;
+
+                    if (ts.FinalMetaSolveCount == finalMetaCount)
+                    {
+                        ts.FinalMetaSolveTime = ts.LatestFinalMetaSolveTime;
+                    }
                 }
             }
 
@@ -160,8 +171,10 @@ namespace ServerCore.Pages.Events
             public Team Team;
             public bool Cheated;
             public int SolveCount;
+            public int FinalMetaSolveCount;
             public int Score;
             public int? Rank;
+            public DateTime LatestFinalMetaSolveTime = DateTime.MinValue;
             public DateTime FinalMetaSolveTime = DateTime.MaxValue;
         }
 

@@ -17,13 +17,16 @@ namespace ServerCore.DataModel
     /// <summary>
     /// A Puzzle is the record of a solvable puzzle in the database
     /// Sometimes a Puzzle is used as a workaround for things like time prerequisites
-    /// </summary>    
+    /// </summary>
     public class Puzzle
     {
         public Puzzle()
         {
         }
 
+        //
+        // WARNING: If you add new properties add them to the constructor as well so importing will work.
+        //
         public Puzzle (Puzzle source)
         {
             // do not fill out the ID
@@ -41,13 +44,17 @@ namespace ServerCore.DataModel
             Group = source.Group;
             OrderInGroup = source.OrderInGroup;
             IsGloballyVisiblePrerequisite = source.IsGloballyVisiblePrerequisite;
+            PrerequisiteWeight = source.PrerequisiteWeight;
             MinPrerequisiteCount = source.MinPrerequisiteCount;
+            MinInGroupCount = source.MinInGroupCount;
             MinutesToAutomaticallySolve = source.MinutesToAutomaticallySolve;
             MinutesOfEventLockout = source.MinutesOfEventLockout;
             MaxAnnotationKey = source.MaxAnnotationKey;
             SupportEmailAlias = source.SupportEmailAlias;
+            CustomAuthorText = source.CustomAuthorText;
             CustomURL = source.CustomURL;
             CustomSolutionURL = source.CustomSolutionURL;
+            CustomCSSFile = source.CustomCSSFile;
             Description = source.Description;
             Errata = source.Errata;
             PieceMetaUsage = source.PieceMetaUsage;
@@ -169,10 +176,15 @@ namespace ServerCore.DataModel
         public int? PrerequisiteWeight { get; set; } = null;
 
         /// <summary>
-        /// Minimum number of <see cref="Prerequisites.cs"/> that must be satisfied
+        /// This puzzle unlocks when this number of <see cref="Prerequisites.cs"/> are satisfied (or the MinInGroupCount property causes an unlock).
         /// TODO: When the system is mature, set the default to 1 so new puzzles are not accidentally displayed.
         /// </summary>
         public int MinPrerequisiteCount { get; set; } = 0;
+
+        /// <summary>
+        /// This puzzle unlocks when this number of puzzles with the same Group are satisfied (or the MinPrerequisite property causes an unlock).
+        /// </summary>
+        public int? MinInGroupCount { get; set; } = null;
 
         /// <summary>
         /// Minutes from the time a puzzle is unlocked until it is automatically marked as solved.
@@ -217,6 +229,11 @@ namespace ServerCore.DataModel
         public string SupportEmailAlias { get; set; }
 
         /// <summary>
+        /// The names of the authors that should be displayed to players
+        /// </summary>
+        public string CustomAuthorText { get; set; }
+
+        /// <summary>
         /// Errata
         /// </summary>
         public string Errata { get; set; }
@@ -232,6 +249,11 @@ namespace ServerCore.DataModel
         /// </summary>
         [DataType(DataType.Url)]
         public string CustomSolutionURL { get; set; }
+
+        /// <summary>
+        /// A file or url that will be applied to the answer submission page to style it
+        /// </summary>
+        public string CustomCSSFile { get; set; }
 
         /// <summary>
         /// Short description of the puzzle for authors or special pages
@@ -267,10 +289,6 @@ namespace ServerCore.DataModel
         /// True if puzzle can be solved as a player rather than solved as a team.
         /// </summary>
         public bool IsForSinglePlayer { get; set; }
-
-        //
-        // WARNING: If you add new properties add them to the constructor as well so importing will work.
-        //
 
         /// <summary>
         /// File for the main puzzle (typically a PDF containing the puzzle)
@@ -331,7 +349,7 @@ namespace ServerCore.DataModel
                        where contentFile.FileType == ContentFileType.SolveToken
                        select contentFile;
             }
-        }        
+        }
 
         public virtual List<Submission> Submissions { get; set; }
 

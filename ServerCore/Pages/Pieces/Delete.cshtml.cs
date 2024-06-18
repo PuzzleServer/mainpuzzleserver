@@ -17,7 +17,7 @@ namespace ServerCore.Pages.Pieces
 
         [BindProperty]
         public Piece Piece { get; set; }
-        
+
         public int PuzzleId { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int id)

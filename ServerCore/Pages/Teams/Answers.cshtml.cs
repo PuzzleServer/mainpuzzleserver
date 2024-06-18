@@ -41,7 +41,7 @@ namespace ServerCore.Pages.Teams
             IQueryable<Submission> correctSubmissions = _context.Submissions
                 .Where((s) => s.TeamID == teamId && s.Response.IsSolution);
 
-            IQueryable<SubmissionView> finalSubmissions = 
+            IQueryable<SubmissionView> finalSubmissions =
                 from state in puzzleStates
                 join submission in correctSubmissions on state.PuzzleID equals submission.PuzzleID into joinedStateSubmission
                 from joinedSubmission in joinedStateSubmission.DefaultIfEmpty()
@@ -53,7 +53,7 @@ namespace ServerCore.Pages.Teams
                     SubmissionText = joinedSubmission.SubmissionText,
                     ResponseText = joinedSubmission.Response.ResponseText
                 };
-            
+
             this.Sort = sort;
             switch (sort ?? DefaultSort) {
                 case SortOrder.PuzzleNameAscending:

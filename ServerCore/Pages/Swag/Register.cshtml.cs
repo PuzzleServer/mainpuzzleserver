@@ -23,7 +23,7 @@ namespace ServerCore.Pages.Swag
         {
             if (!Event.HasIndividualLunch)
             {
-                return Forbid("This page is only available for events that have individual lunch orders.");
+                return RedirectToPage("/EventSpecific/Index");
             }
 
             PlayerInEvent = await _context.PlayerInEvent.Where(m => m.Event == Event && m.Player == LoggedInUser).FirstOrDefaultAsync();
@@ -35,7 +35,7 @@ namespace ServerCore.Pages.Swag
 
             return Page();
         }
-        
+
         public async Task<IActionResult> OnPostAsync(int puzzleId)
         {
             ModelState.Remove("Swag.Event");

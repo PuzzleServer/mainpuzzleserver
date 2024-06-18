@@ -2,6 +2,7 @@
 @model ServerCore.Pages.Hints.IndexModel
 
 @{
+    @using Helpers;
     ViewData["Title"] = "Hints";
     ViewData["AdminRoute"] = "../Hints/Index";
     ViewData["AuthorRoute"] = "../Hints/Index";
@@ -44,7 +45,7 @@
                     @item.Description
                 </td>
                 <td>
-                    @item.Content
+                    @(RawHtmlHelper.Display(item.Content, Model.Event.ID, Html))
                 </td>
                 <td>
                     @item.Cost

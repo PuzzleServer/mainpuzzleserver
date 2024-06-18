@@ -3,20 +3,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
 using ServerCore.ModelBases;
+using ServerCore.ServerMessages;
 
 namespace ServerCore.Pages.Puzzles
 {
     [Authorize(Policy = "IsEventAdminOrAuthorOfPuzzle")]
     public class EditModel : EventSpecificPageModel
     {
-        public EditModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
+        private IHubContext<ServerMessageHub> messageHub;
+
+        public EditModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager, IHubContext<ServerMessageHub> messageHub) : base(serverContext, userManager)
         {
+            this.messageHub = messageHub;
         }
 
         [BindProperty]
@@ -129,6 +136,9 @@ namespace ServerCore.Pages.Puzzles
                                                       join PuzzleStatePerTeam pspt in _context.PuzzleStatePerTeam on tm.Team equals pspt.Team
                                                       where pspt.PuzzleID == Puzzle.ID && pspt.UnlockedTime != null
                                                       select tm.Member.Email).ToListAsync();
+                    List<Team> teams = await (from PuzzleStatePerTeam pspt in _context.PuzzleStatePerTeam
+                                                      where pspt.PuzzleID == Puzzle.ID && pspt.UnlockedTime != null
+                                                      select pspt.Team).ToListAsync();
 
                     string subject, body;
                     string puzzleName = Puzzle.PlaintextName;
@@ -145,6 +155,10 @@ namespace ServerCore.Pages.Puzzles
                     }
 
                     MailHelper.Singleton.SendPlaintextBcc(teamMembers, subject, body);
+                    foreach (Team team in teams)
+                    {
+                        await this.messageHub.SendNotification(team, subject, body, $"/{this.Event.EventID}/play/Submissions/{puzzleId}");
+                    }
                 }
             }
             catch (DbUpdateConcurrencyException)
@@ -163,32 +177,41 @@ namespace ServerCore.Pages.Puzzles
             {
                 if (Puzzle.IsForSinglePlayer) // If switch from team puzzle to single player puzzle
                 {
+                    // Remove old team puzzle states
+                    IEnumerable<HintStatePerTeam> hintStatesToRemove = _context.HintStatePerTeam.Where(hintState => hintState.Hint.PuzzleID == oldPuzzleView.ID);
+                    _context.HintStatePerTeam.RemoveRange(hintStatesToRemove);
+
+                    IEnumerable<PuzzleStatePerTeam> puzzleStatesToRemove = _context.PuzzleStatePerTeam.Where(puzzleState => puzzleState.PuzzleID == oldPuzzleView.ID);
+                    _context.PuzzleStatePerTeam.RemoveRange(puzzleStatesToRemove);
+
+                    IEnumerable<Submission> submissionsToRemove = _context.Submissions.Where(submissions => submissions.PuzzleID == oldPuzzleView.ID);
+                    _context.Submissions.RemoveRange(submissionsToRemove);
+
+                    // Create new SinglePlayerPuzzle states
                     if (!_context.SinglePlayerPuzzleUnlockStates.Where(unlockState => unlockState.PuzzleID == oldPuzzleView.ID).Any())
                     {
                         _context.SinglePlayerPuzzleUnlockStates.Add(new SinglePlayerPuzzleUnlockState() { PuzzleID = oldPuzzleView.ID });
                     }
-
-                    List<PuzzleStatePerTeam> allPsptsToDelete = await (from pspt in _context.PuzzleStatePerTeam
-                                          where pspt.Puzzle.EventID == Puzzle.EventID && pspt.Puzzle.ID == Puzzle.ID
-                                          select pspt).ToListAsync();
-
-                    foreach(PuzzleStatePerTeam toDelete in allPsptsToDelete)
-                    {
-                        _context.PuzzleStatePerTeam.Remove(toDelete);
-                    }
                 }
                 else // If switch from single player puzzle to team puzzle
                 {
+                    // Remove all old single player puzzle states.
+                    IEnumerable<SinglePlayerPuzzleHintStatePerPlayer> hintStatesToRemove = _context.SinglePlayerPuzzleHintStatePerPlayer.Where(hintState => hintState.Hint.PuzzleID == oldPuzzleView.ID);
+                    _context.SinglePlayerPuzzleHintStatePerPlayer.RemoveRange(hintStatesToRemove);
+
+                    IEnumerable<SinglePlayerPuzzleStatePerPlayer> puzzleStatesToRemove = _context.SinglePlayerPuzzleStatePerPlayer.Where(puzzleState => puzzleState.PuzzleID == oldPuzzleView.ID);
+                    _context.SinglePlayerPuzzleStatePerPlayer.RemoveRange(puzzleStatesToRemove);
+
+                    IEnumerable<SinglePlayerPuzzleSubmission> submissionsToRemove = _context.SinglePlayerPuzzleSubmissions.Where(submissions => submissions.PuzzleID == oldPuzzleView.ID);
+                    _context.SinglePlayerPuzzleSubmissions.RemoveRange(submissionsToRemove);
+
+                    IEnumerable<SinglePlayerPuzzleUnlockState> unlockStatesToRemove = _context.SinglePlayerPuzzleUnlockStates.Where(unlockState => unlockState.PuzzleID == oldPuzzleView.ID);
+                    _context.SinglePlayerPuzzleUnlockStates.RemoveRange(unlockStatesToRemove);
+
                     List<PuzzleStatePerTeam> missingPuzzleStates = await this.GetMissingPuzzleStatesPerTeam(_context, Puzzle.EventID, oldPuzzleView.ID);
                     foreach (PuzzleStatePerTeam missingPuzzleState in missingPuzzleStates)
                     {
                         _context.PuzzleStatePerTeam.Add(missingPuzzleState);
-                    }
-
-                    SinglePlayerPuzzleUnlockState unlockStateToDelete = _context.SinglePlayerPuzzleUnlockStates.Where(unlockState => unlockState.PuzzleID == oldPuzzleView.ID).FirstOrDefault();
-                    if (unlockStateToDelete != null)
-                    {
-                        _context.SinglePlayerPuzzleUnlockStates.Remove(unlockStateToDelete);
                     }
                 }
             }

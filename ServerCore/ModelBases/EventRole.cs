@@ -7,7 +7,7 @@ namespace ServerCore.ModelBases
 {
     public enum EventRole
     {
-        admin,
+        admin = 1,
         author,
         play
     }

@@ -8,29 +8,6 @@
     ViewData["PlayRoute"] = "/Teams/Details";
 }
 
-<!-- TODO - figure out why site.min.css isn't working & remove this once it is -->
-<!-- Github issue https://github.com/PuzzleServer/mainpuzzleserver/issues/413 -->
-<style>
-    .shortcut-menu-dropdown {
-        position: relative;
-        display: inline-block;
-    }
-
-    .shortcut-menu-dropdown-content {
-        display: none;
-        position: absolute;
-        background-color: #f9f9f9;
-        min-width: 160px;
-        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-        padding: 12px 16px;
-        z-index: 1;
-    }
-
-    .shortcut-menu-dropdown:hover .shortcut-menu-dropdown-content {
-        display: block;
-    }
-</style>
-
 <h2>All Teams</h2>
 
 <p>
@@ -58,14 +35,19 @@
     <div>
         Summaries:
         <a asp-page="/Teams/TeamCompositionSummary">Team Composition</a> @("|")
+        <a asp-page="/Teams/TeamMergeSummary">Merged Teams</a> @("|")
         @if (Model.Event.HasSwag)
         {
             <a asp-page="/Swag/Report">Intern T-shirts and Lunch</a> @("|")
         }
+        @if (Model.Event.EventHasTeamSwag)
+        {
+            <a asp-page="/Swag/TeamReport">Intern Team Lunch</a> @("|")
+        }
     </div>
     <br />
-    <a asp-page="/Events/Mailer" asp-route-group="PrimaryContacts">Email all team primary contacts from the bulk mailer</a> @("|") 
-    <form>        
+    <a asp-page="/Events/Mailer" asp-route-group="PrimaryContacts">Email all team primary contacts from the bulk mailer</a> @("|")
+    <form>
         <label>Small team threshold: </label><input type="number" min="0" max="99" asp-for="SmallTeamThreshold" />
         <input type="submit" asp-page="/Events/Mailer" asp-route-group="SmallTeams" asp-route-smallTeamThreshold="@Model.SmallTeamThreshold" value="Email small teams" />
     </form>
@@ -86,6 +68,12 @@
             <th>
                 CustomRoom
             </th>
+            @if (Model.EventRole == ModelBases.EventRole.admin && !string.IsNullOrEmpty(Model.Event.TeamAnnouncement))
+            {
+            <th>
+                TeamAnnouncement
+            </th>
+            }
             <th>
                 PrimaryContactEmail
             </th>
@@ -97,6 +85,9 @@
             </th>
             <th>
                 IsDisqualified
+            </th>
+            <th>
+                Automatic Team Type
             </th>
             <th>
                 Bio
@@ -117,11 +108,24 @@
                     @Model.PlayerCountByTeamID[item.ID]
                 </td>
                 <td>
-                    @item.RoomID
+                    <!--TODO: Add updated RoomId-->
                 </td>
                 <td>
                     @item.CustomRoom
                 </td>
+                @if (Model.EventRole == ModelBases.EventRole.admin && !string.IsNullOrEmpty(Model.Event.TeamAnnouncement))
+                {
+                    <td>
+                        @if (item.ShowTeamAnnouncement == true)
+                        {
+                            <a asp-page-handler="ShowTeamAnnouncement" asp-route-teamId="@item.ID" asp-route-value="false">Unsend</a>
+                        }
+                        else
+                        {
+                            <a asp-page-handler="ShowTeamAnnouncement" asp-route-teamId="@item.ID" asp-route-value="true">Send</a>
+                        }
+                    </td>
+                }
                 <td>
                     @item.PrimaryContactEmail
                 </td>
@@ -135,6 +139,12 @@
                     @if(item.IsDisqualified)
                     {
                         <text>Disqualified</text>
+                    }
+                </td>
+                <td>
+                    @if (item.AutoTeamType != null)
+                    {
+                        <text>@item.AutoTeamType</text>
                     }
                 </td>
                 <td>
@@ -156,6 +166,7 @@
                                 {
                                     <a asp-page="/Hints/AuthorIndex" asp-route-teamId="@item.ID">Hints Taken</a><br />
                                 }
+                                <a asp-page="/Threads/PuzzleThreads" asp-route-teamId="@item.ID">Threads</a><br />
                                 ------<br />
                                 <a asp-page="./MergeInto" asp-route-teamId="@item.ID">Merge Into...</a><br/>
                                 <a asp-page="./Delete" asp-route-teamId="@item.ID">Delete</a>
@@ -174,6 +185,7 @@
                                     <a asp-page="/Hints/AuthorIndex" asp-route-teamId="@item.ID">Hints Taken</a><br />
 
                                 }
+                                <a asp-page="/Threads/PuzzleThreads" asp-route-teamId="@item.ID">Threads</a><br />
                             </div>
                         </div>
                     }

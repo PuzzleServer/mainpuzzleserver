@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using ServerCore.DataModel;
+using ServerCore.Helpers;
 
 namespace ServerCore.Pages.Events
 {
@@ -16,6 +17,7 @@ namespace ServerCore.Pages.Events
     {
         private readonly PuzzleServerContext _context;
         private readonly UserManager<IdentityUser> _userManager;
+        const string SharedResourceDirectoryName = "resources";
 
         [BindProperty]
         public Event Event { get; set; }
@@ -25,6 +27,9 @@ namespace ServerCore.Pages.Events
 
         [BindProperty]
         public bool AddCreatorToLoneWolfTeam { get; set; }
+
+        [BindProperty]
+        public bool AddSkeletonContentFiles { get; set; }
 
         public CreateDemoModel(PuzzleServerContext context, UserManager<IdentityUser> userManager)
         {
@@ -82,6 +87,7 @@ namespace ServerCore.Pages.Events
                 Event.TeamDeleteEnd = Event.AnswerSubmissionEnd;
                 Event.AnswersAvailableBegin = Event.AnswerSubmissionEnd;
                 Event.StandingsAvailableBegin = DateTime.UtcNow;
+                Event.LunchReportDate = Event.AnswerSubmissionEnd;
                 Event.LockoutIncorrectGuessLimit = 5;
                 Event.LockoutIncorrectGuessPeriod = 15;
                 Event.LockoutDurationMultiplier = 2;
@@ -89,6 +95,7 @@ namespace ServerCore.Pages.Events
                 Event.MaxNumberOfTeams = 120;
                 Event.MaxExternalsPerTeam = 9;
                 Event.MaxTeamSize = 12;
+                Event.AllowBlazor = true;
                 _context.Events.Add(Event);
 
                 await _context.SaveChangesAsync();
@@ -163,6 +170,21 @@ namespace ServerCore.Pages.Events
                     IsForSinglePlayer = true
                 };
                 _context.Puzzles.Add(singlePlayer);
+
+                Puzzle singlePlayer2 = new Puzzle
+                {
+                    Name = "Single player sample 2",
+                    Event = Event,
+                    IsPuzzle = true,
+                    SolveValue = 10,
+                    HintCoinsForSolve = 1,
+                    Group = "Sample",
+                    OrderInGroup = 3,
+                    MinPrerequisiteCount = 1,
+                    Description = "Demonstrates single player puzzles",
+                    IsForSinglePlayer = true
+                };
+                _context.Puzzles.Add(singlePlayer2);
 
                 Puzzle meta = new Puzzle
                 {
@@ -297,6 +319,8 @@ namespace ServerCore.Pages.Events
                 _context.Responses.Add(new Response() { Puzzle = hard, SubmittedText = "ANSWER", ResponseText = "Correct!", IsSolution = true });
                 _context.Responses.Add(new Response() { Puzzle = singlePlayer, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
                 _context.Responses.Add(new Response() { Puzzle = singlePlayer, SubmittedText = "ANSWER", ResponseText = "Correct!", IsSolution = true });
+                _context.Responses.Add(new Response() { Puzzle = singlePlayer2, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
+                _context.Responses.Add(new Response() { Puzzle = singlePlayer2, SubmittedText = "ANSWER", ResponseText = "Correct!", IsSolution = true });
                 _context.Responses.Add(new Response() { Puzzle = meta, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
                 _context.Responses.Add(new Response() { Puzzle = meta, SubmittedText = "ANSWER", ResponseText = "Correct!", IsSolution = true });
                 _context.Responses.Add(new Response() { Puzzle = other, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
@@ -328,6 +352,10 @@ namespace ServerCore.Pages.Events
                 _context.Hints.Add(new Hint() { Puzzle = hard, Description = hint2Description, DisplayOrder = 1, Cost = 1, Content = hint2Content });
                 _context.Hints.Add(new Hint() { Puzzle = meta, Description = hint1Description, DisplayOrder = 0, Cost = 0, Content = hint1Content });
                 _context.Hints.Add(new Hint() { Puzzle = meta, Description = hint2Description, DisplayOrder = 1, Cost = 1, Content = hint2Content });
+                _context.Hints.Add(new Hint() { Puzzle = singlePlayer, Description = hint1Description, DisplayOrder = 0, Cost = 0, Content = hint1Content });
+                _context.Hints.Add(new Hint() { Puzzle = singlePlayer, Description = hint2Description, DisplayOrder = 1, Cost = 1, Content = hint2Content });
+                _context.Hints.Add(new Hint() { Puzzle = singlePlayer2, Description = hint1Description, DisplayOrder = 0, Cost = 0, Content = hint1Content });
+                _context.Hints.Add(new Hint() { Puzzle = singlePlayer2, Description = hint2Description, DisplayOrder = 1, Cost = 1, Content = hint2Content });
 
                 await _context.SaveChangesAsync();
 
@@ -406,6 +434,11 @@ namespace ServerCore.Pages.Events
                     _context.PuzzleAuthors.Add(new PuzzleAuthors() { Puzzle = intermediate, Author = demoCreatorUser });
                     _context.PuzzleAuthors.Add(new PuzzleAuthors() { Puzzle = hard, Author = demoCreatorUser });
                     _context.PuzzleAuthors.Add(new PuzzleAuthors() { Puzzle = meta, Author = demoCreatorUser });
+
+                    //
+                    // Puzzle author for the first Single Player puzzle
+                    //
+                    _context.PuzzleAuthors.Add(new PuzzleAuthors() { Puzzle = singlePlayer, Author = demoCreatorUser });
                 }
 
                 // TODO: Files (need to know how to detect whether local blob storage is configured)
@@ -452,6 +485,13 @@ namespace ServerCore.Pages.Events
                 }
 
                 transaction.Commit();
+            }
+
+            // Create base files for event content and style
+            // Fails silently if local Azure storage emulator isn't installed
+            if (AddSkeletonContentFiles)
+            {
+                NewFileCreationHelper.CreateNewEventFiles(Event.ID, SharedResourceDirectoryName);
             }
 
             return RedirectToPage("./Index");

@@ -49,7 +49,7 @@ namespace ServerCore.Pages.Events
         public async Task<IActionResult> OnGetAsync(int? puzzleId)
         {
             // Hide submissions from players until the event is over
-            if (EventRole != EventRole.admin && EventRole == EventRole.author && DateTime.UtcNow <= Event.AnswersAvailableBegin)
+            if (EventRole != EventRole.admin && EventRole != EventRole.author && DateTime.UtcNow <= Event.AnswersAvailableBegin)
             {
                 NoContent = true;
                 return Page();
@@ -65,7 +65,7 @@ namespace ServerCore.Pages.Events
                 puzzleQuery = from puzzle in puzzleQuery
                               join puzzleAuthor in _context.PuzzleAuthors on puzzle.ID equals puzzleAuthor.PuzzleID
                               where puzzleAuthor.AuthorID == LoggedInUser.ID
-                              select puzzle;                              
+                              select puzzle;
             }
 
             FreeformPuzzles = await (puzzleQuery.Select(puzzle => new SelectListItem()

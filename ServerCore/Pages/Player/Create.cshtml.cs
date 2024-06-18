@@ -28,7 +28,7 @@ namespace ServerCore.Pages.Player
 
             if(player != null)
             {
-                return RedirectToPage("./Details", new { id = player.ID });
+                return RedirectToPage("/Teams/Signup");
             }
 
             return Page();
@@ -55,7 +55,7 @@ namespace ServerCore.Pages.Player
             _context.PlayerInEvent.Add(PlayerInEvent);
             await _context.SaveChangesAsync();
 
-            return RedirectToPage("/Teams/List");
+            return RedirectToPage("/Teams/Signup");
         }
     }
 }

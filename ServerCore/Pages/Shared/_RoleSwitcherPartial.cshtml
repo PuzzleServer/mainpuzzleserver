@@ -14,27 +14,34 @@
             var AdminRoute = ViewData["AdminRoute"] as string ?? "/EventSpecific/Index";
             var AuthorRoute = ViewData["AuthorRoute"] as string ?? "/EventSpecific/Index";
             var PlayRoute = ViewData["PlayRoute"] as string ?? "/EventSpecific/Index";
-            if (!IsRegistered && !PlayRoute.StartsWith("/EventSpecific/") && !PlayRoute.Equals("/Teams/Apply") && !PlayRoute.Equals("/Teams/Create"))
+            if (!IsRegistered && !PlayRoute.StartsWith("/EventSpecific/") && !PlayRoute.Equals("/Teams/Apply") && !PlayRoute.Equals("/Teams/Create") && !PlayRoute.Equals("/Teams/Signup"))
             {
                 // If the user isn't registered and isn't on an event page or the two teams pages they have access to, always redirect to the registration page
-                PlayRoute = "/Teams/List";
+                PlayRoute = "/Teams/Signup";
             }
             var RoutingPuzzleId = ViewData["RoutingPuzzleId"] as string;
             var RoutingTeamId = ViewData["RoutingTeamId"] as string;
-
-<ul class="dropdown-menu">
-    @if (IsAdmin)
-    {
-    <li><a asp-page=@AdminRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.admin" asp-route-teamId=@RoutingTeamId asp-route-puzzleId=@RoutingPuzzleId>Admin mode</a></li>
-    <li class="divider"></li>
-    }
-    @if (IsAuthor)
-    {
-    <li><a asp-page=@AuthorRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.author" asp-route-teamId=@RoutingTeamId asp-route-puzzleId=@RoutingPuzzleId>Author mode</a></li>
-    <li class="divider"></li>
-    }
-    <li><a asp-page=@PlayRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play" asp-route-teamId=@RoutingTeamId asp-route-puzzleId=@RoutingPuzzleId>Player mode</a></li>
-</ul>
+            var RoutingPlayerId = ViewData["RoutingPlayerId"] as string;
+            var cssValue = "player-menu";
+            if (IsAdmin)
+            {
+                cssValue = "admin-menu";
+            }
+            else if (IsAuthor) 
+            {
+                cssValue = "author-menu";
+            }
+            <ul class="dropdown-menu @cssValue">
+                @if (IsAdmin)
+                {
+                    <li><a class="dropdown-item" asp-page=@AdminRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.admin" asp-route-teamId=@RoutingTeamId asp-route-puzzleId=@RoutingPuzzleId asp-route-playerId="@RoutingPlayerId">Admin mode</a></li>
+                }
+                @if (IsAuthor)
+                {
+                    <li><a class="dropdown-item" asp-page=@AuthorRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.author" asp-route-teamId=@RoutingTeamId asp-route-puzzleId=@RoutingPuzzleId asp-route-playerId="@RoutingPlayerId">Author mode</a></li>
+                }
+                <li><a class="dropdown-item" asp-page=@PlayRoute asp-route-id="@Event.ID" asp-route-eventRole="@ModelBases.EventRole.play" asp-route-teamId=@RoutingTeamId asp-route-puzzleId=@RoutingPuzzleId asp-route-playerId="@RoutingPlayerId">Player mode</a></li>
+            </ul>
         }
     }
 }

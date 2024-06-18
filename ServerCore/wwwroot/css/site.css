@@ -1,48 +1,76 @@
+/* Set base content size */
+html {
+    font-size: 12px;
+}
+
 body {
+    font-size: 14px;
+    font-family: Tahoma, Verdana, sans-serif;
     padding-bottom: 20px;
 }
 
-/* Wrapping element */
-/* Set some basic padding to keep content from hitting the edges */
-.body-content {
-    padding-left: 15px;
-    padding-right: 15px;
+h1 {
+    font-size: 40px;
+    margin-bottom: 20px;
 }
 
-/* Carousel */
-.carousel-caption p {
+h2 {
+    font-size: 32px;
+    margin-bottom: 16px;
+}
+
+h3 {
+    font-size: 28px;
+    margin-bottom: 14px;
+}
+
+h4 {
+    font-size: 24px;
+    margin-bottom: 12px;
+}
+
+h5 {
     font-size: 20px;
-    line-height: 1.4;
+    margin-bottom: 10px;
 }
 
-/* Make .svg files in the carousel display properly in older browsers */
-.carousel-inner .item img[src$=".svg"] {
-    width: 100%;
+h6 {
+    font-size: 18px;
+    margin-bottom: 9px;
 }
 
-/* QR code generator */
-#qrCode {
-    margin: 15px;
+nav {
+    font-size: 16px;
+    font-weight: normal;
 }
 
-/* Hide/rearrange for smaller screens */
-@media screen and (max-width: 767px) {
-    /* Hide captions */
-    .carousel-caption {
-        display: none;
-    }
+.hidden {
+    display: none;
 }
 
+/* Set some basic padding to keep content from hitting the edges */
+.container {
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto
+}
+
+/* Statemap */
 table.ph-statemap {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
     width: auto;
+    border-collapse: collapse;
 }
 
 table.ph-statemap > tbody > tr > td {
     padding: 3px;
     vertical-align: middle;
+    border-width: 1px;
+    border-style: solid;
+    border-collapse: collapse;
 }
 
 table.ph-statemap > thead > tr > th:nth-child(1n+5) > a {
@@ -83,11 +111,107 @@ table.ph-statemap > thead > tr > th > a, table.ph-statemap > tbody > tr > td > a
     text-decoration: none;
 }
 
+table.ph-statemap > tbody > tr > td.stateparent {
+    position: relative;
+    padding: 0px;
+}
+
+table.ph-statemap > tbody > tr > td > a.statecell {
+    position: absolute;
+    display: block;
+    width: 100%;
+    height: 100%;
+    transform: translate(0, -50%);
+    color: #ccc;
+}
+
+table.ph-statemap > tbody > tr > td > a.statecell.email-mode {
+    background-color: #FF0000;
+    color: white;
+}
+
+table.ph-statemap > tbody > tr > td > a.statecell.solved-old {
+    background-color: #A9D08E;
+    color: #4D7620;
+}
+
+table.ph-statemap > tbody > tr > td > a.statecell.solved-recent {
+    background-color: #4D7620;
+    color: #A9D08E;
+}
+
+table.ph-statemap > tbody > tr > td > a.statecell.unlocked-old {
+    background-color: #BD92DE;
+    color: #7030A0;
+}
+
+table.ph-statemap > tbody > tr > td > a.statecell.still-locked {
+    background-color: #FFE699;
+    color: #CCB577;
+}
+
+table.ph-statemap > tbody > tr > td > a.statecell.unlocked-recent {
+    background-color: #7030A0;
+    color: #BD92DE;
+}
+
+table.ph-statemap > tbody > tr > td > a.statecell.meta-puzzle::after {
+    content: "\2605";
+    font-size: 1rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+table.ph-statemap > tbody > tr > td > a.statecell.final-puzzle::after {
+    content: "\2605";
+    font-size: 2rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
 table.ph-statemap tbody tr td.dark a {
     color: #ccc;
 }
 
-/* Custom css*/
+/* Custom css to tweak bootstrap */
+
+body a {
+    text-decoration: underline;
+}
+
+p {
+    margin-top: 0px;
+    margin-bottom: 5px;
+}
+
+li {
+    margin-top: 0px;
+    margin-bottom: 2px;
+}
+
+button,
+input.btn {
+    color: black;
+    border: 1px solid black;
+    border-radius: 4px;
+    background-color: #f0f0f0;
+    font-size: 14px;
+    padding: 0px 6px;
+}
+
+button:hover,
+input.btn:hover {
+    border: 1px solid black;
+    background-color: #d8d8d8;
+}
+
+#submissionHistory {
+    background-color: #ffffff;
+}
 
 .shortcut-menu-dropdown {
     position: relative;
@@ -111,23 +235,165 @@ table.ph-statemap tbody tr td.dark a {
 .player-menu {
     background-color: #293D2C;
     border-color: #080808;
-    font-weight: bold;
 }
 
 .author-menu {
     background-color: #483F32;
     border-color: #080808;
-    font-weight: bold;
 }
 
 .admin-menu {
     background-color: #330001;
     border-color: #080808;
-    font-weight: bold;
 }
 
 .announcement {
     color: #ff0000;
     font-size: 20px;
     font-weight: bold;
+}
+
+.player-menu a.dropdown-item:hover {
+    background-color: #527a58;
+}
+
+.author-menu a.dropdown-item:hover {
+    background-color: #87765e;
+}
+
+.admin-menu a.dropdown-item:hover {
+    background-color: #990003;
+}
+
+nav a {
+    text-decoration: none;
+}
+
+nav a.navbar-brand {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+nav .dropdown-menu {
+    font-size: 16px;
+}
+
+nav li {
+    margin-bottom: 0px;
+}
+
+.nav-header {
+    padding-top: 2px;
+}
+
+.navbar-custom {
+    color: #9d9d9d;
+    padding: 0px 10%;
+    margin-bottom: 20px;
+    user-select: none;
+}
+
+.navbar-custom a {
+    text-decoration: none;
+    color: #9d9d9d;
+    padding-right: 20px;
+}
+
+.navbar-custom a:hover {
+    color: #ffffff;
+}
+
+#topBarCollapsable.show {
+    border-top: 1px solid black;
+    padding-bottom: 10px;
+}
+
+.navbar-collapse button {
+    border: 0px solid black;
+    text-decoration: none;
+    color: #9d9d9d;
+    background-color: transparent;
+}
+
+.navbar-collapse button:hover {
+    color: #ffffff;
+}
+
+.navbar-collapse.show button {
+    padding-left: 0px;
+}
+
+.nav-item {
+    min-height: 40px;
+    padding-top: 10px;
+}
+
+.nav-item.blank {
+    min-height: 0px;
+    max-height: 0px;
+    padding-top: 0px;
+}
+
+.login-buttons {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.login-buttons button {
+    font-weight: normal;
+}
+
+.nav-item button {
+    font-size: 14px;
+    padding: 0px 20px;
+}
+
+.navbar-toggler {
+    margin: 10px 0px;
+}
+
+a.navbar-brand {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.dropdown a.show {
+    color: #ffffff;
+}
+
+.footer-custom {
+    padding: 0px 10%;
+    margin: 0px;
+}
+
+.footer-custom ul {
+    margin: 0px;
+}
+
+.message-container {
+    border: 0px solid #dedede;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    padding: 10px 20px;
+    margin: 22px 0;
+    font-size: 14pt;
+    font-family: Verdana;
+    box-shadow: 5px 5px 10px 5px #d4d2d2;
+}
+
+.message-game-control {
+    border-color: #03d65f;
+    background-color: #03d65f;
+    color: #F8FFFF;
+    box-shadow: 5px 5px 10px 3px rgba(2, 161, 71, 0.8);
+}
+
+.message-main-content {
+    padding-top: 18px;
+    padding-bottom: 15px;
+    font-size: 16pt;
+}
+
+.message-subtitle {
+    font-size: 12pt;
 }

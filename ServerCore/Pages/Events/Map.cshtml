@@ -58,8 +58,8 @@
             {
                 var teamState = Model.StateMap[x, y] ?? MapModel.StateStats.Default;
 
-                    <td @if (teamState.DisplayLightness < 30) { <text> class= "dark"</text> }  style="background-color: hsl(@teamState.DisplayHue, 100%, @teamState.DisplayLightness%)">
-                        <a asp-page="/Submissions/AuthorIndex" asp-route-puzzleId="@Model.Puzzles[x].Puzzle.ID" asp-route-teamId="@Model.Teams[y].Team.ID">@teamState.DisplayText</a>
+                    <td class="stateparent">
+                        <a class="@teamState.Classes" asp-page="/Submissions/AuthorIndex" asp-route-puzzleId="@Model.Puzzles[x].Puzzle.ID" asp-route-teamId="@Model.Teams[y].Team.ID"></a>
                     </td>
             }
                 </tr>

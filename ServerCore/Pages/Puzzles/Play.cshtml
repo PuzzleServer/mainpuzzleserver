@@ -1,0 +1,381 @@
+﻿@page "/{eventId}/{eventRole}/Play"
+@model ServerCore.Pages.Puzzles.PlayModel
+
+@{
+    @using Helpers;
+
+    ViewData["Title"] = "Play";
+    ViewData["AdminRoute"] = "/Puzzles/Index";
+    ViewData["AuthorRoute"] = "/Puzzles/Index";
+
+    bool unsolvedFilter = Model.StateFilter == PlayModel.PuzzleStateFilter.Unsolved;
+    bool canSubmit = DateTime.UtcNow >= Model.Event.EventBegin || Model.Team?.IsDisqualified == true;
+}
+<style>
+    .radioButton {
+        padding: 0px 5px;
+        color: inherit;
+        text-decoration: none;
+    }
+
+        .radioButton:hover {
+            color: inherit;
+            text-decoration: none;
+            cursor: pointer;
+        }
+</style>
+
+@if (DateTime.UtcNow > @Model.Event.AnswerSubmissionEnd)
+{
+    <div class="alert alert-warning" role="alert">
+        <h4>The event is over.</h4>
+        <span>You may check answers, but they will not count toward your ranking.</span>
+    </div>
+}
+
+@if (Model.AnyErrata)
+{
+    <p>Note: Puzzles with a &#x26A0; before the name have errata, which will be provided on that puzzle's answer submission page.</p>
+}
+<div>
+    <a asp-page="./Play"
+       asp-route-singlePlayerPuzzleSort="@Model.SinglePlayerPuzzleSort"
+       asp-route-teamPuzzleSort="@Model.TeamPuzzleSort"
+       asp-route-stateFilter=@(unsolvedFilter ? PlayModel.PuzzleStateFilter.All : PlayModel.PuzzleStateFilter.Unsolved)>
+        Show @(unsolvedFilter ? "All" : "only unsolved") puzzles
+    </a> | 
+    <a asp-page="/Threads/PuzzleThreads">View help threads</a> | 
+    @if ((Model.Team != null) && (Model.VisibleTeamPuzzleViews.Any()))
+    {
+        <a asp-page="/Teams/Answers" asp-route-teamId="@Model.Team.ID">View all correct team answers</a><text> | </text>
+    }
+    @if (Model.Event.ShowFastestSolves) 
+    {
+        <a asp-page="/Events/FastestSolves" asp-route-teamPuzzleSort="CountDescending" asp-route-stateFilter="Unsolved">Click here</a><text> if you're feeling stuck and want to see which puzzles other teams have solved.</text>
+    }
+</div>
+<br />
+
+<h2>Team puzzles</h2>
+@if (Model.Team == null)
+{
+    <p>You cannot see team puzzles because you are not yet on a team!<br/>
+        Create or join a team <a asp-page="/Player/Create">HERE</a>.</p>
+}
+else if (!Model.VisibleTeamPuzzleViews.Any())
+{
+    if (unsolvedFilter)
+    {
+        <p>You have no unsolved team puzzles.</p>
+    }
+    else
+    {
+        <p>Looks like there are no Team puzzles available here yet!</p>
+    }
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    <a asp-page="./Play"
+                        asp-route-teamId="@Model.Team.ID"
+                        asp-route-singlePlayerPuzzleSort="@Model.SinglePlayerPuzzleSort" 
+                        asp-route-teamPuzzleSort="@(Model.SortForColumnLink(Model.TeamPuzzleSort, PlayModel.SortOrder.GroupAscending, PlayModel.SortOrder.GroupDescending))" 
+                        asp-route-stateFilter="@Model.StateFilter">
+                        @(Model.Event.TermForGroup ?? "Group")
+                    </a>
+                </th>
+                <th>
+                    <a asp-page="./Play"
+                        asp-route-singlePlayerPuzzleSort="@Model.SinglePlayerPuzzleSort"
+                        asp-route-teamPuzzleSort="@(Model.SortForColumnLink(Model.TeamPuzzleSort, PlayModel.SortOrder.PuzzleAscending, PlayModel.SortOrder.PuzzleDescending))"
+                        asp-route-stateFilter="@Model.StateFilter">
+                        Puzzle
+                    </a>
+                </th>
+                @if (Model.ShowAnswers)
+                {
+                    <th>
+                        Answer
+                    </th>
+                }
+                <th>
+                    <a asp-page="./Play"
+                        asp-route-singlePlayerPuzzleSort="@Model.SinglePlayerPuzzleSort" 
+                        asp-route-teamPuzzleSort="@(Model.SortForColumnLink(Model.TeamPuzzleSort, PlayModel.SortOrder.SolveAscending, PlayModel.SortOrder.SolveDescending))"
+                        asp-route-stateFilter="@Model.StateFilter">
+                        Solve
+                    </a>
+                </th>
+                @if (!Model.Event.HideHints)
+                {
+                    <th>
+                        Hints
+                    </th>
+                }
+                @if (Model.AllowFeedback)
+                {
+                    <th>
+                        Feedback
+                    </th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.VisibleTeamPuzzleViews)
+            {
+                <tr id="@item.Name.Replace(" ", "")">
+                    <td class="puzzle-list-group-customizable">
+                        @RawHtmlHelper.Display(item.Group, Model.Event.ID, Html)
+                    </td>
+                    <td class="puzzle-list-title-customizable">
+                        @if (!string.IsNullOrWhiteSpace(item.Errata))
+                        {
+                            <span class="errata-symbol-customizable" title="This puzzle has errata">&#x26A0; </span>
+                        }
+                        @if (item.SolvedTime != null)
+                        {
+                            <span class="solved-symbol-customizable" title="This puzzle has been solved">&#10004; </span>
+                        }
+
+                        @if (!Model.Event.EmbedPuzzles)
+                        {
+                            @if (item.CustomUrl != null)
+                            {
+                                <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.CustomUrl, item.ID, Model.Event.ID, Model.Team.Password)" target="_blank">@RawHtmlHelper.Display(item.Name, Model.Event.ID, Html)</a>
+                            }
+                            else if (item.Content != null)
+                            {
+                                <a asp-action="Index" asp-controller="Files" asp-route-eventId="@Model.Event.ID" asp-route-filename="@item.Content.ShortName" target="_blank">@RawHtmlHelper.Display(item.Name, Model.Event.ID, Html)</a>
+                            }
+                            else
+                            {
+                                @RawHtmlHelper.Display(item.Name, Model.Event.ID, Html)
+                            }
+                        }
+                        else
+                        {
+                            @RawHtmlHelper.Display(item.Name, Model.Event.ID, Html)
+                        }
+
+                        @if (item.PieceMetaUsage != DataModel.PieceMetaUsage.None)
+                        {
+                            <text>(<a asp-page="/Pieces/SimpleMeta" asp-route-puzzleId="@item.ID">Meta Pieces</a>)</text>
+                        }
+                    </td>
+                    @if (Model.ShowAnswers)
+                    {
+                        <td class="puzzle-list-answer-customizable">
+                            @if (item.CustomSolutionUrl != null)
+                            {
+                                <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.CustomSolutionUrl, item.ID, Model.Event.ID, Model.Team.Password)" target="_blank">View answer</a>
+                            }
+                            else if (item.Answer != null)
+                            {
+                                @Html.ActionLink("View answer", "Index", "Files", new { eventId = Model.Event.ID, filename = item.Answer.ShortName }, new { target = "_blank" })
+                            }
+                        </td>
+                    }
+                    <td class="puzzle-list-submit-customizable">
+                        @if (canSubmit)
+                        {
+                            @if (Model.Event.EmbedPuzzles)
+                            {
+                                <a asp-page="/Submissions/Index" asp-route-puzzleId="@item.ID">View Puzzle</a>
+                            }
+                            else
+                            {
+                                <a asp-page="/Submissions/Index" asp-route-puzzleId="@item.ID">Submit Answer</a>
+                            }
+                        }
+                        else
+                        {
+                            <text>Not yet available</text>
+                        }
+                        @if (item.SolvedTime != null)
+                        {
+                            <text> (Solved on </text> @Html.Raw(Model.LocalTime(item.SolvedTime))<text>)</text>
+                        }
+                    </td>
+                    @if (!Model.Event.HideHints)
+                    {
+                        <td class="puzzle-list-hints-customizable">
+                            <a asp-page="/Teams/Hints" asp-route-puzzleid="@item.ID" asp-route-teamId="@Model.Team.ID">Hints</a>
+                        </td>
+                    }
+                    @if (Model.AllowFeedback)
+                    {
+                        <td class="puzzle-list-feedback-customizable">
+                            <a asp-Page="/Puzzles/SubmitFeedback" asp-route-puzzleid="@item.ID">Submit feedback</a>
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if (Model.Event.ShouldShowSinglePlayerPuzzles)
+{
+    <br/>
+    <h2>@Model.Event.SinglePlayerPuzzleTitle</h2>
+    @if (!Model.VisibleSinglePlayerPuzzleViews.Any())
+    {
+        if (unsolvedFilter)
+        {
+            <p>You have no unsolved puzzles in this section.</p>
+        }
+        else
+        {
+            <p>There are no puzzles available here yet.</p>
+        }
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        <a asp-page="./Play"
+                            asp-route-teamPuzzleSort="@Model.TeamPuzzleSort" 
+                            asp-route-singlePlayerPuzzleSort="@(Model.SortForColumnLink(Model.SinglePlayerPuzzleSort, PlayModel.SortOrder.GroupAscending, PlayModel.SortOrder.GroupDescending))"
+                            asp-route-stateFilter="@Model.StateFilter">
+                            @(Model.Event.TermForGroup ?? "Group")
+                        </a>
+                    </th>
+                    <th>
+                        <a asp-page="./Play"
+                            asp-route-teamPuzzleSort="@Model.TeamPuzzleSort" 
+                            asp-route-singlePlayerPuzzleSort="@(Model.SortForColumnLink(Model.SinglePlayerPuzzleSort, PlayModel.SortOrder.PuzzleAscending, PlayModel.SortOrder.PuzzleDescending))" 
+                            asp-route-stateFilter="@Model.StateFilter">
+                            Puzzle
+                        </a>
+                    </th>
+                    @if (Model.ShowAnswers)
+                    {
+                        <th>
+                            Answer
+                        </th>
+                    }
+                    <th>
+                        <a asp-page="./Play"
+                            asp-route-teamPuzzleSort="@Model.TeamPuzzleSort" 
+                            asp-route-singlePlayerPuzzleSort="@(Model.SortForColumnLink(Model.SinglePlayerPuzzleSort, PlayModel.SortOrder.SolveAscending, PlayModel.SortOrder.SolveDescending))"
+                            asp-route-stateFilter="@Model.StateFilter">
+                            Solve
+                        </a>
+                    </th>
+                    @if (!Model.Event.HideHints)
+                    {
+                        <th>
+                            Hints
+                        </th>
+                    }
+                    @if (Model.AllowFeedback)
+                    {
+                        <th>
+                            Feedback
+                        </th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.VisibleSinglePlayerPuzzleViews)
+                {
+                    <tr>
+                        <td class="puzzle-list-group-customizable">
+                            @RawHtmlHelper.Display(item.Group, Model.Event.ID, Html)
+                        </td>
+                        <td class="puzzle-list-title-customizable">
+                            @if (!string.IsNullOrWhiteSpace(item.Errata))
+                            {
+                                <span class="errata-symbol-customizable" title="This puzzle has errata">&#x26A0; </span>
+                            }
+                            @if (item.SolvedTime != null)
+                            {
+                                <span class="solved-symbol-customizable" title="This puzzle has been solved">&#10004; </span>
+                            }
+
+                            @if (!Model.Event.EmbedPuzzles)
+                            {
+                                @if (item.CustomUrl != null)
+                                {
+                                    <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.CustomUrl, item.ID, Model.Event.ID, teamPassword: null)" target="_blank">@RawHtmlHelper.Display(item.Name, Model.Event.ID, Html)</a>
+                                }
+                                else if (item.Content != null)
+                                {
+                                    <a asp-action="Index" asp-controller="Files" asp-route-eventId="@Model.Event.ID" asp-route-filename="@item.Content.ShortName" target="_blank">@RawHtmlHelper.Display(item.Name, Model.Event.ID, Html)</a>
+                                }
+                                else
+                                {
+                                    @RawHtmlHelper.Display(item.Name, Model.Event.ID, Html)
+                                }
+                            }
+                            else
+                            {
+                                @RawHtmlHelper.Display(item.Name, Model.Event.ID, Html)
+                            }
+
+                            @if (item.PieceMetaUsage != DataModel.PieceMetaUsage.None)
+                            {
+                                <text>(<a asp-page="/Pieces/SimpleMeta" asp-route-puzzleId="@item.ID">Meta Pieces</a>)</text>
+                            }
+                        </td>
+                        @if (Model.ShowAnswers)
+                        {
+                            <td class="puzzle-list-answer-customizable">
+                                @if (item.CustomSolutionUrl != null)
+                                {
+                                    <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.CustomSolutionUrl, item.ID, Model.Event.ID, teamPassword: null)" target="_blank">View answer</a>
+                                }
+                                else if (item.Answer != null)
+                                {
+                                    @Html.ActionLink("View answer", "Index", "Files", new { eventId = Model.Event.ID, filename = item.Answer.ShortName }, new { target = "_blank" })
+                                }
+                            </td>
+                        }
+                        <td class="puzzle-list-submit-customizable">
+                            <a asp-page="/Submissions/Index" asp-route-puzzleId="@item.ID">
+                                @if (item.SolvedTime != null)
+                                {
+                                    <text>Solved on </text>
+
+                                    @Html.Raw(Model.LocalTime(item.SolvedTime))
+                                }
+                                else if (canSubmit)
+                                {
+                                    @if (Model.Event.EmbedPuzzles)
+                                    {
+                                        <text>View</text>
+                                    }
+                                    else
+                                    {
+                                        <text>Submit Answer</text>
+                                    }
+                                }
+                                else
+                                {
+                                    <text>Not yet available</text>
+                                }
+                            </a>
+                        </td>
+                        @if (!Model.Event.HideHints)
+                        {
+                            <td class="puzzle-list-hints-customizable">
+                                <a asp-page="/Puzzles/SinglePlayerPuzzleHints" asp-route-puzzleid="@item.ID">Hints</a>
+                            </td>
+                        }
+                        @if (Model.AllowFeedback)
+                        {
+                            <td class="puzzle-list-feedback-customizable">
+                                <a asp-Page="/Puzzles/SubmitFeedback" asp-route-puzzleid="@item.ID">Submit feedback</a>
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}

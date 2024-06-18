@@ -13,13 +13,18 @@
 <h2>@Model.Puzzle.Name: Status</h2>
 @if (Model.UnlockedTime != null)
 {
-    <h4 style="color:green">Puzzle was unlocked at @Html.Raw(Model.LocalTime(Model.UnlockedTime))</h4>
+    <h4 style="color:green">Puzzle was unlocked for all players at @Html.Raw(Model.LocalTime(Model.UnlockedTime))</h4>
 }
 else
 {
-    <h4 style="color:red">Puzzle is currently locked</h4>
+    <h4 style="color:red">Puzzle is currently locked for all players</h4>
 }
-
+<div>
+    Important notes: <br />
+    Clicking "Unlock all"/"Lock all" will unlock/lock the puzzle for all players shown below AND for future players <br />
+    Puzzles can still be unlocked/locked manually for each individual player.<br />
+    A player status line will be created only if the player had viewed the puzzle.<br />
+</div>
 <table class="table">
     <thead>
         <tr>
@@ -48,7 +53,33 @@ else
         </tr>
     </thead>
     <tbody>
-
+        <tr>
+            <td></td>
+            <td>
+                <a asp-page-handler="UnlockState" asp-route-sort="@Model.Sort" asp-route-playerId="@Model.LoggedInUser.ID" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-value="true" onclick="return confirm('Are you sure you want to mark unlock this puzzle for yourself?')">Unlock for me</a>
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <a asp-page-handler="UnlockState" asp-route-sort="@Model.Sort" asp-route-playerId="@Model.LoggedInUser.ID" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-value="false" onclick="return confirm('Are you sure you want to lock the puzzle for yourself?')"> Lock for me</a>
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <a asp-page="./UnlockSinglePlayerPuzzleForPlayer" asp-route-puzzleId="@Model.Puzzle.ID">Unlock for player</a>
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
         <tr>
             <td></td>
             <td>

@@ -1,79 +1,103 @@
-﻿
-<div class="container">
-    <h1>Puzzle Solving Tools</h1>
+﻿<div class="container">
+    <h1>Puzzle Solving Tools and Techniques</h1>
 
-    <p>
-        If you're wondering how the top teams are able to solve so many puzzles so
-        quickly, part of the answer is that they're probably not relying solely on
-        their brainpower. Puzzles in the Puzzlehunt often involve anagramming,
-        deleting, or otherwise manipulating letters and words to discover new words.
-        This is a task well-suited to computers. Since we can't effectively ban the
-        use of such tools, the least we can do is share the locations of some of them
-        to help level the playing field.
-    </p>
+    <p>If you're wondering how the top teams are able to solve so many puzzles so quickly, part of the answer is that they're probably using computer power to help them. Many puzzle mechanics like anagramming, deleting, or otherwise manipulating letters and words to discover new words are well-suited to computers. Since we can't effectively ban the use of such tools, the least we can do is share the locations of some of them to help level the playing field.</p>
 
-    <h3><a href="http://web.archive.org/web/20171224203122/http://www.crosswordman.com/teadown.html">The Electronic Alveary (TEA)</a></h3>
-    <p>
-        TEA (The Electronic Alveary) allows you to search word lists for words
-        that match a pattern. TEA's pattern language supports simple template and
-        anagram searches, but also has the flexibility to perform many more
-        complicated queries.  Check the Quick Reference page on the help menu to see
-        the kinds of things TEA can do for you. Typing ;STIN for example will product
-        all anagrams of the letters STIN (ISN'T, NITS, TINS, SNIT).
-    </p>
+    <br />
+    <h2>TL;DR</h2>
+    <p>All of these links are elaborated on in depth below, and there are even more tools below as well.</p>
+    <div style="display: flex; gap: 40px">
+        <div>
+            <h6 style="margin-top: 9px">General</h6>
+            <div><a asp-page="/EventSpecific/Encodings" target="_blank">All types of encodings (Braille, Morse, etc.)</a></div>
+            <div><a href="https://www.quinapalus.com/qat.html" target="_blank">&lsquo;Qat&rsquo; word finder</a></div>
+            <div><a href="https://nutrimatic.org/2024/" target="_blank">&lsquo;Nutrimatic&rsquo; word finder</a></div>
+            <div><a href="https://www.dcode.fr/caesar-cipher" target="_blank">Letter Shift ciphers (Caesar, ROT-13, etc.)</a></div>
+            <div><a href="https://www.boxentriq.com/code-breaking/cryptogram" target="_blank">Cryptogram helper</a></div>
+            <div><a href="https://www.bing.com/translator" target="_blank">Foreign language translation</a></div>
+        </div>
+        <div>
+            <h6 style="margin-top: 9px">Wordplay</h6>
+            <div><a href="https://www.oneacross.com" target="_blank">Crossword clue helper</a></div>
+            <div><a href="https://en.wikipedia.org/wiki/Cryptic_crossword#Types_of_cryptic_clues" target="_blank">Cryptic crossword primer</a></div>
+            <div><a href="http://wiki.puzzlers.org/dokuwiki/doku.php?id=solving:start" target="_blank">Word finder for &lsquo;Flats&rsquo;</a></div>
+            <h6 style="margin-top: 9px">Audio</h6>
+            <div><a href="https://www.musicca.com/piano" target="_blank">Online playable piano</a></div>
+            <div><a href="https://www.shazam.com" target="_blank">Song identification</a></div>
+            <div><a href="https://www.audacityteam.org/download/" target="_blank">Audio file manipulation</a></div>
+        </div>
+        <div>
+            <h6 style="margin-top: 9px">Pop Culture</h6>
+            <div><a href="https://www.imdb.com" target="_blank">IMDB (movie database)</a></div>
+            <div><a href="https://www.tvtropes.org" target="_blank">TV Tropes</a></div>
+            <div><a href="https://www.knowyourmeme.com" target="_blank">Know Your Meme</a></div>
+            <h6 style="margin-top: 9px">Practice Puzzles</h6>
+            <div><a href="https://www.puzzazz.com/how-to-solve" target="_blank">Ways to solve word puzzles</a></div>
+            <div><a href="https://www.nikoli.co.jp/en/puzzles/" target="_blank">Ways to solve visual logic puzzles</a></div>
+            <div><a href="https://www.chiark.greenend.org.uk/~sgtatham/puzzles/" target="_blank">Many playable logic puzzles</a></div>
+        </div>
+    </div>
+    <br/>
+    <h2>General Techniques</h2>
+    <h3>Observation</h3>
+    <p>The first thing you might notice is that some puzzles have no instructions!  In that case, part of the puzzle is figuring out what to do. Sometimes you'll be looking for differences or similarities between things.  For example, if there are just a number of pictures, perhaps a set of them have some theme or root word in common.</p>
+    <p>Other times, you'll be looking for things that are out of place or arranged suspiciously.  Often, those arrangements use some <a asp-page="/EventSpecific/Encodings">Encoding</a> to spell out a word or phrase. This is especially true if the puzzle contains more pictures or numbers than words. The title usually also hints at the mechanics. For example, a puzzle named "The Three Little Pigs" could be using a Pigpen cipher.</p>
+    
+    <h3>Instructions</h3>
+    <p>If a puzzle does have instructions, there may also be clues in them beyond just their literal meaning.  Look at every word or phrase, because it may have a double meaning! It could be pointing out a mechanic, an encryption, or even a piece of information out on the internet that you need to find in order to solve the puzzle. For example, if you notice words like "dots" and "dashes" in the instructions, they might be hinting about using Morse code.</p>
 
-    <h3><a href="https://www.quinapalus.com/qat.html">Qat</a></h3>
-    <p>
-        Qat is a more modern analog of TEA.
-    </p>
+    <h3>Extraction</h3>
+    <p>The final answer for a puzzle is usually a single word or short phrase. Longer phrases that you extract are often just next steps in the puzzle or clues that you're on the right track. When in doubt, put what you have into the answer submission system! Even if it's not the final answer, most puzzles will tell you if you've solved that part of it correctly or give information about what to do next. Often, the final answer after a longer phrase is just a piece of information on the internet instead of directly in the puzzle, so don't be afraid to look things up, either!</p>
 
-    <h3><a href="https://web.archive.org/web/20110723054953/http://www.valuecube.com/lexpert/LXP321.exe">LeXpert</a></h3>
-    <p>
-        LeXpert is a software program designed to assist word game enthusiasts in
-        expanding their knowledge of words. It offers more than 3500 word lists and
-        different ways of viewing these lists. Customized lists can be created based on
-        patterns, cryptograms, anagrams, number of vowels, etc. It offers similar
-        functionality to TEA.
-    </p>
+    <h3>Types of Puzzles</h3>
+    <p>One of the best ways to learn how to solve puzzles is to familiarize yourself with the many different kinds of puzzles there are. For example, Japan is famous for its many types of number puzzles.  You've likely heard of Sudoku, but there are tons more!  You can explore and play samples of many of them at sites like <a href="https://www.puzzazz.com/how-to-solve" target="_blank">Puzzazz</a>, <a href="https://www.nikoli.co.jp/en/puzzles/" target="_blank">Nikoli</a>, and <a href="https://www.chiark.greenend.org.uk/~sgtatham/puzzles/" target="_blank">Simon Tatham's</a>. As you can see, some puzzle types even go by multiple names, and there are often types of puzzles that you didn't even know had a name!  Those groups of pictures that represent a word? That's called a "Rebus".</p>
+    <p>Similarly, board and card game mechanics are often used in puzzles, so it can be very helpful to recognize them, especially since they may not be called out by name. Chess moves, Poker hands, and more are all fair game, and this is especially true when the game itself has puzzle-like mechanics.  For example, Boggle works just as well online as it does with the physical cubes!</p>
 
-    <h3><a href="http://www.ics.uci.edu/~eppstein/cryptogram/">Cryptogram Helper</a></h3>
-    <p>
-        Cryptogram solver which not only provides a helpful interface for
-        replacing letters in a cryptogram, but can also solve the cryptogram for you.
-        You don't really think we'd give you any cryptograms that can be solved this
-        way, do you?
-    </p>
+    <h3>Searching for Information</h3>
+    <p>Puzzles occasionally deal with manipulating a moderate amount of information; sometimes it's given to you, sometimes it's up to you to go get it.  Wikipedia is great for this, especially when it comes to large lists of information.  Even small lists are very common for puzzle mechanics:  months of the year, <a href="https://en.wikipedia.org/wiki/Lists_of_constellations" target="_blank">constellations in the sky</a>, US Presidents, basically anything you could think of! It may also help to move that information into a program like Excel that can keep all the columns lined up nicely.</p>
 
-    <h3><a href="http://www.oneacross.com">One Across</a></h3>
-    <p>Database of crossword clues.</p>
+    <br />
+    <h2>Text-Based Puzzles</h2>
+    <h3>Indexing</h3>
+    <p>Perhaps all you're given is a paragraph or a list of words.  If there are numbers associated with each item in the list, the first thing to try is to pull out the letter at whichever position in the word/phrase an associated number tells you to.  If that doesn't give you anything useful, it's likely that you're supposed to pull the letter out of the word or phrase that the associated clue tells you to come up with. Other times, a number may be telling you how long the word or words you're trying to come up with will be.</p>
 
-    <h3><a href="http://en.wikipedia.org/wiki/Cryptic_crosswords#Clues">Cryptic Crossword Solving Hints</a></h3>
-    <p>
-        Detailed hints for solving cryptic crossword, including explanations and
-        samples of all the major clue types.
-    </p>
+    <h3>Logic</h3>
+    <p>Since the goal of most puzzles is to narrow down data you have until you get a final answer, it can help if you are familiar with some of the general <a href="https://en.wikipedia.org/wiki/Term_logic" target="_blank">rules of logic</a>. For example, if you're given properties that apply to certain groups, it can help to narrow down the groups that don't have those properties by proving the opposite:  that if something that isn't supposed to have that property DID actually have it, then you'd eventually end up in a <a href="https://en.wikipedia.org/wiki/Contradiction" target="_blank">contradiction</a> where NOTHING could be correct if that were the case. </p>
+    <p>Some of this guessing and checking may mean you need to follow a certain possibility for a little while until it doesn't pan out, so it can be helpful to note when something is just a guess vs. when you're sure of it. Also, be careful not to mix up cause and effect. Just because one thing leads to a second thing doesn't mean the <a href="https://en.wikipedia.org/wiki/Converse_(logic)" target="_blank">converse</a> is true where the second thing ALSO leads to the first.</p>
 
-    <h3>
-        <a href="http://wiki.puzzlers.org/dokuwiki/doku.php?id=solving:start">
-            National Puzzlers League Base Finding Tools for Flats
-        </a>
-    </h3>
-    <p>Search tools for all kinds of word forms, including many you never knew existed.</p>
+    <h3>Encryption</h3>
+    <p>Sometimes nothing at all seems amiss with a puzzle and you just need to follow the instructions. As you do that, keep track of everything, since the data you need may be something you're creating as you go instead of being given to you directly. Or, that data may just look like gibberish!  First, try making sure it's not just a foreign language by running it through a <a href="https://www.bing.com/Translator" target="_blank">translator</a>. If it's not, it may be some sort of <a href="https://en.wikipedia.org/wiki/Cipher#Historical" target="_blank">cipher</a>, where one letter is substituted for another. Sometimes the substitution is straightforward, like the Caesar cipher shown on the <a asp-page="/EventSpecific/Encodings">encodings page</a>, where every letter is just "shifted" over a number of spots in the alphabet. Luckily, there are many <a href="https://www.boxentriq.com/code-breaking/cryptogram" target="_blank">online solvers</a> that can automatically solve simple cryptograms!</p>
+    <p>Other times, it may be something completely random. In that case, first look and see if there's a key hidden somewhere.  Often it's just a word that, when put in front of the rest of the alphabet, gets you the entire key, as seen in the <a href="https://en.wikipedia.org/wiki/Substitution_cipher" target="_blank">ciphertext example here</a>.  If all else fails, you may be able to statistically deduce likely encodings based on the fact that languages like English generally use some letters more than others.  Tools <a href="https://www.dcode.fr/monoalphabetic-substitution" target="_blank">like this</a> can perform such analyses automatically!</p>
 
-    <h3>
-        <a href="tools.qhex.org">
-            tools.qhex.org
-        </a>
-    </h3>
-    <p>A set of puzzle solving tools by Dany Qumsiyeh designed for puzzle hunts. Great for wordplay.</p>
+    <h3>Senses</h3>
+    <p>It sounds funny, but don't forget about your other senses when solving! Sometimes, word puzzles rely on something sounding completely different when you say it out loud compared to just looking at the text.  For example, saying the words "treat" and "ice" out loud over and over will eventually make it sound more like the word "treatise". Or, you may be looking for an overall pattern that isn't visible until you step back from something to view it from farther away.</p>
 
-    <h3><a href="http://www.imdb.com">Internet Movie Database</a></h3>
-    <p>Did we really need to tell you about this one?</p>
+    <h3>Wordplay</h3>
+    <p>There are certain types of puzzles where what is written is <i>explicitly</i> not exactly what is meant.  Many of these double-meanings are used when solving crossword puzzles, and there's even a standard form for many types of clues! You can look up many of them in a database like <a href="https://www.oneacross.com/" target="_blank">this one</a>.</p>
+    <p>For the not-as-straightforward rules, you may need to instead turn to <a href="https://en.wikipedia.org/wiki/Cryptic_crossword#Types_of_cryptic_clues" target="_blank">cryptic crossword</a> logic. Or the puzzle may be a special kind called a Flat, which also has <a href="http://wiki.puzzlers.org/dokuwiki/doku.php?id=solving:start" target="_blank">standard rules</a> for solving.</p>
 
-    <h3><a href="http://www.puzzazz.com/how-to-solve">Puzzazz</a></h3>
-    <p>various puzzle solving techinques.</p>
+    <h3>Letterplay</h3>
+    <p>If your personal lexicon isn't stuffed, you have more than just a thesaurus you can use. <a href="https://www.scrabbleplayers.org/w/NASPA_Zyzzyva:_The_Last_Word_in_Word_Study" target="_blank">Official dictionaries</a> for games like Scrabble are available for download, or as part of <a href="https://scrabble.merriam.com/" target="_blank">regular dictionaries</a>.</p>
+    <p>If instead you need to make new words out of existing ones, you'll need to look for an anagram solver. This is one tool you'll likely turn to often, which is why there are many like <a href="https://www.thewordfinder.com/anagram-solver/" target="_blank">Word Finders</a>, <a href="https://www.quinapalus.com/qat.html" target="_blank">Qat</a>, and <a href="https://nutrimatic.org/" target="_blank">Nutrimatic</a> to choose from.</p>
 
-    <h3><a href="http://zyzzyva.net/">Zyzzyva</a></h3>
-    <p>An app on Windows, macOS, Linux, Android, and iOS. Zyzzyva is the word judge program of choice at major events such as the North American SCRABBLE Championship, the North American School SCRABBLE Championship, the Canadian National SCRABBLE Championship and the World SCRABBLE Championship, as well as at smaller events, clubs and gatherings around the world.</p>
+    <br />
+    <h2>Media-Based Puzzles</h2>
+    <h3>Built-in tools</h3>
+    <p>If you're using the browser to look something up, don't forget that there are multiple search engines to try, and all have the possibility of giving different results.  Don't like what you find on Google or Bing?  Try <a href="https://www.seekr.com/" target="_blank">Seekr</a>, <a href="https://www.mojeek.com/" target="_blank">Mojeek</a>, or <a href="https://www.qwant.com/" target="_blank">Qwant</a>.  You also don't have to search with just words; you can use reverse image search to upload an image and look for ones just like it.</p>
+    <p>Even the browser itself has tools to help you.  For example, Microsoft Edge has built-in screenshotting tools that allow you to draw directly on the screenshot, or web selection tools to only select the relevant parts of a page. Just right-click and look for Web Capture! If your browser doesn't have a screenshot tool, your OS likely does.  The keyboard shortcut in Windows is the Windows key + Shift + S, which puts the screenshot on your clipboard so you can paste it into a program like Paint. </p>
+
+    <h3>Online Puzzles</h3>
+    <p>Puzzles that are webpages instead of PDFs are often built to take advantage of the interactivity that the web makes capable. That means that if something looks clickable... it probably is!  So click, hover, and type around; you may be surprised at how much you can solve without leaving the browser!</p>
+
+    <h3>Special Skills</h3>
+    <p>Depending on the difficulty level of the event, special skills that can't be learned in realtime may or may not be expected. Puzzleday is an event for beginners, so participants wouldn't be expected to be able to read sheet music, for example, but they would in Puzzlehunt. That means if there is sheet music in a Puzzleday puzzle, it's likely just a vehicle for a more standard encoding and the music is simply thematic. Or if you <i>are</i> expected to play music, it won't be any more complicated than something that can be clicked on an <a href="https://www.musicca.com/piano" target="_blank">online piano</a>.</p>
+    <p>Similarly, those with programming knowledge may be able to write small scripts to process data for longer hunts, but it's generally going to be a lot faster to just solve a puzzle directly than to write a solver for it. However, knowing how to write a good Excel formula to conditionally look up or format data may go a long way!</p>
+
+    <h3>Audio Puzzles</h3>
+    <p>For music-based puzzles, there can be a lot to look for besides the lyrics:  the artist, the album, the year the song was released, etc. If you have no words to identify a song with, <a href="https://www.shazam.com/" target="_blank">Shazam</a> is an app that will listen to a song and tell you what it is (hope you have good speakers to play it on!)</p>
+    <p>If it's not a song but is instead just sounds, it may be helpful to load the audio into an editor and view the waveform visually. There are free editors like <a href="https://www.audacityteam.org/download/" target="_blank">Audacity</a> that make doing so very easy.</p>
+
+    <h3>Video Puzzles</h3>
+    <p>Puzzles with videos have even more in them!  There are the actors, the characters, the director, the writer, the soundtrack, famous quotes, and more.  If it's a professionally-made TV show or movie, chances are it's in a database like <a href="https://www.imdb.com/" target="_blank">IMDB</a> that will list all of that info for you, assuming you know at least something to look it up with! Also, some videos may have captions, or could be saved to your local device by right-clicking in case it's easier to watch in a player you can resize to be bigger.</p>
+    <p>Pop culture in general is rife with potential puzzle data, from video games to comics to books to podcasts and so much more! Lots of links between different media can be found on <a href="https://tvtropes.org/" target="_blank">TV Tropes</a>, since many tropes are common storytelling mechanics for any medium. And of course there are many sites that log and share what's new and hot in pop culture like <a href="https://knowyourmeme.com/" target="_blank">Know Your Meme</a>.</p>
 </div>
-

@@ -17,7 +17,7 @@ namespace ServerCore.Pages.Responses
 
         [BindProperty]
         public Response PuzzleResponse { get; set; }
-        
+
         public int PuzzleId { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int id)

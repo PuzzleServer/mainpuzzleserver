@@ -239,7 +239,7 @@ namespace ServerCore.Pages
                 // in the set and, if so, put it in the list of solved puzzles to inform the
                 // requester of.  Also, if we've been asked to query all puzzles in the puzzle's
                 // group and this is one of them, put it in the list of solved puzzles.
-                    
+
                 if (queryPuzzleIdSet != null && queryPuzzleIdSet.Contains(solvedPuzzle.ID)) {
                     solvedPuzzles.Add(solvedPuzzle.ID);
                 }
@@ -344,7 +344,7 @@ namespace ServerCore.Pages
           // assign the timestamp itself.  The reason is that the database might be running
           // on a different machine than the puzzle server, and it might be using a different
           // time zone.
-          
+
           try {
               var sqlCommand = "UPDATE Annotations SET Version = Version + 1, Contents = @Contents, Timestamp = @Timestamp WHERE PuzzleID = @PuzzleID AND TeamID = @TeamID AND [Key] = @Key";
               int result = await context.Database.ExecuteSqlRawAsync(sqlCommand,
@@ -395,10 +395,10 @@ namespace ServerCore.Pages
                     // same puzzle ID, team ID, and key.  (This means there was a race condition:
                     // between the time we checked for the existence of a matching annotation and
                     // now, there was another insert.)  So, we need to update the existing one.
-    
+
                     // But first, we need to detach the annotation from the context so the context
                     // doesn't think the annotation is in the database.
-    
+
                     context.Entry(annotation).State = EntityState.Detached;
                     await UpdateOneAnnotation(response, puzzleId, teamId, key, contents);
                 }
@@ -449,7 +449,7 @@ namespace ServerCore.Pages
                 // return an annotation the requester already knows about, but this is harmless: The
                 // requester will see that the annotation has the same version number as the one
                 // the requester already knows about for that key, and ignore it.
-                
+
                 var lastSyncTimeMinusSlop = request.LastSyncTime.Value.AddSeconds(-5);
                 annotations = await (from a in context.Annotations
                                      where a.PuzzleID == puzzleId && a.TeamID == teamId && a.Timestamp >= lastSyncTimeMinusSlop
@@ -476,7 +476,7 @@ namespace ServerCore.Pages
             // Check to make sure that they're not trying to sync a puzzle and event that don't go together.
             // That could be a security issue, allowing them to unlock pieces for a puzzle using the progress
             // they made in a whole different event!
-            
+
             if (thisPuzzle.Event.ID != eventId) {
                 response.AddError("That puzzle doesn't belong to that event.");
                 return response.GetResult();
@@ -519,7 +519,7 @@ namespace ServerCore.Pages
             this.context = context;
             this.userManager = userManager;
         }
-        
+
         // POST api/Sync
         [HttpPost]
         [Route("{eventId}/{puzzleId}/api/Sync/")]
@@ -540,7 +540,7 @@ namespace ServerCore.Pages
                                                         annotations, last_sync_time, false);
             return Json(response);
         }
-        
+
         // GET api/Sync/client
         [HttpGet]
         [Route("{eventId}/{puzzleId}/api/Sync/client/")]
@@ -551,7 +551,7 @@ namespace ServerCore.Pages
             {
                 return Content("ERROR:  That event doesn't exist");
             }
-            
+
             PuzzleUser user = await PuzzleUser.GetPuzzleUserForCurrentUser(context, User, userManager);
             if (user == null)
             {

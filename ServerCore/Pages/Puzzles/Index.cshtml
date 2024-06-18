@@ -7,31 +7,8 @@
     ViewData["Title"] = "Puzzle Index";
     ViewData["AdminRoute"] = "/Puzzles/Index";
     ViewData["AuthorRoute"] = "/Puzzles/Index";
-    ViewData["PlayRoute"] = "/Teams/Play";
+    ViewData["PlayRoute"] = "/Puzzles/Play";
 }
-
-<!-- TODO - figure out why site.min.css isn't working & remove this once it is -->
-<!-- Github issue https://github.com/PuzzleServer/mainpuzzleserver/issues/413 -->
-<style>
-    .shortcut-menu-dropdown {
-        position: relative;
-        display: inline-block;
-    }
-
-    .shortcut-menu-dropdown-content {
-        display: none;
-        position: absolute;
-        background-color: #f9f9f9;
-        min-width: 160px;
-        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-        padding: 12px 16px;
-        z-index: 1;
-    }
-
-    .shortcut-menu-dropdown:hover .shortcut-menu-dropdown-content {
-        display: block;
-    }
-</style>
 
 <h2>@Model.Event.Name Puzzles (@Model.Puzzles.Count):</h2>
 
@@ -44,12 +21,15 @@
         <a asp-page="/Hints/CreateBulkMulti">Bulk hint create</a> @(" |")
         <a asp-page="/Hints/Responses">View all hint responses</a> @(" |")
     }
-    <a asp-page="/Puzzles/Checklist">View puzzle checklist</a>
+    <a asp-page="/Puzzles/Checklist">View puzzle checklist</a> |
+    <a asp-page="/Puzzles/ResourceManagement">Manage shared resources</a>
 </p>
 <p>
     Support:
-    <a asp-page="/Submissions/AuthorIndex">View all submissions</a> |
+    <a asp-page="/Submissions/AuthorIndex">View all team submissions</a> |
+    <a asp-page="/Submissions/SinglePlayerPuzzleAuthorIndex">View all single player puzzle submissions</a> |
     <a asp-page="/Puzzles/Feedback">View all feedback</a> |
+    <a asp-page="/Threads/PuzzleThreads">View all help threads</a> |
     @if (!Model.Event.HideHints)
     {
         <a asp-page="/Hints/AuthorIndex">View all hints taken</a> @(" |")
@@ -91,6 +71,9 @@
             </th>
             <th>
                 MinPreReq
+            </th>
+            <th>
+                MinInGroup
             </th>
             <th>
                 Support
@@ -164,6 +147,9 @@
                     @item.Puzzle.MinPrerequisiteCount
                 </td>
                 <td>
+                    @item.Puzzle.MinInGroupCount
+                </td>
+                <td>
                     @item.Puzzle.SupportEmailAlias
                 </td>
                 <td>
@@ -182,6 +168,7 @@
                              @if (item.Puzzle.IsForSinglePlayer)
                             {
                                 <a asp-page="/Puzzles/SinglePlayerPuzzleStatus" asp-route-puzzleid=@item.Puzzle.ID>Status</a><br />
+                                <a asp-page="/Submissions/SinglePlayerPuzzleAuthorIndex" asp-route-puzzleid=@item.Puzzle.ID>Submissions</a><br />
                             }
                             else
                             {
@@ -193,6 +180,7 @@
                             {
                                 <a asp-page="/Hints/AuthorIndex" asp-route-puzzleid=@item.Puzzle.ID>Hints Taken</a><br />
                             }
+                            <a asp-Page="/Threads/PuzzleThreads" asp-route-puzzleid=@item.Puzzle.ID>Help threads</a><br />
                             <a asp-Page="./Feedback" asp-route-puzzleid=@item.Puzzle.ID>Feedback</a><br />
                             ------<br />
                             <a asp-Page="./Delete" asp-route-puzzleid="@item.Puzzle.ID">Delete</a>

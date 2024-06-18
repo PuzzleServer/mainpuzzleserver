@@ -79,19 +79,44 @@ namespace ServerCore.Pages
                 return true;
             }
 
-            Team team = await UserEventHelper.GetTeamForPlayer(context, currentEvent, user);
-            if (team == null)
-            {
-                return false;
-            }
-
             // Once answers are available, so are all other files
             if (currentEvent.AreAnswersAvailableNow)
             {
                 return true;
             }
 
-            PuzzleStatePerTeam puzzleState = await PuzzleStateHelper.GetFullReadOnlyQuery(context, currentEvent, puzzle, team).SingleAsync();
+            DateTime? unlockedTime = null;
+            DateTime? solvedTime = null;
+
+            if (puzzle.IsForSinglePlayer)
+            {
+                // get unlock/solve data from player if available
+                SinglePlayerPuzzleStatePerPlayer playerState = await SinglePlayerPuzzleStateHelper.GetFullReadOnlyQuery(context, currentEvent, puzzle.ID, user.ID).FirstOrDefaultAsync();
+
+                if (playerState?.UnlockedTime != null)
+                {
+                    unlockedTime = playerState.UnlockedTime;
+                    solvedTime = playerState.SolvedTime;
+                }
+                else
+                {
+                    // not available? Check global state
+                    SinglePlayerPuzzleUnlockState globalState = await SinglePlayerPuzzleUnlockStateHelper.GetFullReadOnlyQuery(context, currentEvent, puzzle.ID).FirstOrDefaultAsync();
+                    unlockedTime = globalState?.UnlockedTime;
+                }
+            }
+            else
+            {
+                Team team = await UserEventHelper.GetTeamForPlayer(context, currentEvent, user);
+                if (team == null)
+                {
+                    return false;
+                }
+
+                PuzzleStatePerTeam teamState = await PuzzleStateHelper.GetFullReadOnlyQuery(context, currentEvent, puzzle, team).SingleAsync();
+                unlockedTime = teamState?.UnlockedTime;
+                solvedTime = teamState?.SolvedTime;
+            }
 
             switch (content.FileType)
             {
@@ -101,7 +126,7 @@ namespace ServerCore.Pages
 
                 case ContentFileType.Puzzle:
                 case ContentFileType.PuzzleMaterial:
-                    if (puzzleState.UnlockedTime != null)
+                    if (unlockedTime != null)
                     {
                         return true;
                     }
@@ -111,7 +136,7 @@ namespace ServerCore.Pages
                     }
 
                 case ContentFileType.SolveToken:
-                    if (puzzleState.SolvedTime != null)
+                    if (solvedTime != null)
                     {
                         return true;
                     }

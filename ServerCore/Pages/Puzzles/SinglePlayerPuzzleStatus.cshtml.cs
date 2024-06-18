@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -22,6 +23,7 @@ namespace ServerCore.Pages.Puzzles
         }
 
         public DateTime? UnlockedTime { get; set; }
+
         public Puzzle Puzzle { get; set; }
 
         protected override SortOrder DefaultSort => SortOrder.UserAscending;
@@ -40,19 +42,14 @@ namespace ServerCore.Pages.Puzzles
             return await InitializeModelAsync(unlockState, sort: sort);
         }
 
-        public async Task<IActionResult> OnGetUnlockStateAsync(int puzzleId, bool value, string sort)
+        public async Task<IActionResult> OnGetUnlockStateAsync(int puzzleId, int? playerId, bool value, string sort)
         {
-            var unlockStates = _context.SinglePlayerPuzzleUnlockStates.Where(unlockState => unlockState.PuzzleID == puzzleId).ToList();
-            if (value)
-            {
-                unlockStates[0].UnlockedTime = DateTime.UtcNow;
-            }
-            else
-            {
-                unlockStates[0].UnlockedTime = null;
-            }
-
-            await _context.SaveChangesAsync();
+            await SinglePlayerPuzzleStateHelper.SetUnlockStateAsync(
+                _context,
+                Event,
+                puzzleId,
+                playerId,
+                value ? DateTime.UtcNow : null);
 
             // redirect without the unlock info to keep the URL clean
             return RedirectToPage(new { puzzleId, sort });
@@ -60,7 +57,14 @@ namespace ServerCore.Pages.Puzzles
 
         public async Task<IActionResult> OnGetSolveStateAsync(int puzzleId, int? playerId, bool value, string sort)
         {
-            await SetSolveStateAsync(puzzleId, playerId, value);
+            var puzzle = await _context.Puzzles.FirstAsync(m => m.ID == puzzleId);
+
+            if (puzzle == null)
+            {
+                return NotFound();
+            }
+
+            await SetSolveStateAsync(puzzle, playerId, value);
 
             // redirect without the solve info to keep the URL clean
             return RedirectToPage(new { puzzleId, sort });

@@ -22,10 +22,12 @@ namespace ServerCore.Helpers
             }
 
             // Delete all Prerequisites where this puzzle depends on or is depended upon by another puzzle
-            foreach (Prerequisites thisPrerequisite in context.Prerequisites.Where((r) => r.Puzzle == puzzle || r.Prerequisite == puzzle))
-            {
-                context.Prerequisites.Remove(thisPrerequisite);
-            }
+            IEnumerable<Prerequisites> prerequisitesToRemove = context.Prerequisites.Where((r) => r.Puzzle == puzzle || r.Prerequisite == puzzle);
+            context.Prerequisites.RemoveRange(prerequisitesToRemove);
+
+            // Delete all puzzle messages related to this puzzle
+            IEnumerable<Message> messagesToRemove = context.Messages.Where(m => m.Puzzle == puzzle);
+            context.Messages.RemoveRange(messagesToRemove);
 
             if (puzzle.IsForSinglePlayer)
             {

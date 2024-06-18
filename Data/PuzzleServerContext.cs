@@ -40,6 +40,8 @@ namespace ServerCore.DataModel
         public DbSet<Piece> Pieces { get; set; }
         public DbSet<PlayerInEvent> PlayerInEvent { get; set; }
         public DbSet<TeamLunch> TeamLunch { get; set; }
+        public DbSet<Room> Rooms { get; set; }
+        public DbSet<Message> Messages { get; set; }
 
         public static void UpdateDatabase(IApplicationBuilder app)
         {
@@ -66,6 +68,7 @@ namespace ServerCore.DataModel
             modelBuilder.Entity<HintStatePerTeam>().HasKey(state => new { state.TeamID, state.HintID });
             modelBuilder.Entity<SinglePlayerPuzzleHintStatePerPlayer>().HasKey(state => new { state.PlayerID, state.HintID });
             modelBuilder.Entity<Event>().HasIndex(eventObj => new { eventObj.UrlString }).IsUnique();
+            modelBuilder.Entity<Event>().Property(eventObj => eventObj.AllowBlazor).HasDefaultValue(true);
             modelBuilder.Entity<Annotation>().HasKey(state => new { state.PuzzleID, state.TeamID, state.Key });
             modelBuilder.Entity<Piece>().HasIndex(piece => new { piece.ProgressLevel });
             modelBuilder.Entity<Submission>().HasIndex(submission => new { submission.TeamID, submission.PuzzleID, submission.SubmissionText }).IsUnique();
@@ -76,8 +79,16 @@ namespace ServerCore.DataModel
             modelBuilder.Entity<SinglePlayerPuzzleStatePerPlayer>().HasIndex(pspt => new { pspt.PlayerID });
             modelBuilder.Entity<SinglePlayerPuzzleStatePerPlayer>().HasIndex(pspt => new { pspt.PlayerID, pspt.SolvedTime });
             modelBuilder.Entity<SinglePlayerPuzzleUnlockState>().HasKey(state => new { state.PuzzleID });
+            modelBuilder.Entity<Room>().HasIndex(room => new { room.EventID, room.Building, room.Number }).IsUnique();
+            modelBuilder.Entity<Message>().HasIndex(message => message.ThreadId);
+            modelBuilder.Entity<Message>().HasIndex(message => message.EventID);
+            modelBuilder.Entity<Message>().HasIndex(message => message.PuzzleID);
+            modelBuilder.Entity<Message>().HasIndex(message => message.SenderID);
+            modelBuilder.Entity<Message>().HasIndex(message => message.TeamID);
+            modelBuilder.Entity<Message>().HasIndex(message => message.PlayerID);
 
             // SQL doesn't allow multiple cacasding delete paths from one entity to another, so cut links that cause those
+            // For more info, see https://learn.microsoft.com/en-us/ef/core/saving/cascade-delete
             modelBuilder.Entity<ContentFile>().HasOne(contentFile => contentFile.Event).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<PuzzleStatePerTeam>().HasOne(state => state.Team).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<SinglePlayerPuzzleStatePerPlayer>().HasOne(state => state.Player).WithMany().OnDelete(DeleteBehavior.Restrict);
@@ -87,6 +98,11 @@ namespace ServerCore.DataModel
             modelBuilder.Entity<Submission>().HasOne(submission => submission.Team).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<SinglePlayerPuzzleSubmission>().HasOne(submission => submission.Submitter).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Annotation>().HasOne(annotation => annotation.Team).WithMany().OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Message>().HasOne(message => message.Puzzle).WithMany().OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Message>().HasOne(message => message.Sender).WithMany().OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Message>().HasOne(message => message.Team).WithMany().OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Message>().HasOne(message => message.Player).WithMany().OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Message>().HasOne(message => message.Claimer).WithMany().OnDelete(DeleteBehavior.SetNull);
 
             base.OnModelCreating(modelBuilder);
         }

@@ -1,0 +1,29 @@
+﻿@{
+    var eventPage = Model as ServerCore.ModelBases.EventSpecificPageModel;
+    var Event = eventPage?.Event;
+}
+
+@if (!string.IsNullOrEmpty(Event.HomeContent))
+{
+    @Html.Raw(Event.HomeContent)
+}
+else
+{
+
+    <div class="container">
+        <h1>Welcome to the PuzzleDay alpha site!</h1>
+        <div>
+            You are now at aka.ms/pdalpha.<br />
+            <br />
+            We use this site to
+        </div>
+        <ul>
+            <li>Get our puzzles tested by our PuzzleDay planner peers</li>
+            <li>See what our puzzles will look like to players when they go on the site</li>
+            <li>Test the site before showing it outside of PuzzleDay planning</li>
+        </ul>
+        <h2>How do I use the site?</h2>
+        Check out our <a href="https://github.com/PuzzleServer/mainpuzzleserver/wiki/Onboarding" target="_blank">Onboarding wiki</a>
+    </div>
+
+}

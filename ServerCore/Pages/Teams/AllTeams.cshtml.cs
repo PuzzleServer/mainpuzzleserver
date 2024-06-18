@@ -19,7 +19,7 @@ namespace ServerCore.Pages.Teams
         public AllTeamsModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
         }
-        
+
         public async Task<IActionResult> OnGetAsync()
         {
             if (LoggedInUser == null)

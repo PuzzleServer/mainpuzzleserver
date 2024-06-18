@@ -32,6 +32,11 @@ namespace ServerCore.Pages.Teams
                 return Challenge();
             }
 
+            if (!(await LoggedInUser.IsRegisteredForEvent(_context, Event)))
+            {
+                return RedirectToPage("/Player/Create");
+            }
+
             TeamMembers playerTeam = await (from member in _context.TeamMembers
                                             where member.Member == LoggedInUser &&
                                             member.Team.Event == Event

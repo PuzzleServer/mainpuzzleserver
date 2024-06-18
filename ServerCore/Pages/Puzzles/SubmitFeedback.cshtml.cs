@@ -18,14 +18,14 @@ namespace ServerCore.Pages.Puzzles
         }
 
         [BindProperty]
-        public Feedback Feedback { get; set; }  
+        public Feedback Feedback { get; set; }
         public Puzzle Puzzle { get; set; }
 
         /// <summary>
         /// Gets the submit feedback page for a puzzle
         /// </summary>
         public async Task<IActionResult> OnGetAsync(int puzzleId)
-        {       
+        {
             Puzzle = await _context.Puzzles.Where(m => m.ID == puzzleId).FirstOrDefaultAsync();
 
             if (Puzzle == null)
@@ -46,7 +46,7 @@ namespace ServerCore.Pages.Puzzles
 
             return Page();
         }
-        
+
         /// <summary>
         /// Takes the filled out items and adds it to the database as a new piece of feedback.
         /// </summary>
@@ -68,7 +68,7 @@ namespace ServerCore.Pages.Puzzles
                                              Feedback.MaxRating);
 
             Feedback editableFeedback = await _context.Feedback
-                .Where((f) => (f.Puzzle.ID == puzzleId && 
+                .Where((f) => (f.Puzzle.ID == puzzleId &&
                                f.Submitter == LoggedInUser))
                 .FirstOrDefaultAsync();
 
@@ -104,7 +104,7 @@ namespace ServerCore.Pages.Puzzles
 
             await _context.SaveChangesAsync();
 
-            return RedirectToPage("/Teams/Play", new { teamId = GetTeamId().Result });
+            return RedirectToPage("/Puzzles/Play");
         }
     }
 }

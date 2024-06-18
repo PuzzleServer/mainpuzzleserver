@@ -24,56 +24,51 @@
         </dt>
         <dd>
             @Model.Team.Name
-        </dd>
-        <!-- TODO: Conditionally show/hide based on event property (not needed for PuzzleHunt)
-    <dt>
-        RoomID
-    </dt>
-    <dd>
-        @Model.Team.RoomID
-    </dd>
-    -->
+        </dd>        
+        @if (!Model.Event.IsRemote)
+        {
+            <dt>
+                Team room
+            </dt>
+            <dd>
+                @if (Model.Team.CustomRoom == null)
+                {
+                    <div>(none)</div>
+                }
+                else
+                {
+                    @Model.Team.CustomRoom
+                }
+            </dd>
+            <dt>
+                Primary phone number
+            </dt>
+            <dd>
+                @if (Model.Team.PrimaryPhoneNumber == null)
+                {
+                    <div>(none)</div>
+                }
+                else
+                {
+                    @Model.Team.PrimaryPhoneNumber
+                }
+            </dd>
+            <dt>
+                Secondary phone number
+            </dt>
+            <dd>
+                @if (Model.Team.SecondaryPhoneNumber == null)
+                {
+                    <div>(none)</div>
+                }
+                else
+                {
+                    @Model.Team.SecondaryPhoneNumber
+                }
+            </dd>
+        }
         <dt>
-            Team room
-        </dt>
-        <dd>
-            @if (Model.Team.CustomRoom == null)
-            {
-                <div>(none)</div>
-            }
-            else
-            {
-                @Model.Team.CustomRoom
-            }
-        </dd>
-        <dt>
-            Primary phone number
-        </dt>
-        <dd>
-            @if (Model.Team.PrimaryPhoneNumber == null)
-            {
-                <div>(none)</div>
-            }
-            else
-            {
-                @Model.Team.PrimaryPhoneNumber
-            }
-        </dd>
-        <dt>
-            Secondary phone number
-        </dt>
-        <dd>
-            @if (Model.Team.SecondaryPhoneNumber == null)
-            {
-                <div>(none)</div>
-            }
-            else
-            {
-                @Model.Team.SecondaryPhoneNumber
-            }
-        </dd>
-        <dt>
-            Primary contact e-mail 
+            Primary contact e-mail
         </dt>
         <dd>
             @if (Model.Team.PrimaryContactEmail == null)
@@ -99,7 +94,7 @@
             }
         </dd>
     </dl>
-    
+
     <form method="post">
         <input type="hidden" asp-for="Team.ID" />
         <input type="submit" value="Delete" class="btn btn-default" />

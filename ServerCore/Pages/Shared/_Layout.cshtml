@@ -1,73 +1,137 @@
 ﻿<!DOCTYPE html>
 <html lang="en-us">
+
+@{
+    // Using ev here so that it isn't the same as Event that we bind in the <body>
+    // Works fine if we use Event, but VS will yell at you with an error in the IDE
+    var evBase = Model as ServerCore.ModelBases.EventSpecificPageModel;
+    var ev = evBase?.Event;
+    string fileStoragePrefix = "";
+    if (evBase != null)
+    {
+        fileStoragePrefix = evBase.GetFileStoragePrefix();
+    }
+}
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Microsoft Puzzle Server</title>
 
     <environment include="Development">
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/lib/bootstrap-5.3.2-dist/css/bootstrap.css" />
         <link rel="stylesheet" href="~/css/site.css" />
     </environment>
     <environment exclude="Development">
-        <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
-              asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+              asp-fallback-href="~/lib/bootstrap-5.3.2-dist/css/bootstrap.min.css"
               asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
     </environment>
 
-    <!-- TODO: Make this actually scalable and correct -->
-    @{
-        // Using ev here so that it isn't the same as Event that we bind in the <body>
-        // Works fine if we use Event, but VS will yell at you with an error in the IDE
-        var ev = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Event;
-        if ((ev?.UrlString != null) && ((ev.UrlString.StartsWith("pd")) || (ev.UrlString.StartsWith("nipd"))))
-        {
-            <link rel="stylesheet" href="~/css/@(ev.UrlString)/styles.min.css" />
+    <environment include="Development">
+        <script src="~/lib/jquery-3.7.0-dist/jquery-3.7.0.js"></script>
+        <script src="~/lib/popper-2.11.8-dist/popper.js"></script>
+        <script src="~/lib/bootstrap-5.3.2-dist/js/bootstrap.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.7.0.min.js"
+                asp-fallback-src="~/lib/jquery-3.7.0-dist/jquery-3.7.0.min.js"
+                asp-fallback-test="window.jQuery"
+                crossorigin="anonymous"
+                integrity="sha384-NXgwF8Kv9SSAr+jemKKcbvQsz+teULH/a5UNJvZc6kP47hZgl62M1vGnw6gHQhb1">
+        </script>
+        <!-- Note that the URL below is npm/"at"popperjs with just one symbol; the second symbol is an escape character -->
+        <script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@2.11.8/dist/umd/popper.min.js"
+                asp-fallback-src="~/lib/popper-2.11.8-dist/popper.min.js"
+                asp-falllback-test="window.Popper"
+                crossorigin="anonymous"
+                integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r">
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+                asp-fallback-src="~/lib/bootstrap-5.3.2-dist/js/bootstrap.min.js"
+                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
+                crossorigin="anonymous"
+                integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+">
+        </script>
+        <script src="~/js/site.min.js" asp-append-version="true"></script>
+    </environment>
+
+    <base href="~/" />
+    <style>
+        @@media print {
+            .no-print {
+                display: none;
+            }
         }
+    </style>
+
+    @if (ev != null && ev.AllowBlazor)
+    {
+        <component type="typeof(Microsoft.AspNetCore.Components.Web.HeadOutlet)"
+                   render-mode="ServerPrerendered" />
     }
-    <link href="https://fonts.googleapis.com/css?family=Montserrat|Staatliches" rel="stylesheet">
 
     @{
-        var refresh = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Refresh;
+        // Keep the old path for events prior to 2024 so they aren't broken
+        if ((ev?.HomePartial != null) && ((ev.HomePartial.StartsWith("pd")) || (ev.HomePartial.StartsWith("nipd"))) && (ev.EventBegin.Year < 2024))
+        {
+            <link rel="stylesheet" href="~/css/@(ev.HomePartial)/styles.min.css" />
+        }
+
+        // For all future events, resources global to all pages for an event should be uploaded to the shared event resources page
+        // (FileStoragePrefix used to account for different urls between development and production)
+        if (ev?.EventBegin.Year >= 2024)
+        {
+            <link rel="stylesheet" href="@(fileStoragePrefix)/resources/global-styles.css" />
+        }
+    }
+
+    @{
+        var refresh = evBase?.Refresh;
         if (refresh.HasValue)
         {
             <meta http-equiv="refresh" content="@refresh.Value" />
         }
     }
-
 </head>
-<body>
-    @{
-        var Event = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.Event;
-        var EventRole = (Model as ServerCore.ModelBases.EventSpecificPageModel)?.EventRole;
-    }
-    <!--CURRENT NAV BAR-->
-    @if (Event == null)
+<body class="body-customizable">
+    @if (ev != null && ev.AllowBlazor)
     {
-        <nav class="navbar navbar-inverse navbar-static-top">
-            <div class="container">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    @if (Event == null)
-                    {
-                        <a asp-page="/Index" class="navbar-brand">
-                            Microsoft Puzzles
-                        </a>
-                    }
-                    else
-                    {
-                        <a asp-page="/EventSpecific/Index" asp-route-eventId=@Event.EventID class="navbar-brand">
-                            @(Event.Name)
-                        </a>
-                    }
-                </div>
-                <div class="navbar-collapse collapse">
+        <script src="_framework/blazor.server.js"></script>
+        <script>
+            var lockResolver;
+            if (navigator && navigator.locks && navigator.locks.request) {
+                const promise = new Promise((res) => {
+                    lockResolver = res;
+                });
+
+                navigator.locks.request('browserSleepLock', { mode: "shared" }, () => {
+                    return promise;
+                });
+            }
+        </script>
+    }
+
+    @RenderSection("Scripts", required: false)
+
+    <!--CURRENT NAV BAR-->
+    @if (ev == null)
+    {
+        <nav class="navbar bg-dark navbar-custom static-top navbar-expand-sm no-print" data-bs-theme="dark">
+            <div class="container-fluid">
+                <a asp-page="/Index" class="navbar-brand">
+                    Microsoft Puzzles
+                </a>
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#topBarCollapsable" title="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="topBarCollapsable">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item blank">&nbsp;</li>
+                    </ul>
                     <partial name="/Pages/Shared/_LoginPartial.cshtml" />
                 </div>
             </div>
@@ -77,50 +141,32 @@
     {
         <!-- Navigation header for event specific pages -->
         <partial name="/Pages/Shared/_EventNavigationPartial.cshtml" />
-
     }
 
-    <div class="container body-content">
-        @if (!string.IsNullOrEmpty(Event?.Announcement))
+    <div class="container body-content body-content-customizable">
+        @if (!string.IsNullOrEmpty(ev?.Announcement))
             {
-            <p class="announcement">@Event.Announcement</p>
-            <hr />
+            <p class="announcement announcement-customizable no-print">@ev?.Announcement</p>
+            <hr class="no-print" />
+            }
+        @if (!string.IsNullOrEmpty(ev?.TeamAnnouncement) && await (Model as ServerCore.ModelBases.EventSpecificPageModel)?.GetShowTeamAnnouncement())
+            {
+            <p class="announcement announcement-customizable no-print">@ev?.TeamAnnouncement</p>
+            <hr class="no-print" />
             }
         @RenderBody()
-        <hr />
-        <footer>
-            <ul class="list-inline text-right">
-                <li><a href="mailto:@(Event?.ContactEmail ?? "puzzhunt@microsoft.com")">Contact Us</a></li>
-                <li><a href="mailto:puzztech@puzzlehunt.org">Website Emergency?</a></li>
-                <li><a href="https://go.microsoft.com/fwlink/?LinkID=206977">Terms Of Use</a></li>
-                <li><a href="https://go.microsoft.com/fwlink/?LinkId=506942">Trademarks</a></li>
-                <li><a href="http://go.microsoft.com/fwlink/?LinkId=521839">Privacy &amp; Cookies</a></li>
-                <li>© @(DateTime.Now.Year) @(Event?.Copyright ?? "Puzzlehunt")</li>
-            </ul>
-        </footer>
     </div>
 
-    <environment include="Development">
-        <script src="~/lib/jquery/dist/jquery.js"></script>
-        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
-        <script src="~/js/site.js" asp-append-version="true"></script>
-    </environment>
-    <environment exclude="Development">
-        <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"
-                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
-                asp-fallback-test="window.jQuery"
-                crossorigin="anonymous"
-                integrity="sha384-K+ctZQ+LL8q6tP7I94W+qzQsfRV2a+AfHIi9k8z8l9ggpc8X+Ytst4yBo/hH+8Fk">
-        </script>
-        <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
-                asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
-                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
-                crossorigin="anonymous"
-                integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa">
-        </script>
-        <script src="~/js/site.min.js" asp-append-version="true"></script>
-    </environment>
-
-    @RenderSection("Scripts", required: false)
+    <hr class="no-print" />
+    <footer class="no-print footer-custom">
+        <ul class="list-inline text-end">
+            <li class="list-inline-item"><a href="mailto:@(ev?.ContactEmail ?? "puzzhunt@microsoft.com")">Contact Us</a></li>
+            <li class="list-inline-item"><a href="mailto:puzztech@puzzlehunt.org">Website Emergency?</a></li>
+            <li class="list-inline-item"><a href="https://go.microsoft.com/fwlink/?LinkID=206977">Terms Of Use</a></li>
+            <li class="list-inline-item"><a href="https://go.microsoft.com/fwlink/?LinkId=506942">Trademarks</a></li>
+            <li class="list-inline-item"><a href="http://go.microsoft.com/fwlink/?LinkId=521839">Privacy &amp; Cookies</a></li>
+            <li class="list-inline-item">&copy; @(DateTime.Now.Year) @(ev?.Copyright ?? "Puzzlehunt")</li>
+        </ul>
+    </footer>
 </body>
 </html>

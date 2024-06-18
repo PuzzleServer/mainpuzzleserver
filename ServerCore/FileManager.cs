@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.CodeAnalysis.Elfie.Model.Strings;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
@@ -24,10 +25,11 @@ namespace ServerCore
         /// <param name="fileName">Name of the file to upload. The caller should ensure it is safe to use in a URL</param>
         /// <param name="eventId">Event the file will be used in</param>
         /// <param name="contents">Contents of the file</param>
+        /// <param name="specificDirectory">A directory name to upload the file to. If null, a randomized directory will be used.</param>
         /// <returns>Url of the file in blob storage</returns>
-        public static async Task<Uri> UploadBlobAsync(string fileName, int eventId, Stream contents)
+        public static async Task<Uri> UploadBlobAsync(string fileName, int eventId, Stream contents, string specificDirectory = null)
         {
-            CloudBlockBlob blob = await CreateNewBlob(fileName, eventId, GetRandomDirectoryName());
+            CloudBlockBlob blob = await CreateNewBlob(fileName, eventId, specificDirectory ?? GetRandomDirectoryName());
 
             await blob.UploadFromStreamAsync(contents);
             return blob.Uri;
@@ -52,6 +54,34 @@ namespace ServerCore
             return blob.Uri;
         }
 
+        /// <summary>
+        /// Enumerates all the files in a directory subtree.
+        /// </summary>
+        /// <param name="eventId">Event to find the directory in</param>
+        /// <param name="directoryName">The name of the directory</param>
+        /// <returns>The names and URIs of all the files in the directory.</returns>
+        public static async Task<List<DirectoryFileResult>> GetDirectoryContents(int eventId, string directoryName)
+        {
+            CloudBlobDirectory directory = await GetPuzzleDirectoryAsync(eventId, directoryName);
+
+            BlobContinuationToken continuationToken = null;
+            List<DirectoryFileResult> results = new List<DirectoryFileResult>();
+            do
+            {
+                bool useFlatBlobListing = true;
+                BlobListingDetails blobListingDetails = BlobListingDetails.None;
+                int maxBlobsPerRequest = 500;
+                var response = await directory.ListBlobsSegmentedAsync(useFlatBlobListing, blobListingDetails, maxBlobsPerRequest, continuationToken, null, null);
+                continuationToken = response.ContinuationToken;
+                foreach (var result in response.Results)
+                {
+                    results.Add(new DirectoryFileResult() {  Name = (result as CloudBlockBlob)?.Name, Uri = result.Uri });
+                }
+            }
+            while (continuationToken != null);
+            return results;
+        }
+
         private static async Task<CloudBlockBlob> CreateNewBlob(string fileName, int eventId, string puzzleDirectoryName)
         {
             CloudBlobDirectory puzzleDirectory = await GetPuzzleDirectoryAsync(eventId, puzzleDirectoryName);
@@ -71,10 +101,11 @@ namespace ServerCore
         /// <param name="files">A dictionary of files. Keys are file names. The caller should ensure they are safe to use in a URL.
         /// The values are streams with the contents of the files</param>
         /// <param name="eventId">Event the files will be used in</param>
+        /// <param name="specificDirectory">A directory name to upload the files to. If null, a randomized directory will be used.</param>
         /// <returns>A dictionary with key of the file names and value of the urls of the files in blob storage</returns>
-        public static async Task<Dictionary<string, Uri>> UploadBlobsAsync(Dictionary<string, Stream> files, int eventId)
+        public static async Task<Dictionary<string, Uri>> UploadBlobsAsync(Dictionary<string, Stream> files, int eventId, string specificDirectory = null)
         {
-            CloudBlobDirectory puzzleDirectory = await GetPuzzleDirectoryAsync(eventId, GetRandomDirectoryName());
+            CloudBlobDirectory puzzleDirectory = await GetPuzzleDirectoryAsync(eventId, specificDirectory ?? GetRandomDirectoryName());
             Dictionary<string, Uri> fileUrls = new Dictionary<string, Uri>(files.Count);
 
             foreach (KeyValuePair<string, Stream> file in files)
@@ -117,6 +148,16 @@ namespace ServerCore
         }
 
         /// <summary>
+        /// Gets the url that that all file storage for this event lives at
+        /// </summary>
+        /// <returns>The url as a string</returns>
+        public static string GetFileStoragePrefix(int eventId, string puzzleDirectoryName) {
+            CloudBlobClient blobClient = StorageAccount.CreateCloudBlobClient();
+            CloudBlobContainer eventContainer = blobClient.GetContainerReference($"evt{eventId}");
+            return eventContainer.Uri.AbsoluteUri;
+        }
+
+        /// <summary>
         /// Cretes a random directory name that will work in a URL
         /// </summary>
         private static string GetRandomDirectoryName()
@@ -143,10 +184,19 @@ namespace ServerCore
         private static CloudStorageAccount StorageAccount
         {
             get
-            { 
+            {
                 return CloudStorageAccount.Parse(ConnectionString);
             }
         }
+    }
+
+    /// <summary>
+    /// One file in the result of a call to GetDirectoryContents.
+    /// </summary>
+    public class DirectoryFileResult
+    {
+        public string Name { get; set; }
+        public Uri Uri { get; set; }
     }
 
     /// <summary>
@@ -159,7 +209,7 @@ namespace ServerCore
         public BackgroundFileUploader(IServiceProvider serviceProvider)
         {
             IServiceScope newScope = serviceProvider.CreateScope();
-            _context = newScope.ServiceProvider.GetService<PuzzleServerContext>();            
+            _context = newScope.ServiceProvider.GetService<PuzzleServerContext>();
         }
 
         public void CloneInBackground(ContentFile newFile, string fileName, int eventId, Uri sourceUri)

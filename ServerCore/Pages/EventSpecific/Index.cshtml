@@ -5,6 +5,19 @@
     ViewData["AdminRoute"] = "/EventSpecific/Index";
     ViewData["AuthorRoute"] = "/EventSpecific/Index";
     ViewData["PlayRoute"] = "/EventSpecific/Index";
+    var eventPage = Model as ServerCore.ModelBases.EventSpecificPageModel;
+    var Event = eventPage?.Event;
 }
 
-<partial name="../Resources/@(Model.Event.HomePartial ?? "Default")/HomePartial.cshtml" />
+@if (Event.EventBegin.Year < 2024)
+{
+    <partial name="../Resources/@(Event.HomePartial ?? "Default")/HomePartial.cshtml" />
+}
+else
+{
+    if (!string.IsNullOrEmpty(Event.HomeContent))
+    {
+        @Html.Raw(Event.HomeContent);
+    }
+    <partial name="/Pages/Shared/_ContentFilePartial.cshtml" />
+}

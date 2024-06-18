@@ -45,6 +45,9 @@
                     Primary Contact
                 </th>
                 <th>
+                    Automatic Team Type
+                </th>
+                <th>
                     Total
                 </th>
                 <th>
@@ -72,6 +75,9 @@
                         @teamComp.TeamPrimaryContactEmail
                     </td>
                     <td>
+                        @teamComp.AutoTeamTypeString
+                    </td>
+                    <td>
                         @teamComp.Total
                     </td>
                     <td>
@@ -93,6 +99,58 @@
                     </td>
                 </tr>
             }
+            <tr>
+                <td>
+                    <b>Total</b>
+                </td>
+                <td>
+                </td>
+                <td>
+                </td>
+                <td>
+                    <b>@Model.TotalTotal</b>
+                </td>
+                <td>
+                    <b>@Model.TotalEmployeeCount</b>
+                </td>
+                <td>
+                    <b>@Model.TotalInternCount</b>
+                </td>
+                <td>
+                    <b>@Model.TotalNonMicrosoftCount</b>
+                </td>
+                <td>
+                    <b>@Model.TotalPossibleEmployeeAliasesCount</b>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Automatic Team Summary</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Total Automatic Teams</th>
+                <th>Total Manual Teams</th>
+                <th>Total Automatic Players</th>
+                <th>Total Manual Players</th>
+                <th>Automatic Beginner Players</th>
+                <th>Automatic Expert Players</th>
+                <th>Automatic Casual Players</th>
+                <th>Automatic Serious Players</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@Model.TotalAutoTeamCount</td>
+                <td>@Model.TotalManualTeamCount</td>
+                <td>@Model.TotalAutoPlayerCount</td>
+                <td>@Model.TotalManualPlayerCount</td>
+                <td>@Model.TotalBeginnerPlayerCount</td>
+                <td>@Model.TotalExpertPlayerCount</td>
+                <td>@Model.TotalCasualPlayerCount</td>
+                <td>@Model.TotalSeriousPlayerCount</td>
+            </tr>
         </tbody>
     </table>
 </div>

@@ -20,7 +20,7 @@ namespace ServerCore.Pages.Teams
     {
 
         public DisqualifyModel(
-            PuzzleServerContext serverContext, 
+            PuzzleServerContext serverContext,
             UserManager<IdentityUser> userManager)
             : base(serverContext, userManager)
         {

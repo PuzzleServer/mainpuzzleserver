@@ -49,15 +49,21 @@ namespace ServerCore.Pages.Events
             if (EventRole == EventRole.admin)
             {
                 puzzles = await _context.Puzzles.Where(p => p.Event == Event)
+                    .Where(p => !p.IsForSinglePlayer)
                     .Select(p => new PuzzleStats() { Puzzle = p })
                     .ToListAsync();
             }
             else
             {
                 puzzles = await UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser)
+                    .Where(p => !p.IsForSinglePlayer)
                     .Select(p => new PuzzleStats() { Puzzle = p })
                     .ToListAsync();
             }
+
+            int finalMetaCount = await _context.Puzzles.Where(p => p.Event == Event)
+                    .Where(p => p.IsFinalPuzzle)
+                    .CountAsync();
 
             List<TeamStats> teams = await _context.Teams.Where(t => t.Event == Event)
                 .Select(t => new TeamStats() { Team = t })
@@ -78,7 +84,20 @@ namespace ServerCore.Pages.Events
                 null,
                 EventRole == EventRole.admin ? null : LoggedInUser).ToListAsync();
 
-            List<StateStats> stateList = new List<StateStats>(states.Count);
+            // Get the earliest unlock time
+            DateTime? earliestUnlock = null;
+            foreach (PuzzleStatePerTeam state in states)
+            {
+                if (state.UnlockedTime != null)
+                {
+                    if (earliestUnlock == null || earliestUnlock.Value >= state.UnlockedTime.Value)
+                    {
+                        earliestUnlock = state.UnlockedTime;
+                    }
+                }
+            }
+
+                List<StateStats> stateList = new List<StateStats>(states.Count);
             foreach (PuzzleStatePerTeam state in states)
             {
                 // TODO: Is it more performant to prefilter the states if an author, or is this sufficient?
@@ -91,6 +110,7 @@ namespace ServerCore.Pages.Events
                 stateList.Add(new StateStats() {
                     Puzzle = puzzle,
                     Team = team,
+                    UnlockedAtStart = state.UnlockedTime == earliestUnlock,
                     UnlockedTime = state.UnlockedTime,
                     SolvedTime = state.SolvedTime,
                     LockedOut = state.IsEmailOnlyMode
@@ -110,7 +130,16 @@ namespace ServerCore.Pages.Events
 
                     if (puzzle.Puzzle.IsFinalPuzzle && !team.CheatCodeUsed)
                     {
-                        team.FinalMetaSolveTime = state.SolvedTime.Value;
+                        if (team.LatestFinalMetaSolveTime < state.SolvedTime.Value)
+                        {
+                            team.LatestFinalMetaSolveTime = state.SolvedTime.Value;
+                        }
+                        team.FinalMetaSolveCount++;
+
+                        if (team.FinalMetaSolveCount == finalMetaCount)
+                        {
+                            team.FinalMetaSolveTime = team.LatestFinalMetaSolveTime;
+                        }
                     }
                 }
             }
@@ -133,6 +162,8 @@ namespace ServerCore.Pages.Events
             }
 
             puzzles = puzzles.OrderBy(p => p.GroupOrder)
+                .ThenByDescending(p => p.Puzzle.IsFinalPuzzle)
+                .ThenByDescending(p => p.Puzzle.IsMetaPuzzle)
                 .ThenByDescending(p => p.Puzzle.IsPuzzle)
                 .ThenBy(p => p.Puzzle.Group)
                 .ThenBy(p => p.SolveCount)
@@ -185,10 +216,12 @@ namespace ServerCore.Pages.Events
         {
             public Team Team { get; set; }
             public int SolveCount { get; set; }
+            public int FinalMetaSolveCount { get; set; }
             public int Score { get; set; }
             public int SortOrder { get; set; }
             public int? Rank { get; set; }
             public bool CheatCodeUsed { get; set; }
+            public DateTime LatestFinalMetaSolveTime { get; set; } = DateTime.MinValue;
             public DateTime FinalMetaSolveTime { get; set; } = DateTime.MaxValue;
         }
 
@@ -198,73 +231,50 @@ namespace ServerCore.Pages.Events
 
             public PuzzleStats Puzzle { get; set; }
             public TeamStats Team { get; set; }
+            public bool UnlockedAtStart { get; set; }
             public DateTime? UnlockedTime { get; set; }
             public DateTime? SolvedTime { get; set; }
             public Boolean LockedOut { get; set; }
 
-            public string DisplayText
+            public string Classes
             {
                 get
                 {
+                    string puzzleType = null;
+                    string puzzleState = null;
+
+                    if (Puzzle != null && Puzzle.Puzzle.IsFinalPuzzle)
+                    {
+                        puzzleType = "final-puzzle";
+                    }
+                    else if (Puzzle != null && Puzzle.Puzzle.IsMetaPuzzle)
+                    {
+                        puzzleType = "meta-puzzle";
+                    }
+
                     if (LockedOut)
                     {
-                        return "E";
+                        puzzleState = "email-mode";
                     }
-
-                    if (SolvedTime != null)
-                    {
-                        return "C";
-                    }
-
-                    if (UnlockedTime != null)
-                    {
-                        return "U";
-                    }
-
-                    return "L";
-                }
-            }
-
-            public int DisplayHue
-            {
-                get
-                {
-                    if (LockedOut)
-                    {
-                        return 0;
-                    }
-
-                    if (SolvedTime != null)
-                    {
-                        return 120;
-                    }
-
-                    if (UnlockedTime != null)
-                    {
-                        return 60;
-                    }
-
-                    return 0;
-                }
-            }
-
-            public int DisplayLightness
-            {
-                get
-                {
-                    if (SolvedTime != null)
+                    else if (SolvedTime != null)
                     {
                         int minutes = (int)((DateTime.UtcNow - SolvedTime.Value).TotalMinutes);
-                        return 75 - (Math.Min(minutes, 236) >> 2);
+                        puzzleState = minutes > 15 ? "solved-old" : "solved-recent";
                     }
-
-                    if (UnlockedTime != null)
+                    else if (!UnlockedAtStart)
                     {
-                        int minutes = (int)((DateTime.UtcNow - UnlockedTime.Value).TotalMinutes);
-                        return 75 - (Math.Min(minutes, 236) >> 2);
+                        if (UnlockedTime == null)
+                        {
+                            puzzleState = "still-locked";
+                        }
+                        else
+                        {
+                            int minutes = (int)((DateTime.UtcNow - UnlockedTime.Value).TotalMinutes);
+                            puzzleState = minutes > 15 ? "unlocked-old" : "unlocked-recent";
+                        }
                     }
 
-                    return 100;
+                    return puzzleState != null ? $"statecell {puzzleType} {puzzleState}" : $"statecell {puzzleType}";
                 }
             }
         }

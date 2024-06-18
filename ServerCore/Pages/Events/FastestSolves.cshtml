@@ -12,61 +12,65 @@
     Boolean unsolvedFilter = Model.StateFilter == FastestSolvesModel.PuzzleStateFilter.Unsolved;
 }
 
-<h2>Fastest Solves</h2>
-<br/>
-<div>
-    <a asp-page="./FastestSolves"
-       asp-route-sort="@Model.Sort"
-       asp-route-stateFilter=@(unsolvedFilter ? FastestSolvesModel.PuzzleStateFilter.All : FastestSolvesModel.PuzzleStateFilter.Unsolved)>
-        Show @(unsolvedFilter ? "All" : "Unsolved") Puzzles
-    </a>
-</div>
-<br/>
-<table class="table table-condensed">
-            <thead>
+<h2>Fastest solves</h2>
+@if (!string.IsNullOrEmpty(Model.TeamSectionNotShowMessage))
+{
+    <div><p>@Model.TeamSectionNotShowMessage</p></div>
+}
+else
+{
+    <div>
+        <a asp-page="./FastestSolves"
+           asp-route-teamPuzzleSort="@Model.TeamPuzzleSort"
+           asp-route-stateFilter=@(unsolvedFilter ? FastestSolvesModel.PuzzleStateFilter.All : FastestSolvesModel.PuzzleStateFilter.Unsolved)>
+            Show @(unsolvedFilter ? "All" : "Unsolved") Puzzles
+        </a>
+    </div>
+    <br />
+    <table class="table table-condensed">
+        <thead>
+            <tr>
+                <th>
+                    <a asp-page="./FastestSolves"
+                       asp-route-teamPuzzleSort="@(Model.SortForColumnLink(FastestSolvesModel.TeamPuzzleSortOrder.PuzzleAscending,
+                                                                      FastestSolvesModel.TeamPuzzleSortOrder.PuzzleDescending))"
+                       asp-route-stateFilter="@Model.StateFilter">
+                        PuzzleName
+                    </a>
+                </th>
+                <th>
+                    <a asp-page="./FastestSolves"
+                       asp-route-teamPuzzleSort="@(Model.SortForColumnLink(FastestSolvesModel.TeamPuzzleSortOrder.CountAscending,
+                                                                      FastestSolvesModel.TeamPuzzleSortOrder.CountDescending))"
+                       asp-route-stateFilter="@Model.StateFilter">
+                        Teams Solved
+                    </a>
+                </th>
+                <th>
+                    First
+                </th>
+                <th>
+                    Second
+                </th>
+                <th>
+                    Third
+                </th>
+                @if (Model.CurrentTeam != null)
+                {
+                    <th>
+                        Status for @Model.CurrentTeam.Name
+                    </th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @for (int y = 0; y < Model.TeamPuzzles.Count; y++)
+            {
+                var puzzle = Model.TeamPuzzles[y];
+                Func<TimeSpan, string> convertTimeToString = ts => string.Format("{0:00}.{1:00}:{2:00}:{3:00}", ts.TotalDays, Math.Abs(ts.Hours), Math.Abs(ts.Minutes), Math.Abs(ts.Seconds));
+
                 <tr>
-                    <th>
-                        <a  asp-page="./FastestSolves" 
-                            asp-route-sort="@(Model.SortForColumnLink(FastestSolvesModel.SortOrder.PuzzleAscending,
-                                                                      FastestSolvesModel.SortOrder.PuzzleDescending))"
-                            asp-route-stateFilter="@Model.StateFilter">
-
-                            PuzzleName
-                        </a>
-                    </th>
-                    <th>
-                        <a  asp-page="./FastestSolves" 
-                            asp-route-sort="@(Model.SortForColumnLink(FastestSolvesModel.SortOrder.CountAscending,
-                                                                      FastestSolvesModel.SortOrder.CountDescending))"
-                            asp-route-stateFilter="@Model.StateFilter">
-
-                            Teams Solved
-                        </a>
-                    </th>
-                    <th>
-                        First
-                    </th>
-                    <th>
-                        Second
-                    </th>
-                    <th>
-                        Third
-                    </th>
-                    @if (Model.CurrentTeam != null)
-                    {
-                        <th>
-                            Status for @Model.CurrentTeam.Name
-                        </th>
-                    }
-                </tr>
-            </thead>
-            <tbody>
-        @for (int y = 0; y < Model.Puzzles.Count; y++) {
-            var puzzle = Model.Puzzles[y];
-            Func<TimeSpan, string> convertTimeToString = ts => string.Format("{0:00}.{1:00}:{2:00}:{3:00}", ts.TotalDays, Math.Abs(ts.Hours), Math.Abs(ts.Minutes), Math.Abs(ts.Seconds));
-
-                <tr>
-                    <td>
+                    <td class="puzzle-list-title-customizable">
                         @(RawHtmlHelper.Display(puzzle.PuzzleName, Model.Event.ID, Html))
                     </td>
                     <td>
@@ -105,6 +109,78 @@
                         </th>
                     }
                 </tr>
-        }
+            }
+        </tbody>
+    </table>
+}
+
+@if (Model.Event.ShouldShowSinglePlayerPuzzles)
+{
+    <br />
+    <h2>@Model.Event.SinglePlayerPuzzleTitle solve counts</h2>
+    @if (!string.IsNullOrEmpty(Model.SinglePlayerPuzzleSectionNotShowMessage))
+    {
+        <div><p>@Model.SinglePlayerPuzzleSectionNotShowMessage</p></div>
+    }
+    else
+    {
+        <div>
+            <a asp-page="./FastestSolves"
+               asp-route-singlePlayerPuzzleSort="@Model.SinglePlayerPuzzleSort"
+               asp-route-stateFilter=@(unsolvedFilter ? FastestSolvesModel.PuzzleStateFilter.All : FastestSolvesModel.PuzzleStateFilter.Unsolved)>
+                Show @(unsolvedFilter ? "All" : "Unsolved") Puzzles
+            </a>
+        </div>
+        <br />
+        <table class="table table-condensed">
+            <thead>
+                <tr>
+                    <th>
+                        <a asp-page="./FastestSolves"
+                           asp-route-singlePlayerPuzzleSort="@(Model.SortForColumnLink(FastestSolvesModel.SinglePlayerPuzzleSortOrder.PuzzleAscending,
+                                                                      FastestSolvesModel.SinglePlayerPuzzleSortOrder.PuzzleDescending))"
+                           asp-route-stateFilter="@Model.StateFilter">
+                            PuzzleName
+                        </a>
+                    </th>
+                    <th>
+                        <a asp-page="./FastestSolves"
+                           asp-route-singlePlayerPuzzleSort="@(Model.SortForColumnLink(FastestSolvesModel.SinglePlayerPuzzleSortOrder.CountAscending,
+                                                                      FastestSolvesModel.SinglePlayerPuzzleSortOrder.CountDescending))"
+                           asp-route-stateFilter="@Model.StateFilter">
+                            Players solved
+                        </a>
+                    </th>
+                    <th>
+                        Status for you
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int y = 0; y < Model.SinglePlayerPuzzles.Count; y++)
+                {
+                    var puzzle = Model.SinglePlayerPuzzles[y];
+                    <tr>
+                        <td class="puzzle-list-title-customizable">
+                            @(RawHtmlHelper.Display(puzzle.PuzzleName, Model.Event.ID, Html))
+                        </td>
+                        <td>
+                            @(puzzle.SolveCount)
+                        </td>
+                        <th>
+                            @if (puzzle.IsSolved)
+                            {
+                                <text>Solved!</text>
+                            }
+                            else
+                            {
+                                <text>Unsolved</text>
+                            }
+                        </th>
+                    </tr>
+                }
             </tbody>
-</table>
+        </table>
+    }
+}
+

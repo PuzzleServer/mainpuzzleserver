@@ -20,10 +20,22 @@ namespace ServerCore.DataModel
 
         public string Lunch { get; set; }
 
+        [MaxLength(100)]
         public string LunchModifications { get; set; }
 
+        [MaxLength(20)]
         public string ShirtSize { get; set; }
 
         public bool IsRemote { get; set; }
+
+        /// <summary>
+        /// The number of hint coins the player has left.
+        /// </summary>
+        public int HintCoinCount { get; set; }
+
+        /// <summary>
+        /// The number of hint coins the player has used.
+        /// </summary>
+        public int HintCoinsUsed { get; set; }
     }
 }

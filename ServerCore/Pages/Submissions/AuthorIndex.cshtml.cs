@@ -27,6 +27,7 @@ namespace ServerCore.Pages.Submissions
             public DateTime TimeSubmitted;
             public bool IsFreeform;
             public bool Linkify;
+            public bool IsSolution;
         }
 
         public AuthorIndexModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
@@ -83,6 +84,10 @@ namespace ServerCore.Pages.Submissions
             else
             {
                 Puzzle = await _context.Puzzles.Where(m => m.ID == puzzleId).FirstOrDefaultAsync();
+                if (Puzzle.IsForSinglePlayer)
+                {
+                    return RedirectToPage("/Submissions/SinglePlayerPuzzleAuthorIndex", new { puzzleId = puzzleId });
+                }
 
                 if (EventRole == EventRole.author && !await UserEventHelper.IsAuthorOfPuzzle(_context, Puzzle, LoggedInUser))
                 {
@@ -158,6 +163,12 @@ namespace ServerCore.Pages.Submissions
                 case SortOrder.TimeDescending:
                     submissionsQ = submissionsQ.OrderByDescending(submission => submission.TimeSubmitted);
                     break;
+                case SortOrder.IsSolutionAscending:
+                    submissionsQ = submissionsQ.OrderBy(submission => submission.Response.IsSolution);
+                    break;
+                case SortOrder.IsSolutionDescending:
+                    submissionsQ = submissionsQ.OrderByDescending(submission => submission.Response.IsSolution);
+                    break;
             }
 
             IQueryable<SubmissionView> submissionViewQ = submissionsQ
@@ -171,6 +182,7 @@ namespace ServerCore.Pages.Submissions
                     IsFreeform = s.Puzzle.IsFreeform,
                     SubmissionText = s.Puzzle.IsFreeform ? s.UnformattedSubmissionText : s.SubmissionText,
                     ResponseText = s.Response == null ? null : s.Response.ResponseText,
+                    IsSolution = s.Response == null ? false : s.Response.IsSolution,
                     TimeSubmitted = s.TimeSubmitted
                 });
 
@@ -223,7 +235,9 @@ namespace ServerCore.Pages.Submissions
             SubmissionAscending,
             SubmissionDescending,
             TimeAscending,
-            TimeDescending
+            TimeDescending,
+            IsSolutionAscending,
+            IsSolutionDescending
         }
     }
 }

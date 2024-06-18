@@ -47,6 +47,11 @@ namespace ServerCore.DataModel
         public bool IsRemote { get; set; }
 
         /// <summary>
+        /// True if puzzles will be shown in an iframe on the answer submission page
+        /// </summary>
+        public bool EmbedPuzzles { get; set; }
+
+        /// <summary>
         /// True if the event has individual swag
         /// </summary>
         [Column("EventHasSwag")]
@@ -59,6 +64,11 @@ namespace ServerCore.DataModel
 
         public DateTime TeamRegistrationBegin { get; set; }
         public DateTime TeamRegistrationEnd { get; set; }
+
+        /// <summary>
+        /// True if we should show puzzle help messages only to the authors of that puzzle (along with their support and admins).
+        /// </summary>
+        public bool ShouldShowHelpMessageOnlyToAuthor { get; set; }
 
         /// <summary>
         /// Returns whether or not team registration is active.
@@ -229,6 +239,11 @@ namespace ServerCore.DataModel
         public string Announcement { get; set; }
 
         /// <summary>
+        /// Announcement to be added to every page, once the team has their state configured to show it
+        /// </summary>
+        public string TeamAnnouncement { get; set; }
+
+        /// <summary>
         /// content for the home page
         /// </summary>
         public string HomeContent { get; set; }
@@ -264,5 +279,38 @@ namespace ServerCore.DataModel
         /// If no lunch is chosen, what to fill in with
         /// </summary>
         public string DefaultLunch { get; set; }
+
+        /// <summary>
+        /// List of lunch options to show on individual registration and/or team details page
+        /// Each option is composed of a "Lunch Name":"Lunch Description"; pair, including the quotes
+        /// Each option is delimited by a ; semicolon, so whitespace outside of quotes is ignored
+        /// The Lunch Name is also used as the value that's written to the database
+        /// A Lunch Name == "noneoftheabove" after removing spaces and converting to lowercase
+        ///   will make the "Custom Order" textbox appear on the Swag Registration and Player Create/Edit pages
+        /// Lunch Details are not displayed for team lunches
+        /// </summary>
+        public string LunchOptions { get; set; }
+
+        /// <summary>
+        /// Paragraph of text shown on the Team Details page to describe lunch
+        /// </summary>
+        public string LunchDescription { get; set; }
+
+        /// <summary>
+        /// Title for single player puzzles.
+        /// Note: If this field is empty or null, the tab will not be shown.
+        /// </summary>
+        public string SinglePlayerPuzzleTitle { get; set; }
+
+        /// <summary>
+        /// True if the single player puzzles should be shown.
+        /// </summary>
+        [NotMapped]
+        public bool ShouldShowSinglePlayerPuzzles => !string.IsNullOrEmpty(SinglePlayerPuzzleTitle);
+
+        /// <summary>
+        /// True if Blazor can run on pages for this event. Should normally be true, but can be disabled in an emergency
+        /// </summary>
+        public bool AllowBlazor { get; set; }
     }
 }

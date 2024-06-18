@@ -1,10 +1,23 @@
 ﻿@page "/{eventId}/{eventRole}/Rules"
-@model ServerCore.Pages.EventSpecific.IndexModel
+@model ServerCore.Pages.EventSpecific.RulesModel
 @{
     ViewData["Title"] = "Rules";
     ViewData["AdminRoute"] = "/EventSpecific/Rules";
     ViewData["AuthorRoute"] = "/EventSpecific/Rules";
     ViewData["PlayRoute"] = "/EventSpecific/Rules";
+    var eventPage = Model as ServerCore.ModelBases.EventSpecificPageModel;
+    var Event = eventPage?.Event;
 }
 
-<partial name="../Resources/@(Model.Event.HomePartial ?? "Default")/RulesPartial.cshtml" />
+@if (Event.EventBegin.Year < 2024)
+{
+    <partial name="../Resources/@(Event.HomePartial ?? "Default")/RulesPartial.cshtml" />
+}
+else
+{
+    if (!string.IsNullOrEmpty(Event.RulesContent))
+    {
+        @Html.Raw(Event.RulesContent);
+    }
+    <partial name="/Pages/Shared/_ContentFilePartial.cshtml" />
+}

@@ -17,7 +17,7 @@ namespace Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.5")
+                .HasAnnotation("ProductVersion", "7.0.8")
                 .HasAnnotation("Proxies:ChangeTracking", false)
                 .HasAnnotation("Proxies:CheckEquality", false)
                 .HasAnnotation("Proxies:LazyLoading", true)
@@ -295,6 +295,11 @@ namespace Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
+                    b.Property<bool>("AllowBlazor")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
                     b.Property<bool>("AllowFeedback")
                         .HasColumnType("bit");
 
@@ -318,6 +323,9 @@ namespace Data.Migrations
 
                     b.Property<string>("DefaultLunch")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("EmbedPuzzles")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("EventBegin")
                         .HasColumnType("datetime2");
@@ -362,6 +370,12 @@ namespace Data.Migrations
                     b.Property<double>("LockoutIncorrectGuessPeriod")
                         .HasColumnType("float");
 
+                    b.Property<string>("LunchDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LunchOptions")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("LunchReportDate")
                         .HasColumnType("datetime2");
 
@@ -387,14 +401,23 @@ namespace Data.Migrations
                     b.Property<string>("RulesContent")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("ShouldShowHelpMessageOnlyToAuthor")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("ShowFastestSolves")
                         .HasColumnType("bit");
+
+                    b.Property<string>("SinglePlayerPuzzleTitle")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("StandingsAvailableBegin")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("StandingsOverride")
                         .HasColumnType("bit");
+
+                    b.Property<string>("TeamAnnouncement")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("TeamDeleteEnd")
                         .HasColumnType("datetime2");
@@ -499,6 +522,7 @@ namespace Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("WrittenFeedback")
+                        .HasMaxLength(5000)
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
@@ -590,6 +614,71 @@ namespace Data.Migrations
                     b.ToTable("Invitations");
                 });
 
+            modelBuilder.Entity("ServerCore.DataModel.Message", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<int?>("ClaimerID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDateTimeInUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("EventID")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsFromGameControl")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("ModifiedDateTimeInUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("PlayerID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PuzzleID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SenderID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Subject")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("TeamID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("ThreadId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ClaimerID");
+
+                    b.HasIndex("EventID");
+
+                    b.HasIndex("PlayerID");
+
+                    b.HasIndex("PuzzleID");
+
+                    b.HasIndex("SenderID");
+
+                    b.HasIndex("TeamID");
+
+                    b.HasIndex("ThreadId");
+
+                    b.ToTable("Messages");
+                });
+
             modelBuilder.Entity("ServerCore.DataModel.Piece", b =>
                 {
                     b.Property<int>("ID")
@@ -628,6 +717,12 @@ namespace Data.Migrations
                     b.Property<int>("EventId")
                         .HasColumnType("int");
 
+                    b.Property<int>("HintCoinCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HintCoinsUsed")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsRemote")
                         .HasColumnType("bit");
 
@@ -635,13 +730,15 @@ namespace Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LunchModifications")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("PlayerId")
                         .HasColumnType("int");
 
                     b.Property<string>("ShirtSize")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.HasKey("ID");
 
@@ -682,6 +779,12 @@ namespace Data.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("CustomAuthorText")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustomCSSFile")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomSolutionURL")
                         .HasColumnType("nvarchar(max)");
@@ -732,6 +835,9 @@ namespace Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<int>("MaxAnnotationKey")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MinInGroupCount")
                         .HasColumnType("int");
 
                     b.Property<int>("MinPrerequisiteCount")
@@ -854,10 +960,13 @@ namespace Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("EmployeeAlias")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("IdentityUserId")
                         .IsRequired()
@@ -870,13 +979,17 @@ namespace Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("TShirtSize")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<bool>("VisibleToOthers")
                         .HasColumnType("bit");
@@ -909,13 +1022,55 @@ namespace Data.Migrations
 
                     b.Property<string>("SubmittedText")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.HasKey("ID");
 
                     b.HasIndex("PuzzleID");
 
                     b.ToTable("Responses");
+                });
+
+            modelBuilder.Entity("ServerCore.DataModel.Room", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("Building")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int?>("Capacity")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("CurrentlyOnline")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("EventID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Group")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Number")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int?>("TeamID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("TeamID");
+
+                    b.HasIndex("EventID", "Building", "Number")
+                        .IsUnique()
+                        .HasFilter("[Building] IS NOT NULL");
+
+                    b.ToTable("Rooms");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.SinglePlayerPuzzleHintStatePerPlayer", b =>
@@ -1005,7 +1160,8 @@ namespace Data.Migrations
 
                     b.Property<string>("SubmissionText")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<int>("SubmitterID")
                         .HasColumnType("int");
@@ -1071,7 +1227,8 @@ namespace Data.Migrations
 
                     b.Property<string>("SubmissionText")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<int>("SubmitterID")
                         .HasColumnType("int");
@@ -1111,11 +1268,19 @@ namespace Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
+                    b.Property<bool>("AutoApproveTeammates")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("AutoTeamType")
+                        .HasColumnType("int");
+
                     b.Property<string>("Bio")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("CustomRoom")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<int>("EventID")
                         .HasColumnType("int");
@@ -1132,24 +1297,32 @@ namespace Data.Migrations
                     b.Property<bool>("IsLookingForTeammates")
                         .HasColumnType("bit");
 
+                    b.Property<string>("MergedTeams")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Password")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PrimaryContactEmail")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("PrimaryPhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("RoomID")
-                        .HasColumnType("int");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("SecondaryPhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<bool>("ShowTeamAnnouncement")
+                        .HasColumnType("bit");
 
                     b.HasKey("ID");
 
@@ -1193,7 +1366,8 @@ namespace Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LunchModifications")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("TeamId")
                         .HasColumnType("int");
@@ -1411,6 +1585,53 @@ namespace Data.Migrations
                         .HasForeignKey("TeamID");
                 });
 
+            modelBuilder.Entity("ServerCore.DataModel.Message", b =>
+                {
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Claimer")
+                        .WithMany()
+                        .HasForeignKey("ClaimerID")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("ServerCore.DataModel.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Player")
+                        .WithMany()
+                        .HasForeignKey("PlayerID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
+                        .WithMany()
+                        .HasForeignKey("PuzzleID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ServerCore.DataModel.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Claimer");
+
+                    b.Navigation("Event");
+
+                    b.Navigation("Player");
+
+                    b.Navigation("Puzzle");
+
+                    b.Navigation("Sender");
+
+                    b.Navigation("Team");
+                });
+
             modelBuilder.Entity("ServerCore.DataModel.Piece", b =>
                 {
                     b.HasOne("ServerCore.DataModel.Puzzle", "Puzzle")
@@ -1518,6 +1739,23 @@ namespace Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Puzzle");
+                });
+
+            modelBuilder.Entity("ServerCore.DataModel.Room", b =>
+                {
+                    b.HasOne("ServerCore.DataModel.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ServerCore.DataModel.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamID");
+
+                    b.Navigation("Event");
+
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.SinglePlayerPuzzleHintStatePerPlayer", b =>

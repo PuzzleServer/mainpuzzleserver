@@ -64,13 +64,14 @@ namespace ServerCore.Pages.Teams
                 Team.Name = existingTeam.Name;
             }
 
+            Team.Name = TeamHelper.UnicodeSanitizeTeamName(Team.Name);
             if (string.IsNullOrWhiteSpace(Team.Name))
             {
                 ModelState.AddModelError("Team.Name", "Team names cannot be left blank.");
                 return Page();
             }
 
-            if (Team.Name != existingTeam.Name && await TeamHelper.IsTeamNameTakenAsync(_context, Event, Team.Name))
+            if (Team.Name != existingTeam.Name && TeamHelper.IsTeamNameTaken(_context, Event.ID, Team.Name))
             {
                 ModelState.AddModelError("Team.Name", "Another team has this name.");
                 return Page();

@@ -9,7 +9,7 @@
 <h2>Unlocked Answers</h2>
 <hr />
 <div>
-    <a asp-page="/Teams/Play" asp-route-teamId="@Model.TeamID">Back to puzzle list</a>
+    <a asp-page="/Puzzles/Play" asp-route-teamId="@Model.TeamID">Back to puzzle list</a>
 </div>
 <br />
 <table class="table">
@@ -41,30 +41,30 @@
     <tbody>
         @foreach (var item in Model.CorrectSubmissions)
         {
-        <tr>
-            <td>
-                @Html.Raw(Model.LocalTime(item.SolvedTime))
-            </td>
-            <td>
-                @item.Group
-            </td>
-            <td>
-                @item.Name
-            </td>
-            @if(string.IsNullOrEmpty(item.SubmissionText)) {
+            <tr>
                 <td>
-                    None (marked as solved by admin)
+                    @Html.Raw(Model.LocalTime(item.SolvedTime))
                 </td>
-            }
-            else {
-                <td>
-                    @item.SubmissionText
+                <td class="puzzle-list-group-customizable">
+                    @item.Group
                 </td>
-            }
-            <td>
-                @item.ResponseText
-            </td>
-        </tr>
+                <td class="puzzle-list-title-customizable">
+                    @item.Name
+                </td>
+                @if(string.IsNullOrEmpty(item.SubmissionText)) {
+                    <td class="puzzle-list-submission-customizable">
+                        None (marked as solved by admin)
+                    </td>
+                }
+                else {
+                    <td class="puzzle-list-submission-customizable">
+                        @item.SubmissionText
+                    </td>
+                }
+                <td class="puzzle-list-response-customizable">
+                    @ServerCore.Helpers.RawHtmlHelper.Display(item.ResponseText, Model.Event.ID, Html)
+                </td>
+            </tr>
         }
     </tbody>
 </table>

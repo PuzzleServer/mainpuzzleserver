@@ -60,7 +60,7 @@ namespace ServerCore.DataModel
         }
 
         /// <summary>
-        /// String representation of the blob URL. Use <see cref="Url"/> instead 
+        /// String representation of the blob URL. Use <see cref="Url"/> instead
         /// </summary>
         [DataType(DataType.Url)]
         [Required]

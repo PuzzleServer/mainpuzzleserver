@@ -4,8 +4,6 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Numerics;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace ServerCore
 {
@@ -92,7 +90,7 @@ namespace ServerCore
             if (puzzleId.HasValue)
             {
                 return from state in context.SinglePlayerPuzzleStatePerPlayer
-                       where state.PlayerID == playerId
+                       where state.PuzzleID == puzzleId
                        select state;
             }
 
@@ -139,13 +137,13 @@ namespace ServerCore
         public static async Task SetSolveStateAsync(
             PuzzleServerContext context,
             Event eventObj,
-            int? puzzleId,
+            Puzzle puzzle,
             int? playerId,
             DateTime? value,
             PuzzleUser author = null)
         {
             IQueryable<SinglePlayerPuzzleStatePerPlayer> statesQ = SinglePlayerPuzzleStateHelper
-                .GetFullReadWriteQuery(context, eventObj, puzzleId, playerId, author);
+                .GetFullReadWriteQuery(context, eventObj, puzzle?.ID, playerId, author);
 
             List<SinglePlayerPuzzleStatePerPlayer> states = await statesQ.ToListAsync();
 
@@ -164,14 +162,37 @@ namespace ServerCore
                 }
             }
 
+            // Award hint coins
+            if (value != null && puzzle != null && puzzle.HintCoinsForSolve != 0)
+            {
+                IQueryable<PlayerInEvent> playersInEvent;
+                if (playerId != null)
+                {
+                    playersInEvent = from PlayerInEvent player in context.PlayerInEvent
+                                        where player.PlayerId == playerId && player.EventId == eventObj.ID
+                                        select player;
+                }
+                else
+                {
+                    playersInEvent = from PlayerInEvent player in context.PlayerInEvent
+                                     where player.EventId == eventObj.ID
+                                     select player;
+                }
+
+                foreach (PlayerInEvent player in playersInEvent)
+                {
+                    player.HintCoinCount += puzzle.HintCoinsForSolve;
+                }
+            }
+
             await context.SaveChangesAsync();
 
             // if this puzzle got solved, look for others to unlock
-            if (puzzleId.HasValue && value != null)
+            if (puzzle != null && value != null)
             {
                 await UnlockAnyPuzzlesThatThisSolveUnlockedAsync(context,
                     eventObj,
-                    puzzleId,
+                    puzzle,
                     playerId,
                     value.Value);
             }
@@ -186,11 +207,9 @@ namespace ServerCore
         /// <param name="playerId">The id of the player.</param>
         /// <param name="unlockTime">The time that the puzzle should be marked as unlocked.</param>
         /// <returns></returns>
-        private static async Task UnlockAnyPuzzlesThatThisSolveUnlockedAsync(PuzzleServerContext context, Event eventObj, int? puzzleJustSolvedId, int? playerId, DateTime unlockTime)
+        private static async Task UnlockAnyPuzzlesThatThisSolveUnlockedAsync(PuzzleServerContext context, Event eventObj, Puzzle puzzleJustSolved, int? playerId, DateTime unlockTime)
         {
-            // a simple query for all puzzle IDs in the event - will be used at least once below
-            IQueryable<int> allPuzzleIDsQ = context.Puzzles.Where(p => p.Event == eventObj).Select(p => p.ID);
-
+            var puzzlesInGroup = puzzleJustSolved.Group == null ? null : await context.Puzzles.Where(p => p.Event == eventObj && p.IsForSinglePlayer && p.Group == puzzleJustSolved.Group).Select(p => new { PuzzleID = p.ID, MinInGroupCount = p.MinInGroupCount }).ToDictionaryAsync(p => p.PuzzleID);
 
             // get the prerequisites for all puzzles that need an update
             // information we get per puzzle: { id, min count, number of solved prereqs including this one }
@@ -198,7 +217,7 @@ namespace ServerCore
                                                          join unlockedBy in context.Prerequisites on possibleUnlock.PuzzleID equals unlockedBy.PuzzleID
                                                          join pspt in context.SinglePlayerPuzzleStatePerPlayer on unlockedBy.PrerequisiteID equals pspt.PuzzleID
                                                          join puz in context.Puzzles on unlockedBy.PrerequisiteID equals puz.ID
-                                                         where possibleUnlock.Prerequisite.ID == puzzleJustSolvedId && pspt.SolvedTime != null
+                                                         where possibleUnlock.Prerequisite.ID == puzzleJustSolved.ID && pspt.SolvedTime != null && puz.IsForSinglePlayer
                                                          group puz by new { unlockedBy.PuzzleID, unlockedBy.Puzzle.MinPrerequisiteCount, pspt.PlayerID } into g
                                                          select new
                                                          {
@@ -219,6 +238,10 @@ namespace ServerCore
                 .Select(puzzleState => puzzleState.PuzzleID)
                 .ToHashSet();
 
+            int solveCountInGroup = puzzlesInGroup == null ? 0 : singlePlayerPuzzleStates
+                .Where(puzzleState => puzzleState.SolvedTime != null)
+                .Count();
+
             // now loop through all puzzles and count up who needs to be unlocked
             foreach (var puzzleToUpdate in prerequisiteDataForNeedsUpdatePuzzles)
             {
@@ -233,6 +256,21 @@ namespace ServerCore
                 {
                     SinglePlayerPuzzleStatePerPlayer state = await context.SinglePlayerPuzzleStatePerPlayer.Where(s => s.PuzzleID == puzzleToUpdate.PuzzleID && s.PlayerID == playerId).FirstAsync();
                     state.UnlockedTime = unlockTime;
+                }
+            }
+
+            if (puzzlesInGroup != null)
+            {
+                foreach (var pair in puzzlesInGroup)
+                {
+                    if (pair.Value.MinInGroupCount.HasValue &&
+                        solveCountInGroup >= pair.Value.MinInGroupCount.Value &&
+                        !unlockedPuzzleIDs.Contains(pair.Key))
+                    {
+                        // enough puzzles unlocked in the same group? Let's unlock it
+                        SinglePlayerPuzzleStatePerPlayer state = await context.SinglePlayerPuzzleStatePerPlayer.Where(s => s.PuzzleID == pair.Key && s.PlayerID == playerId).FirstAsync();
+                        state.UnlockedTime = unlockTime;
+                    }
                 }
             }
 
@@ -275,6 +313,127 @@ namespace ServerCore
                 if (value == true)
                 {
                     states[i].WrongSubmissionCountBuffer += eventObj.MaxSubmissionCount;
+                }
+            }
+
+            await context.SaveChangesAsync();
+        }
+
+        public static IQueryable<Puzzle> PuzzlesCausingGlobalLockout(
+            PuzzleServerContext context,
+            Event eventObj,
+            int playerId)
+        {
+            DateTime now = DateTime.UtcNow;
+            return SinglePlayerPuzzleStateHelper.GetFullReadOnlyQuery(context, eventObj, puzzleId: null, playerId: playerId)
+                .Where(state => state.SolvedTime == null && state.UnlockedTime != null && state.Puzzle.MinutesOfEventLockout != 0 && EF.Functions.DateDiffMinute(state.UnlockedTime.Value, now) < state.Puzzle.MinutesOfEventLockout)
+                .Select((s) => s.Puzzle);
+        }
+
+        /// <summary>
+        /// Set the lockout expiry time of some puzzle state records. In the
+        /// course of setting the state, instantiate any state records that are
+        /// missing on the server.
+        /// </summary>
+        /// <param name="context">The puzzle DB context</param>
+        /// <param name="eventObj">The event we are querying from</param>
+        /// <param name="puzzleId">
+        ///     The puzzle id; if null, get all puzzles in the event.
+        /// </param>
+        /// <param name="playerId">
+        ///     The player id; if null, get all the players in the event.
+        /// </param>
+        /// <param name="value">The Lockout expiry time<param>
+        /// <param name="author">The author.</param>
+        /// <returns>
+        ///     A task that can be awaited for the lockout operation
+        /// </returns>
+        public static async Task SetLockoutExpiryTimeAsync(
+            PuzzleServerContext context,
+            Event eventObj,
+            int? puzzleId,
+            int? playerId,
+            DateTime? value,
+            PuzzleUser author = null)
+        {
+            IQueryable<SinglePlayerPuzzleStatePerPlayer> statesQ = SinglePlayerPuzzleStateHelper
+                .GetFullReadWriteQuery(context, eventObj, puzzleId, playerId, author);
+
+            List<SinglePlayerPuzzleStatePerPlayer> states = await statesQ.ToListAsync();
+
+            for (int i = 0; i < states.Count; i++)
+            {
+                states[i].LockoutExpiryTime = value;
+            }
+
+            await context.SaveChangesAsync();
+        }
+
+        public static async Task<SinglePlayerPuzzleStatePerPlayer> GetOrAddStateIfNotThere(
+            PuzzleServerContext context,
+            Event eventObj,
+            Puzzle puzzle,
+            int playerId)
+        {
+            IQueryable<SinglePlayerPuzzleStatePerPlayer> statesQ = SinglePlayerPuzzleStateHelper
+                .GetFullReadWriteQuery(context, eventObj, puzzle.ID, playerId, author: null);
+            SinglePlayerPuzzleStatePerPlayer state = statesQ.FirstOrDefault();
+            if (state == null)
+            {
+                SinglePlayerPuzzleUnlockState unlockState = context.SinglePlayerPuzzleUnlockStates
+                    .Where(state => state.Puzzle == puzzle)
+                    .FirstOrDefault();
+
+                state = new SinglePlayerPuzzleStatePerPlayer { Puzzle = puzzle, PlayerID = playerId, UnlockedTime = unlockState?.UnlockedTime };
+                context.SinglePlayerPuzzleStatePerPlayer.Add(state);
+                await context.SaveChangesAsync();
+            }
+
+            return state;
+        }
+
+        /// <summary>
+        /// Set the unlock state of some puzzle state records.
+        /// </summary>
+        /// <param name="context">The puzzle DB context</param>
+        /// <param name="eventObj">The event we are querying from</param>
+        /// <param name="puzzleId">The puzzle id; if null, get all puzzles in the event.</param>
+        /// <param name="player">The team; if null, get all the players in the event.</param>
+        /// <param name="value">The unlock time (null if relocking)</param>
+        /// <returns>A task that can be awaited for the unlock/lock operation</returns>
+        public static async Task SetUnlockStateAsync(PuzzleServerContext context, Event eventObj, int? puzzleId, int? playerId, DateTime? value, PuzzleUser author = null)
+        {
+            // If no player id is given, it implies that this is an unlock for all players
+            if (!playerId.HasValue)
+            {
+                SinglePlayerPuzzleUnlockState unlockState = (await SinglePlayerPuzzleUnlockStateHelper.GetFullReadOnlyQuery(context, eventObj, puzzleId).ToListAsync()).Single();
+                // Only allow unlock time to be modified if we were relocking it (setting it to null) or unlocking it for the first time 
+                if (value == null || unlockState.UnlockedTime == null)
+                {
+                    unlockState.UnlockedTime = value;
+                }
+            }
+
+            IQueryable<SinglePlayerPuzzleStatePerPlayer> statesQ = SinglePlayerPuzzleStateHelper.GetFullReadWriteQuery(context, eventObj, puzzleId, playerId, author);
+            List<SinglePlayerPuzzleStatePerPlayer> states = await statesQ.ToListAsync();
+            if (playerId.HasValue && puzzleId.HasValue && states.Count < 1)
+            {
+                context.SinglePlayerPuzzleStatePerPlayer.Add(new SinglePlayerPuzzleStatePerPlayer
+                {
+                    PuzzleID = puzzleId.Value,
+                    PlayerID = playerId.Value,
+                    UnlockedTime = value
+                });
+            }
+            else
+            {
+                for (int i = 0; i < states.Count; i++)
+                {
+                    // Only allow unlock time to be modified if we were relocking it (setting it to null) or unlocking it for the first time 
+                    if (value == null || states[i].UnlockedTime == null)
+                    {
+                        states[i].UnlockedTime = value;
+                    }
                 }
             }
 

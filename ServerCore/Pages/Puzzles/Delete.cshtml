@@ -5,7 +5,7 @@
     ViewData["Title"] = "Delete puzzle";
     ViewData["AdminRoute"] = "../Puzzles/Delete";
     ViewData["AuthorRoute"] = "../Puzzles/Delete";
-    ViewData["PlayRoute"] = "/Teams/Play";
+    ViewData["PlayRoute"] = "/Puzzles/Play";
     ViewData["RoutingPuzzleId"] = ViewContext.RouteData.Values["puzzleId"];
     Layout = "_puzzleManagementLayout.cshtml";
 }
@@ -86,6 +86,12 @@
         </dt>
         <dd>
             @Model.Puzzle.MinPrerequisiteCount
+        </dd>
+        <dt>
+            MinInGroupCount
+        </dt>
+        <dd>
+            @Model.Puzzle.MinInGroupCount
         </dd>
         <dt>
             MinutesToAutomaticallySolve

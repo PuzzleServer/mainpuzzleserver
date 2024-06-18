@@ -17,6 +17,8 @@ namespace ServerCore.Helpers
         {
             if (text != null && text.EndsWith(")") && text.Contains("Html.Raw("))
             {
+                // Note that because this returns an ASP object, this can't be used in Javascript on pages that have already loaded
+                // For example, Pages\Submissions\Index.cshtml duplicates this stripping of "Html.Raw(" in Javascript since it can't call this
                 text = text.Replace("{eventId}", $"{eventId}");
                 int start = text.IndexOf("Html.Raw(") + 9;
                 return helper.Raw(text.Substring(start, text.Length - start - 1));

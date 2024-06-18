@@ -16,14 +16,23 @@ namespace ServerCore.Pages.Player
         {
         }
 
-        public IList<PlayerInEvent> PlayerInEvent { get;set; }
+        public IList<PlayerWithTeamInEvent> PlayerInEvent { get;set; }
 
         public async Task OnGetAsync()
         {
-            PlayerInEvent = await _context.PlayerInEvent
-                .Where(p => p.EventId == Event.ID)
-                .Include(p => p.Event)
-                .Include(p => p.Player).ToListAsync();
+            PlayerInEvent = await (from t in _context.Teams
+                                   where t.EventID == Event.ID
+                                   join tm in _context.TeamMembers on t.ID equals tm.Team.ID
+                                   join p in _context.PlayerInEvent on tm.Member.ID equals p.Player.ID
+                                   where p.Event.ID == Event.ID
+                                   orderby p.Player.Name
+                                   select new PlayerWithTeamInEvent { Player = p, Team = tm.Team }
+                ).ToListAsync();
+        }
+
+        public class PlayerWithTeamInEvent {
+            public PlayerInEvent Player { get; set; }
+            public Team Team { get; set; }
         }
     }
 }

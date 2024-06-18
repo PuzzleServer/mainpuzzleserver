@@ -47,7 +47,8 @@
 <style>
     .column {
         float: left;
-        width: 50%;
+        width: calc(50% - 40px);
+        margin: 0px 20px;
     }
 
     /* Clear floats after the columns */
@@ -66,7 +67,7 @@
         Your team has been disqualified from the event. You are welcome to
         continue solving puzzles for fun, but your team will no longer appear
         in the final standings and is not eligible for any awards or prizes
-        that the event may offer. If you have any questions, please contact 
+        that the event may offer. If you have any questions, please contact
         <a href="@mailtoUrl"> this email</a>.
     </div>
 }
@@ -81,10 +82,15 @@
                 <a asp-page="/Events/Mailer" asp-route-group="Players" asp-route-teamId="@Model.Team.ID">Mail Players</a> |
             </text>
         }
-        <a asp-page="./Delete" asp-route-teamId="@Model.Team.ID">Delete team</a> |
+        @if (!Model.Team.AutoTeamType.HasValue || Model.EventRole == ModelBases.EventRole.admin)
+        {
+            <text>
+                <a asp-page="./Delete" asp-route-teamId="@Model.Team.ID">Delete team</a> |
+            </text>
+        }
         @if (Model.EventRole == ModelBases.EventRole.admin)
         {
-            <a asp-page="./Disqualify" 
+            <a asp-page="./Disqualify"
                asp-route-teamId="@Model.Team.ID">
                 @(Model.Team.IsDisqualified ? "Requalify Team" : "Disqualify Team")
             </a>
@@ -108,64 +114,59 @@
                 <dd>
                     @Model.Team.Name
                 </dd>
-                <!-- TODO: Conditionally show/hide based on event property (not needed for PuzzleHunt)
-    <dt>
-        RoomID
-    </dt>
-    <dd>
-        @Model.Team.RoomID
-    </dd>
-    -->
-                
+                <!-- TODO: Add new room dropdown here and clean up custom room-->
+                @if (!Model.Event.IsRemote)
+                {
+                    <dt>
+                        Team room
+                    </dt>
+                    <dd>
+                        @if (Model.Team.CustomRoom == null)
+                        {
+                            @if (Model.Event.IsInternEvent)
+                            {
+                                <div>@Model.TeamRoom</div>
+                            }
+                            else
+                            {
+                                <div>(none - please enter this before the start of the event)</div>
+                            }
+                        }
+                        else
+                        {
+                            @Model.Team.CustomRoom
+                        }
+                    </dd>
+
+                    <dt>
+                        Primary phone number
+                    </dt>
+                    <dd>
+                        @if (Model.Team.PrimaryPhoneNumber == null)
+                        {
+                            <div>(none - please enter this before the start of the event)</div>
+                        }
+                        else
+                        {
+                            @Model.Team.PrimaryPhoneNumber
+                        }
+                    </dd>
+                    <dt>
+                        Secondary phone number (optional)
+                    </dt>
+                    <dd>
+                        @if (Model.Team.SecondaryPhoneNumber == null)
+                        {
+                            <div>(none)</div>
+                        }
+                        else
+                        {
+                            @Model.Team.SecondaryPhoneNumber
+                        }
+                    </dd>
+                }
                 <dt>
-                    Team room
-                </dt>
-                <dd>
-                    @if (Model.Team.CustomRoom == null)
-                    {
-                    @if (Model.Event.IsInternEvent)
-                    {
-                    <div>(none - will be selected by the organizers prior to the start of the event)</div>
-                    }
-                    else
-                    {
-                    <div>(none - please enter this before the start of the event)</div>
-                    }
-                    }
-                    else
-                    {
-                    @Model.Team.CustomRoom
-                    }
-                </dd>
-                
-                <dt>
-                    Primary phone number
-                </dt>
-                <dd>
-                    @if (Model.Team.PrimaryPhoneNumber == null)
-                    {
-                    <div>(none - please enter this before the start of the event)</div>
-                    }
-                    else
-                    {
-                    @Model.Team.PrimaryPhoneNumber
-                    }
-                </dd>
-                <dt>
-                    Secondary phone number (optional)
-                </dt>
-                <dd>
-                    @if (Model.Team.SecondaryPhoneNumber == null)
-                    {
-                    <div>(none)</div>
-                    }
-                    else
-                    {
-                    @Model.Team.SecondaryPhoneNumber
-                    }
-                </dd>
-                <dt>
-                    Primary contact e-mail (optional)
+                    Primary contact e-mail
                 </dt>
                 <dd>
                     @if (Model.Team.PrimaryContactEmail == null)
@@ -177,61 +178,70 @@
                     @Model.Team.PrimaryContactEmail
                     }
                 </dd>
-                <dt>
-                    Allow unsolicited applications
-                </dt>
-                <dd>
-                    @if (Model.Team.IsLookingForTeammates)
-                    {
-                    <div>Yes (this team shows up on the list of teams that anyone can apply to)</div>
-                    }
-                    else
-                    {
-                    <div>No (only people who are sent an application link directly will be able to apply)</div>
-                    }
-                </dd>
-                <dt>
-                    Bio for unsolicited applications (visible to applicants)
-                </dt>
-                <dd>
-                    @if (Model.Team.Bio == null)
-                    {
-                    <div>(none)</div>
-                    }
-                    else
-                    {
-                    @Model.Team.Bio
-                    }
-                </dd>
+                @if (!Model.Team.AutoTeamType.HasValue)
+                {
+                    <dt>
+                        Allow unsolicited applications
+                    </dt>
+                    <dd>
+                        @if (Model.Team.IsLookingForTeammates)
+                        {
+                        <div>Yes (this team shows up on the list of teams that anyone can apply to)</div>
+                        }
+                        else
+                        {
+                        <div>No (only people who are sent an application link directly will be able to apply)</div>
+                        }
+                    </dd>
+                    <dt>
+                        Bio for unsolicited applications (visible to applicants)
+                    </dt>
+                    <dd>
+                        @if (Model.Team.Bio == null)
+                        {
+                        <div>(none)</div>
+                        }
+                        else
+                        {
+                        @Model.Team.Bio
+                        }
+                    </dd>
+                }
             </dl>
             </div>
             @if (Model.Event.EventHasTeamSwag)
             {
                 <div class="row">
-                    <h2>Pizza</h2>
+                    <h2>Lunch</h2>
+                    @if (!string.IsNullOrWhiteSpace(Model.Event.LunchDescription))
+                    {
+                        <p>@Model.Event.LunchDescription</p>
+                    }
                     <p>
-                        Your team can currently have @Model.EditableLunches pizza(s). Don&apos;t want a pizza? Pick &quot;No Pizza&quot;.
-                        @if (Model.EditableLunches < Model.MaxLunches && Model.Event.CanChangeLunch)
+                        Your team can currently have @Model.EditableLunches item(s). If your team wants to opt out of one of the items, select &quot;Skip Item&quot;. If you cannot have any of the options offered due to dietary restrictions, please email <a href="mailto:puzzhunt@microsoft.com">puzzhunt@microsoft.com</a> with details and we'll find an alternative.
+                        @if (Model.EditableLunches < Model.SoftMaxLunches && Model.Event.CanChangeLunch)
                         {
                             <span>
-                                Recruit @(Model.Event.PlayersPerLunch - Model.Members.Count % Model.Event.PlayersPerLunch + 1) more player(s) to get another pizza, up to @Model.MaxLunches pizzas total!
+                                Recruit @(Model.Event.PlayersPerLunch - ((Model.EligibleForLunch - 1) % Model.Event.PlayersPerLunch)) more in-person player(s) to get another item, up to @Model.GlobalMaxLunches items total!
                             </span>
                         }
                     </p>
+                    <br />
                     @if (Model.Lunches.Count < Model.EditableLunches && Model.Event.CanChangeLunch)
                     {
-                        <h3>Add a pizza</h3>
+                        <h3>Add an item</h3>
                         <form method="post">
                             <select asp-for="NewLunch">
-                                <option value="">Select a topping</option>
-                                <option value="No Pizza">No Pizza</option>
-                                @foreach (var topping in DetailsModel.PizzaOptions)
+                                <option value="">Select an option</option>
+                                <option value="Skip Item">Skip Item</option>
+                                @foreach (var lunchOption in DetailsModel.LunchOptions)
                                 {
-                                    <option value="@topping">@topping</option>
+                                    <option value="@lunchOption">@lunchOption</option>
                                 }
                             </select>
                             <button type="submit" asp-page-handler="AddLunch" asp-route-teamId="@Model.Team.ID" asp-route-newLunch="@Model.NewLunch">Add</button>
                         </form>
+                        <br />
                     }
                     <h3>Order:</h3>
                     @foreach (TeamLunch lunch in Model.Lunches)
@@ -245,14 +255,21 @@
                             </span>
                         </p>
                     }
-                    @if(Model.Lunches.Count < Model.EditableLunches)
+                    @if ((Model.Lunches.Count < Model.EditableLunches) && !(string.IsNullOrWhiteSpace(Model.Event.DefaultLunch)))
                     {
-                        <div>You have not chosen @(Model.EditableLunches - Model.Lunches.Count) pizza(s) yet. If you do not choose, you will get @Model.Event.DefaultLunch.</div>
+                        <div>You have not chosen @(Model.EditableLunches - Model.Lunches.Count) item(s) yet. If you do not choose, each one will be @Model.Event.DefaultLunch.</div>
                     }
                 </div>
             }
         </div>
         <div class="column">
+            @if (Model.Team.AutoTeamType != null)
+            {
+                <div class="alert alert-warning" role="alert">
+                    This team was automatically created and more members will be automatically added. You can still invite friends if you want.
+                </div>
+            }
+
             <div>
                 <h3>Current members (@(Model.Members.Count))</h3>
                 @{ bool canAdd = Model.EventRole == ModelBases.EventRole.admin; }
@@ -302,7 +319,7 @@
                             </td>
                             @if (Model.EventRole == ModelBases.EventRole.admin || Model.Event.IsTeamMembershipChangeActive)
                             {
-                                if (Model.EventRole == ModelBases.EventRole.play && Model.Members.Count == 1)
+                                if (Model.EventRole == ModelBases.EventRole.play && Model.Members.Count == 1 && !Model.Team.AutoTeamType.HasValue)
                                 {
                                     <td>
                                         (Can't remove last member)
@@ -311,7 +328,10 @@
                                 else
                                 {
                                     <td>
-                                        <a asp-page-handler="RemoveMember" asp-route-teamId="@Model.Team.ID" asp-route-teamMemberId="@item.ID" onclick="return confirm('Are you sure you want to remove @item.Member.Name from @Model.Team.Name?')">Remove</a>
+                                        @if (Model.EventRole != ModelBases.EventRole.play || !Model.Team.AutoTeamType.HasValue || item.Member == Model.LoggedInUser)
+                                        {
+                                            <a asp-page-handler="RemoveMember" asp-route-teamId="@Model.Team.ID" asp-route-teamMemberId="@item.ID" onclick="return confirm('Are you sure you want to remove @item.Member.Name from @Model.Team.Name?')">Remove</a>
+                                        }
                                     </td>
                                 }
                             }
@@ -339,16 +359,20 @@
             {
                 <h3>Invite teammates</h3>
                 <p>Copy the sample e-mail below and send it to teammates to give them a direct link to join this team. The link in the mail has a special code that will auto-approve them for your team.</p>
-                @if (Model.Team.IsLookingForTeammates)
-                {
-                    <p>Note: Your team is currently marked as looking for unsolicited teammates. You may get applications from people who you did not send the link to, and you can approve or ignore those requests by visiting this page. To change this, edit your team details <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID"> here</a>.</p>
 
-                }
-                else
+                @if (!Model.Team.AutoTeamType.HasValue)
                 {
-                    <p>Note: Your team is currently marked as not looking for unsolicited teammates. Sending this link is the only way people will find your team. To change this, edit your team details <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID"> here</a>.</p>
+                    @if (Model.Team.IsLookingForTeammates)
+                    {
+                        <p>Note: Your team is currently marked as looking for unsolicited teammates. You may get applications from people who you did not send the link to, and you can approve or ignore those requests by visiting this page. To change this, edit your team details <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID"> here</a>.</p>
+
+                    }
+                    else
+                    {
+                        <p>Note: Your team is currently marked as not looking for unsolicited teammates. Sending this link is the only way people will find your team. To change this, edit your team details <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID"> here</a>.</p>
+                    }
                 }
-                
+
                 <p id="emailContent">
                     ------------------
                     <br /><br />Hello,
