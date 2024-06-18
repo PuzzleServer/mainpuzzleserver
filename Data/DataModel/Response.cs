@@ -52,7 +52,7 @@ namespace ServerCore.DataModel
         /// The submitted text
         /// </summary>
         [Required]
-        [MaxLength(100)]
+        [MaxLength(1000)]
         public string SubmittedText
         {
             get { return submittedText; }

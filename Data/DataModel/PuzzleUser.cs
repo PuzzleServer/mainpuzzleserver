@@ -44,7 +44,7 @@ namespace ServerCore.DataModel
         [MaxLength(20)]
         public string PhoneNumber { get; set; }
         [PersonalData]
-        [MaxLength(5)]
+        [MaxLength(20)]
         public string TShirtSize { get; set; }
         public bool VisibleToOthers { get; set; }
 

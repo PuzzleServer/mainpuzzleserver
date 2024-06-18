@@ -43,7 +43,7 @@ namespace ServerCore.DataModel
         /// <summary>
         /// The feedback text submitted by the user.
         /// </summary>
-        [MaxLength(500)]
+        [MaxLength(5000)]
         public string WrittenFeedback { get; set; }
 
         /// <summary>

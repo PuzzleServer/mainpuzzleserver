@@ -23,7 +23,7 @@ namespace ServerCore.DataModel
         [MaxLength(100)]
         public string LunchModifications { get; set; }
 
-        [MaxLength(5)]
+        [MaxLength(20)]
         public string ShirtSize { get; set; }
 
         public bool IsRemote { get; set; }
