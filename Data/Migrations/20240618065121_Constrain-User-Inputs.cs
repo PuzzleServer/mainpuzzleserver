@@ -73,8 +73,8 @@ namespace Data.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "LunchModifications",
                 table: "TeamLunch",
-                type: "nvarchar(100)",
-                maxLength: 100,
+                type: "nvarchar(500)",
+                maxLength: 500,
                 nullable: true,
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)",
@@ -93,8 +93,8 @@ namespace Data.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "LunchModifications",
                 table: "Swag",
-                type: "nvarchar(100)",
-                maxLength: 100,
+                type: "nvarchar(500)",
+                maxLength: 500,
                 nullable: true,
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)",
@@ -267,8 +267,8 @@ namespace Data.Migrations
                 type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(100)",
-                oldMaxLength: 100,
+                oldType: "nvarchar(500)",
+                oldMaxLength: 500,
                 oldNullable: true);
 
             migrationBuilder.AlterColumn<string>(
@@ -287,8 +287,8 @@ namespace Data.Migrations
                 type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(100)",
-                oldMaxLength: 100,
+                oldType: "nvarchar(500)",
+                oldMaxLength: 500,
                 oldNullable: true);
 
             migrationBuilder.AlterColumn<string>(

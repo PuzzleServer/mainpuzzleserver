@@ -20,7 +20,7 @@ namespace ServerCore.DataModel
 
         public string Lunch { get; set; }
 
-        [MaxLength(100)]
+        [MaxLength(500)]
         public string LunchModifications { get; set; }
 
         [MaxLength(20)]
