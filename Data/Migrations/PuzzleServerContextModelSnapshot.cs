@@ -522,8 +522,8 @@ namespace Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("WrittenFeedback")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasMaxLength(5000)
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
@@ -737,8 +737,8 @@ namespace Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("ShirtSize")
-                        .HasMaxLength(5)
-                        .HasColumnType("nvarchar(5)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.HasKey("ID");
 
@@ -988,8 +988,8 @@ namespace Data.Migrations
                         .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("TShirtSize")
-                        .HasMaxLength(5)
-                        .HasColumnType("nvarchar(5)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<bool>("VisibleToOthers")
                         .HasColumnType("bit");
@@ -1022,8 +1022,8 @@ namespace Data.Migrations
 
                     b.Property<string>("SubmittedText")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.HasKey("ID");
 
@@ -1160,8 +1160,8 @@ namespace Data.Migrations
 
                     b.Property<string>("SubmissionText")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<int>("SubmitterID")
                         .HasColumnType("int");
@@ -1227,8 +1227,8 @@ namespace Data.Migrations
 
                     b.Property<string>("SubmissionText")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<int>("SubmitterID")
                         .HasColumnType("int");
