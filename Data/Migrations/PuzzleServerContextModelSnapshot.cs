@@ -654,8 +654,8 @@ namespace Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Text")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasMaxLength(5000)
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ThreadId")
                         .HasColumnType("nvarchar(450)");

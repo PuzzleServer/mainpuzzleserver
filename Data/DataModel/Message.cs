@@ -54,7 +54,7 @@ namespace ServerCore.DataModel
         /// <summary>
         /// Gets or sets the actual message text.
         /// </summary>
-        [MaxLength(500)]
+        [MaxLength(5000)]
         public string Text { get; set; }
 
         /// <summary>
