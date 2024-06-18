@@ -180,6 +180,16 @@ namespace Data.Migrations
                 oldNullable: true);
 
             migrationBuilder.AlterColumn<string>(
+                name: "Text",
+                table: "Messages",
+                type: "nvarchar(5000)",
+                maxLength: 5000,
+                nullable: true,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(max)",
+                oldNullable: true);
+
+            migrationBuilder.AlterColumn<string>(
                 name: "Subject",
                 table: "Messages",
                 type: "nvarchar(50)",
@@ -355,6 +365,16 @@ namespace Data.Migrations
                 oldClrType: typeof(string),
                 oldType: "nvarchar(50)",
                 oldMaxLength: 50);
+
+            migrationBuilder.AlterColumn<string>(
+                name: "Text",
+                table: "Messages",
+                type: "nvarchar(max)",
+                nullable: true,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(5000)",
+                oldMaxLength: 5000,
+                oldNullable: true);
 
             migrationBuilder.AlterColumn<string>(
                 name: "Subject",

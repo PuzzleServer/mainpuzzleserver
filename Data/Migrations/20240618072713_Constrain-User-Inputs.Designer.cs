@@ -12,7 +12,7 @@ using ServerCore.DataModel;
 namespace Data.Migrations
 {
     [DbContext(typeof(PuzzleServerContext))]
-    [Migration("20240618072058_Constrain-User-Inputs")]
+    [Migration("20240618072713_Constrain-User-Inputs")]
     partial class ConstrainUserInputs
     {
         /// <inheritdoc />
