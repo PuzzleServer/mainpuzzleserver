@@ -522,7 +522,6 @@ namespace Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("WrittenFeedback")
-                        .HasMaxLength(5000)
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
@@ -654,8 +653,8 @@ namespace Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Text")
-                        .HasMaxLength(5000)
-                        .HasColumnType("nvarchar(5000)");
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
 
                     b.Property<string>("ThreadId")
                         .HasColumnType("nvarchar(450)");
