@@ -12,7 +12,7 @@ using ServerCore.DataModel;
 namespace Data.Migrations
 {
     [DbContext(typeof(PuzzleServerContext))]
-    [Migration("20240618070947_Constrain-User-Inputs")]
+    [Migration("20240618074014_Constrain-User-Inputs")]
     partial class ConstrainUserInputs
     {
         /// <inheritdoc />
@@ -525,7 +525,6 @@ namespace Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("WrittenFeedback")
-                        .HasMaxLength(5000)
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
@@ -657,8 +656,8 @@ namespace Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Text")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
 
                     b.Property<string>("ThreadId")
                         .HasColumnType("nvarchar(450)");

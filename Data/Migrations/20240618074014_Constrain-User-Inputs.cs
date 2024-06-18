@@ -182,8 +182,8 @@ namespace Data.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "Text",
                 table: "Messages",
-                type: "nvarchar(500)",
-                maxLength: 500,
+                type: "nvarchar(4000)",
+                maxLength: 4000,
                 nullable: true,
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)",
@@ -372,8 +372,8 @@ namespace Data.Migrations
                 type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(500)",
-                oldMaxLength: 500,
+                oldType: "nvarchar(4000)",
+                oldMaxLength: 4000,
                 oldNullable: true);
 
             migrationBuilder.AlterColumn<string>(
