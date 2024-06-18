@@ -25,7 +25,7 @@ namespace ServerCore.DataModel
         /// <summary>
         /// Modifications like "no cheese"
         /// </summary>
-        [MaxLength(100)]
+        [MaxLength(500)]
         public string LunchModifications { get; set; }
     }
 }
