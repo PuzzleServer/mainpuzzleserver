@@ -161,8 +161,8 @@ namespace Data.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "EmployeeAlias",
                 table: "PuzzleUsers",
-                type: "nvarchar(20)",
-                maxLength: 20,
+                type: "nvarchar(50)",
+                maxLength: 50,
                 nullable: true,
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)",
@@ -353,8 +353,8 @@ namespace Data.Migrations
                 type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(20)",
-                oldMaxLength: 20,
+                oldType: "nvarchar(50)",
+                oldMaxLength: 50,
                 oldNullable: true);
 
             migrationBuilder.AlterColumn<string>(

@@ -12,7 +12,7 @@ using ServerCore.DataModel;
 namespace Data.Migrations
 {
     [DbContext(typeof(PuzzleServerContext))]
-    [Migration("20240618065121_Constrain-User-Inputs")]
+    [Migration("20240618070947_Constrain-User-Inputs")]
     partial class ConstrainUserInputs
     {
         /// <inheritdoc />
@@ -968,8 +968,8 @@ namespace Data.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("EmployeeAlias")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("IdentityUserId")
                         .IsRequired()
