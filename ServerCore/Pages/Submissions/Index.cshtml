@@ -486,7 +486,7 @@ else
             <div class="flexwrapper">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <label for="submissionText" class="marginright margintop">Answer:</label>
-                <input name="submissionText" id="submitBox" class="form-control marginright" data-val="true" data-val-required="Your answer cannot be empty" />
+                <input name="submissionText" maxlength="1000" id="submitBox" class="form-control marginright" data-val="true" data-val-required="Your answer cannot be empty" />
                 <input type="submit" id="submitButton" value="Submit" class="btn btn-default marginright" title="Submitted answers will automatically be capitalized and stripped of non-alphanumeric characters" />
                 @Html.ValidationSummary(true)
                 <span class="text-danger"><span class="field-validation-valid" data-valmsg-for="submissionText" data-valmsg-replace="true"></span></span>
