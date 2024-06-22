@@ -370,18 +370,18 @@ namespace ServerCore.Pages.Submissions
             foreach (SubmissionView submissionView in SubmissionViews)
             {
                 Submissions.Add(submissionView.Submission);
-            }
 
-            if (PuzzleState.SolvedTime != null)
-            {
-                if (!Puzzle.IsFreeform && Submissions?.Count > 0)
+                if (submissionView.Response != null
+                    && submissionView.Response.IsSolution 
+                    && !Puzzle.IsFreeform)
                 {
                     AnswerToken = Submissions.Last().SubmissionText;
                 }
-                else
-                {
-                    AnswerToken = "(marked as solved by admin or author)";
-                }
+            }
+
+            if (PuzzleState.SolvedTime != null && AnswerToken == null)
+            {
+                AnswerToken = "(marked as solved by admin or author)";
             }
 
             FileStoragePrefix = FileManager.GetFileStoragePrefix(Event.ID, "");
