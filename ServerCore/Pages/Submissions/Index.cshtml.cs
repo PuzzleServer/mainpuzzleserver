@@ -396,7 +396,10 @@ namespace ServerCore.Pages.Submissions
                                                  where contentFile.Event == Event &&
                                                  contentFile.ShortName == Puzzle.CustomCSSFile.Substring(1)
                                                  select contentFile).SingleOrDefaultAsync();
-                    PossibleMaterialFile = content.Url.AbsoluteUri;
+                    if (content != null)
+                    {
+                        PossibleMaterialFile = content.Url.AbsoluteUri;
+                    }
                 }
             }
         }

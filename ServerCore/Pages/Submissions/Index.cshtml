@@ -446,7 +446,7 @@ else
         }
         else
         {
-            if (cssFileName.StartsWith("$") && (embedType > 0))
+            if (cssFileName.StartsWith("$") && (embedType > 0) && !string.IsNullOrWhiteSpace(Model.PossibleMaterialFile))
             {
                 // $ denotes a material file, where the Short Name of the file is expected to be in the box
                 // the full url has already been obtained in the cs file, so just use it here
