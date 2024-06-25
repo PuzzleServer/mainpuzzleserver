@@ -40,7 +40,11 @@ namespace ServerCore.Pages.Events
             string[] groupList = Groups.Split("|");
             for (int i = 0; i < groupList.Length; i++)
             {
-                groupSortIndex[groupList[i]] = i;
+                string[] groupSublist = groupList[i].Split(";");
+                foreach (string sl in groupSublist)
+                {
+                    groupSortIndex[sl] = i;
+                }
             }
 
             // get the puzzles and teams
@@ -165,7 +169,6 @@ namespace ServerCore.Pages.Events
                 .ThenByDescending(p => p.Puzzle.IsFinalPuzzle)
                 .ThenByDescending(p => p.Puzzle.IsMetaPuzzle)
                 .ThenByDescending(p => p.Puzzle.IsPuzzle)
-                .ThenBy(p => p.Puzzle.Group)
                 .ThenBy(p => p.SolveCount)
                 .ThenBy(p => p.Puzzle.Name)
                 .ToList();
