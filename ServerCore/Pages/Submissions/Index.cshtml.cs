@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Migrations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -33,7 +32,7 @@ namespace ServerCore.Pages.Submissions
 
         public List<SubmissionView> SubmissionViews { get; set; }
 
-        public DataModel.Puzzle Puzzle { get; set; }
+        public Puzzle Puzzle { get; set; }
 
         public string PuzzleAuthor { get; set; }
 
@@ -41,7 +40,7 @@ namespace ServerCore.Pages.Submissions
 
         public string AnswerToken { get; set; }
 
-        public IList<DataModel.Puzzle> PuzzlesCausingGlobalLockout { get; set; }
+        public IList<Puzzle> PuzzlesCausingGlobalLockout { get; set; }
 
         public string AnswerRedAlertMessage { get; set; }
 
