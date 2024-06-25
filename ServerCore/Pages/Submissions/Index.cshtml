@@ -447,22 +447,33 @@ else
     {
         cssFileName += (!cssFileName.EndsWith(".css")) ? ".css" : "";
         cssFileName = cssFileName.Replace('\\', '/');
-        if (cssFileName.Contains('/'))
+        if (cssFileName.StartsWith("http"))
         {
-            if (cssFileName.StartsWith(".") && (embedType > 0))
-            {
-                // For relative urls, ASSUME THAT THE RULES DESCRIBED ON THE UPLOAD PAGE HAVE BEEN FOLLOWED
-                // This means that the leading . will be replaced with the puzzleFilePath variable above, minus the puzzle file itself
-                // If the file doesn't start with a ., it's assumed to be a full url that will be used as-is
-                cssFileName = puzzleFilePath.Substring(0, puzzleFilePath.LastIndexOf('/')) + cssFileName.Substring(1);
-            }
+            // Use full links as-is
             <link rel="stylesheet" href="@cssFileName" />
         }
         else
         {
-            // Otherwise, assume that bare file names are in the shared resources folder 
-            // (FileStoragePrefix used to account for different urls between development and production)
-            <link rel="stylesheet" href="@(Model.FileStoragePrefix)/resources/@cssFileName" />
+            if (cssFileName.StartsWith("$") && (embedType > 0) && !string.IsNullOrWhiteSpace(Model.PossibleMaterialFile))
+            {
+                // $ denotes a material file, where the Short Name of the file is expected to be in the box
+                // the full url has already been obtained in the cs file, so just use it here
+                <link rel="stylesheet" href="@(Model.PossibleMaterialFile)" />
+            }
+            else
+            {
+                if (cssFileName.StartsWith("./") && (embedType > 0))
+                {
+                    // Strip relative links that start in the root shared resources folder
+                    cssFileName = cssFileName.Substring(2);
+                }
+                else if (cssFileName.StartsWith("/") && (embedType > 0))
+                {
+                    // Strip relative links that start in the root shared resources folder
+                    cssFileName = cssFileName.Substring(1);
+                }
+                <link rel="stylesheet" href="@(Model.FileStoragePrefix)/resources/@cssFileName" />
+            }
         }
     }
 

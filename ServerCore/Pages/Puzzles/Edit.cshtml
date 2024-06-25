@@ -115,21 +115,17 @@
                             </div>
                             <div class="form-group">
                                 <label asp-for="Puzzle.CustomCSSFile" class="control-label"></label>
-                                <div class="text-danger" style="font-size: 10px">The name of a CSS file to customize the appearance of the Submission page when embedding is enabled. 
-                                    If only a filename is provided, the file is assumed to be in the shared resources folder and addressable 
-                                    as https://puzzleserverteststore.blob.core.windows.net/evt{eventId}/resources/{filename} in production 
-                                    (development url will be different). Otherwise, a full or relative url will be used as-is, allowing for files 
-                                    to be uploaded to the puzzle's materials for example.<br />
-                                    Full urls are preferred; use caution with relative ones! If a relative url is provided, it is assumed to be 
-                                    relative to the puzzle file path, which can be useful if you want both the host page and the puzzle to be 
-                                    able to use the same file, but this will only be true if you upload the puzzle and the css file together at 
-                                    the same time as part of the same zip file! Otherwise, if you upload it separately, Azure storage will put 
-                                    it in a different randomly-named folder, which will break the link.<br />
-                                    Relative links will also assume that all files for a puzzle live at the same base directory level. For 
-                                    example, if the puzzle lives at /myPuzzleName/puzzle.html, then the css file will be assumed to live at 
-                                    /myPuzzleName/{filename}. Specifically, don't put them at different levels, for example putting the css file 
-                                    at only /{filename} via a relative link of ../{filename}. Instead, 
-                                    ./{optionalDeeperFolderInsideMyPuzzleNameFolder}/{filename} should be the only kind of relative link used.
+                                <div class="text-danger" style="font-size: 10px">The name of a CSS file to customize the appearance of the Submission 
+                                    page when embedding is enabled. If only a filepath is provided (i.e. not a full url beginning with http...), the 
+                                    relative path of the file will start in the shared resources folder. The path on local development environments 
+                                    may differ, but in production, the shared resources folder (and any subfolder uploaded to it as a zip file) is at 
+                                    https://puzzleserverteststore.blob.core.windows.net/evt{eventId}/resources/{optionalFolderName}/{filename}
+                                    <br /><br />
+                                    A full url will be used as-is.  Please note that in development, non-raw full urls to files uploaded to a specific
+                                    puzzle will fail to load. Use caution with full urls; puzzle files have links (both raw and non-) that change every
+                                    time the puzzle is re-uploaded. To address files outside of the shared resources, a dollar sign $ as the first 
+                                    character preceding the relative path can be used to access a file from that puzzle's files. 
+                                    <br /><br />
                                 </div>
                                 <input asp-for="Puzzle.CustomCSSFile" class="form-control" />
                                 <span asp-validation-for="Puzzle.CustomCSSFile" class="text-danger"></span>
