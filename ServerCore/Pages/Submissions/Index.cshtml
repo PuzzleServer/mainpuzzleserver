@@ -127,6 +127,14 @@
         background-color: rgba(255,255,255,1);
         overflow: auto;
     }
+    .print-link {
+        text-decoration: underline;
+        color: #0D6EFD;
+        cursor: pointer;
+    }
+    .print-link:hover {
+        color: #0A58CA;
+    }
     iframe {
         border: 0px solid black;
     }
@@ -521,23 +529,17 @@ else
                 <div><b>Have feedback?</b> <a asp-Page="/Puzzles/SubmitFeedback" asp-route-puzzleid="@Model.Puzzle.ID" target="_blank">Click this link</a> to open the feedback form.</div>
             }
 
-            @if (embedType > 2) // HTML files or images
+            @if (embedType == 3) // HTML files
             {
-                string urlSuffix = "";
-                if (puzzleFilePath.Contains('?')) 
-                {
-                    urlSuffix += "&";
-                }
-                else
-                {
-                    urlSuffix += "?";
-                }
-                urlSuffix += "print=true";
-                <div><b>Want to print?</b> <a href="@puzzleFilePath@urlSuffix" target="_blank">Click this link</a> for a printable version. Print in color!</div>
+                <div><b>Want to print?</b> <span class="print-link">Click this link</span> for a printable version. Please allow popups!</div>
+            }
+            else if (embedType == 4) // images
+            {
+                <div><b>Want to print?</b> <a href="@puzzleFilePath" target="_blank">Click this link</a> for a printable version. Please allow popups!</div>
             }
             else if (embedType == 1) // PDFs
             {
-                <div><b>Want to print?</b> <a href="@puzzleFilePath" download>Click this link</a> to download the file. Print in color!</div>
+                <div><b>Want to print?</b> <a href="@puzzleFilePath" target="_blank" download>Click this link</a> to download the file. Please allow popups!</div>
             }
 
             @if (!Model.IsPuzzleForSinglePlayer && Model.Event.AllowBlazor)
@@ -694,7 +696,7 @@ else
                 urlSuffix += "?";
             }
             urlSuffix += "embed=true";
-            <iframe id="puzzle-frame" class="unsized" title="@Model.Puzzle.Name" sandbox="allow-same-origin allow-scripts allow-popups allow-downloads" src="@puzzleFilePath@urlSuffix"></iframe>
+            <iframe id="puzzle-frame" class="unsized" title="@Model.Puzzle.Name" sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-downloads" src="@puzzleFilePath@urlSuffix"></iframe>
             break;
         case 4: // Images
             <img id="img-frame" src="@puzzleFilePath" alt="An image containing a puzzle" />
@@ -884,8 +886,15 @@ else
                 const iframe = document.querySelector("#puzzle-frame");
                 if ((iframe !== null) && (iframe !== undefined)) {
                     iframe.addEventListener("load", (e) => {
-                        e.target.contentWindow.postMessage("", "*");
+                        e.target.contentWindow.postMessage("size", "*");
                     });
+                }
+
+                // Create a custom print link so it can find the current location of the iframe 
+                // instead of the initial one in case it changed due to a navigation inside it
+                const printLink = document.querySelector(".print-link");
+                if ((printLink !== null) && (printLink !== undefined)) {
+                    printLink.addEventListener("click", customPrint);
                 }
             });
 
@@ -893,7 +902,7 @@ else
             window.addEventListener("resize", (e) => {
                 const iframe = document.querySelector("#puzzle-frame");
                 if ((iframe !== null) && (iframe !== undefined)) {
-                    iframe.contentWindow.postMessage("", "*");
+                    iframe.contentWindow.postMessage("size", "*");
                 }
             });
 
@@ -909,21 +918,25 @@ else
             });
 
             // Intercept print calls since printing the embedded page doesn't work well
-            // Instead open the puzzle in a new tab and pop the print dialog automatically
-            // This will unfortunately leave the dialog still open in the parent page
-            window.addEventListener("beforeprint", (e) => {
-                let url = "@puzzleFilePath";
-                let urlSuffix = "";
-                if (url.includes('?')) {
-                    urlSuffix += "&";
+            // Instead, open the puzzle in a new tab and pop the print dialog automatically
+            // Use of ctrl+P will likely leave the dialog still open in the parent page
+            // If the embedded puzzle is an iframe, use the current location, not initial
+            // by sending a message to the puzzle to open itself from its current location
+            window.addEventListener("beforeprint", customPrint);
+            function customPrint() {
+                const embedType = "@embedType";
+                if (embedType == "3") {
+                    const iframe = document.querySelector("#puzzle-frame");
+                    if ((iframe !== null) && (iframe !== undefined)) {
+                        iframe.contentWindow.postMessage("print", "*");
+                    }
                 }
-                else {
-                    urlSuffix += "?";
+                else { // Images and PDFs will only end up here via ctrl+P
+                    let url = "@puzzleFilePath";
+                    url = url.replace("&#x2B;", "+");
+                    window.open(url, "_blank");
                 }
-                urlSuffix += "print=true";
-                url += urlSuffix;
-                window.open(url, "_blank");
-            });
+            }
         </script>
     }
 }
