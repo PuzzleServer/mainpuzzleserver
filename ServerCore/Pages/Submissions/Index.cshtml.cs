@@ -375,7 +375,7 @@ namespace ServerCore.Pages.Submissions
                     && submissionView.Response.IsSolution 
                     && !Puzzle.IsFreeform)
                 {
-                    AnswerToken = Submissions.Last().SubmissionText;
+                    AnswerToken = submissionView.Submission.SubmissionText;
                 }
             }
 
