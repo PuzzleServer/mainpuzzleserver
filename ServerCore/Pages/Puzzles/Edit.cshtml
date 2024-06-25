@@ -116,16 +116,15 @@
                             <div class="form-group">
                                 <label asp-for="Puzzle.CustomCSSFile" class="control-label"></label>
                                 <div class="text-danger" style="font-size: 10px">The name of a CSS file to customize the appearance of the Submission 
-                                    page when embedding is enabled. If only a filepath is provided (i.e. not a full url beginning with https...), the 
+                                    page when embedding is enabled. If only a filepath is provided (i.e. not a full url beginning with http...), the 
                                     relative path of the file will start in the shared resources folder. The path on local development environments 
                                     may differ, but in production, the shared resources folder (and any subfolder uploaded to it as a zip file) is at 
                                     https://puzzleserverteststore.blob.core.windows.net/evt{eventId}/resources/{optionalFolderName}/{filename}
                                     <br /><br />
-                                    A full url will be used as-is.  To address files outside of the shared resources, a single set of .. dots at the
-                                    beginning of the relative path can be used to access a file from the puzzle's resources, for example. To prevent
-                                    the need for future puzzle updates, shared resources are preferred; use caution with puzzle resources instead of 
-                                    shared ones! Puzzle resource links change every time the puzzle is re-uploaded, but they do allow authors to do
-                                    their own submission page styling; shared resources require admins to upload them.
+                                    A full url will be used as-is.  Please note that in development, non-raw full urls to files uploaded to a specific
+                                    puzzle will fail to load. Use caution with full urls; puzzle files have links (both raw and non-) that change every
+                                    time the puzzle is re-uploaded. To address files outside of the shared resources, a dollar sign $ as the first 
+                                    character preceding the relative path can be used to access a file from that puzzle's files. 
                                     <br /><br />
                                 </div>
                                 <input asp-for="Puzzle.CustomCSSFile" class="form-control" />

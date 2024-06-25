@@ -446,22 +446,22 @@ else
         }
         else
         {
-            if (cssFileName.StartsWith("../") && (embedType > 0))
+            if (cssFileName.StartsWith("$") && (embedType > 0))
             {
-                // Allow a single ../ at the beginning for relative links to puzzle files instead of shared resources
-                cssFileName = cssFileName.Substring(3);
-                <link rel="stylesheet" href="@(Model.FileStoragePrefix)/@cssFileName" />
+                // $ denotes a material file, where the Short Name of the file is expected to be in the box
+                // the full url has already been obtained in the cs file, so just use it here
+                <link rel="stylesheet" href="@(Model.PossibleMaterialFile)" />
             }
             else
             {
                 if (cssFileName.StartsWith("./") && (embedType > 0))
                 {
-                    // Strip relative links that start in the root folder
+                    // Strip relative links that start in the root shared resources folder
                     cssFileName = cssFileName.Substring(2);
                 }
                 else if (cssFileName.StartsWith("/") && (embedType > 0))
                 {
-                    // Strip relative links that start in the root folder
+                    // Strip relative links that start in the root shared resources folder
                     cssFileName = cssFileName.Substring(1);
                 }
                 <link rel="stylesheet" href="@(Model.FileStoragePrefix)/resources/@cssFileName" />

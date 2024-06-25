@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Migrations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -16,9 +17,11 @@ namespace ServerCore.Pages.Submissions
     public class IndexModel : EventSpecificPageModel
     {
         public const string IncorrectResponseText = "Incorrect";
+        private readonly PuzzleServerContext context;
 
         public IndexModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
+            context = serverContext;
         }
         public bool IsPuzzleForSinglePlayer { get; set; }
 
@@ -30,7 +33,7 @@ namespace ServerCore.Pages.Submissions
 
         public List<SubmissionView> SubmissionViews { get; set; }
 
-        public Puzzle Puzzle { get; set; }
+        public DataModel.Puzzle Puzzle { get; set; }
 
         public string PuzzleAuthor { get; set; }
 
@@ -38,7 +41,7 @@ namespace ServerCore.Pages.Submissions
 
         public string AnswerToken { get; set; }
 
-        public IList<Puzzle> PuzzlesCausingGlobalLockout { get; set; }
+        public IList<DataModel.Puzzle> PuzzlesCausingGlobalLockout { get; set; }
 
         public string AnswerRedAlertMessage { get; set; }
 
@@ -48,6 +51,8 @@ namespace ServerCore.Pages.Submissions
         public bool AllowFreeformSharing { get; set; }
 
         public string FileStoragePrefix { get; set; }
+
+        public string PossibleMaterialFile { get; set; }
 
         public class SubmissionView
         {
@@ -384,6 +389,17 @@ namespace ServerCore.Pages.Submissions
             }
 
             FileStoragePrefix = FileManager.GetFileStoragePrefix(Event.ID, "");
+            if (!string.IsNullOrWhiteSpace(Puzzle.CustomCSSFile)) 
+            {
+                if (Puzzle.CustomCSSFile.StartsWith("$"))
+                {
+                    ContentFile content = await (from contentFile in context.ContentFiles
+                                                 where contentFile.Event == Event &&
+                                                 contentFile.ShortName == Puzzle.CustomCSSFile.Substring(1)
+                                                 select contentFile).SingleOrDefaultAsync();
+                    PossibleMaterialFile = content.Url.AbsoluteUri;
+                }
+            }
         }
 
         /// <summary>
