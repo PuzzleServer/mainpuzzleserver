@@ -570,12 +570,13 @@ namespace ServerCore
                     var teams = await (from sub in context.Submissions
                                              where sub.PuzzleID == response.PuzzleID && sub.SubmissionText == response.SubmittedText
                                              select sub.Team).ToListAsync();
+                    var plaintextResponseText = response.GetPlaintextResponseText(puzzle?.EventID ?? 0);
                     MailHelper.Singleton.SendPlaintextBcc(teamMembers,
                         $"{puzzle.Event.Name}: {puzzle.PlaintextName} Response updated for '{response.SubmittedText}'",
-                        $"The new response for this submission is: '{response.GetPlaintextResponseText(puzzle?.EventID ?? 0)}'.");
+                        $"The new response for this submission is: '{plaintextResponseText}'.");
                     foreach (Team team in teams)
                     {
-                        await ServiceProvider.GetRequiredService<IHubContext<ServerMessageHub>>().SendNotification(team, $"{puzzle.PlaintextName} Response updated for '{response.SubmittedText}'", $"The new response for this submission is: '{response.GetPlaintextResponseText(puzzle?.EventID ?? 0)}'.", $"/{puzzle.Event.EventID}/play/Submissions/{puzzle.ID}");
+                        await ServiceProvider.GetRequiredService<IHubContext<ServerMessageHub>>().SendNotification(team, $"{puzzle.PlaintextName} Response updated for '{response.SubmittedText}'", $"The new response for this submission is: '{plaintextResponseText}'.", $"/{puzzle.Event.EventID}/play/Submissions/{puzzle.ID}");
                     }
                 }
             }

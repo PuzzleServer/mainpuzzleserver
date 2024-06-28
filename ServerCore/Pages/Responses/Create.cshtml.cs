@@ -34,10 +34,16 @@ namespace ServerCore.Pages.Responses
         {
             if (!ModelState.IsValid)
             {
-                return Page();
+                return await OnGetAsync(puzzleId);
             }
 
             PuzzleResponse.PuzzleID = puzzleId;
+
+            if (PuzzleResponse.ResponseText != null && PuzzleResponse.ResponseText.StartsWith("Html.Raw("))
+            {
+                ModelState.AddModelError("PuzzleResponse.ResponseText", "Reponses using \"Html.Raw\" must start with a plain text version.");
+                return await OnGetAsync(puzzleId);
+            }
 
             // Ensure that the response text is unique across all responses for this puzzle.
             bool duplicateResponse = await (from Response r in _context.Responses
