@@ -339,11 +339,13 @@
 {
     <script>
         var allEventToasts = {};
+        var documentLoaded = false;
+        var windowHasFocus = false;
 
         function popToast(notification, animate) {
             let notificationList = document.querySelector("#notification-list");
             notificationList.insertAdjacentHTML("afterbegin", `\
-                    <div class='toast' role='alert' aria-live='assertive' aria-atomic='true'> \
+                    <div class='toast' role='alert' data-bs-dismiss='toast' aria-live='assertive' aria-atomic='true'> \
                         <div class='toast-header'> \
                             <strong class='me-auto'>${notification.title}</strong> \
                             <small class='text-muted'>${new Date(notification.time).toLocaleString()}</small> \
@@ -386,8 +388,9 @@
             popToast(notification, true);
         };
 
-        document.addEventListener("DOMContentLoaded", function () { resetAllToasts(); });
-        document.addEventListener("visibilitychange", function () { if (!document.hidden) { resetAllToasts(); } });
+        document.addEventListener("DOMContentLoaded", function () { if (windowHasFocus) { resetAllToasts(); } documentLoaded = true; });
+        window.addEventListener("focus", function() { if (documentLoaded && !windowHasFocus) { resetAllToasts(); } windowHasFocus = true; });
+        window.addEventListener("blur", function () { windowHasFocus = false; });
     </script>
 
     <div aria-live="polite" aria-atomic="true" class="position-relative">
