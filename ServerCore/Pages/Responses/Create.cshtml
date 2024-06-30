@@ -7,7 +7,21 @@
     ViewData["AuthorRoute"] = "../Responses/Create";
     ViewData["PlayRoute"] = "../Submissions/Index";
     ViewData["RoutingPuzzleId"] = ViewContext.RouteData.Values["puzzleId"];
+
+    HashSet<string> commonResponses = new HashSet<string> 
+    {
+        "Correct!",
+        "Keep going...",
+        "Yes. That is part of the puzzle"
+    };
 }
+<script>
+    function OnClickResponsePill(pillElement) {
+        let responseInput = document.getElementById("ResponseTextInput");
+        let pillValue = pillElement.innerHTML;
+        responseInput.value = pillValue;
+    }
+</script>
 
 <h2>@Model.Puzzle.Name: Create response</h2>
 <h5>Note: ResponseText can either be plaintext or Raw HTML.</h5>
@@ -18,7 +32,7 @@
 
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-5">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
@@ -28,22 +42,33 @@
                     </label>
                 </div>
             </div>
+            </br>
             <div class="form-group">
-                <label asp-for="PuzzleResponse.SubmittedText" class="control-label"></label>
+                <label class="bolded-label" asp-for="PuzzleResponse.SubmittedText" class="control-label"></label>
+                <p>Note that capitalization and spacing won't matter here</p>
                 <input asp-for="PuzzleResponse.SubmittedText" class="form-control" />
                 <span asp-validation-for="PuzzleResponse.SubmittedText" class="text-danger"></span>
             </div>
-
+            <br />
             <div class="form-group">
-                <label asp-for="PuzzleResponse.ResponseText" class="control-label"></label>
-                <input asp-for="PuzzleResponse.ResponseText" class="form-control" />
+                <label class="bolded-label" asp-for="PuzzleResponse.ResponseText" class="control-label"></label>
+                <p>This is what the player will see if they input the above text.<br/> You can choose one of the below common responses or write your own.</p>
+                <div>
+                    @foreach (string commonResponse in commonResponses)
+                    {
+                        <span class="pill-button" onclick="OnClickResponsePill(this)">@commonResponse</span>
+                    }
+                </div>
+                <input id="ResponseTextInput" asp-for="PuzzleResponse.ResponseText" class="form-control" />
                 <span asp-validation-for="PuzzleResponse.ResponseText" class="text-danger"></span>
             </div>
+            <br/>
             <div class="form-group">
-                <label asp-for="PuzzleResponse.Note" class="control-label"></label>
+                <label class="bolded-label" asp-for="PuzzleResponse.Note" class="control-label"></label>
                 <input asp-for="PuzzleResponse.Note" class="form-control" />
                 <span asp-validation-for="PuzzleResponse.Note" class="text-danger"></span>
             </div>
+            <br />
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-default" />
             </div>
