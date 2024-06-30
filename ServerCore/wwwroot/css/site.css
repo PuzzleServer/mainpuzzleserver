@@ -397,3 +397,24 @@ a.navbar-brand {
 .message-subtitle {
     font-size: 12pt;
 }
+
+.pill-button {
+    background-color: #ddd;
+    border: none;
+    color: black;
+    padding: 3px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 16px;
+}
+
+.pill-button:hover {
+    background-color: #f1f1f1;
+}
+
+.bolded-label {
+    font-weight: 600;
+}
