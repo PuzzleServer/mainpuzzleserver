@@ -11,7 +11,10 @@
 
 <div>
     <span>
-        <b>Who&apos;s Here: </b>
+        @if(!IsReadOnly)
+        {
+            <b>Who&apos;s Here: </b>
+        }
         @string.Join(" | ", PresentUsers.Select(u => u.Name))
     </span>
 </div>

@@ -33,6 +33,9 @@ namespace ServerCore.Pages.Components
         [Parameter]
         public int PuzzleId { get; set; }
 
+        [Parameter]
+        public bool IsReadOnly { get; set; }
+
         Guid pageInstance = Guid.NewGuid();
         TeamPuzzleStore teamPuzzleStore;
 
@@ -106,7 +109,11 @@ namespace ServerCore.Pages.Components
 
             await UpdateModelAsync(teamPuzzleStore.PresentPages);
 
-            await MessageHub.BroadcastPresenceMessageAsync(new PresenceMessage { PageInstance = pageInstance, PuzzleUserId = PuzzleUserId, TeamId = TeamId, PuzzleId = PuzzleId, PresenceType = PresenceType.Active });
+            if (!this.IsReadOnly)
+            {
+                await MessageHub.BroadcastPresenceMessageAsync(new PresenceMessage { PageInstance = pageInstance, PuzzleUserId = PuzzleUserId, TeamId = TeamId, PuzzleId = PuzzleId, PresenceType = PresenceType.Active });
+            }
+
             await base.OnParametersSetAsync();
         }
 
