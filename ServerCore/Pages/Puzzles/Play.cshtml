@@ -101,6 +101,12 @@ else
                         Answer
                     </th>
                 }
+                else if (Model.Event.AllowBlazor)
+                {
+                    <th>
+                        Who's here
+                    </th>
+                }
                 <th>
                     <a asp-page="./Play"
                         asp-route-singlePlayerPuzzleSort="@Model.SinglePlayerPuzzleSort" 
@@ -176,6 +182,12 @@ else
                             {
                                 @Html.ActionLink("View answer", "Index", "Files", new { eventId = Model.Event.ID, filename = item.Answer.ShortName }, new { target = "_blank" })
                             }
+                        </td>
+                    }
+                    else if (Model.Event.AllowBlazor)
+                    {
+                        <td>
+                            <component type="typeof(ServerCore.Pages.Components.PresenceComponent)" render-mode="Server" param-PuzzleUserId="@Model.LoggedInUser.ID" param-TeamId="@Model.Team.ID" param-PuzzleId="@item.ID" param-IsReadOnly=true param-ShowPresenceOnly=true param-MaxUsers=2 />
                         </td>
                     }
                     <td class="puzzle-list-submit-customizable">
