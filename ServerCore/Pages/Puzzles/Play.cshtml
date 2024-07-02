@@ -101,7 +101,7 @@ else
                         Answer
                     </th>
                 }
-                else
+                else if (Model.Event.AllowBlazor)
                 {
                     <th>
                         Who's here
@@ -184,10 +184,10 @@ else
                             }
                         </td>
                     }
-                    else
+                    else if (Model.Event.AllowBlazor)
                     {
                         <td>
-                            <component type="typeof(ServerCore.Pages.Components.PresenceComponent)" render-mode="Server" param-PuzzleUserId="@Model.LoggedInUser.ID" param-TeamId="@Model.Team.ID" param-PuzzleId="@item.ID" param-IsReadOnly=true />
+                            <component type="typeof(ServerCore.Pages.Components.PresenceComponent)" render-mode="Server" param-PuzzleUserId="@Model.LoggedInUser.ID" param-TeamId="@Model.Team.ID" param-PuzzleId="@item.ID" param-IsReadOnly=true param-ShowPresenceOnly=true param-MaxUsers=2 />
                         </td>
                     }
                     <td class="puzzle-list-submit-customizable">
