@@ -98,7 +98,7 @@
             <span asp-validation-for="PuzzleMaterialFiles" class="text-danger"></span>
             <hr />
 
-            <label class="control-label">Solve Token Files</label>
+            <label class="control-label">Solution Materials and Tokens</label>
             @foreach (var solveFile in Model.Puzzle.SolveTokenFiles.OrderBy(file => file.ShortName))
             {
                 <p>
