@@ -477,90 +477,93 @@ else
         }
     }
 
-    <div class="twocolumn">
-        <div class="flexwrapper">
-            <div><h2 class="puzzle-title-customizable" id="puzzleNamePrintable"><b>@RawHtmlHelper.Display(Model.Puzzle.Name, Model.Event.ID, Html)</b></h2></div>
-            @if (!string.IsNullOrEmpty(Model.Puzzle.Group))
-            {
-                <div><h3 class="puzzle-group-customizable" id="puzzleGroupPrintable">@RawHtmlHelper.Display(Model.Puzzle.Group, Model.Event.ID, Html)</h3></div>
-            }
-            @if (Model.Puzzle.HasDataConfirmation)
-            {
-                <img class="dc-icon-customizable" id="dataConfirmationPrintable" src="~/images/comic-dc.png" width="30" height="30" style="margin-bottom:3px" title="Reminder: This puzzle supports data confirmation" />
-            }
-        </div>
-        <div class="inlinewrapper">
-            <h4 class="puzzle-author-customizable" id="puzzleAuthorPrintable">@RawHtmlHelper.Display(Model.PuzzleAuthor, Model.Event.ID, Html)</h4>
-        </div>
-    </div>
-
-    @if (!string.IsNullOrEmpty(Model.Puzzle.Errata))
-    {
-        <div class="no-print"><span style="color: red; font-weight:600;">&#x26A0; Errata: </span>@Model.Puzzle.Errata</div>
-        <br class="no-print" />
-    }
-
-    <div class="evencolumn no-print">
-        <div>
+    <div class="top-header-customizable" id="top-header">
+        <div class="twocolumn">
             <div class="flexwrapper">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <label for="submissionText" class="marginright margintop">Answer:</label>
-                <input name="submissionText" maxlength="1000" id="submitBox" class="form-control marginright" data-val="true" data-val-required="Your answer cannot be empty" />
-                <input type="submit" id="submitButton" value="Submit" class="btn btn-default marginright" title="Submitted answers will automatically be capitalized and stripped of non-alphanumeric characters" />
-                @Html.ValidationSummary(true)
-                <span class="text-danger"><span class="field-validation-valid" data-valmsg-for="submissionText" data-valmsg-replace="true"></span></span>
+                <div><h2 class="puzzle-title-customizable" id="puzzleNamePrintable"><b>@RawHtmlHelper.Display(Model.Puzzle.Name, Model.Event.ID, Html)</b></h2></div>
+                @if (!string.IsNullOrEmpty(Model.Puzzle.Group))
+                {
+                    <div><h3 class="puzzle-group-customizable" id="puzzleGroupPrintable">@RawHtmlHelper.Display(Model.Puzzle.Group, Model.Event.ID, Html)</h3></div>
+                }
+                @if (Model.Puzzle.HasDataConfirmation)
+                {
+                    <img class="dc-icon-customizable" id="dataConfirmationPrintable" src="~/images/comic-dc.png" width="30" height="30" style="margin-bottom:3px" title="Reminder: This puzzle supports data confirmation" />
+                }
             </div>
-            @if (Model.Puzzle.IsFreeform)
-            {
-                <label for="allowFreeformSharing" class="marginright margintop">
-                    <input class="checkboxfix" type="checkbox" name="allowFreeformSharing" asp-for="AllowFreeformSharing" title="Allow other players to see this after the event" />
-                    Allow other players to see this after the event
-                </label>
-            }
+            <div class="inlinewrapper">
+                <h4 class="puzzle-author-customizable" id="puzzleAuthorPrintable">@RawHtmlHelper.Display(Model.PuzzleAuthor, Model.Event.ID, Html)</h4>
+            </div>
         </div>
-        <div class="inlinewrapper">
-            @if (!Model.Event.HideHints)
-            {
-                if (Model.Puzzle.IsForSinglePlayer)
-                {
-                    <div><b>Need help?</b> <a asp-page="/Puzzles/SinglePlayerPuzzleHints" asp-route-puzzleid="Model.Puzzle.ID" target="_blank">Click this link</a> to access hints for this puzzle.</div>
-                }
-                else
-                {
-                    <div><b>Need help?</b> <a asp-page="/Teams/Hints" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-teamId="@Model.Team.ID" target="_blank">Click this link</a> to access hints for this puzzle.</div>
-                }
-            }
-            else if (!Model.PuzzleState.IsEmailOnlyMode)
-            {
-                <div><b>Need help?</b> <a asp-Page="/Threads/PuzzleThread" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-teamId="@Model.Team?.ID" asp-route-playerId="@Model.LoggedInUser.ID">Click this link</a> to message the author.</div>
-            }
 
-            @if (Model.Event.AllowFeedback)
-            {
-                <div><b>Have feedback?</b> <a asp-Page="/Puzzles/SubmitFeedback" asp-route-puzzleid="@Model.Puzzle.ID" target="_blank">Click this link</a> to open the feedback form.</div>
-            }
+        @if (!string.IsNullOrEmpty(Model.Puzzle.Errata))
+        {
+            <div class="no-print"><span style="color: red; font-weight:600;">&#x26A0; Errata: </span>@Model.Puzzle.Errata</div>
+            <br class="no-print" />
+        }
 
-            @if (embedType == 3) // HTML files
-            {
-                <div><b>Want to print?</b> <span class="print-link">Click this link</span> for a printable version. Please allow popups!</div>
-            }
-            else if (embedType == 4) // images
-            {
-                <div><b>Want to print?</b> <a href="@puzzleFilePath" target="_blank">Click this link</a> for a printable version. Please allow popups!</div>
-            }
-            else if (embedType == 1) // PDFs
-            {
-                <div><b>Want to print?</b> <a href="@puzzleFilePath" target="_blank" download>Click this link</a> to download the file. Please allow popups!</div>
-            }
-
-            @if (!Model.IsPuzzleForSinglePlayer && Model.Event.AllowBlazor)
-            {
-                <div>
-                    <component type="typeof(ServerCore.Pages.Components.PresenceComponent)" render-mode="Server" param-PuzzleUserId="@Model.LoggedInUser.ID" param-TeamId="@Model.Team.ID" param-PuzzleId="@Model.Puzzle.ID" />
+        <div class="evencolumn no-print">
+            <div>
+                <div class="flexwrapper">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <label for="submissionText" class="marginright margintop answer-label-customizable">Answer:</label>
+                    <input name="submissionText" maxlength="1000" id="submitBox" class="form-control marginright" data-val="true" data-val-required="Your answer cannot be empty" />
+                    <input type="submit" id="submitButton" value="Submit" class="btn btn-default marginright" title="Submitted answers will automatically be capitalized and stripped of non-alphanumeric characters" />
+                    @Html.ValidationSummary(true)
+                    <span class="text-danger"><span class="field-validation-valid" data-valmsg-for="submissionText" data-valmsg-replace="true"></span></span>
                 </div>
-            }
+                @if (Model.Puzzle.IsFreeform)
+                {
+                    <label for="allowFreeformSharing" class="marginright margintop">
+                        <input class="checkboxfix" type="checkbox" name="allowFreeformSharing" asp-for="AllowFreeformSharing" title="Allow other players to see this after the event" />
+                        Allow other players to see this after the event
+                    </label>
+                }
+            </div>
+            <div class="inlinewrapper">
+                @if (!Model.Event.HideHints)
+                {
+                    if (Model.Puzzle.IsForSinglePlayer)
+                    {
+                        <div><b>Need help?</b> <a asp-page="/Puzzles/SinglePlayerPuzzleHints" asp-route-puzzleid="Model.Puzzle.ID" target="_blank">Click this link</a> to access hints for this puzzle.</div>
+                    }
+                    else
+                    {
+                        <div><b>Need help?</b> <a asp-page="/Teams/Hints" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-teamId="@Model.Team.ID" target="_blank">Click this link</a> to access hints for this puzzle.</div>
+                    }
+                }
+                else if (!Model.PuzzleState.IsEmailOnlyMode)
+                {
+                    <div><b>Need help?</b> <a asp-Page="/Threads/PuzzleThread" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-teamId="@Model.Team?.ID" asp-route-playerId="@Model.LoggedInUser.ID">Click this link</a> to message the author.</div>
+                }
+
+                @if (Model.Event.AllowFeedback)
+                {
+                    <div><b>Have feedback?</b> <a asp-Page="/Puzzles/SubmitFeedback" asp-route-puzzleid="@Model.Puzzle.ID" target="_blank">Click this link</a> to open the feedback form.</div>
+                }
+
+                @if (embedType == 3) // HTML files
+                {
+                    <div><b>Want to print?</b> <span class="print-link">Click this link</span> for a printable version. Please allow popups!</div>
+                }
+                else if (embedType == 4) // images
+                {
+                    <div><b>Want to print?</b> <a href="@puzzleFilePath" target="_blank">Click this link</a> for a printable version. Please allow popups!</div>
+                }
+                else if (embedType == 1) // PDFs
+                {
+                    <div><b>Want to print?</b> <a href="@puzzleFilePath" target="_blank" download>Click this link</a> to download the file. Please allow popups!</div>
+                }
+
+                @if (!Model.IsPuzzleForSinglePlayer && Model.Event.AllowBlazor)
+                {
+                    <div>
+                        <component type="typeof(ServerCore.Pages.Components.PresenceComponent)" render-mode="Server" param-PuzzleUserId="@Model.LoggedInUser.ID" param-TeamId="@Model.Team.ID" param-PuzzleId="@Model.Puzzle.ID" />
+                    </div>
+                }
+            </div>
         </div>
     </div>
+
     <br class="no-print" />
     <div id="initialMessage" class="no-print">
         @if (!string.IsNullOrEmpty(Model.AnswerToken))
