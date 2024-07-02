@@ -101,19 +101,23 @@ else
                         Answer
                     </th>
                 }
-                <th>
-                    <a asp-page="./Play"
+                @if (!Model.Event.EmbedPuzzles)
+                {
+                    <th>
+                        <a asp-page="./Play"
                         asp-route-singlePlayerPuzzleSort="@Model.SinglePlayerPuzzleSort" 
                         asp-route-teamPuzzleSort="@(Model.SortForColumnLink(Model.TeamPuzzleSort, PlayModel.SortOrder.SolveAscending, PlayModel.SortOrder.SolveDescending))"
                         asp-route-stateFilter="@Model.StateFilter">
-                        Solve
-                    </a>
-                </th>
-                @if (!Model.Event.HideHints)
-                {
-                    <th>
-                        Hints
+                            Solve
+                        </a>
                     </th>
+
+                    @if (!Model.Event.HideHints)
+                    {
+                        <th>
+                            Hints
+                        </th>
+                    }
                 }
                 @if (Model.AllowFeedback)
                 {
@@ -157,7 +161,7 @@ else
                         }
                         else
                         {
-                            @RawHtmlHelper.Display(item.Name, Model.Event.ID, Html)
+                            <a asp-page="/Submissions/Index" asp-route-puzzleId="@item.ID">@RawHtmlHelper.Display(item.Name, Model.Event.ID, Html)</a>
                         }
 
                         @if (item.PieceMetaUsage != DataModel.PieceMetaUsage.None)
@@ -178,32 +182,28 @@ else
                             }
                         </td>
                     }
-                    <td class="puzzle-list-submit-customizable">
-                        @if (canSubmit)
-                        {
-                            @if (Model.Event.EmbedPuzzles)
-                            {
-                                <a asp-page="/Submissions/Index" asp-route-puzzleId="@item.ID">View Puzzle</a>
-                            }
-                            else
+                    @if (!Model.Event.EmbedPuzzles)
+                    {
+                        <td class="puzzle-list-submit-customizable">
+                            @if (canSubmit)
                             {
                                 <a asp-page="/Submissions/Index" asp-route-puzzleId="@item.ID">Submit Answer</a>
                             }
-                        }
-                        else
-                        {
-                            <text>Not yet available</text>
-                        }
-                        @if (item.SolvedTime != null)
-                        {
-                            <text> (Solved on </text> @Html.Raw(Model.LocalTime(item.SolvedTime))<text>)</text>
-                        }
-                    </td>
-                    @if (!Model.Event.HideHints)
-                    {
-                        <td class="puzzle-list-hints-customizable">
-                            <a asp-page="/Teams/Hints" asp-route-puzzleid="@item.ID" asp-route-teamId="@Model.Team.ID">Hints</a>
+                            else
+                            {
+                                <text>Not yet available</text>
+                            }
+                            @if (item.SolvedTime != null)
+                            {
+                                <text> (Solved on </text> @Html.Raw(Model.LocalTime(item.SolvedTime))<text>)</text>
+                            }
                         </td>
+                        @if (!Model.Event.HideHints)
+                        {
+                            <td class="puzzle-list-hints-customizable">
+                                <a asp-page="/Teams/Hints" asp-route-puzzleid="@item.ID" asp-route-teamId="@Model.Team.ID">Hints</a>
+                            </td>
+                        }
                     }
                     @if (Model.AllowFeedback)
                     {
