@@ -22,7 +22,7 @@ namespace ServerCore.Pages.Components
     /// </summary>
     public partial class PresenceComponent : IAsyncDisposable
     {
-        public List<PresenceModel> PresentUsers { get; set; } = new List<PresenceModel>(0);
+        public IEnumerable<PresenceModel> PresentUsers { get; set; } = Array.Empty<PresenceModel>();
 
         [Parameter]
         public int PuzzleUserId { get; set; }
@@ -32,25 +32,6 @@ namespace ServerCore.Pages.Components
 
         [Parameter]
         public int PuzzleId { get; set; }
-
-        /// <summary>
-        /// True if the component will only read the presence and not write.
-        /// </summary>
-        [Parameter]
-        public bool IsReadOnly { get; set; }
-
-        /// <summary>
-        /// True if we only want to show the presence and no other UI.
-        /// </summary>
-        [Parameter]
-        public bool ShowPresenceOnly { get; set; }
-
-        /// <summary>
-        /// Max number of users to show.
-        /// If more than this, then replace with the count (e.g. "3+")
-        /// </summary>
-        [Parameter]
-        public int? MaxUsers { get; set; }
 
         Guid pageInstance = Guid.NewGuid();
         TeamPuzzleStore teamPuzzleStore;
@@ -76,14 +57,11 @@ namespace ServerCore.Pages.Components
                     presentUsers.Add(presenceModel);
                 }
 
-                PresentUsers = presentUsers
-                    .OrderBy(presence => presence.PresenceType)
-                    .ThenBy(presence => presence.Name)
-                    .ToList();
+                PresentUsers = presentUsers.OrderBy(presence => presence.PresenceType).ThenBy(presence => presence.Name);
             }
             else
             {
-                PresentUsers = new List<PresenceModel>(0);
+                PresentUsers = Array.Empty<PresenceModel>();
             }
 
             await InvokeAsync(StateHasChanged);
@@ -128,11 +106,7 @@ namespace ServerCore.Pages.Components
 
             await UpdateModelAsync(teamPuzzleStore.PresentPages);
 
-            if (!this.IsReadOnly)
-            {
-                await MessageHub.BroadcastPresenceMessageAsync(new PresenceMessage { PageInstance = pageInstance, PuzzleUserId = PuzzleUserId, TeamId = TeamId, PuzzleId = PuzzleId, PresenceType = PresenceType.Active });
-            }
-
+            await MessageHub.BroadcastPresenceMessageAsync(new PresenceMessage { PageInstance = pageInstance, PuzzleUserId = PuzzleUserId, TeamId = TeamId, PuzzleId = PuzzleId, PresenceType = PresenceType.Active });
             await base.OnParametersSetAsync();
         }
 
@@ -143,10 +117,7 @@ namespace ServerCore.Pages.Components
                 teamPuzzleStore.OnTeamPuzzlePresenceChange -= OnPresenceChange;
             }
 
-            if (!this.IsReadOnly)
-            {
-                await MessageHub.BroadcastPresenceMessageAsync(new PresenceMessage { PageInstance = pageInstance, PuzzleUserId = PuzzleUserId, TeamId = TeamId, PuzzleId = PuzzleId, PresenceType = PresenceType.Disconnected });
-            }
+            await MessageHub.BroadcastPresenceMessageAsync(new PresenceMessage { PageInstance = pageInstance, PuzzleUserId = PuzzleUserId, TeamId = TeamId, PuzzleId = PuzzleId, PresenceType = PresenceType.Disconnected });
         }
     }
 }

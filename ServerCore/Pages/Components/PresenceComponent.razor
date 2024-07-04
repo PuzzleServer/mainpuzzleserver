@@ -11,19 +11,7 @@
 
 <div>
     <span>
-        @if(!ShowPresenceOnly)
-        {
-            <b>Who&apos;s Here: </b>
-        }
-        @if (MaxUsers.HasValue && PresentUsers.Count > MaxUsers.Value)
-        {
-            int remainingUsers = PresentUsers.Count - MaxUsers.Value + 1;
-            string remainingUsersString = $"{remainingUsers}+";
-            @(string.Join(" | ", PresentUsers.Take(MaxUsers.Value - 1).Select(u => u.Name)) + " | " + remainingUsersString);
-        }
-        else
-        {
-            @string.Join(" | ", PresentUsers.Select(u => u.Name))
-        }
+        <b>Who&apos;s Here: </b>
+        @string.Join(" | ", PresentUsers.Select(u => u.Name))
     </span>
 </div>
