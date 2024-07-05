@@ -132,7 +132,7 @@ namespace ServerCore.ServerMessages
             var onTeamPuzzlePresenceChange = OnTeamPresenceChange;
             if (onTeamPuzzlePresenceChange != null)
             {
-                await onTeamPuzzlePresenceChange?.Invoke(puzzleId, presentUsers);
+                await onTeamPuzzlePresenceChange.Invoke(puzzleId, presentUsers);
             }
         }
     }
@@ -169,7 +169,7 @@ namespace ServerCore.ServerMessages
             var onTeamPuzzlePresenceChange = OnTeamPuzzlePresenceChange;
             if (onTeamPuzzlePresenceChange != null)
             {
-                await onTeamPuzzlePresenceChange?.Invoke(PuzzleId, presentUsers);
+                await onTeamPuzzlePresenceChange.Invoke(PuzzleId, presentUsers);
             }
         }
 
