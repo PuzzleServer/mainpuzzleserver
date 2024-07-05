@@ -25,6 +25,14 @@
         }
 </style>
 
+@if (Model.Event.AllowBlazor)
+{
+    <script>
+        window.showPresence = (puzzleId, presenceText) => { document.querySelector(`#presence-${puzzleId}`).innerHTML = presenceText; }
+    </script>
+    <component type="typeof(ServerCore.Pages.Components.TeamPresenceToJSComponent)" render-mode="Server" param-TeamId="@Model.Team.ID" param-MaxUsers=2 />
+}
+
 @if (DateTime.UtcNow > @Model.Event.AnswerSubmissionEnd)
 {
     <div class="alert alert-warning" role="alert">
@@ -186,8 +194,7 @@ else
                     }
                     else if (Model.Event.AllowBlazor)
                     {
-                        <td>
-                            <component type="typeof(ServerCore.Pages.Components.PresenceComponent)" render-mode="Server" param-PuzzleUserId="@Model.LoggedInUser.ID" param-TeamId="@Model.Team.ID" param-PuzzleId="@item.ID" param-IsReadOnly=true param-ShowPresenceOnly=true param-MaxUsers=2 />
+                        <td id="presence-@item.ID">                            
                         </td>
                     }
                     <td class="puzzle-list-submit-customizable">

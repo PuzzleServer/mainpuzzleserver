@@ -1,8 +1,10 @@
+using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using ServerCore.DataModel;
 
 namespace ServerCore.Helpers
@@ -94,6 +96,32 @@ namespace ServerCore.Helpers
                 return null;
             }
             return await dbContext.PlayerInEvent.Where(p => p.PlayerId == user.ID && p.EventId == thisEvent.ID).FirstOrDefaultAsync();
+        }
+
+        /// <summary>
+        /// Gets a puzzle user's name with a backing cache
+        /// </summary>
+        /// <param name="puzzleUserId">The user to get a name for</param>
+        /// <returns>The user's name</returns>
+        public static async Task<string> GetUserNameAsync(PuzzleServerContext dbContext, IMemoryCache memoryCache, int puzzleUserId)
+        {
+            string userName = await memoryCache.GetOrCreateAsync<string>(puzzleUserId, async entry =>
+            {
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
+                string userName = await (from user in dbContext.PuzzleUsers
+                                         where user.ID == puzzleUserId
+                                         select user.Name).SingleAsync();
+                if (userName is null)
+                {
+                    userName = String.Empty;
+                }
+
+                entry.SetValue(userName);
+                entry.SetSize(userName.Length);
+                return userName;
+            });
+
+            return userName;
         }
     }
 }

@@ -18,7 +18,7 @@ namespace ServerCore.ServerMessages
             messageListener.OnPresence += OnPresenceChange;
         }
 
-        public TeamPuzzleStore GetOrCreateTeamPuzzleStore(int teamId, int puzzleId)
+        public TeamStore GetOrCreateTeamStore(int teamId)
         {
             TeamStore teamStore = new TeamStore();
             if (!TeamStores.TryAdd(teamId, teamStore))
@@ -26,7 +26,14 @@ namespace ServerCore.ServerMessages
                 teamStore = TeamStores[teamId];
             }
 
-            TeamPuzzleStore teamPuzzleStore = new TeamPuzzleStore();
+            return teamStore;
+        }
+
+        public TeamPuzzleStore GetOrCreateTeamPuzzleStore(int teamId, int puzzleId)
+        {
+            TeamStore teamStore = GetOrCreateTeamStore(teamId);
+
+            TeamPuzzleStore teamPuzzleStore = new TeamPuzzleStore(puzzleId);
             if (!teamStore.TeamPuzzleStores.TryAdd(puzzleId, teamPuzzleStore))
             {
                 teamPuzzleStore = teamStore.TeamPuzzleStores[puzzleId];
@@ -88,11 +95,24 @@ namespace ServerCore.ServerMessages
                 await OnPresenceChange(message);
             }
         }
+    }
 
-        private class TeamStore
-        {
-            public ConcurrentDictionary<int, TeamPuzzleStore> TeamPuzzleStores { get; } = new ConcurrentDictionary<int, TeamPuzzleStore>();
-        }
+    /// <summary>
+    /// Model for a user's presence on a puzzle page
+    /// </summary>
+    public class PresenceModel
+    {
+        public int UserId { get; set; }
+        public string Name { get; set; }
+        public PresenceType PresenceType { get; set; }
+    }
+
+    /// <summary>
+    /// Has the pages present for all puzzles on a team
+    /// </summary>
+    public class TeamStore
+    {
+        public ConcurrentDictionary<int, TeamPuzzleStore> TeamPuzzleStores { get; } = new ConcurrentDictionary<int, TeamPuzzleStore>();
     }
 
     /// <summary>
@@ -100,22 +120,32 @@ namespace ServerCore.ServerMessages
     /// </summary>
     public class TeamPuzzleStore
     {
+        public TeamPuzzleStore(int puzzleId)
+        {
+            PuzzleId = puzzleId;
+        }
+
         /// <summary>
         /// Event for a person joining or leaving a team puzzle
         /// </summary>
-        public event Func<IDictionary<Guid, PresenceModel>, Task> OnTeamPuzzlePresenceChange;
+        public event Func<int, IDictionary<Guid, PresenceModel>, Task> OnTeamPuzzlePresenceChange;
 
         /// <summary>
         /// The pages present on the team puzzle
         /// </summary>
         public ConcurrentDictionary<Guid, PresenceModel> PresentPages { get; set; } = new ConcurrentDictionary<Guid, PresenceModel>();
 
+        /// <summary>
+        /// Puzzle this is a store for
+        /// </summary>
+        public int PuzzleId { get; }
+
         public async Task InvokeTeamPuzzlePresenceChange()
         {
             var onTeamPuzzlePresenceChange = OnTeamPuzzlePresenceChange;
             if (onTeamPuzzlePresenceChange != null)
             {
-                await onTeamPuzzlePresenceChange?.Invoke(PresentPages);
+                await onTeamPuzzlePresenceChange?.Invoke(PuzzleId, PresentPages);
             }
         }
     }

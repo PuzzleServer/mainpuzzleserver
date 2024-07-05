@@ -6,17 +6,11 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using ServerCore.DataModel;
+using ServerCore.Helpers;
 using ServerCore.ServerMessages;
 
 namespace ServerCore.Pages.Components
 {
-    public class PresenceModel
-    {
-        public int UserId { get; set; }
-        public string Name { get; set; }
-        public PresenceType PresenceType { get; set; }
-    }
-
     /// <summary>
     /// Live widget that shows which users are active on a puzzle page
     /// </summary>
@@ -55,7 +49,7 @@ namespace ServerCore.Pages.Components
         Guid pageInstance = Guid.NewGuid();
         TeamPuzzleStore teamPuzzleStore;
 
-        private async Task OnPresenceChange(IDictionary<Guid, PresenceModel> presentPages)
+        private async Task OnPresenceChange(int _, IDictionary<Guid, PresenceModel> presentPages)
         {
             await UpdateModelAsync(presentPages);
         }
@@ -72,7 +66,7 @@ namespace ServerCore.Pages.Components
                 foreach(var user in deduplicatedUsers)
                 {
                     PresenceModel presenceModel = new PresenceModel { UserId = user.UserId, PresenceType = user.PresenceType };
-                    presenceModel.Name = await GetUserNameAsync(user.UserId);
+                    presenceModel.Name = await UserEventHelper.GetUserNameAsync(PuzzleServerContext, MemoryCache, user.UserId);
                     presentUsers.Add(presenceModel);
                 }
 
@@ -87,32 +81,6 @@ namespace ServerCore.Pages.Components
             }
 
             await InvokeAsync(StateHasChanged);
-        }
-
-        /// <summary>
-        /// Gets a puzzle user's name
-        /// </summary>
-        /// <param name="puzzleUserId"></param>
-        /// <returns></returns>
-        private async Task<string> GetUserNameAsync(int puzzleUserId)
-        {
-            string userName = await MemoryCache.GetOrCreateAsync<string>(puzzleUserId, async entry =>
-            {
-                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
-                string userName = await (from user in PuzzleServerContext.PuzzleUsers
-                                         where user.ID == puzzleUserId
-                                         select user.Name).SingleAsync();
-                if (userName is null)
-                {
-                    userName = String.Empty;
-                }
-
-                entry.SetValue(userName);
-                entry.SetSize(userName.Length);
-                return userName;
-            });
-
-            return userName;
         }
 
         protected override async Task OnInitializedAsync()
