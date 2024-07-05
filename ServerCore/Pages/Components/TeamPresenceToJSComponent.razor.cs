@@ -60,49 +60,41 @@ namespace ServerCore.Pages.Components
 
             foreach (TeamPuzzleStore teamPuzzleStore in TeamStore.TeamPuzzleStores.Values)
             {
-                await SendPresenceToJSAsync(teamPuzzleStore.PuzzleId, teamPuzzleStore.PresentPages);
+                await SendPresenceToJSAsync(teamPuzzleStore.PuzzleId, teamPuzzleStore.GetPresentUsers());
             }
 
             await base.OnParametersSetAsync();
         }
 
-        private async Task SendPresenceToJSAsync(int puzzleId, IDictionary<Guid, PresenceModel> presentPages)
+        private async Task SendPresenceToJSAsync(int puzzleId, IList<PresenceModel> presentUsers)
         {
-            List<PresenceModel> presentUsers = new List<PresenceModel>();
-            if (presentPages.Count > 0)
+            List<PresenceModel> namedUsers = new List<PresenceModel>(presentUsers.Count);
+            foreach (var user in presentUsers)
             {
-                var deduplicatedUsers = from model in presentPages.Values
-                                        group model by model.UserId into userGroup
-                                        select new { UserId = userGroup.Key, PresenceType = userGroup.Min(user => user.PresenceType) };
-
-                foreach (var user in deduplicatedUsers)
-                {
-                    PresenceModel presenceModel = new PresenceModel { UserId = user.UserId, PresenceType = user.PresenceType };
-                    presenceModel.Name = await UserEventHelper.GetUserNameAsync(PuzzleServerContext, MemoryCache, user.UserId);
-                    presentUsers.Add(presenceModel);
-                }
-
-                presentUsers = presentUsers
-                    .OrderBy(presence => presence.PresenceType)
-                    .ThenBy(presence => presence.Name)
-                    .ToList();
+                PresenceModel presenceModel = new PresenceModel { UserId = user.UserId, PresenceType = user.PresenceType };
+                presenceModel.Name = await UserEventHelper.GetUserNameAsync(PuzzleServerContext, MemoryCache, user.UserId);
+                namedUsers.Add(presenceModel);
             }
 
+            namedUsers = namedUsers
+                .OrderBy(presence => presence.PresenceType)
+                .ThenBy(presence => presence.Name)
+                .ToList();
+
             string presenceString;
-            if (MaxUsers.HasValue && presentUsers.Count > MaxUsers.Value)
+            if (MaxUsers.HasValue && namedUsers.Count > MaxUsers.Value)
             {
-                int remainingUsers = presentUsers.Count - MaxUsers.Value + 1;
+                int remainingUsers = namedUsers.Count - MaxUsers.Value + 1;
                 string remainingUsersString = $"{remainingUsers}+";
-                presenceString = string.Join(" | ", presentUsers.Take(MaxUsers.Value - 1).Select(u => u.Name)) + " | " + remainingUsersString;
+                presenceString = string.Join(" | ", namedUsers.Take(MaxUsers.Value - 1).Select(u => u.Name)) + " | " + remainingUsersString;
             }
             else
             {
-                presenceString = string.Join(" | ", presentUsers.Select(u => u.Name));
+                presenceString = string.Join(" | ", namedUsers.Select(u => u.Name));
             }
 
             await JSRuntime.InvokeVoidAsync("showPresence", puzzleId, presenceString);
         }
-
 
         public void Dispose()
         {

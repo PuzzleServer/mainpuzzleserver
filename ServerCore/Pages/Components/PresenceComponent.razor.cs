@@ -16,7 +16,7 @@ namespace ServerCore.Pages.Components
     /// </summary>
     public partial class PresenceComponent : IAsyncDisposable
     {
-        public List<PresenceModel> PresentUsers { get; set; } = new List<PresenceModel>(0);
+        public IList<PresenceModel> PresentUsers { get; set; } = Array.Empty<PresenceModel>();
 
         [Parameter]
         public int PuzzleUserId { get; set; }
@@ -49,35 +49,31 @@ namespace ServerCore.Pages.Components
         Guid pageInstance = Guid.NewGuid();
         TeamPuzzleStore teamPuzzleStore;
 
-        private async Task OnPresenceChange(int _, IDictionary<Guid, PresenceModel> presentPages)
+        private async Task OnPresenceChange(int _, IList<PresenceModel> presentUsers)
         {
-            await UpdateModelAsync(presentPages);
+            await UpdateModelAsync(presentUsers);
         }
 
-        private async Task UpdateModelAsync(IDictionary<Guid, PresenceModel> presentPages)
+        private async Task UpdateModelAsync(IList<PresenceModel> presentUsers)
         {
-            if (presentPages.Count > 0)
+            if (presentUsers.Count > 0)
             {
-                var deduplicatedUsers = from model in presentPages.Values
-                                         group model by model.UserId into userGroup
-                                         select new { UserId = userGroup.Key, PresenceType = userGroup.Min(user => user.PresenceType) };
-
-                List<PresenceModel> presentUsers = new List<PresenceModel>();
-                foreach(var user in deduplicatedUsers)
+                List<PresenceModel> namedUsers = new List<PresenceModel>(presentUsers.Count);
+                foreach (var user in presentUsers)
                 {
                     PresenceModel presenceModel = new PresenceModel { UserId = user.UserId, PresenceType = user.PresenceType };
                     presenceModel.Name = await UserEventHelper.GetUserNameAsync(PuzzleServerContext, MemoryCache, user.UserId);
-                    presentUsers.Add(presenceModel);
+                    namedUsers.Add(presenceModel);
                 }
 
-                PresentUsers = presentUsers
+                PresentUsers = namedUsers
                     .OrderBy(presence => presence.PresenceType)
                     .ThenBy(presence => presence.Name)
                     .ToList();
             }
             else
             {
-                PresentUsers = new List<PresenceModel>(0);
+                PresentUsers = Array.Empty<PresenceModel>();
             }
 
             await InvokeAsync(StateHasChanged);
@@ -94,7 +90,7 @@ namespace ServerCore.Pages.Components
             teamPuzzleStore = PresenceStore.GetOrCreateTeamPuzzleStore(TeamId, PuzzleId);
             teamPuzzleStore.OnTeamPuzzlePresenceChange += OnPresenceChange;
 
-            await UpdateModelAsync(teamPuzzleStore.PresentPages);
+            await UpdateModelAsync(teamPuzzleStore.GetPresentUsers());
 
             if (!this.IsReadOnly)
             {
