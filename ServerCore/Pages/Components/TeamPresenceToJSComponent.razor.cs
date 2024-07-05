@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,7 +8,6 @@ using Microsoft.JSInterop;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
 using ServerCore.ServerMessages;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ServerCore.Pages.Components
 {
@@ -58,9 +56,10 @@ namespace ServerCore.Pages.Components
         {
             TeamStore = PresenceStore.GetOrCreateTeamStore(TeamId);
 
+            TeamStore.OnTeamPresenceChange += SendPresenceToJSAsync;
+
             foreach (TeamPuzzleStore teamPuzzleStore in TeamStore.TeamPuzzleStores.Values)
             {
-                teamPuzzleStore.OnTeamPuzzlePresenceChange += SendPresenceToJSAsync;
                 await SendPresenceToJSAsync(teamPuzzleStore.PuzzleId, teamPuzzleStore.PresentPages);
             }
 
@@ -107,10 +106,7 @@ namespace ServerCore.Pages.Components
 
         public void Dispose()
         {
-            foreach (TeamPuzzleStore teamPuzzleStore in TeamStore.TeamPuzzleStores.Values)
-            {
-                teamPuzzleStore.OnTeamPuzzlePresenceChange -= SendPresenceToJSAsync;
-            }
+            TeamStore.OnTeamPresenceChange -= SendPresenceToJSAsync;
         }
     }
 }

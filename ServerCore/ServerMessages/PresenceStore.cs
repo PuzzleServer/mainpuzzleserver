@@ -32,14 +32,7 @@ namespace ServerCore.ServerMessages
         public TeamPuzzleStore GetOrCreateTeamPuzzleStore(int teamId, int puzzleId)
         {
             TeamStore teamStore = GetOrCreateTeamStore(teamId);
-
-            TeamPuzzleStore teamPuzzleStore = new TeamPuzzleStore(puzzleId);
-            if (!teamStore.TeamPuzzleStores.TryAdd(puzzleId, teamPuzzleStore))
-            {
-                teamPuzzleStore = teamStore.TeamPuzzleStores[puzzleId];
-            }
-
-            return teamPuzzleStore;
+            return teamStore.GetOrCreateTeamPuzzleStore(puzzleId);
         }
 
         /// <summary>
@@ -113,6 +106,35 @@ namespace ServerCore.ServerMessages
     public class TeamStore
     {
         public ConcurrentDictionary<int, TeamPuzzleStore> TeamPuzzleStores { get; } = new ConcurrentDictionary<int, TeamPuzzleStore>();
+
+        /// <summary>
+        /// Event for a person joining or leaving any team puzzle. Aggregates all team puzzles.
+        /// </summary>
+        public event Func<int, IDictionary<Guid, PresenceModel>, Task> OnTeamPresenceChange;
+
+        internal TeamPuzzleStore GetOrCreateTeamPuzzleStore(int puzzleId)
+        {
+            TeamPuzzleStore teamPuzzleStore = new TeamPuzzleStore(puzzleId);
+            if (TeamPuzzleStores.TryAdd(puzzleId, teamPuzzleStore))
+            {
+                teamPuzzleStore.OnTeamPuzzlePresenceChange += InvokeTeamPresenceChange;
+            }
+            else
+            {
+                teamPuzzleStore = TeamPuzzleStores[puzzleId];
+            }
+
+            return teamPuzzleStore;
+        }
+
+        private async Task InvokeTeamPresenceChange(int puzzleId, IDictionary<Guid, PresenceModel> presentPages)
+        {
+            var onTeamPuzzlePresenceChange = OnTeamPresenceChange;
+            if (onTeamPuzzlePresenceChange != null)
+            {
+                await onTeamPuzzlePresenceChange?.Invoke(puzzleId, presentPages);
+            }
+        }
     }
 
     /// <summary>
