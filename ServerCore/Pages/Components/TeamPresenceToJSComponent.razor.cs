@@ -45,6 +45,17 @@ namespace ServerCore.Pages.Components
 
         TeamStore TeamStore { get; set; }
 
+        public class PresenceObject
+        {
+            public int PuzzleId { get; }
+            public string PresenceText { get; }
+
+            public PresenceObject(int puzzleId, string presenceText)
+            {
+                PuzzleId = puzzleId;
+                PresenceText = presenceText;
+            }
+        }
 
         protected override async Task OnInitializedAsync()
         {
@@ -58,15 +69,31 @@ namespace ServerCore.Pages.Components
 
             TeamStore.OnTeamPresenceChange += SendPresenceToJSAsync;
 
+            List<PresenceObject> allPresence = new List<PresenceObject>();
             foreach (TeamPuzzleStore teamPuzzleStore in TeamStore.TeamPuzzleStores.Values)
             {
-                await SendPresenceToJSAsync(teamPuzzleStore.PuzzleId, teamPuzzleStore.GetPresentUsers());
+                PresenceObject presence = await GetPresenceObjectAsync(teamPuzzleStore.PuzzleId, teamPuzzleStore.GetPresentUsers());
+                if (!string.IsNullOrEmpty(presence.PresenceText))
+                {
+                    allPresence.Add(presence);
+                }
+            }
+
+            if (allPresence.Count > 0)
+            {
+                await JSRuntime.InvokeVoidAsync("showPresence", allPresence);
             }
 
             await base.OnParametersSetAsync();
         }
 
         private async Task SendPresenceToJSAsync(int puzzleId, IList<PresenceModel> presentUsers)
+        {
+            PresenceObject presence = await GetPresenceObjectAsync(puzzleId, presentUsers);
+            await JSRuntime.InvokeVoidAsync("showPresence", new List<PresenceObject>() { presence });
+        }
+
+        private async Task<PresenceObject> GetPresenceObjectAsync(int puzzleId, IList<PresenceModel> presentUsers)
         {
             List<PresenceModel> namedUsers = new List<PresenceModel>(presentUsers.Count);
             foreach (var user in presentUsers)
@@ -93,7 +120,7 @@ namespace ServerCore.Pages.Components
                 presenceString = string.Join(" | ", namedUsers.Select(u => u.Name));
             }
 
-            await JSRuntime.InvokeVoidAsync("showPresence", puzzleId, presenceString);
+            return new PresenceObject(puzzleId, presenceString);
         }
 
         public void Dispose()

@@ -28,11 +28,13 @@
 @if (Model.Event.AllowBlazor)
 {
     <script>
-        window.showPresence = (puzzleId, presenceText) => {
-            let presenceId = document.querySelector(`#presence-${puzzleId}`);
-            if (presenceId) {
-                presenceId.textContent = presenceText;
-            }
+        window.showPresence = (allPresence) => {
+            allPresence.forEach(p => {
+                let presenceId = document.querySelector(`#presence-${p.puzzleId}`);
+                if (presenceId) {
+                    presenceId.textContent = p.presenceText;
+                }
+            });
         }
     </script>
     <component type="typeof(ServerCore.Pages.Components.TeamPresenceToJSComponent)" render-mode="Server" param-TeamId="@Model.Team.ID" param-MaxUsers=2 />
