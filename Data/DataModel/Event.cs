@@ -312,5 +312,11 @@ namespace ServerCore.DataModel
         /// True if Blazor can run on pages for this event. Should normally be true, but can be disabled in an emergency
         /// </summary>
         public bool AllowBlazor { get; set; }
+
+        /// <summary>
+        /// Short-term hacks for modifying behavior without adding new properties all the time.
+        /// Note: If a hack lasts more than a few months, it should probably be promoted to a real property.
+        /// </summary>
+        public string EphemeralHacks { get; set; }
     }
 }

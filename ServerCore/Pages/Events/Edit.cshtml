@@ -90,6 +90,12 @@
                 <span asp-validation-for="EditableEvent.HomePartial" class="text-danger"></span>
             </div>
             <div class="description-column">DEPRECATED: DO NOT USE</div>
+            <div class="form-group">
+                <label asp-for="EditableEvent.EphemeralHacks" class="control-label"></label>
+                <input asp-for="EditableEvent.EphemeralHacks" class="form-control" />
+                <span asp-validation-for="EditableEvent.EphemeralHacks" class="text-danger"></span>
+            </div>
+            <div class="description-column">Short-term hacks driven by short-term needs. If you don't know why you're here, best to keep out!</div>
             <h4>Times</h4><div></div>
             <div class="form-group">
                 <label asp-for="EditableEvent.TeamRegistrationBegin" class="control-label"></label>
