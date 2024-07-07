@@ -42,6 +42,8 @@ namespace ServerCore.DataModel
         public DbSet<TeamLunch> TeamLunch { get; set; }
         public DbSet<Room> Rooms { get; set; }
         public DbSet<Message> Messages { get; set; }
+        public DbSet<LiveEvent> LiveEvents { get; set; }
+        public DbSet<LiveEventSchedule> LiveEventsSchedule { get; set; }
 
         public static void UpdateDatabase(IApplicationBuilder app)
         {

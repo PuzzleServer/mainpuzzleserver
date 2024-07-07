@@ -115,6 +115,15 @@ namespace ServerCore.Pages
 
             return await SubmissionEvaluator.EvaluateSubmission(context, user, currentEvent, puzzleId, submission.SubmissionText, submission.AllowFreeformSharing);
         }
+
+        [HttpPost]
+        [Route ("api/puzzleapi/liveevent/triggernotifications")]
+        public async Task TriggerLiveEventNotifications(string eventId, int timerWindow)
+        {
+            Event currentEvent = await EventHelper.GetEventFromEventId(context, eventId);
+
+           await LiveEventHelper.TriggerNotifications(context, currentEvent, timerWindow);
+        }
     }
 
     public class AnswerSubmission

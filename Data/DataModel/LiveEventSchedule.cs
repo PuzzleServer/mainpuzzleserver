@@ -10,7 +10,15 @@ namespace ServerCore.DataModel
         /// The ID
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
+        public int ID { get; set; }
+
+        [Required] public string Name { get; set; }
+
+        [Required]
+        public Event Event { get; set; }
+
+        [Required] 
+        public int EventId { get; set; }
 
         [Required]
         public int LiveEventId { get; set; }
@@ -19,8 +27,25 @@ namespace ServerCore.DataModel
         public int TeamId { get; set; }
 
         [Required]
-        public DateTime StartTime { get; set; }
+        public Team Team { get; set; }
 
+        [Required]
+        public DateTime StartTimeUtc { get; set; }
+
+        [Required]
         public LiveEvent LiveEvent { get; set; }
+
+        public DateTime LastNotifiedUtc { get; set; } = DateTime.MinValue;
+
+        public LiveEventSchedule (Event e, LiveEvent liveEvent, Team team, DateTime slotTimeUtc)
+        {
+            LiveEvent = liveEvent;
+            LiveEventId = liveEvent.ID;
+            Team = team;
+            TeamId = team.ID;
+            StartTimeUtc = slotTimeUtc;
+            Event = e;
+            EventId = e.ID;
+        }
     }
 }
