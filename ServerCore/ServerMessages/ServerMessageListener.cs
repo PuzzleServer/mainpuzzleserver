@@ -124,7 +124,11 @@ namespace ServerCore.ServerMessages
 
         private async Task OnPresenceMessageAsync(PresenceMessage message)
         {
-            await OnPresence?.Invoke(message);
+            var onPresence = OnPresence;
+            if (onPresence != null)
+            {
+                await onPresence.Invoke(message);
+            }
         }
 
         private async Task OnGetPresenceState(GetPresenceState requestMessage)
@@ -140,7 +144,11 @@ namespace ServerCore.ServerMessages
 
         private async Task OnNotificationMessageAsync(Notification notification)
         {
-            await OnNotification?.Invoke(notification);
+            var onNotification = OnNotification;
+            if (onNotification != null)
+            {
+                await onNotification.Invoke(notification);
+            }
         }
 
         public void Dispose()

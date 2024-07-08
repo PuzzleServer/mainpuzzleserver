@@ -335,7 +335,7 @@
 }
 <!--UNREGISTERED PLAYER NAV BAR END-->
 
-@if (Event?.AllowBlazor == true)
+@if (Event?.AllowBlazor == true && Event?.EphemeralHackKillNotifications != true)
 {
     <script>
         var allEventToasts = {};

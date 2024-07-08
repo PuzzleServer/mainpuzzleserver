@@ -327,6 +327,9 @@ namespace Data.Migrations
                     b.Property<bool>("EmbedPuzzles")
                         .HasColumnType("bit");
 
+                    b.Property<string>("EphemeralHacks")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("EventBegin")
                         .HasColumnType("datetime2");
 
