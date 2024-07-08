@@ -59,7 +59,12 @@
                 var teamState = Model.StateMap[x, y] ?? MapModel.StateStats.Default;
 
                     <td class="stateparent">
-                        <a class="@teamState.Classes" asp-page="/Submissions/AuthorIndex" asp-route-puzzleId="@Model.Puzzles[x].Puzzle.ID" asp-route-teamId="@Model.Teams[y].Team.ID"></a>
+                        <a class="@teamState.Classes" asp-page="/Submissions/AuthorIndex" asp-route-puzzleId="@Model.Puzzles[x].Puzzle.ID" asp-route-teamId="@Model.Teams[y].Team.ID">
+                            @if (teamState.IsPresent)
+                            {
+                                <span>👀</span>
+                            }
+                        </a>
                     </td>
             }
                 </tr>

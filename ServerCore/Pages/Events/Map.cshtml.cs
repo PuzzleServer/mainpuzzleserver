@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
 using ServerCore.ModelBases;
+using ServerCore.ServerMessages;
 
 namespace ServerCore.Pages.Events
 {
@@ -23,9 +24,15 @@ namespace ServerCore.Pages.Events
 
         public string Groups { get; set; }
 
+        public PresenceStore PresenceStore { get; }
+
         public MapModel(PuzzleServerContext serverContext,
-                        UserManager<IdentityUser> userManager)
-            : base(serverContext, userManager) { }
+                        UserManager<IdentityUser> userManager,
+                        PresenceStore presenceStore)
+            : base(serverContext, userManager)
+        {
+            PresenceStore = presenceStore;
+        }
 
         public async Task<IActionResult> OnGetAsync(int? refresh, string? groups)
         {
@@ -101,7 +108,9 @@ namespace ServerCore.Pages.Events
                 }
             }
 
-                List<StateStats> stateList = new List<StateStats>(states.Count);
+            List<StateStats> stateList = new List<StateStats>(states.Count);
+            bool loadPresence = Event.EphemeralHackKillPresence;
+
             foreach (PuzzleStatePerTeam state in states)
             {
                 // TODO: Is it more performant to prefilter the states if an author, or is this sufficient?
@@ -111,13 +120,21 @@ namespace ServerCore.Pages.Events
                     continue;
                 }
 
+
+                bool isPresent = false;
+                if (loadPresence)
+                {
+                    isPresent = PresenceStore.IsPresent(state.TeamID, state.PuzzleID);
+                }
+
                 stateList.Add(new StateStats() {
                     Puzzle = puzzle,
                     Team = team,
                     UnlockedAtStart = state.UnlockedTime == earliestUnlock,
                     UnlockedTime = state.UnlockedTime,
                     SolvedTime = state.SolvedTime,
-                    LockedOut = state.IsEmailOnlyMode
+                    LockedOut = state.IsEmailOnlyMode,
+                    IsPresent = isPresent,
                 });
 
                 if (state.SolvedTime != null)
@@ -237,7 +254,8 @@ namespace ServerCore.Pages.Events
             public bool UnlockedAtStart { get; set; }
             public DateTime? UnlockedTime { get; set; }
             public DateTime? SolvedTime { get; set; }
-            public Boolean LockedOut { get; set; }
+            public bool LockedOut { get; set; }
+            public bool IsPresent { get; set; }
 
             public string Classes
             {
