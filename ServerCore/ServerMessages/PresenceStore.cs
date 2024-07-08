@@ -88,6 +88,26 @@ namespace ServerCore.ServerMessages
                 await OnPresenceChange(message);
             }
         }
+
+        /// <summary>
+        /// Returns true if any user on a team is on a puzzle page
+        /// </summary>
+        /// <param name="teamID">Team to check presence for</param>
+        /// <param name="puzzleID">Puzzle to check presence for</param>
+        public bool IsPresent(int teamID, int puzzleID)
+        {
+            // Don't create stores if we don't need them -- it means nobody's present
+            if (!TeamStores.TryGetValue(teamID, out TeamStore teamStore))
+            {
+                return false;
+            }
+            if (!teamStore.TeamPuzzleStores.TryGetValue(puzzleID, out TeamPuzzleStore teamPuzzleStore))
+            {
+                return false;
+            }
+
+            return teamPuzzleStore.PresentPages.Count > 0;
+        }
     }
 
     /// <summary>
