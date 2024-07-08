@@ -10,7 +10,7 @@
 
     bool unsolvedFilter = Model.StateFilter == PlayModel.PuzzleStateFilter.Unsolved;
     bool canSubmit = DateTime.UtcNow >= Model.Event.EventBegin || Model.Team?.IsDisqualified == true;
-    bool canUsePresence = Model.Event.EphemeralHacks?.Contains("kill-presence") != true && Model.Event.EphemeralHacks?.Contains("kill-team-presence") != true;
+    bool canUsePresence = !Model.Event.EphemeralHackKillPresence && !Model.Event.EphemeralHackKillListPresence;
 }
 <style>
     .radioButton {
@@ -26,7 +26,7 @@
         }
 </style>
 
-@if (Model.Event.AllowBlazor && Model.Event.EphemeralHacks?.Contains("kill-presence") != true)
+@if (Model.Event.AllowBlazor && canUsePresence)
 {
     <script>
         window.showPresence = (puzzleId, presenceText) => {

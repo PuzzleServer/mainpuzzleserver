@@ -318,5 +318,23 @@ namespace ServerCore.DataModel
         /// Note: If a hack lasts more than a few months, it should probably be promoted to a real property.
         /// </summary>
         public string EphemeralHacks { get; set; }
+
+        /// <summary>
+        /// true if toast notifications should be turned off.
+        /// </summary>
+        [NotMapped]
+        public bool EphemeralHackKillNotifications => EphemeralHacks?.Contains("kill-notifications") == true;
+
+        /// <summary>
+        /// true if player presence should be turned off everywhere.
+        /// </summary>
+        [NotMapped]
+        public bool EphemeralHackKillPresence => EphemeralHacks?.Contains("kill-presence") == true;
+
+        /// <summary>
+        /// true if player presence should be turned off specifically in the Puzzles list.
+        /// </summary>
+        [NotMapped]
+        public bool EphemeralHackKillListPresence => EphemeralHacks?.Contains("kill-list-presence") == true;
     }
 }
