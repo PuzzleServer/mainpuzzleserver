@@ -340,7 +340,6 @@
     <script>
         var allEventToasts = {};
         var documentLoaded = false;
-        var windowHasFocus = false;
 
         function popToast(notification, animate) {
             let notificationList = document.querySelector("#notification-list");
@@ -388,9 +387,8 @@
             popToast(notification, true);
         };
 
-        document.addEventListener("DOMContentLoaded", function () { if (windowHasFocus) { resetAllToasts(); } documentLoaded = true; });
-        window.addEventListener("focus", function() { if (documentLoaded && !windowHasFocus) { resetAllToasts(); } windowHasFocus = true; });
-        window.addEventListener("blur", function () { windowHasFocus = false; });
+        document.addEventListener("DOMContentLoaded", function () { resetAllToasts(); documentLoaded = true; });
+        window.addEventListener("focus", function() { if (documentLoaded) { resetAllToasts(); } });
     </script>
 
     <div aria-live="polite" aria-atomic="true" class="position-relative">
