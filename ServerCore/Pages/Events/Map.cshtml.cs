@@ -109,7 +109,7 @@ namespace ServerCore.Pages.Events
             }
 
             List<StateStats> stateList = new List<StateStats>(states.Count);
-            bool loadPresence = Event.EphemeralHackKillPresence;
+            bool loadPresence = !Event.EphemeralHackKillPresence;
 
             foreach (PuzzleStatePerTeam state in states)
             {
