@@ -105,7 +105,8 @@ namespace ServerCore.Pages.Teams
                     })
                 .ToList()
                 .GroupBy(intermediate => intermediate.TeamID)
-                .Select(this.MapToTeamComposition);
+                .Select(this.MapToTeamComposition)
+                .ToList();
 
             foreach (TeamComposition t in TeamCompositions)
             {
