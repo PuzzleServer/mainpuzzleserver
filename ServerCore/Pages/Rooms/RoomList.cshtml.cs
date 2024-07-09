@@ -75,7 +75,7 @@ namespace ServerCore.Pages.Rooms
                 // Assign them rooms starting at the top of the list of active rooms and moving down until there are no more teams or no more rooms
                 // Teams are pulled in no particular order, so probably the order they registered in
 
-                List<Room> unassignedRooms = _context.Rooms.Where(r => r.TeamID == null && r.CurrentlyOnline).ToList();
+                List<Room> unassignedRooms = _context.Rooms.Where(r => r.EventID == Event.ID && r.TeamID == null && r.CurrentlyOnline).ToList();
                 int roomsIndex = 0;
 
                 foreach (var team in teamsWithoutRooms)
