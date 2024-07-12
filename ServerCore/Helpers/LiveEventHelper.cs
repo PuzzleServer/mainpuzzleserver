@@ -29,7 +29,7 @@ namespace ServerCore.Helpers
         /// </summary>
         public static async Task PreEventReminder(PuzzleServerContext context, Event currentEvent, int lengthOfTimerWindow)
         {
-            var liveEvents = GetLiveEventsForEvent(context, currentEvent, true, false);
+            var liveEvents = await GetLiveEventsForEvent(context, currentEvent, true, false);
 
             foreach (LiveEvent liveEvent in liveEvents)
             {
@@ -45,7 +45,7 @@ namespace ServerCore.Helpers
 
                 foreach (var teamSlot in schedule)
                 {
-                    await SendNotifiction(title, firstReminderMessage, liveEvent.AssociatedPuzzle.CustomURL, team: teamSlot.Team);
+                    await SendNotification(title, firstReminderMessage, liveEvent.AssociatedPuzzle.CustomURL, team: teamSlot.Team);
                     teamSlot.LastNotifiedUtc = DateTime.UtcNow;
                 }
 
@@ -57,7 +57,7 @@ namespace ServerCore.Helpers
 
                 foreach (var teamSlot in lastSchedule)
                 {
-                    await SendNotifiction(title, lastReminderMessage, liveEvent.AssociatedPuzzle.CustomURL, team: teamSlot.Team);
+                    await SendNotification(title, lastReminderMessage, liveEvent.AssociatedPuzzle.CustomURL, team: teamSlot.Team);
                     teamSlot.LastNotifiedUtc = DateTime.UtcNow;
                 }
 
@@ -75,9 +75,10 @@ namespace ServerCore.Helpers
             (l.EventStartTimeUtc - DateTime.UtcNow) < l.OpeningReminderOffset &&
             (l.LastNotifiedAllTeamsUtc - DateTime.UtcNow) > l.OpeningReminderOffset);
 
+            // todo morganb: could link to a file if it's not a custom url
             foreach (LiveEvent e in eventsOpening)
             {
-                await SendNotifiction($"{e.Name} opening soon!", $"{e.Name} is opening in {e.OpeningReminderOffset} minutes! See you at {e.Location}!", e.AssociatedPuzzle.CustomURL, currentEvent);
+                await SendNotification($"{e.Name} opening soon!", $"{e.Name} is opening in {e.OpeningReminderOffset} minutes! See you at {e.Location}!", e.AssociatedPuzzle.CustomURL, currentEvent);
                 e.LastNotifiedAllTeamsUtc = DateTime.UtcNow;
             }
 
@@ -95,7 +96,7 @@ namespace ServerCore.Helpers
 
             foreach (LiveEvent e in eventsOpening)
             {
-                await SendNotifiction($"{e.Name} closing soon!", $"{e.Name} is closing in {e.ClosingReminderOffset} minutes! Go to {e.Location} right now if you haven't completed this event!", e.AssociatedPuzzle.CustomURL, currentEvent);
+                await SendNotification($"{e.Name} closing soon!", $"{e.Name} is closing in {e.ClosingReminderOffset} minutes! Go to {e.Location} right now if you haven't completed this event!", e.AssociatedPuzzle.CustomURL, currentEvent);
                 e.LastNotifiedAllTeamsUtc = DateTime.UtcNow;
             }
 
@@ -117,7 +118,7 @@ namespace ServerCore.Helpers
             }
 
             // Get all of the scheduled live events for the current event
-            var liveEvents = GetLiveEventsForEvent(context, e, true, false);
+            var liveEvents = await GetLiveEventsForEvent(context, e, true, false);
 
             foreach (LiveEvent liveEvent in liveEvents)
             {
@@ -131,6 +132,11 @@ namespace ServerCore.Helpers
                     {
                         for (int j = 0; j < liveEvent.TeamsPerSlot; j++)
                         {
+                            if (teamQueue.Count == 0)
+                            {
+                                break;
+                            }
+
                             Team t = teamQueue.Dequeue();
                             LiveEventSchedule schedule = new LiveEventSchedule(e, liveEvent, t, currentSlot);
                             await context.LiveEventsSchedule.AddAsync(schedule);
@@ -141,34 +147,34 @@ namespace ServerCore.Helpers
                     currentSlot += liveEvent.TimePerSlot;
                 }
 
-                // Shuffle the team list - doesn't guarantee fairness or that events won't overlap but it's easy
+                // Reshuffle the team list for the next event - doesn't guarantee fairness or that events won't overlap but it's easy
                 teamList = await ShuffleTeams(context, e, bigTeamsFirst);
             }
 
-            //  await context.SaveChangesAsync();
+            await context.SaveChangesAsync();
 
-            // Create csv for mailmerge
+            //// Create csv for mailmerge
 
-            List<string> rows = new List<string>();
+            //List<string> rows = new List<string>();
 
-            string header = $"TeamName,";
-            foreach (LiveEventSchedule schedule in localCopyForCsv[0])
-            {
-                header += $"{schedule.Event.Name},";
-            }
-            rows.Add(header);
+            //string header = $"TeamName,";
+            //foreach (LiveEventSchedule schedule in localCopyForCsv[0])
+            //{
+            //    header += $"{schedule.Event.Name},";
+            //}
+            //rows.Add(header);
 
-            foreach(var team in localCopyForCsv.Keys)
-            {
-                string row = $"{team.Name},";
-                foreach( LiveEventSchedule schedule in localCopyForCsv[team])
-                {
-                    row += $"{schedule.StartTimeUtc.ToLocalTime().ToShortTimeString()},";
-                }
-                rows.Add(row);
-            }
+            //foreach(var team in localCopyForCsv.Keys)
+            //{
+            //    string row = $"{team.Name},";
+            //    foreach( LiveEventSchedule schedule in localCopyForCsv[team])
+            //    {
+            //        row += $"{schedule.StartTimeUtc.ToLocalTime().ToShortTimeString()},";
+            //    }
+            //    rows.Add(row);
+            //}
 
-            await File.WriteAllLinesAsync("C:\\Users\\asyas\\OneDrive\\Puzzles\\Puzzleday 2024",rows);
+            //await File.WriteAllLinesAsync("C:\\Users\\asyas\\OneDrive\\Puzzles\\Puzzleday 2024",rows);
         }
 
         private static async Task<IQueryable<Team>> ShuffleTeams(PuzzleServerContext context, Event e, bool bigTeamsFirst)
@@ -198,21 +204,6 @@ namespace ServerCore.Helpers
                     sortedTeamList.Add(t);
                 }
 
-                //for (int x = e.MaxTeamSize; x > 0; x--)
-                //{
-                //    IEnumerable<int> teamsOfX = from team in teams
-                //                                where team.Count == x
-                //                                select team.TeamId;
-
-                //    teamsOfX.OrderBy<int, int>(_ => seed.Next());
-
-                //    foreach (var teamId in teamsOfX)
-                //    {
-                //        Team t = context.Teams.Where(t => t.ID == teamId).FirstOrDefault();
-                //        sortedTeamList.Add(t);
-                //    }
-                //}
-
                 teamList = (IQueryable<Team>)sortedTeamList;
             }
             else
@@ -241,7 +232,7 @@ namespace ServerCore.Helpers
         /// </summary>
         /// <param name="message">The message to show</param>
         /// <param name="teamId">Defaults to -1, if not set it sends to all teams</param>
-        private static async Task SendNotifiction(string title, string message, string puzzleUrl, Event e = null, Team team = null)
+        private static async Task SendNotification(string title, string message, string puzzleUrl, Event e = null, Team team = null)
         {
             if (team == null)
             {
@@ -253,7 +244,7 @@ namespace ServerCore.Helpers
             }
         }
 
-        private static List<LiveEvent> GetLiveEventsForEvent(PuzzleServerContext context, Event e, bool scheduledOnly, bool unscheduledOnly)
+        private static async Task<List<LiveEvent>> GetLiveEventsForEvent(PuzzleServerContext context, Event e, bool scheduledOnly, bool unscheduledOnly)
         {
             IQueryable<LiveEvent> liveEvents = context.LiveEvents.Where(l => (l.AssociatedEvent == e));
 
@@ -267,7 +258,7 @@ namespace ServerCore.Helpers
                 liveEvents = liveEvents.Where(l => !l.EventIsScheduled);
             }
 
-            return liveEvents.ToList();
+            return await liveEvents.ToListAsync();
         }
     }
 }
