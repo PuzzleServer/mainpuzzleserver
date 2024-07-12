@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Migrations;
@@ -105,17 +106,20 @@ namespace ServerCore.Helpers
         /// Create LiveEventSchedule rows for each team and each scheduled live event
         /// This does not currently handle regeneration, in order to regenerate the schedule use the delete method, then run this again
         /// </summary>
-        private static async Task GenerateScheduleForLiveEvents(PuzzleServerContext context, Event e)
+        private static async Task GenerateScheduleForLiveEvents(PuzzleServerContext context, Event e, bool bigTeamsFirst = false)
         {
-            // Randomize the team list order so that teams don't get an advantage for early registration or names
-            IQueryable<Team> teamList = context.Teams.Where(t => t.Event == e);
-            Random seed = new();
-            teamList.OrderBy(_ => seed.Next());
+            IQueryable<Team> teamList = await ShuffleTeams(context, e, bigTeamsFirst);
+            Dictionary<Team, List<LiveEventSchedule>> localCopyForCsv = new Dictionary<Team, List<LiveEventSchedule>>();
+
+            foreach (Team t in localCopyForCsv.Keys)
+            {
+                localCopyForCsv[t] = new List<LiveEventSchedule>();
+            }
 
             // Get all of the scheduled live events for the current event
             var liveEvents = GetLiveEventsForEvent(context, e, true, false);
 
-            foreach(LiveEvent liveEvent in liveEvents)
+            foreach (LiveEvent liveEvent in liveEvents)
             {
                 DateTime currentSlot = liveEvent.EventStartTimeUtc;
                 Queue<Team> teamQueue = new Queue<Team>(teamList);
@@ -130,6 +134,7 @@ namespace ServerCore.Helpers
                             Team t = teamQueue.Dequeue();
                             LiveEventSchedule schedule = new LiveEventSchedule(e, liveEvent, t, currentSlot);
                             await context.LiveEventsSchedule.AddAsync(schedule);
+                            localCopyForCsv[t].Add(schedule);
                         }
                     }
 
@@ -137,10 +142,86 @@ namespace ServerCore.Helpers
                 }
 
                 // Shuffle the team list - doesn't guarantee fairness or that events won't overlap but it's easy
+                teamList = await ShuffleTeams(context, e, bigTeamsFirst);
+            }
+
+            //  await context.SaveChangesAsync();
+
+            // Create csv for mailmerge
+
+            List<string> rows = new List<string>();
+
+            string header = $"TeamName,";
+            foreach (LiveEventSchedule schedule in localCopyForCsv[0])
+            {
+                header += $"{schedule.Event.Name},";
+            }
+            rows.Add(header);
+
+            foreach(var team in localCopyForCsv.Keys)
+            {
+                string row = $"{team.Name},";
+                foreach( LiveEventSchedule schedule in localCopyForCsv[team])
+                {
+                    row += $"{schedule.StartTimeUtc.ToLocalTime().ToShortTimeString()},";
+                }
+                rows.Add(row);
+            }
+
+            await File.WriteAllLinesAsync("C:\\Users\\asyas\\OneDrive\\Puzzles\\Puzzleday 2024",rows);
+        }
+
+        private static async Task<IQueryable<Team>> ShuffleTeams(PuzzleServerContext context, Event e, bool bigTeamsFirst)
+        {
+            // Randomize the team list order so that teams don't get an advantage for early registration or names
+            IQueryable<Team> teamList;
+            Random seed = new();
+
+            // If the event isn't combining small teams, priotize larger times for the earlier time slots (but randomize within sizes)
+            if (bigTeamsFirst)
+            {
+                List<Team> sortedTeamList = new List<Team>();
+
+                var players = await (from teamMember in context.TeamMembers
+                                     where teamMember.Team.EventID == e.ID
+                                     select new { TeamId = teamMember.Team.ID }).ToListAsync();
+
+                var teams = (from player in players
+                             group player by player.TeamId into team
+                             select new { TeamId = team.Key, Count = team.Count() });
+
+                var sortedTeamIds = teams.OrderBy(team => team.Count).ThenBy(_ => seed.Next()).Select(team => team.TeamId).ToList();
+
+                foreach (var teamId in sortedTeamIds)
+                {
+                    Team t = context.Teams.Where(t => t.ID == teamId).FirstOrDefault();
+                    sortedTeamList.Add(t);
+                }
+
+                //for (int x = e.MaxTeamSize; x > 0; x--)
+                //{
+                //    IEnumerable<int> teamsOfX = from team in teams
+                //                                where team.Count == x
+                //                                select team.TeamId;
+
+                //    teamsOfX.OrderBy<int, int>(_ => seed.Next());
+
+                //    foreach (var teamId in teamsOfX)
+                //    {
+                //        Team t = context.Teams.Where(t => t.ID == teamId).FirstOrDefault();
+                //        sortedTeamList.Add(t);
+                //    }
+                //}
+
+                teamList = (IQueryable<Team>)sortedTeamList;
+            }
+            else
+            {
+                teamList = context.Teams.Where(t => t.Event == e);
                 teamList.OrderBy(_ => seed.Next());
             }
 
-            await context.SaveChangesAsync();
+            return teamList;
         }
 
         /// <summary>
@@ -181,7 +262,7 @@ namespace ServerCore.Helpers
                 liveEvents = liveEvents.Where(l => l.EventIsScheduled);
             }
 
-            if (unscheduledOnly) 
+            if (unscheduledOnly)
             {
                 liveEvents = liveEvents.Where(l => !l.EventIsScheduled);
             }

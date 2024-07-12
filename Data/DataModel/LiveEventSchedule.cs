@@ -12,8 +12,6 @@ namespace ServerCore.DataModel
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
-        [Required] public string Name { get; set; }
-
         [Required]
         public Event Event { get; set; }
 
