@@ -1,0 +1,11 @@
+﻿@page "/{eventId}/{eventRole}/Events/LiveEventManagement"
+@model ServerCore.Pages.Events.LiveEventManagementModel
+@{
+    ViewData["Title"] = "Live Event Management";
+    ViewData["AdminRoute"] = "/Events/LiveEventManagement";
+}
+
+<div>
+    <component type="typeof(ServerCore.Pages.Events.LiveEventManagementComponent)" render-mode="Server"
+               param-EventId="@Model.Event.ID" />
+</div>

@@ -616,6 +616,97 @@ namespace Data.Migrations
                     b.ToTable("Invitations");
                 });
 
+            modelBuilder.Entity("ServerCore.DataModel.LiveEvent", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<int>("AssociatedPuzzleId")
+                        .HasColumnType("int");
+
+                    b.Property<TimeSpan>("ClosingReminderOffset")
+                        .HasColumnType("time");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("EventEndTimeUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("EventIsScheduled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("EventStartTimeUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<TimeSpan>("FirstReminderOffset")
+                        .HasColumnType("time");
+
+                    b.Property<DateTime>("LastNotifiedAllTeamsUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<TimeSpan>("LastReminderOffset")
+                        .HasColumnType("time");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("NumberOfInstances")
+                        .HasColumnType("int");
+
+                    b.Property<TimeSpan>("OpeningReminderOffset")
+                        .HasColumnType("time");
+
+                    b.Property<int>("TeamsPerSlot")
+                        .HasColumnType("int");
+
+                    b.Property<TimeSpan>("TimePerSlot")
+                        .HasColumnType("time");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("AssociatedPuzzleId");
+
+                    b.ToTable("LiveEvents");
+                });
+
+            modelBuilder.Entity("ServerCore.DataModel.LiveEventSchedule", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<DateTime>("LastNotifiedUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("LiveEventId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartTimeUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("TeamId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("LiveEventId");
+
+                    b.HasIndex("TeamId");
+
+                    b.ToTable("LiveEventsSchedule");
+                });
+
             modelBuilder.Entity("ServerCore.DataModel.Message", b =>
                 {
                     b.Property<int>("ID")
@@ -1585,6 +1676,36 @@ namespace Data.Migrations
                     b.HasOne("ServerCore.DataModel.Team", null)
                         .WithMany("Invitations")
                         .HasForeignKey("TeamID");
+                });
+
+            modelBuilder.Entity("ServerCore.DataModel.LiveEvent", b =>
+                {
+                    b.HasOne("ServerCore.DataModel.Puzzle", "AssociatedPuzzle")
+                        .WithMany()
+                        .HasForeignKey("AssociatedPuzzleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AssociatedPuzzle");
+                });
+
+            modelBuilder.Entity("ServerCore.DataModel.LiveEventSchedule", b =>
+                {
+                    b.HasOne("ServerCore.DataModel.LiveEvent", "LiveEvent")
+                        .WithMany()
+                        .HasForeignKey("LiveEventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ServerCore.DataModel.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("LiveEvent");
+
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("ServerCore.DataModel.Message", b =>

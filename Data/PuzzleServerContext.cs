@@ -42,6 +42,8 @@ namespace ServerCore.DataModel
         public DbSet<TeamLunch> TeamLunch { get; set; }
         public DbSet<Room> Rooms { get; set; }
         public DbSet<Message> Messages { get; set; }
+        public DbSet<LiveEvent> LiveEvents { get; set; }
+        public DbSet<LiveEventSchedule> LiveEventsSchedule { get; set; }
 
         public static void UpdateDatabase(IApplicationBuilder app)
         {
@@ -98,6 +100,7 @@ namespace ServerCore.DataModel
             modelBuilder.Entity<Submission>().HasOne(submission => submission.Team).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<SinglePlayerPuzzleSubmission>().HasOne(submission => submission.Submitter).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Annotation>().HasOne(annotation => annotation.Team).WithMany().OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<LiveEventSchedule>().HasOne(liveEventSchedule => liveEventSchedule.Team).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Message>().HasOne(message => message.Puzzle).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Message>().HasOne(message => message.Sender).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Message>().HasOne(message => message.Team).WithMany().OnDelete(DeleteBehavior.Restrict);

@@ -107,6 +107,11 @@ namespace ServerCore.Helpers
                               select annotation;
             context.Annotations.RemoveRange(annotations);
 
+            var liveEventSchedules = from liveEventSchedule in context.LiveEventsSchedule
+                                     where liveEventSchedule.Team == team
+                                    select liveEventSchedule;
+            context.LiveEventsSchedule.RemoveRange(liveEventSchedules);
+
             IEnumerable<Message> messages = from message in context.Messages
                                       where message.Team == team
                                       select message;

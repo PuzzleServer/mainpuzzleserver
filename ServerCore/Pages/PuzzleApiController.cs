@@ -4,9 +4,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
+using ServerCore.ServerMessages;
 
 namespace ServerCore.Pages
 {
@@ -19,11 +21,13 @@ namespace ServerCore.Pages
     {
         private readonly PuzzleServerContext context;
         private readonly UserManager<IdentityUser> userManager;
+        private readonly IHubContext<ServerMessageHub> hubContext;
 
-        public PuzzleApiController(PuzzleServerContext context, UserManager<IdentityUser> userManager)
+        public PuzzleApiController(PuzzleServerContext context, UserManager<IdentityUser> userManager, IHubContext<ServerMessageHub> hubContext)
         {
             this.context = context;
             this.userManager = userManager;
+            this.hubContext = hubContext;
         }
 
         /// <summary>
@@ -114,6 +118,15 @@ namespace ServerCore.Pages
             PuzzleUser user = await PuzzleUser.GetPuzzleUserForCurrentUser(context, User, userManager);
 
             return await SubmissionEvaluator.EvaluateSubmission(context, user, currentEvent, puzzleId, submission.SubmissionText, submission.AllowFreeformSharing);
+        }
+
+        [HttpPost]
+        [Route ("api/puzzleapi/liveevent/triggernotifications")]
+        public async Task TriggerLiveEventNotifications(string eventId, int timerWindow)
+        {
+            Event currentEvent = await EventHelper.GetEventFromEventId(context, eventId);
+
+           await LiveEventHelper.TriggerNotifications(context, currentEvent, timerWindow, hubContext);
         }
     }
 
