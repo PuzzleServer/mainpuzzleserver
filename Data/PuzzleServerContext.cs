@@ -100,6 +100,7 @@ namespace ServerCore.DataModel
             modelBuilder.Entity<Submission>().HasOne(submission => submission.Team).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<SinglePlayerPuzzleSubmission>().HasOne(submission => submission.Submitter).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Annotation>().HasOne(annotation => annotation.Team).WithMany().OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<LiveEventSchedule>().HasOne(liveEventSchedule => liveEventSchedule.Team).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Message>().HasOne(message => message.Puzzle).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Message>().HasOne(message => message.Sender).WithMany().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Message>().HasOne(message => message.Team).WithMany().OnDelete(DeleteBehavior.Restrict);

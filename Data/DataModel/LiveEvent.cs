@@ -19,10 +19,7 @@ namespace ServerCore.DataModel
         public string Name { get; set; }
 
         [Required]
-        public Puzzle AssociatedPuzzle { get; set; }
-
-        [Required]
-        public Event AssociatedEvent { get; set; }
+        public virtual Puzzle AssociatedPuzzle { get; set; }
 
         /// <summary>
         /// The displayed location for the event (where to send people)

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Migrations;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -138,7 +137,7 @@ namespace ServerCore.Helpers
                             }
 
                             Team t = teamQueue.Dequeue();
-                            LiveEventSchedule schedule = new LiveEventSchedule(e, liveEvent, t, currentSlot);
+                            LiveEventSchedule schedule = new LiveEventSchedule(liveEvent, t, currentSlot);
                             await context.LiveEventsSchedule.AddAsync(schedule);
                             localCopyForCsv[t].Add(schedule);
                         }
@@ -222,7 +221,12 @@ namespace ServerCore.Helpers
         /// <param name="e">Event</param>
         public static async Task DeleteLiveEventSchedule(PuzzleServerContext context, Event e)
         {
-            var eventSchedule = context.LiveEventsSchedule.Where(s => s.Event == e);
+            var eventSchedule = from schedule in context.LiveEventsSchedule
+                                join liveEvent in context.LiveEvents on schedule.LiveEventId equals liveEvent.ID
+                                join puzzle in context.Puzzles on liveEvent.AssociatedPuzzleId equals puzzle.ID
+                                where puzzle.EventID == e.ID
+                                select schedule;
+
             await eventSchedule.ExecuteDeleteAsync();
             await context.SaveChangesAsync();
         }
@@ -246,7 +250,10 @@ namespace ServerCore.Helpers
 
         private static async Task<List<LiveEvent>> GetLiveEventsForEvent(PuzzleServerContext context, Event e, bool scheduledOnly, bool unscheduledOnly)
         {
-            IQueryable<LiveEvent> liveEvents = context.LiveEvents.Where(l => (l.AssociatedEvent == e));
+            IQueryable<LiveEvent> liveEvents = from liveEvent in context.LiveEvents
+                                               join puzzle in context.Puzzles on liveEvent.AssociatedPuzzleId equals puzzle.ID
+                                               where puzzle.EventID == e.ID
+                                               select liveEvent;
 
             if (scheduledOnly)
             {
