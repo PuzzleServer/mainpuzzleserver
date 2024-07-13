@@ -36,27 +36,35 @@ namespace ServerCore.Helpers
                 string firstReminderMessage = $"Your team's scheduled time for {liveEvent.Name} is in {liveEvent.FirstReminderOffset} minutes!";
                 string lastReminderMessage = $"Your team's scheduled time for {liveEvent.Name} is in {liveEvent.LastReminderOffset} minutes! Time to head to {liveEvent.Location}";
 
+                string puzzleLink = $"/{currentEvent.EventID}/play/Submissions/{liveEvent.AssociatedPuzzleId}";
+
                 // Find first reminders
-                var schedule = context.LiveEventsSchedule.Where(s =>
+                // Logic: Event is in the future, the time until the event is less than the first reminder offset, and the team hasn't been notified yet
+                var schedule = await context.LiveEventsSchedule.Where(s =>
                     (s.LiveEvent == liveEvent) &&
-                    (s.StartTimeUtc - DateTime.UtcNow) < liveEvent.FirstReminderOffset &&
-                    (s.LastNotifiedUtc - DateTime.UtcNow) > liveEvent.FirstReminderOffset);
+                    EF.Functions.DateDiffSecond(DateTime.UtcNow, s.StartTimeUtc) > 0 &&
+                    EF.Functions.DateDiffSecond(DateTime.UtcNow, s.StartTimeUtc) < liveEvent.FirstReminderOffset.TotalSeconds &&
+                    (s.LastNotifiedUtc.Year == 1 ||
+                    EF.Functions.DateDiffSecond(s.LastNotifiedUtc, DateTime.UtcNow) > liveEvent.FirstReminderOffset.TotalSeconds)).ToListAsync();
 
                 foreach (var teamSlot in schedule)
                 {
-                    await SendNotification(hubContext, title, firstReminderMessage, liveEvent.AssociatedPuzzle.CustomURL, team: teamSlot.Team);
+                    await SendNotification(hubContext, title, firstReminderMessage, puzzleLink, team: teamSlot.Team);
                     teamSlot.LastNotifiedUtc = DateTime.UtcNow;
                 }
 
                 // Find second reminders
-                var lastSchedule = context.LiveEventsSchedule.Where(s =>
+                // Note: The first reminder must be at least twice as long as the second reminder for this logic to be correct
+                var lastSchedule = await context.LiveEventsSchedule.Where(s =>
                     (s.LiveEvent == liveEvent) &&
-                    (s.StartTimeUtc - DateTime.UtcNow) < liveEvent.LastReminderOffset &&
-                    (s.LastNotifiedUtc - DateTime.UtcNow) > liveEvent.LastReminderOffset);
+                    EF.Functions.DateDiffSecond(DateTime.UtcNow, s.StartTimeUtc) > 0 &&
+                    EF.Functions.DateDiffSecond(DateTime.UtcNow, s.StartTimeUtc) < liveEvent.LastReminderOffset.TotalSeconds &&
+                    (s.LastNotifiedUtc.Year == 1 ||
+                    EF.Functions.DateDiffSecond(s.LastNotifiedUtc, DateTime.UtcNow) > liveEvent.LastReminderOffset.TotalSeconds)).ToListAsync();
 
                 foreach (var teamSlot in lastSchedule)
                 {
-                    await SendNotification(hubContext, title, lastReminderMessage, liveEvent.AssociatedPuzzle.CustomURL, team: teamSlot.Team);
+                    await SendNotification(hubContext, title, lastReminderMessage, puzzleLink, team: teamSlot.Team);
                     teamSlot.LastNotifiedUtc = DateTime.UtcNow;
                 }
 
@@ -70,14 +78,22 @@ namespace ServerCore.Helpers
         /// </summary>
         public static async Task EventOpeningReminder(PuzzleServerContext context, Event currentEvent, IHubContext<ServerMessageHub> hubContext)
         {
-            IQueryable<LiveEvent> eventsOpening = context.LiveEvents.Where(l =>
-            (l.EventStartTimeUtc - DateTime.UtcNow) < l.OpeningReminderOffset &&
-            (l.LastNotifiedAllTeamsUtc - DateTime.UtcNow) > l.OpeningReminderOffset);
+            var allEvents = await (from liveEvent in context.LiveEvents
+                                       join puzzle in context.Puzzles on liveEvent.AssociatedPuzzleId equals puzzle.ID
+                                       where puzzle.EventID == currentEvent.ID
+                                       select liveEvent).ToListAsync();
 
-            // todo morganb: could link to a file if it's not a custom url
+            var eventsOpening = from liveEvent in allEvents
+                                where
+                                liveEvent.EventStartTimeUtc > DateTime.UtcNow &&
+                                liveEvent.EventStartTimeUtc - DateTime.UtcNow < liveEvent.OpeningReminderOffset &&
+                                DateTime.UtcNow - liveEvent.LastNotifiedAllTeamsUtc > liveEvent.OpeningReminderOffset
+                                select liveEvent;
+
             foreach (LiveEvent e in eventsOpening)
             {
-                await SendNotification(hubContext, $"{e.Name} opening soon!", $"{e.Name} is opening in {e.OpeningReminderOffset} minutes! See you at {e.Location}!", e.AssociatedPuzzle.CustomURL, currentEvent);
+                string puzzleLink = $"/{currentEvent.EventID}/play/Submissions/{e.AssociatedPuzzleId}";
+                await SendNotification(hubContext, $"{e.Name} opening soon!", $"{e.Name} is opening in {e.OpeningReminderOffset} minutes! See you at {e.Location}!", puzzleLink, currentEvent);
                 e.LastNotifiedAllTeamsUtc = DateTime.UtcNow;
             }
 
@@ -89,13 +105,22 @@ namespace ServerCore.Helpers
         /// </summary>
         public static async Task EventClosingReminder(PuzzleServerContext context, Event currentEvent, IHubContext<ServerMessageHub> hubContext)
         {
-            IQueryable<LiveEvent> eventsOpening = context.LiveEvents.Where(l =>
-                (l.EventStartTimeUtc - DateTime.UtcNow) < l.ClosingReminderOffset &&
-                (l.LastNotifiedAllTeamsUtc - DateTime.UtcNow) > l.ClosingReminderOffset);
+            var allEvents = await (from liveEvent in context.LiveEvents
+                                   join puzzle in context.Puzzles on liveEvent.AssociatedPuzzleId equals puzzle.ID
+                                   where puzzle.EventID == currentEvent.ID
+                                   select liveEvent).ToListAsync();
 
-            foreach (LiveEvent e in eventsOpening)
+            var eventsClosing = from liveEvent in allEvents
+                                where 
+                                liveEvent.EventEndTimeUtc > DateTime.UtcNow &&
+                                liveEvent.EventEndTimeUtc - DateTime.UtcNow < liveEvent.ClosingReminderOffset &&
+                                DateTime.UtcNow - liveEvent.LastNotifiedAllTeamsUtc > liveEvent.ClosingReminderOffset
+                                select liveEvent;
+
+            foreach (LiveEvent e in eventsClosing)
             {
-                await SendNotification(hubContext, $"{e.Name} closing soon!", $"{e.Name} is closing in {e.ClosingReminderOffset} minutes! Go to {e.Location} right now if you haven't completed this event!", e.AssociatedPuzzle.CustomURL, currentEvent);
+                string puzzleLink = $"/{currentEvent.EventID}/play/Submissions/{e.AssociatedPuzzleId}";
+                await SendNotification(hubContext, $"{e.Name} closing soon!", $"{e.Name} is closing in {e.ClosingReminderOffset} minutes! Go to {e.Location} right now if you haven't completed this event!", puzzleLink, currentEvent);
                 e.LastNotifiedAllTeamsUtc = DateTime.UtcNow;
             }
 
