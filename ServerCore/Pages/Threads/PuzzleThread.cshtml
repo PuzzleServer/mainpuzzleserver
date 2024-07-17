@@ -39,13 +39,22 @@
         }
         else
         {
-            <a asp-page="/Puzzles/Edit" asp-route-puzzleId="@Model.Puzzle.ID">Go to puzzle</a>@(" |")
+            PuzzleStatePerTeam teamPuzzleState = Model.PuzzleState as PuzzleStatePerTeam;
+            SinglePlayerPuzzleStatePerPlayer singlePlayerPuzzleState = Model.PuzzleState as SinglePlayerPuzzleStatePerPlayer;
+            if (teamPuzzleState != null)
+            {
+                <a asp-page="/Teams/Details" asp-route-teamId="@teamPuzzleState.TeamID">Go to team</a>@(" |")
+            }
+
+            string goToPuzzleLabel = singlePlayerPuzzleState != null ? "Go to single player puzzle" : "Go to puzzle";
+            <a asp-page="/Puzzles/Edit" asp-route-puzzleId="@Model.Puzzle.ID">@goToPuzzleLabel</a>@(" |")
         }
         <a asp-page="/Threads/PuzzleThreads">See all threads</a>
     </span>
 </div>
 
-<h3>Thread for puzzle @Model.Puzzle.Name</h3>
+<h3>@Model.NewMessage.Subject</h3>
+
 <hr />
 @foreach (var message in Model.Messages)
 {
