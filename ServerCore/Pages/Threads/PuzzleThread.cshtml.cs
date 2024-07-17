@@ -39,7 +39,7 @@ namespace ServerCore.Pages.Threads
         public Message EditMessage { get; set; }
 
         /// <summary>
-        /// Gets or sets the team.
+        /// Gets or sets the puzzle.
         /// </summary>
         public Puzzle Puzzle { get; set; }
 
