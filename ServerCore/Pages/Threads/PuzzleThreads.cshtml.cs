@@ -75,8 +75,8 @@ namespace ServerCore.Pages.Threads
                 refreshInterval: refreshInterval,
                 filterToSupportingPuzzlesOnly: filterToSupportingPuzzlesOnly);
 
-            IQueryable<Message> messages = this._context.Messages.Where(message => message.Puzzle != null
-                    && message.Puzzle.EventID == Event.ID);
+            IQueryable<Message> messages = this._context.Messages.Where(message => message.PuzzleID != null
+                    && message.EventID == Event.ID);
             this.Title = "All help threads";
 
             // Based on the event role, filter the messages further.
@@ -149,19 +149,33 @@ namespace ServerCore.Pages.Threads
                 throw new NotSupportedException($"EventRole [{EventRole}] is not supported in PuzzleThreads");
             }
 
-            // Filter down to only latest messages
-            LatestMessagesFromEachThread = await messages
-                .GroupBy(message => message.ThreadId)
-                .Select(group => group.OrderByDescending(message => message.CreatedDateTimeInUtc).First())
-                .ToListAsync();
+            // Filter down to only latest messages in memory
+            List<Message> retrievedMessages = await messages.ToListAsync();
+            var threadIdToMostRecentMessage = new Dictionary<string, Message>();
+            foreach (Message message in retrievedMessages)
+            {
+                if (!threadIdToMostRecentMessage.ContainsKey(message.ThreadId))
+                {
+                    threadIdToMostRecentMessage.Add(message.ThreadId, message);
+                }
+                else if (message.CreatedDateTimeInUtc > threadIdToMostRecentMessage[message.ThreadId].CreatedDateTimeInUtc)
+                {
+                    threadIdToMostRecentMessage[message.ThreadId] = message;
+                }
+            }
+
+            IEnumerable<Message> finalFilteredMessages = threadIdToMostRecentMessage.Values
+                .AsEnumerable()
+                .OrderByDescending(Message => Message.CreatedDateTimeInUtc);
 
             if (showUnclaimedOnly.HasValue && showUnclaimedOnly.Value)
             {
                 this.Title += " (unclaimed only)";
-                LatestMessagesFromEachThread = LatestMessagesFromEachThread
-                    .Where(IsLatestMessageUnclaimed)
-                    .ToList();
+                finalFilteredMessages = finalFilteredMessages
+                    .Where(IsLatestMessageUnclaimed);
             }
+
+            LatestMessagesFromEachThread = finalFilteredMessages.ToList();
 
             return Page();
         }
