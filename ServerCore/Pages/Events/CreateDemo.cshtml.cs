@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -30,6 +31,9 @@ namespace ServerCore.Pages.Events
 
         [BindProperty]
         public bool AddSkeletonContentFiles { get; set; }
+
+        [BindProperty]
+        public bool LargeEvent { get; set; }
 
         public CreateDemoModel(PuzzleServerContext context, UserManager<IdentityUser> userManager)
         {
@@ -306,6 +310,27 @@ namespace ServerCore.Pages.Events
                 };
                 _context.Puzzles.Add(syncTestMetapuzzle);
 
+                List<Puzzle> largeEventPuzzles = new List<Puzzle>();
+                if (LargeEvent)
+                {
+                    for (int i = 0; i < 100; i++)
+                    {
+                        Puzzle puzzle = new Puzzle
+                        {
+                            Name = $"zPuzzle {i}",
+                            Event = Event,
+                            IsPuzzle = true,
+                            SolveValue = 10,
+                            Group = "zLarge Group",
+                            OrderInGroup = i,
+                            MinPrerequisiteCount = 1,
+                            Description = $"Description for puzzle {i}"
+                        };
+                        largeEventPuzzles.Add(puzzle);
+                        _context.Puzzles.Add(puzzle);
+                    }
+                }
+
                 await _context.SaveChangesAsync();
 
                 //
@@ -357,6 +382,18 @@ namespace ServerCore.Pages.Events
                 _context.Hints.Add(new Hint() { Puzzle = singlePlayer2, Description = hint1Description, DisplayOrder = 0, Cost = 0, Content = hint1Content });
                 _context.Hints.Add(new Hint() { Puzzle = singlePlayer2, Description = hint2Description, DisplayOrder = 1, Cost = 1, Content = hint2Content });
 
+                List<Response> largeEventCorrectResponses = new List<Response>();
+                foreach (Puzzle largeEventPuzzle in largeEventPuzzles)
+                {
+                    _context.Responses.Add(new Response() { Puzzle = largeEventPuzzle, SubmittedText = "PARTIAL", ResponseText = "Keep going..." });
+                    Response correctResponse = new Response() { Puzzle = largeEventPuzzle, SubmittedText = "ANSWER", ResponseText = "Correct!", IsSolution = true };
+                    _context.Responses.Add(correctResponse);
+                    largeEventCorrectResponses.Add(correctResponse);
+
+                    _context.Hints.Add(new Hint() { Puzzle = largeEventPuzzle, Description = hint1Description, DisplayOrder = 0, Cost = 0, Content = hint1Content });
+                    _context.Hints.Add(new Hint() { Puzzle = largeEventPuzzle, Description = hint2Description, DisplayOrder = 1, Cost = 1, Content = hint2Content });
+                }
+
                 await _context.SaveChangesAsync();
 
                 //
@@ -378,6 +415,11 @@ namespace ServerCore.Pages.Events
                 _context.Prerequisites.Add(new Prerequisites() { Puzzle = heatSyncPuzzle, Prerequisite = start });
                 _context.Prerequisites.Add(new Prerequisites() { Puzzle = lipSyncPuzzle, Prerequisite = start });
                 _context.Prerequisites.Add(new Prerequisites() { Puzzle = syncTestMetapuzzle, Prerequisite = start });
+
+                foreach (Puzzle largeEventPuzzle in largeEventPuzzles)
+                {
+                    _context.Prerequisites.Add(new Prerequisites() { Puzzle = largeEventPuzzle, Prerequisite = start });
+                }
 
                 await _context.SaveChangesAsync();
 
@@ -414,6 +456,34 @@ namespace ServerCore.Pages.Events
                 {
                     teamLoneWolf = new Team { Name = "Lone Wolf", Event = Event, IsLookingForTeammates = true, PrimaryContactEmail = "wolf@example.com", Password = Guid.NewGuid().ToString() };
                     _context.Teams.Add(teamLoneWolf);
+                }
+
+                List<Team> largeEventTeams = new();
+                List<PuzzleUser> largeEventPlayers = new();
+                Dictionary<Team, List<PuzzleUser>> largeEventTeamMembers = new Dictionary<Team, List<PuzzleUser>>();
+                if (LargeEvent)
+                {
+                    for (int teamIndex = 0; teamIndex < 100; teamIndex++)
+                    {
+                        Team team = new Team { Name = $"zTeam {teamIndex}", Event = Event, IsLookingForTeammates = true, PrimaryContactEmail = $"Team{teamIndex}@example.com" };
+                        largeEventTeams.Add(team);
+                        _context.Teams.Add(team);
+                        largeEventTeamMembers[team] = new();
+
+                        for (int playerIndex = 0; playerIndex < 10; playerIndex++)
+                        {
+                            int playerNumber = teamIndex * 10 + playerIndex;
+                            IdentityUser identityUser = new IdentityUser { UserName = $"Player {playerNumber}", Email = $"Player{playerNumber}@example.com", Id = Guid.NewGuid().ToString() };
+                            await _userManager.CreateAsync(identityUser);
+
+                            PuzzleUser puzzleUser = new PuzzleUser { IdentityUserId = identityUser.Id, Name = identityUser.UserName, Email = identityUser.Email };
+                            largeEventPlayers.Add(puzzleUser);
+                            _context.PuzzleUsers.Add(puzzleUser);
+
+                            _context.TeamMembers.Add(new TeamMembers() { Team = team, Member = puzzleUser });
+                            largeEventTeamMembers[team].Add(puzzleUser);
+                        }
+                    }
                 }
 
                 var demoCreatorUser = await PuzzleUser.GetPuzzleUserForCurrentUser(_context, User, _userManager);
@@ -482,6 +552,36 @@ namespace ServerCore.Pages.Events
                 if (StartTheEvent)
                 {
                     await PuzzleStateHelper.SetSolveStateAsync(_context, Event, start, null, DateTime.UtcNow);
+
+                    // Fill in submissions, threads, and solves for some of the large teams and puzzles
+                    if (LargeEvent)
+                    {
+                        var largeEventPuzzleStates = await (from pspt in _context.PuzzleStatePerTeam
+                                                     join team in _context.Teams on pspt.TeamID equals team.ID
+                                                     join puzzle in _context.Puzzles on pspt.PuzzleID equals puzzle.ID
+                                                     where team.Event == Event
+                                                     select new { PuzzleStatePerTeam = pspt, Team = team, Puzzle = puzzle }).ToListAsync();
+
+                        for (int teamIndex = 0; teamIndex < largeEventTeams.Count; teamIndex += 2)
+                        {
+                            for (int puzzleIndex = 0; puzzleIndex < largeEventPuzzles.Count; puzzleIndex += 2)
+                            {
+                                Team team = largeEventTeams[teamIndex];
+                                Puzzle puzzle = largeEventPuzzles[puzzleIndex];
+                                _context.Submissions.Add(new Submission() { Puzzle = puzzle, Team = team, SubmissionText = "INCORRECT", Submitter = largeEventTeamMembers[team][0], TimeSubmitted = DateTime.UtcNow });
+                                _context.Submissions.Add(new Submission() { Puzzle = puzzle, Team = team, SubmissionText = "ANSWER", Submitter = largeEventTeamMembers[team][1], TimeSubmitted = DateTime.UtcNow, Response = largeEventCorrectResponses[puzzleIndex] });
+
+                                PuzzleStatePerTeam puzzleState = (from pspt in largeEventPuzzleStates
+                                                                  where pspt.Team == team && pspt.Puzzle == puzzle
+                                                                  select pspt.PuzzleStatePerTeam).Single();
+                                puzzleState.SolvedTime = DateTime.UtcNow;
+
+                                string threadId = MessageHelper.GetTeamPuzzleThreadId(puzzle.ID, team.ID);
+                                _context.Messages.Add(new Message() { ThreadId = threadId, Puzzle = puzzle, Team = team, Event = Event, Sender = largeEventTeamMembers[team][2], Subject = "Thread subject", Text = "This is a message", CreatedDateTimeInUtc = DateTime.UtcNow });
+                            }
+                        }
+                        await _context.SaveChangesAsync();
+                    }
                 }
 
                 transaction.Commit();
