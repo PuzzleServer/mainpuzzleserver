@@ -118,19 +118,7 @@
                 Timestamp
             </th>
             <th>
-                Puzzle
-            </th>
-            @if (Model.IsGameControlRole())
-            {
-                <th>
-                    Team
-                </th>
-            }
-            <th>
                 Last message
-            </th>
-            <th>
-                Last message sender
             </th>
         </tr>
     </thead>
@@ -148,39 +136,13 @@
                     </td>
                 }
                 <td>
-                    <a asp-page="/Threads/PuzzleThread" asp-route-puzzleId="@item.Puzzle.ID" asp-route-teamId="@item.TeamID" asp-route-playerId="@item.PlayerID">@item.Subject</a>
+                    <a asp-page="/Threads/PuzzleThread" asp-route-puzzleId="@item.PuzzleID" asp-route-teamId="@item.TeamID" asp-route-playerId="@item.PlayerID">@item.Subject</a>
                 </td>
                 <td>
                     @Html.Raw(Model.LocalTime(@item.CreatedDateTimeInUtc))
                 </td>
                 <td>
-                    @if (Model.EventRole == ModelBases.EventRole.admin || Model.EventRole == ModelBases.EventRole.author)
-                    {
-                        <a asp-Page="/Puzzles/Edit" asp-route-puzzleId=@item.Puzzle.ID>@item.Puzzle.Name</a>
-                    }
-                    else
-                    {
-                        <a asp-page="/Submissions/Index" asp-route-puzzleId="@item.Puzzle.ID">@item.Puzzle.Name</a>
-                    }
-                </td>
-                @if (Model.IsGameControlRole())
-                {
-                            <td>
-                                @if (item.TeamID.HasValue)
-                                {
-                                    <a asp-page="/Teams/Status" asp-route-teamId="@item.TeamID.Value">@item.Team.Name</a>
-                                }
-                                else
-                                {
-                                    <span>N/A</span>
-                                }
-                            </td>
-                }
-                <td>
                     @(item.Text.Length > 93 ? $"{item.Text.Substring(0, 90)}..." : item.Text)
-                </td>
-                <td>
-                    @item.Sender.Name
                 </td>
             </tr>
         }
