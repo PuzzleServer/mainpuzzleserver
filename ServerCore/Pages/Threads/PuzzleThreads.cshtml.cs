@@ -75,8 +75,8 @@ namespace ServerCore.Pages.Threads
                 refreshInterval: refreshInterval,
                 filterToSupportingPuzzlesOnly: filterToSupportingPuzzlesOnly);
 
-            IQueryable<Message> messages = this._context.Messages.Where(message => message.Puzzle != null
-                    && message.Puzzle.EventID == Event.ID);
+            IQueryable<Message> messages = this._context.Messages.Where(message => message.PuzzleID.HasValue
+                    && message.EventID == Event.ID);
             this.Title = "All help threads";
 
             // Based on the event role, filter the messages further.
@@ -132,7 +132,7 @@ namespace ServerCore.Pages.Threads
                 HashSet<int> authorPuzzleIds = UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser)
                     .Select(puzzle => puzzle.ID)
                     .ToHashSet();
-                messages = messages.Where(message => authorPuzzleIds.Contains(message.Puzzle.ID));
+                messages = messages.Where(message => authorPuzzleIds.Contains(message.PuzzleID.Value));
 
                 if (!Event.ShouldShowHelpMessageOnlyToAuthor && filterToSupportingPuzzlesOnly.Value)
                 {
