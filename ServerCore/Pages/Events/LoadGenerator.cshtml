@@ -1,0 +1,36 @@
+﻿@page "/{eventId}/{eventRole}/Events/LoadGenerator"
+@model ServerCore.Pages.Events.LoadGeneratorModel
+@{
+    ViewData["Title"] = "LoadGenerator";
+    ViewData["AdminRoute"] = "/Events/LoadGenerator";
+}
+
+<div>
+    <h2>Load Generator</h2>
+
+    <h3>Notification Load</h3>
+    <form method="post">
+        <dl>
+            <dt>
+                Team
+            </dt>
+            <dd>
+                <select class="form-control" asp-for="NotifyTeamId" asp-items="@(new SelectList(Model.Teams, "ID", "Name"))"></select>
+            </dd>
+            <dt>
+                Number of Notifications
+            </dt>
+            <dd>
+                <input type="text" asp-for="NotifyCount" />
+            </dd>
+            <dt>
+                Notification Spacing (ms)
+            </dt>
+            <dd>
+                <input type="text" asp-for="NotifySpacing" />
+            </dd>
+        </dl>
+
+        <input type="submit" value="Generate Notification Load" class="btn btn-default" />
+    </form>
+</div>
