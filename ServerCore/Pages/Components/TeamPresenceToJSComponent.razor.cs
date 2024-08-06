@@ -81,7 +81,7 @@ namespace ServerCore.Pages.Components
 
             if (allPresence.Count > 0)
             {
-                await JSRuntime.InvokeVoidAsync("showPresence", allPresence);
+                _ = JSRuntime.InvokeVoidAsync("showPresence", allPresence);
             }
 
             await base.OnParametersSetAsync();
@@ -90,7 +90,7 @@ namespace ServerCore.Pages.Components
         private async Task SendPresenceToJSAsync(int puzzleId, IList<PresenceModel> presentUsers)
         {
             PresenceObject presence = await GetPresenceObjectAsync(puzzleId, presentUsers);
-            await JSRuntime.InvokeVoidAsync("showPresence", new List<PresenceObject>() { presence });
+            _ = JSRuntime.InvokeVoidAsync("showPresence", new List<PresenceObject>() { presence });
         }
 
         private async Task<PresenceObject> GetPresenceObjectAsync(int puzzleId, IList<PresenceModel> presentUsers)
