@@ -76,7 +76,7 @@ namespace ServerCore.Pages.Components
                 PresentUsers = Array.Empty<PresenceModel>();
             }
 
-            await InvokeAsync(StateHasChanged);
+            _ = InvokeAsync(StateHasChanged);
         }
 
         protected override async Task OnInitializedAsync()
