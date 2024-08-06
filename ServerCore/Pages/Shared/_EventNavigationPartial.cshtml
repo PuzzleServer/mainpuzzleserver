@@ -370,22 +370,28 @@
         }
 
         function onDismissUserToast(id) {
-            delete allEventToasts[id];
-            localStorage.setItem("userToasts-@(Model.Event.ID)", JSON.stringify(allEventToasts));
+            navigator.locks.request("toastStorage", async (lock) => {
+                delete allEventToasts[id];
+                localStorage.setItem("userToasts-@(Model.Event.ID)", JSON.stringify(allEventToasts));
+            });
         }
 
         function resetAllToasts() {
-            document.querySelector("#notification-list").innerHTML = "";
-            allEventToasts = JSON.parse(localStorage.getItem("userToasts-@(Model.Event.ID)"));
-            if (allEventToasts) { for (const [key, value] of Object.entries(allEventToasts)) { popToast(value, false); } }
+            navigator.locks.request("toastStorage", async (lock) => {
+                document.querySelector("#notification-list").innerHTML = "";
+                allEventToasts = JSON.parse(localStorage.getItem("userToasts-@(Model.Event.ID)"));
+                if (allEventToasts) { for (const [key, value] of Object.entries(allEventToasts)) { popToast(value, false); } }
+            });
         }
 
         window.displayNotification = (notification) => {
-            allEventToasts = JSON.parse(localStorage.getItem("userToasts-@(Model.Event.ID)"));
-            if (!allEventToasts) { allEventToasts = {}; }
-            allEventToasts[notification.id] = notification;
-            localStorage.setItem("userToasts-@(Model.Event.ID)", JSON.stringify(allEventToasts));
-            popToast(notification, true);
+            navigator.locks.request("toastStorage", async (lock) => {
+                allEventToasts = JSON.parse(localStorage.getItem("userToasts-@(Model.Event.ID)"));
+                if (!allEventToasts) { allEventToasts = {}; }
+                allEventToasts[notification.id] = notification;
+                localStorage.setItem("userToasts-@(Model.Event.ID)", JSON.stringify(allEventToasts));
+                popToast(notification, true);
+            });
         };
 
         document.addEventListener("DOMContentLoaded", function () { resetAllToasts(); documentLoaded = true; });
