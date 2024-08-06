@@ -32,9 +32,10 @@ namespace ServerCore.Components
             base.OnInitialized();
         }
 
-        private async Task OnNotify(Notification notification)
+        private Task OnNotify(Notification notification)
         {
-            await this.JS.InvokeVoidAsync("displayNotification", notification);
+            _ = this.JS.InvokeVoidAsync("displayNotification", notification);
+            return Task.CompletedTask;
         }
 
         public void Dispose()
