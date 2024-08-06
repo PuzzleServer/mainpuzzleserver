@@ -381,6 +381,7 @@
         }
 
         window.displayNotification = (notification) => {
+            allEventToasts = JSON.parse(localStorage.getItem("userToasts-@(Model.Event.ID)"));
             if (!allEventToasts) { allEventToasts = {}; }
             allEventToasts[notification.id] = notification;
             localStorage.setItem("userToasts-@(Model.Event.ID)", JSON.stringify(allEventToasts));
