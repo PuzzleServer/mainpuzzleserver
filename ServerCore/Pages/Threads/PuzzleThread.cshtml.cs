@@ -210,14 +210,29 @@ namespace ServerCore.Pages.Threads
             m.ClaimerID = NewMessage.ClaimerID;
             m.PlayerID = NewMessage.PlayerID;
 
+            bool isMessageAdded = false;
             using (IDbContextTransaction transaction = _context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable))
             {
-                _context.Messages.Add(m);
-                await _context.SaveChangesAsync();
-                transaction.Commit();
+                // Make sure to not add the message if already added previously (sometimes the user double clicks)
+                Message newestMessage = await _context.Messages
+                    .Where(message => message.ThreadId == NewMessage.ThreadId)
+                    .OrderBy(message => message.CreatedDateTimeInUtc)
+                    .LastOrDefaultAsync();
+
+                if (newestMessage == null
+                    || newestMessage.Text != NewMessage.Text)
+                {
+                    _context.Messages.Add(m);
+                    await _context.SaveChangesAsync();
+                    transaction.Commit();
+                    isMessageAdded = true;
+                }
             }
 
-            await this.SendEmailNotifications(m, puzzle);
+            if (isMessageAdded)
+            {
+                await this.SendEmailNotifications(m, puzzle);
+            }
 
             return RedirectToPage("/Threads/PuzzleThread", new { puzzleId = m.PuzzleID, teamId = m.TeamID, playerId = m.PlayerID });
         }
