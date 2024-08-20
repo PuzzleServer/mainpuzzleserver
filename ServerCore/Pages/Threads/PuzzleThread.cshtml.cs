@@ -214,11 +214,13 @@ namespace ServerCore.Pages.Threads
             using (IDbContextTransaction transaction = _context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable))
             {
                 // Make sure to not add the message if already added previously (sometimes the user double clicks)
-                var newestMessage = _context.Messages
+                Message newestMessage = await _context.Messages
                     .Where(message => message.ThreadId == NewMessage.ThreadId)
                     .OrderBy(message => message.CreatedDateTimeInUtc)
-                    .Last();
-                if (newestMessage == null || newestMessage.Text != NewMessage.Text)
+                    .LastOrDefaultAsync();
+
+                if (newestMessage == null
+                    || newestMessage.Text != NewMessage.Text)
                 {
                     _context.Messages.Add(m);
                     await _context.SaveChangesAsync();
