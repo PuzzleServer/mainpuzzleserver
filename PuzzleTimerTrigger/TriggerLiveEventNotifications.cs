@@ -14,7 +14,7 @@ namespace PuzzleTimerTrigger
         public void Run([TimerTrigger("0 */1 * * * *")]TimerInfo myTimer, ILogger log)
         {
             const string eventId = "pd2024";
-            HttpClient.PostAsync($"https://puzzlehunt.azurewebsites.net/api/puzzleapi/liveevent/triggernotifications?eventId={eventId}&timerWindow=10", null).Wait();
+            HttpClient.PostAsync($"https://puzzlehunt.azurewebsites.net/api/puzzleapi/liveevent/triggernotifications?eventId=evt1054&timerWindow=10", null).Wait();
         }
     }
 }
