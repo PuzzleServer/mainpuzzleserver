@@ -336,5 +336,11 @@ namespace ServerCore.DataModel
         /// </summary>
         [NotMapped]
         public bool EphemeralHackKillListPresence => EphemeralHacks?.Contains("kill-list-presence") == true;
+
+        /// <summary>
+        /// true if the link to the live events page on the puzzle page should be hidden regardless of live event status
+        /// </summary>
+        [NotMapped]
+        public bool EphemeralHackKillLiveEventPage => EphemeralHacks?.Contains("kill-live-event-page") == true;
     }
 }
