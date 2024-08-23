@@ -1,0 +1,45 @@
+﻿@page "/{eventId}/{eventRole}/Teams/{teamId}/LiveEventSchedule"
+@model ServerCore.Pages.Teams.LiveEventScheduleModel
+@{
+    ViewData["Title"] = "Live Event Schedule";
+
+    <h2>Event Schedule for @Model.ThisTeam.Name</h2>
+    <p>Live events are activities that take place at a certain time and place. If you do not go to the event during that time you will not be able to get credit for it. If you miss a scheduled slot, please contact us using the help button on the puzzle page and we will see if we can reschedule, but there are no guarantees.</p>
+    <br />
+    <br />
+
+    <h3>Scheduled Events</h3>
+    <p>Your team has been given a specific time for the events listed below, please do not be late!</p>
+    <br />
+
+    @foreach (var item in Model.TeamSchedule)
+    {
+        <div style="margin-left:3%;">
+            <h4><b>@item.LiveEvent.Name</b></h4>
+            <div style="margin-left:2%;">
+                <p><b>Your team's scheduled time is:</b> @Html.Raw(Model.LocalTime(item.StartTimeUtc))</p>
+                <p><b>Go To:</b> @item.LiveEvent.Location</p>
+                <p>@item.LiveEvent.Description</p>
+            </div>
+        </div>
+    }
+
+    <br />
+    <br />
+
+    <h3>Unscheduled Events</h3>
+    <p>The following events are open for a set length of time and you may come anytime while they are open. We recommend coming in the middle for the shortest lines!</p>
+    <br />
+
+    @foreach (var item in Model.UnscheduledLiveEvents)
+    {
+        <div style="margin-left:3%;">
+            <h4><b>@item.Name</b></h4>
+            <div style="margin-left:2%;">
+                <p><b>This event runs between: </b> @Html.Raw(Model.LocalTime(item.EventStartTimeUtc)) and @Html.Raw(Model.LocalTime(@item.EventEndTimeUtc))</p>
+                <p><b>Go To:</b> @item.Location</p>
+                <p>@item.Description</p>
+            </div>
+        </div>
+    }
+}

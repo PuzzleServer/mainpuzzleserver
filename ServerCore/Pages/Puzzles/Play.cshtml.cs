@@ -43,6 +43,8 @@ namespace ServerCore.Pages.Puzzles
 
         public Team Team { get; set; }
 
+        public bool HasLiveEvents { get; set; }
+
         public async Task OnGetAsync(
             SortOrder? teamPuzzleSort,
             SortOrder? singlePlayerPuzzleSort,
@@ -74,6 +76,7 @@ namespace ServerCore.Pages.Puzzles
             VisibleSinglePlayerPuzzleViews = this.GetVisibleSinglePlayerPuzzleViews(singlePlayerPuzzleSort).ToList();
             this.PopulatePuzzleViewsWithFiles(VisibleSinglePlayerPuzzleViews, puzzleFiles, answerFiles);
             AnyErrata = VisibleSinglePlayerPuzzleViews.Any(v => v.Errata != null);
+            HasLiveEvents = LiveEventHelper.GetLiveEventsForEvent(_context, Event, false, false).Result.Any();
 
             Team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
             if (Team != null)
