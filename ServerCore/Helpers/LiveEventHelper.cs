@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using ServerCore.DataModel;
 using ServerCore.ServerMessages;
 
@@ -20,6 +18,17 @@ namespace ServerCore.Helpers
             await PreEventReminder(context, currentEvent, timerWindow, hubContext);
             await EventOpeningReminder(context, currentEvent, hubContext);
             await EventClosingReminder(context, currentEvent, hubContext);
+        }
+
+        public static async Task<List<LiveEventSchedule>> GetTeamSchedule(PuzzleServerContext context, Event currentEvent, Team team)
+        {
+            var eventSchedule = await (from schedule in context.LiveEventsSchedule
+                                       join liveEvent in context.LiveEvents on schedule.LiveEventId equals liveEvent.ID
+                                       join puzzle in context.Puzzles on liveEvent.AssociatedPuzzleId equals puzzle.ID
+                                       where puzzle.EventID == currentEvent.ID && schedule.TeamId == team.ID
+                                       select schedule).ToListAsync();
+
+            return eventSchedule;
         }
 
         /// <summary>
@@ -242,7 +251,7 @@ namespace ServerCore.Helpers
             }
         }
 
-        private static async Task<List<LiveEvent>> GetLiveEventsForEvent(PuzzleServerContext context, Event e, bool scheduledOnly, bool unscheduledOnly)
+        public static async Task<List<LiveEvent>> GetLiveEventsForEvent(PuzzleServerContext context, Event e, bool scheduledOnly, bool unscheduledOnly)
         {
             IQueryable<LiveEvent> liveEvents = from liveEvent in context.LiveEvents
                                                join puzzle in context.Puzzles on liveEvent.AssociatedPuzzleId equals puzzle.ID
