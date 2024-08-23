@@ -20,15 +20,15 @@ namespace ServerCore.Helpers
             await EventClosingReminder(context, currentEvent, hubContext);
         }
 
-        public static List<LiveEventSchedule> GetTeamSchedule(PuzzleServerContext context, Event currentEvent, Team team)
+        public static async Task<List<LiveEventSchedule>> GetTeamSchedule(PuzzleServerContext context, Event currentEvent, Team team)
         {
-            var eventSchedule = from schedule in context.LiveEventsSchedule
-                                join liveEvent in context.LiveEvents on schedule.LiveEventId equals liveEvent.ID
-                                join puzzle in context.Puzzles on liveEvent.AssociatedPuzzleId equals puzzle.ID
-                                where puzzle.EventID == currentEvent.ID && schedule.TeamId == team.ID
-                                select schedule;
+            var eventSchedule = await (from schedule in context.LiveEventsSchedule
+                                       join liveEvent in context.LiveEvents on schedule.LiveEventId equals liveEvent.ID
+                                       join puzzle in context.Puzzles on liveEvent.AssociatedPuzzleId equals puzzle.ID
+                                       where puzzle.EventID == currentEvent.ID && schedule.TeamId == team.ID
+                                       select schedule).ToListAsync();
 
-            return eventSchedule.ToList();
+            return eventSchedule;
         }
 
         /// <summary>
