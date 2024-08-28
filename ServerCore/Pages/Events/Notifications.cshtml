@@ -1,0 +1,35 @@
+﻿@page "/{eventId}/{eventRole}/Events/Notifications"
+@model ServerCore.Pages.Events.NotificationsModel
+@{
+    ViewData["Title"] = "Notifications";
+    ViewData["AdminRoute"] = "/Events/Notifications";
+}
+
+<script>
+    newToastCount = 0;
+    localStorage.setItem("userToasts-@(Model.Event.ID)-new", newToastCount);
+    updateToastCount();
+
+    function resetAllPageToasts() {
+        navigator.locks.request("toastStorage", async (lock) => {
+            debugger;
+            var notificationList = document.querySelector("#notification-page-list");
+            notificationList.innerHTML = "";
+            allEventToasts = JSON.parse(localStorage.getItem("userToasts-@(Model.Event.ID)"));
+            if (allEventToasts) { for (const [key, value] of Object.entries(allEventToasts)) { popToast(notificationList, value, false, true); } }
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", function () { resetAllPageToasts(); });
+    window.addEventListener("focus", function () { if (documentLoaded) { resetAllPageToasts(); } });
+
+    // TODO: delete all?
+    // TODO: update list when new toasts arrive?
+</script>
+<div>
+    <h2>Notifications</h2>
+
+    <div id="notification-page-list" class="toast-container" style="position: relative">
+
+    </div>
+</div>

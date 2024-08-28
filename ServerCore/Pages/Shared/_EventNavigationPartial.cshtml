@@ -35,6 +35,14 @@
                 </button>
             </div>
 
+            @if (Event?.AllowBlazor == true && Event?.EphemeralHackKillNotifications != true)
+            {
+                <a class="nav-link position-relative" asp-page="/Events/Notifications">
+                    <span class="fab text-white">✉️</span>
+                    <span id="unreadCounter" class="position-absolute hidden top-0 start-50 translate-middle badge rounded-pill bg-danger">1</span>
+                </a>
+            }
+
             <div class="collapse navbar-collapse" id="topBarCollapsable">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
@@ -112,6 +120,14 @@
                 </button>
             </div>
 
+            @if (Event?.AllowBlazor == true && Event?.EphemeralHackKillNotifications != true)
+            {
+                <a class="nav-link position-relative" asp-page="/Events/Notifications">
+                    <span class="fab text-white">✉️</span>
+                    <span id="unreadCounter" class="position-absolute hidden top-0 start-50 translate-middle badge rounded-pill bg-danger">1</span>
+                </a>
+            }
+
             <div class="collapse navbar-collapse" id="topBarCollapsable">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item"><a asp-page="/EventSpecific/Index">Event</a></li>
@@ -167,6 +183,14 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
             </div>
+
+            @if (Event?.AllowBlazor == true && Event?.EphemeralHackKillNotifications != true)
+            {
+                <a class="nav-link position-relative" asp-page="/Events/Notifications">
+                    <span class="fab text-white">✉️</span>
+                    <span id="unreadCounter" class="position-absolute hidden top-0 start-50 translate-middle badge rounded-pill bg-danger">1</span>
+                </a>
+            }
 
             <div class="collapse navbar-collapse" id="topBarCollapsable">
                 <ul class="navbar-nav me-auto">
@@ -339,10 +363,11 @@
 {
     <script>
         var allEventToasts = {};
+        var criticalEventToasts = {};
+        var newToastCount = 0;
         var documentLoaded = false;
 
-        function popToast(notification, animate) {
-            let notificationList = document.querySelector("#notification-list");
+        function popToast(notificationList, notification, animate, isPageView) {
             notificationList.insertAdjacentHTML("afterbegin", `\
                     <div class='toast' role='alert' data-bs-dismiss='toast' aria-live='assertive' aria-atomic='true'> \
                         <div class='toast-header'> \
@@ -359,28 +384,43 @@
 
             if (notification.linkUrl) {
                 notificationList.firstElementChild.querySelector("a").addEventListener("click", (e) => {
-                    onDismissUserToast(notification.id);
+                    onDismissUserToast(notification.id, isPageView);
                 });
             }
 
-            notificationList.firstElementChild.addEventListener('hidden.bs.toast', () => { onDismissUserToast(notification.id); });
+            notificationList.firstElementChild.addEventListener('hidden.bs.toast', () => { onDismissUserToast(notification.id, isPageView); });
 
-            let toast = new bootstrap.Toast(notificationList.firstElementChild, { animation: animate, autohide: false });
+            let toast = new bootstrap.Toast(notificationList.firstElementChild, { animation: animate, autohide: !isPageView && !notification.isCritical });
             toast.show();
         }
 
-        function onDismissUserToast(id) {
+        function updateToastCount() {
+            if (newToastCount) { unreadCounter.classList.remove("hidden"); unreadCounter.innerHTML = newToastCount; }
+            else { unreadCounter.classList.add("hidden"); }
+        }
+
+        function onDismissUserToast(id, isPageView) {
             navigator.locks.request("toastStorage", async (lock) => {
-                delete allEventToasts[id];
-                localStorage.setItem("userToasts-@(Model.Event.ID)", JSON.stringify(allEventToasts));
+                if (criticalEventToasts[id]) {
+                    delete criticalEventToasts[id];
+                    localStorage.setItem("userToasts-@(Model.Event.ID)-critical", JSON.stringify(criticalEventToasts));
+                }
+                if (isPageView) {
+                    delete allEventToasts[id];
+                    localStorage.setItem("userToasts-@(Model.Event.ID)", JSON.stringify(allEventToasts));
+                }
             });
         }
 
         function resetAllToasts() {
             navigator.locks.request("toastStorage", async (lock) => {
-                document.querySelector("#notification-list").innerHTML = "";
-                allEventToasts = JSON.parse(localStorage.getItem("userToasts-@(Model.Event.ID)"));
-                if (allEventToasts) { for (const [key, value] of Object.entries(allEventToasts)) { popToast(value, false); } }
+                var notificationList = document.querySelector("#notification-list");
+                notificationList.innerHTML = "";
+                criticalEventToasts = JSON.parse(localStorage.getItem("userToasts-@(Model.Event.ID)-critical"));
+                if (criticalEventToasts) { for (const [key, value] of Object.entries(criticalEventToasts)) { popToast(notificationList, value, false, false); } }
+                newToastCount = localStorage.getItem("userToasts-@(Model.Event.ID)-new");
+                newToastCount = newToastCount ? parseInt(newToastCount) : 0;
+                updateToastCount();
             });
         }
 
@@ -388,9 +428,24 @@
             navigator.locks.request("toastStorage", async (lock) => {
                 allEventToasts = JSON.parse(localStorage.getItem("userToasts-@(Model.Event.ID)"));
                 if (!allEventToasts) { allEventToasts = {}; }
-                allEventToasts[notification.id] = notification;
-                localStorage.setItem("userToasts-@(Model.Event.ID)", JSON.stringify(allEventToasts));
-                popToast(notification, true);
+                if (!allEventToasts[notification.id]) {
+                    allEventToasts[notification.id] = notification;
+                    localStorage.setItem("userToasts-@(Model.Event.ID)", JSON.stringify(allEventToasts));
+                    newToastCount = localStorage.getItem("userToasts-@(Model.Event.ID)-new");
+                    newToastCount = newToastCount ? parseInt(newToastCount) : 0;
+                    newToastCount++;
+                    localStorage.setItem("userToasts-@(Model.Event.ID)-new", newToastCount);
+                }
+
+                if (notification.isCritical) {
+                    criticalEventToasts = JSON.parse(localStorage.getItem("userToasts-@(Model.Event.ID)-critical"));
+                    if (!criticalEventToasts) { criticalEventToasts = {}; }
+                    criticalEventToasts[notification.id] = notification;
+                    localStorage.setItem("userToasts-@(Model.Event.ID)-critical", JSON.stringify(criticalEventToasts));
+                }
+
+                popToast(document.querySelector("#notification-list"), notification, true, false);
+                updateToastCount();
             });
         };
 

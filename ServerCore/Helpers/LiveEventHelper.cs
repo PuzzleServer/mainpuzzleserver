@@ -243,11 +243,11 @@ namespace ServerCore.Helpers
         {
             if (team == null)
             {
-                await hubContext.SendNotification(e, title, message, puzzleUrl);
+                await hubContext.SendNotification(e, title, message, puzzleUrl, true);
             }
             else
             {
-                await hubContext.SendNotification(team, title, message, puzzleUrl);
+                await hubContext.SendNotification(team, title, message, puzzleUrl, true);
             }
         }
 
