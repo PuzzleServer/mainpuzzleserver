@@ -43,6 +43,7 @@ namespace ServerCore.DataModel
             Token = source.Token;
             Group = source.Group;
             OrderInGroup = source.OrderInGroup;
+            AlphaTestsNeeded = source.AlphaTestsNeeded;
             IsGloballyVisiblePrerequisite = source.IsGloballyVisiblePrerequisite;
             PrerequisiteWeight = source.PrerequisiteWeight;
             MinPrerequisiteCount = source.MinPrerequisiteCount;
@@ -289,6 +290,11 @@ namespace ServerCore.DataModel
         /// True if puzzle can be solved as a player rather than solved as a team.
         /// </summary>
         public bool IsForSinglePlayer { get; set; }
+
+        /// <summary>
+        /// Number of alpha members who can sign up for a puzzle
+        /// </summary>
+        public int AlphaTestsNeeded { get; set; }
 
         /// <summary>
         /// File for the main puzzle (typically a PDF containing the puzzle)

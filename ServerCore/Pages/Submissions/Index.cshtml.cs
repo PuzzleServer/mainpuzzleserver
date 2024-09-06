@@ -285,6 +285,23 @@ namespace ServerCore.Pages.Submissions
             return Page();
         }
 
+        public async Task<IActionResult> OnGetClaimPuzzleAsync(int puzzleId)
+        {
+            await SetupContext(puzzleId);
+
+            if (!Event.IsAlphaTestingEvent || Puzzle.AlphaTestsNeeded == 0 || PuzzleState.UnlockedTime != null)
+            {
+                return NotFound();
+            }
+
+            PuzzleState.UnlockedTime = DateTime.UtcNow;
+            Puzzle.AlphaTestsNeeded -= 1;
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToPage();
+        }
+
         private async Task SetupContext(int puzzleId)
         {
             Team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
