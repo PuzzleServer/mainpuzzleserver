@@ -49,6 +49,34 @@
     </div>
 }
 
+@if (Model.Event.IsAlphaTestingEvent && Model.Event.EmbedPuzzles && Model.VisibleTeamPuzzleViews.Any())
+{
+    <h2>Puzzles that need alpha testing!</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Puzzle (click to preview)</th>
+                <th>Alpha tests needed</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.UnclaimedAlphaPuzzleViews)
+            {
+                <tr>
+                    <td class="puzzle-list-title-customizable">
+                        <a asp-page="/Submissions/Index" asp-route-puzzleId="@item.ID">@RawHtmlHelper.Display(item.Name, Model.Event.ID, Html)</a>
+                    </td>
+                    <td>
+                        @item.AlphaTestsNeeded
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <br />
+}
+
 @if (Model.AnyErrata)
 {
     <p>Note: Puzzles with a &#x26A0; before the name have errata, which will be provided on that puzzle's answer submission page.</p>
@@ -77,35 +105,6 @@
 @if(Model.HasLiveEvents)
 {
     <a asp-page="/Teams/LiveEventSchedule" asp-route-teamId="@Model.Team.ID">Click Here for the Live Event Schedule</a> <br/> <br/>
-}
-
-@if (Model.Event.IsAlphaTestingEvent && Model.Event.EmbedPuzzles && Model.VisibleTeamPuzzleViews.Any())
-{
-    <h2>Puzzles that need alpha testing!</h2>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Puzzle (click to preview)</th>
-                <th>Alpha tests needed</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.UnclaimedAlphaPuzzleViews)
-            {
-                <tr>
-                    <td class="puzzle-list-title-customizable">
-                        <a asp-page="/Submissions/Index" asp-route-puzzleId="@item.ID">@RawHtmlHelper.Display(item.Name, Model.Event.ID, Html)</a>
-                    </td>
-                    <td>
-                        @item.AlphaTestsNeeded
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
-    <br/>
-    <h2>Team Puzzles</h2>
 }
 
 @if (Model.Team == null)
