@@ -1,14 +1,17 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
 using ServerCore.ModelBases;
+using ServerCore.ServerMessages;
 
 namespace ServerCore.Pages.Submissions
 {
@@ -18,9 +21,12 @@ namespace ServerCore.Pages.Submissions
         public const string IncorrectResponseText = "Incorrect";
         private readonly PuzzleServerContext context;
 
-        public IndexModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
+        private IHubContext<ServerMessageHub> messageHub;
+
+        public IndexModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager, IHubContext<ServerMessageHub> messageHub) : base(serverContext, userManager)
         {
             context = serverContext;
+            this.messageHub = messageHub;
         }
         public bool IsPuzzleForSinglePlayer { get; set; }
 
@@ -296,8 +302,18 @@ namespace ServerCore.Pages.Submissions
 
             PuzzleState.UnlockedTime = DateTime.UtcNow;
             Puzzle.AlphaTestsNeeded -= 1;
-
             await _context.SaveChangesAsync();
+
+            var authors = await _context.PuzzleAuthors
+                .Where(pa => pa.Puzzle.ID == Puzzle.ID)
+                .Select(pa => pa.Author).ToArrayAsync();
+
+            string claimMessage = $"{LoggedInUser.Name} has claimed {Puzzle.Name} for testing.";
+            foreach (var author in authors)
+            {
+                await messageHub.SendNotification(author, "Puzzle Claimed", claimMessage);
+            }
+            MailHelper.Singleton.SendPlaintextWithoutBcc(authors.Select(a => a.Email), claimMessage, $"Contact them at {LoggedInUser.Email} with any special instructions.");
 
             return RedirectToPage();
         }
