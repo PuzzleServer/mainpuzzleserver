@@ -314,6 +314,11 @@ namespace ServerCore.DataModel
         public bool AllowBlazor { get; set; }
 
         /// <summary>
+        /// True if this is an alpha testing event (meaning authors can mark puzzles for testing)
+        /// </summary>
+        public bool IsAlphaTestingEvent { get; set; }
+
+        /// <summary>
         /// Short-term hacks for modifying behavior without adding new properties all the time.
         /// Note: If a hack lasts more than a few months, it should probably be promoted to a real property.
         /// </summary>

@@ -85,6 +85,11 @@
             </div>
             <div class="description-column">Enables new website functionality like realtime presence indication and automatic team creation.</div>
             <div class="form-group">
+                <label asp-for="EditableEvent.IsAlphaTestingEvent"></label>
+                <input asp-for="EditableEvent.IsAlphaTestingEvent" />
+            </div>
+            <div class="description-column">Allows authors to mark puzzles as needing alpha tests, making them conditionally visible to players. <b>Note: The event must have EmbedPuzzles set, and it is highly recommended to set the MaxNumberOfTeams so low that only admins can add teams (to keep nosy people out).</b></div>
+            <div class="form-group">
                 <label asp-for="EditableEvent.HomePartial" class="control-label"></label>
                 <input asp-for="EditableEvent.HomePartial" class="form-control" />
                 <span asp-validation-for="EditableEvent.HomePartial" class="text-danger"></span>

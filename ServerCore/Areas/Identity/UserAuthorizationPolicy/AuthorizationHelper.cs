@@ -200,7 +200,7 @@ namespace ServerCore.Areas.Identity
 
             if (thisEvent != null && puzzle != null)
             {
-                if (thisEvent.AreAnswersAvailableNow)
+                if (thisEvent.AreAnswersAvailableNow || thisEvent.IsAlphaTestingEvent)
                 {
                     authContext.Succeed(requirement);
                 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -26,6 +27,7 @@ namespace ServerCore.Pages.Puzzles
         public IEnumerable<PuzzleView> VisibleTeamPuzzleViews { get; set; }
 
         public IEnumerable<PuzzleView> VisibleSinglePlayerPuzzleViews { get; set; }
+        public IEnumerable<AlphaPuzzleView> UnclaimedAlphaPuzzleViews { get; set; }
 
         public PuzzleStateFilter? StateFilter { get; set; }
 
@@ -93,6 +95,30 @@ namespace ServerCore.Pages.Puzzles
                     AnyErrata = VisibleTeamPuzzleViews.Any(v => v.Errata != null);
                 }
             }
+
+            if (Event.IsAlphaTestingEvent)
+            {
+                HashSet<int> visibleIDs = new HashSet<int>();
+                List<AlphaPuzzleView> notYetVisibleUnclaimedViews = new List<AlphaPuzzleView>();
+
+                foreach (var view in VisibleTeamPuzzleViews) { visibleIDs.Add(view.ID); }
+                foreach (var view in VisibleSinglePlayerPuzzleViews) { visibleIDs.Add(view.ID); }
+
+                var unclaimedViews = await _context.Puzzles
+                    .Where(p => p.EventID == Event.ID && p.AlphaTestsNeeded > 0)
+                    .Select(p => new AlphaPuzzleView { ID = p.ID, Name = p.Name, AlphaTestsNeeded = p.AlphaTestsNeeded })
+                    .ToListAsync();
+
+                foreach (var alphaView in unclaimedViews)
+                {
+                    if (!visibleIDs.Contains(alphaView.ID))
+                    {
+                        notYetVisibleUnclaimedViews.Add(alphaView);
+                    }
+                }
+
+                UnclaimedAlphaPuzzleViews = notYetVisibleUnclaimedViews;
+            }
         }
 
         public SortOrder? SortForColumnLink(SortOrder? currentSort, SortOrder ascendingSort, SortOrder descendingSort)
@@ -125,6 +151,13 @@ namespace ServerCore.Pages.Puzzles
             public ContentFile Content { get; set; }
             public ContentFile Answer { get; set; }
             public PieceMetaUsage PieceMetaUsage { get; set; }
+        }
+
+        public class AlphaPuzzleView
+        {
+            public int ID { get; set; }
+            public string Name { get; set; }
+            public int AlphaTestsNeeded { get; set; }
         }
 
         public enum SortOrder

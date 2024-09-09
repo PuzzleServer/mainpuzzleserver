@@ -358,6 +358,9 @@ namespace Data.Migrations
                     b.Property<string>("HomePartial")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsAlphaTestingEvent")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsInternEvent")
                         .HasColumnType("bit");
 
@@ -872,6 +875,9 @@ namespace Data.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<int>("AlphaTestsNeeded")
+                        .HasColumnType("int");
 
                     b.Property<string>("CustomAuthorText")
                         .HasColumnType("nvarchar(max)");

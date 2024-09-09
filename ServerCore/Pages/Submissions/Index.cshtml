@@ -163,8 +163,16 @@
         margin-top: 4px;
     }
 
-    /* Host-side printing of an embedded puzzle only supports portrait orientation; 
-    puzzle-defined orientation when printing can only be done by clicking the link to print the puzzle file itself */
+    .puzzle-content-wrapper.unclaimed {
+            background: #666666;
+    }
+
+    .puzzle-content-wrapper.unclaimed > * {
+        opacity: 0.25;
+    }
+
+    /* Host-side printing of an embedded puzzle only supports portrait orientation;
+        puzzle-defined orientation when printing can only be done by clicking the link to print the puzzle file itself */
     @@media print {
         .no-print {
             display: none;
@@ -609,10 +617,20 @@ else
         }
         else if (Model.PuzzleState.UnlockedTime == null)
         {
-            <div class="alert alert-danger" role="alert">
-                <h4>Answer Submission Locked</h4>
-                <span>This puzzle is currently locked! Please <a asp-Page="/Threads/PuzzleThread" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-teamId="@Model.Team?.ID" asp-route-playerId="@Model.LoggedInUser.ID">use this link to message us if you think this is a mistake</a>.</span>
-            </div>
+            if (Model.Event.IsAlphaTestingEvent && Model.Puzzle.AlphaTestsNeeded > 0)
+            {
+                <div class="alert alert-warning" role="alert">
+                    <h4>Unclaimed Alpha Puzzle</h4>
+                    <span>This puzzle needs alpha testers! <a asp-page-handler="ClaimPuzzle">Claim it now!</a></span>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-danger" role="alert">
+                    <h4>Answer Submission Locked</h4>
+                    <span>This puzzle is currently locked! Please <a asp-Page="/Threads/PuzzleThread" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-teamId="@Model.Team?.ID" asp-route-playerId="@Model.LoggedInUser.ID">use this link to message us if you think this is a mistake</a>.</span>
+                </div>
+            }
         }
         else
         {
@@ -689,6 +707,7 @@ else
     </div>
     <br />
 
+    <div class='@((Model.Event.IsAlphaTestingEvent && Model.PuzzleState.UnlockedTime == null) ? "puzzle-content-wrapper unclaimed" : "puzzle-content-wrapper")'>
     @switch (embedType)
     {
         case 1: // PDF
@@ -716,6 +735,7 @@ else
             <img id="img-frame" src="@puzzleFilePath" alt="An image containing a puzzle" />
             break;
     }
+    </div>
 
     @section Scripts {
         @{
@@ -780,10 +800,8 @@ else
                 const submit = document.querySelector("#submitButton");
                 async function submitClickHandler (e) {
                     const rawText = document.querySelector("#submitBox").value;
-                    const isFreeform = @Model.Puzzle.IsFreeform.ToString().ToLower();
-                    const cleanedText = isFreeform ? rawText: rawText.normalize("NFKD").replace(/[^a-zA-Z\d]/gi, "").toUpperCase();
-                    let submission = { SubmissionText: cleanedText, AllowFreeformSharing: (isFreeform ? document.querySelector("#AllowFreeformSharing").checked : false) };
-
+                    const cleanedText = rawText.normalize("NFKD").replace(/[^a-zA-Z\d]/gi, "").toUpperCase();
+                    let submission = {SubmissionText: cleanedText, AllowFreeformSharing: @Model.Puzzle.IsFreeform.ToString().ToLower()};
                     const response = await fetch("/api/puzzleapi/submitanswer/@Model.Event.ID/@Model.Puzzle.ID", {
                         method: "POST", mode: "cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(submission), credentials: "include"});
                     const responseData = await response.json();
