@@ -234,6 +234,12 @@ namespace ServerCore.DataModel
         public bool HideHints { get; set; }
 
         /// <summary>
+        /// The number of hint coins a team must have to unlock help threads for any puzzle.
+        /// Note that this can be overridden by the puzzle itself as well.
+        /// </summary>
+        public uint DefaultCostForHelpThread { get; set; }
+
+        /// <summary>
         /// Announcement to be added to every page
         /// </summary>
         public string Announcement { get; set; }

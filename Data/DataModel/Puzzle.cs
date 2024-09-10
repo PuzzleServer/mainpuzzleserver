@@ -361,6 +361,12 @@ namespace ServerCore.DataModel
 
         public virtual List<SinglePlayerPuzzleSubmission> SinglePlayerPuzzleSubmissions { get; set; }
 
+        /// <summary>
+        /// Gets or sets the number of hint coins needed to access the help thread for this puzzle.
+        /// If this is empty, will use the Event.DefaultCostForHelpThread
+        /// </summary>
+        public int? CostForHelpThread { get; set; }
+
         //
         // WARNING: If you add new properties add them to the constructor as well so importing will work.
         //
