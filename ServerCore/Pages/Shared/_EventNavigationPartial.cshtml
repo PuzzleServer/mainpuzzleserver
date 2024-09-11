@@ -392,6 +392,10 @@
 
             let toast = new bootstrap.Toast(notificationList.firstElementChild, { animation: animate, autohide: !isPageView && !notification.isCritical });
             toast.show();
+
+            if (notificationList.children.length > 5) {
+                bootstrap.Toast.getInstance(notificationList.lastElementChild).hide();
+            }
         }
 
         function updateToastCount() {

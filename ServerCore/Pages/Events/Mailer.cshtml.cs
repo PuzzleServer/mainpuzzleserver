@@ -102,11 +102,11 @@ namespace ServerCore.Pages.Events
                 if (TeamID != null)
                 {
                     var team = await _context.Teams.FindAsync(TeamID);
-                    await this.messageHub.SendNotification(team, MailSubject, "Check your email for details.", null, true);
+                    await this.messageHub.SendNotification(team, MailSubject, "Check your email for details.", isCritical: true);
                 }
                 else
                 {
-                    await this.messageHub.SendNotification(Event, MailSubject, "Check your email for details.", null, true);
+                    await this.messageHub.SendNotification(Event, MailSubject, "Check your email for details.", isCritical: true);
                 }
             }
 
