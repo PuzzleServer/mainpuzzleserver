@@ -237,7 +237,7 @@ namespace ServerCore.DataModel
         /// The number of hint coins a team must have to unlock help threads for any puzzle.
         /// Note that this can be overridden by the puzzle itself as well.
         /// </summary>
-        public uint DefaultCostForHelpThread { get; set; }
+        public int DefaultCostForHelpThread { get; set; }
 
         /// <summary>
         /// Announcement to be added to every page

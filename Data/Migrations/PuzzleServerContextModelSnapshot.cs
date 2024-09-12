@@ -321,8 +321,8 @@ namespace Data.Migrations
                     b.Property<string>("Copyright")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("DefaultCostForHelpThread")
-                        .HasColumnType("bigint");
+                    b.Property<int>("DefaultCostForHelpThread")
+                        .HasColumnType("int");
 
                     b.Property<string>("DefaultLunch")
                         .HasColumnType("nvarchar(max)");
