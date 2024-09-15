@@ -321,6 +321,9 @@ namespace Data.Migrations
                     b.Property<string>("Copyright")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("DefaultCostForHelpThread")
+                        .HasColumnType("int");
+
                     b.Property<string>("DefaultLunch")
                         .HasColumnType("nvarchar(max)");
 
@@ -877,6 +880,9 @@ namespace Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<int>("AlphaTestsNeeded")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CostForHelpThread")
                         .HasColumnType("int");
 
                     b.Property<string>("CustomAuthorText")
