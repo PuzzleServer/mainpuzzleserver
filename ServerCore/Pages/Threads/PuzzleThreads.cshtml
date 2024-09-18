@@ -115,6 +115,9 @@
                 Thread
             </th>
             <th>
+                Author(s)
+            </th>
+            <th>
                 Timestamp
             </th>
             <th>
@@ -137,6 +140,12 @@
                 }
                 <td>
                     <a asp-page="/Threads/PuzzleThread" asp-route-puzzleId="@item.PuzzleID" asp-route-teamId="@item.TeamID" asp-route-playerId="@item.PlayerID">@item.Subject</a>
+                </td>
+                <td>
+                    @if (@item.PuzzleID != null)
+                    {
+                        @Model.AuthorsForPuzzleID[item.PuzzleID ?? 0]
+                    }
                 </td>
                 <td>
                     @Html.Raw(Model.LocalTime(@item.CreatedDateTimeInUtc))

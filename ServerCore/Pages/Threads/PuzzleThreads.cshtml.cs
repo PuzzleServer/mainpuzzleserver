@@ -30,6 +30,11 @@ namespace ServerCore.Pages.Threads
         public List<Message> LatestMessagesFromEachThread { get; set; }
 
         /// <summary>
+        /// A dictionary with key Puzzle ID and value of concatenated list of authors
+        /// </summary>
+        public Dictionary<int, string> AuthorsForPuzzleID { get; set; }
+
+        /// <summary>
         /// Gets or sets the input parameters passed to GET.
         /// This is needed so that we can replay requests for things like refresh.
         /// </summary>
@@ -161,6 +166,19 @@ namespace ServerCore.Pages.Threads
                 LatestMessagesFromEachThread = LatestMessagesFromEachThread
                     .Where(IsLatestMessageUnclaimed)
                     .ToList();
+            }
+
+            ILookup<int, string> puzzleAuthors = (await (from author in _context.PuzzleAuthors
+                                                         where author.Puzzle.Event == Event
+                                                         select author).ToListAsync()).ToLookup(author => author.PuzzleID, author => author.Author.Name);
+
+            AuthorsForPuzzleID = new Dictionary<int, string>();
+
+            foreach (var message in LatestMessagesFromEachThread)
+            { 
+                IEnumerable<string> authorsForPuzzle = puzzleAuthors[message.PuzzleID ?? 0];
+                var authorList = authorsForPuzzle != null ? string.Join(", ", authorsForPuzzle) : "";
+                AuthorsForPuzzleID.Add(message.PuzzleID ?? 0, authorList);
             }
 
             return Page();
