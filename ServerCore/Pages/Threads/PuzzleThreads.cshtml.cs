@@ -175,10 +175,13 @@ namespace ServerCore.Pages.Threads
             AuthorsForPuzzleID = new Dictionary<int, string>();
 
             foreach (var message in LatestMessagesFromEachThread)
-            { 
-                IEnumerable<string> authorsForPuzzle = puzzleAuthors[message.PuzzleID ?? 0];
-                var authorList = authorsForPuzzle != null ? string.Join(", ", authorsForPuzzle) : "";
-                AuthorsForPuzzleID.Add(message.PuzzleID ?? 0, authorList);
+            {
+                if (message.PuzzleID.HasValue)
+                {
+                    IEnumerable<string> authorsForPuzzle = puzzleAuthors[message.PuzzleID.Value];
+                    string authorList = authorsForPuzzle != null ? string.Join(", ", authorsForPuzzle) : "";
+                    AuthorsForPuzzleID.Add(message.PuzzleID.Value, authorList);
+                }
             }
 
             return Page();

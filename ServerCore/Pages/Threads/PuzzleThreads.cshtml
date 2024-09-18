@@ -142,9 +142,9 @@
                     <a asp-page="/Threads/PuzzleThread" asp-route-puzzleId="@item.PuzzleID" asp-route-teamId="@item.TeamID" asp-route-playerId="@item.PlayerID">@item.Subject</a>
                 </td>
                 <td>
-                    @if (@item.PuzzleID != null)
+                    @if (@item.PuzzleID.HasValue)
                     {
-                        @Model.AuthorsForPuzzleID[item.PuzzleID ?? 0]
+                        @Model.AuthorsForPuzzleID[item.PuzzleID.Value]
                     }
                 </td>
                 <td>
