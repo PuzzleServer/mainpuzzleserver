@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -31,6 +32,7 @@ namespace ServerCore.DataModel
 
         [PersonalData]
         [MaxLength(50)]
+        [DisplayName("Employee Alias")]
         public string EmployeeAlias { get; set; }
 
         [PersonalData]
@@ -42,10 +44,15 @@ namespace ServerCore.DataModel
         [PersonalData]
         [Phone]
         [MaxLength(20)]
+        [DisplayName("Phone Number")]
         public string PhoneNumber { get; set; }
+
         [PersonalData]
         [MaxLength(20)]
+        [DisplayName("T-shirt Size")]
         public string TShirtSize { get; set; }
+
+        [DisplayName("Visible To Others")]
         public bool VisibleToOthers { get; set; }
 
         /// <summary>
