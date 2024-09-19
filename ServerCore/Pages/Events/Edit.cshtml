@@ -223,6 +223,11 @@
             </div>
             <div class="description-column">Hides the link for players to view hints and authors to manage hints. Also hides hint statistics from the event standings.</div>
             <div class="form-group">
+                <label asp-for="EditableEvent.DefaultCostForHelpThread"></label>
+                <input asp-for="EditableEvent.DefaultCostForHelpThread" />
+            </div>
+            <div class="description-column">When hints are not hidden, players will need this number of hint coins to unlock help threads for a puzzle (individual puzzles can override this). Note that if you set this to -1, no help threads will be available.</div>
+            <div class="form-group">
                 <label asp-for="EditableEvent.AllowFeedback"></label>
                 <input asp-for="EditableEvent.AllowFeedback" />
             </div>
