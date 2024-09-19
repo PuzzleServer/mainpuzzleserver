@@ -403,24 +403,22 @@
         </div>
     }
 
-    @if (!Model.PuzzleState.IsEmailOnlyMode)
+    @if (!Model.Event.HideHints)
     {
         <h3>Need some help?</h3>
-        @if (!Model.Event.HideHints)
+        if (Model.Puzzle.IsForSinglePlayer)
         {
-            if (Model.Puzzle.IsForSinglePlayer)
-            {
-                <p><a asp-page="/Puzzles/SinglePlayerPuzzleHints" asp-route-puzzleid="Model.Puzzle.ID" target="_blank">Click this link</a> to access hints for this puzzle.</p>
-            }
-            else
-            {
-                <p><a asp-page="/Teams/Hints" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-teamId="@Model.Team.ID" target="_blank">Click this link</a> to access hints for this puzzle.</p>
-            }
+            <p><a asp-page="/Puzzles/SinglePlayerPuzzleHints" asp-route-puzzleid="Model.Puzzle.ID" target="_blank">Click this link</a> to access hints for this puzzle.</p>
         }
         else
         {
-            <p>While solving this puzzle, if you've run into a bug, think there's an error, or are not having fun anymore, <a asp-Page="/Threads/PuzzleThread" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-teamId="@Model.Team?.ID" asp-route-playerId="@Model.LoggedInUser.ID">use this link to ask for help!</a></p>
+            <p><a asp-page="/Teams/Hints" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-teamId="@Model.Team.ID" target="_blank">Click this link</a> to access hints for this puzzle.</p>
         }
+    }
+    else if (!Model.PuzzleState.IsEmailOnlyMode)
+    {
+        <h3>Need some help?</h3>
+        <p>While solving this puzzle, if you've run into a bug, think there's an error, or are not having fun anymore, <a asp-Page="/Threads/PuzzleThread" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-teamId="@Model.Team?.ID" asp-route-playerId="@Model.LoggedInUser.ID">use this link to ask for help!</a></p>
     }
 
     @if (Model.Event.AllowFeedback)
