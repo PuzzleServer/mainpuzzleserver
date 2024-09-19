@@ -107,4 +107,9 @@ public class Notification
     /// The link that should be followed if the notification is clicked.
     /// </summary>
     public string LinkUrl { get; set; }
+
+    /// <summary>
+    /// Says whether the notification is so critical that it should not disappear automatically
+    /// </summary>
+    public bool IsCritical { get; set; }
 }
