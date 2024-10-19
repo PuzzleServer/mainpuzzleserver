@@ -1029,6 +1029,9 @@ namespace Data.Migrations
                     b.Property<bool>("IsEmailOnlyMode")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsHelpThreadUnlockedByCoins")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime?>("LockoutExpiryTime")
                         .HasColumnType("datetime2");
 
@@ -1205,6 +1208,9 @@ namespace Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<bool>("IsEmailOnlyMode")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsHelpThreadUnlockedByCoins")
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("LockoutExpiryTime")
