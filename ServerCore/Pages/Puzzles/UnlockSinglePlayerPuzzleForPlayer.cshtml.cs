@@ -38,6 +38,7 @@ namespace ServerCore.Pages.Puzzles
                                                  select puzzleState.PlayerID).ToListAsync()).ToHashSet();
 
             Users = await (from user in _context.PlayerInEvent
+                           where user.EventId == this.Event.ID
                            where !playerIdsAlreadyUnlocked.Contains(user.PlayerId)
                            select user.Player).ToListAsync();
 
