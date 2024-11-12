@@ -79,5 +79,10 @@ namespace ServerCore.DataModel
         /// reaching the maximum submission limit for this puzzle.
         /// </summary>
         public uint WrongSubmissionCountBuffer { get; set; }
+
+        /// <summary>
+        /// Gets or sets if the help thread for this puzzle is unlocked by using hint coins.
+        /// </summary>
+        public bool IsHelpThreadUnlockedByCoins { get; set; }
     }
 }
