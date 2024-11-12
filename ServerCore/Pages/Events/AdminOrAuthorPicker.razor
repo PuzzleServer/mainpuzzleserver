@@ -1,0 +1,44 @@
+﻿<label>
+    Start typing a user name or email:
+    <form>
+        <input type="text" @oninput="OnFilterChanged" />
+    </form>
+</label>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Name
+            </th>
+            <th>
+                Email
+            </th>
+            <th>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in SelectedUsers)
+        {
+            <tr>
+                <td>
+                    @item.Name
+                </td>
+                <td>
+                    @item.Email
+                </td>
+@*                 <td>
+                    @if (Model.addAdmin)
+                    {
+                        <a asp-page-handler="AddAdmin" asp-route-userId=@item.ID>Add</a>
+                    }
+                    else
+                    {
+                        <a asp-page-handler="AddAuthor" asp-route-userId=@item.ID>Add</a>
+                    }
+                </td> *@
+            </tr>
+        }
+    </tbody>
+</table>
