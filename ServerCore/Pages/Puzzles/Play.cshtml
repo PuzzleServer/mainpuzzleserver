@@ -88,7 +88,10 @@
        asp-route-stateFilter=@(unsolvedFilter ? PlayModel.PuzzleStateFilter.All : PlayModel.PuzzleStateFilter.Unsolved)>
         Show @(unsolvedFilter ? "All" : "only unsolved") puzzles
     </a> | 
-    <a asp-page="/Threads/PuzzleThreads">View help threads</a> | 
+    @if (Model.Event.HideHints || Model.Event.DefaultCostForHelpThread >= 0)
+    {
+        <a asp-page="/Threads/PuzzleThreads">View help threads</a><text> | </text>
+    }
     @if ((Model.Team != null) && (Model.VisibleTeamPuzzleViews.Any()))
     {
         <a asp-page="/Teams/Answers" asp-route-teamId="@Model.Team.ID">View all correct team answers</a><text> | </text>
