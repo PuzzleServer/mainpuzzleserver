@@ -77,10 +77,9 @@ namespace ServerCore.Pages.Threads
             // If we are showing hints, only allow the thread to be seen if the user has unlocked it
             if (!Event.HideHints)
             {
-                string returnUrl = HttpContext.Request.Path.HasValue ? HttpContext.Request.Path.Value : null;
                 if (Event.DefaultCostForHelpThread < 0)
                 {
-                    return RedirectToPage("/ErrorPage", new { ErrorMessage = "Help threads are not allowed for this event" });
+                    return Forbid();
                 }
 
                 PuzzleStateBase puzzleStateBase = await (
@@ -90,7 +89,7 @@ namespace ServerCore.Pages.Threads
 
                 if (puzzleStateBase == null || !puzzleStateBase.IsHelpThreadUnlockedByCoins)
                 {
-                    return RedirectToPage("/ErrorPage", new { ErrorMessage = "You have not yet unlocked this thread" });
+                    return Forbid();
                 }
             }
 
