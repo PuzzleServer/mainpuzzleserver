@@ -74,7 +74,27 @@ namespace ServerCore.Pages.Threads
                 return NotFound();
             }
 
-            Team team = null;
+            // If we are showing hints, only allow the thread to be seen if the user has unlocked it
+            if (!Event.HideHints)
+            {
+                string returnUrl = HttpContext.Request.Path.HasValue ? HttpContext.Request.Path.Value : null;
+                if (Event.DefaultCostForHelpThread < 0)
+                {
+                    return RedirectToPage("/ErrorPage", new { ErrorMessage = "Help threads are not allowed for this event" });
+                }
+
+                PuzzleStateBase puzzleStateBase = await (
+                    from puzzleState in _context.PuzzleStatePerTeam
+                    where puzzleState.PuzzleID == Puzzle.ID && puzzleState.TeamID == teamId
+                    select puzzleState).FirstOrDefaultAsync();
+
+                if (puzzleStateBase == null || !puzzleStateBase.IsHelpThreadUnlockedByCoins)
+                {
+                    return RedirectToPage("/ErrorPage", new { ErrorMessage = "You have not yet unlocked this thread" });
+                }
+            }
+
+                Team team = null;
             PuzzleUser singlePlayerPuzzlePlayer = null;
             string subject = null;
             string threadId = null;
