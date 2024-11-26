@@ -1,6 +1,8 @@
 ﻿@page "/{eventId}/{eventRole}/Threads/PuzzleThread/{puzzleId}"
 @using ServerCore.DataModel
 @using ServerCore.Pages.Threads;
+@using System.Web
+@using System.Collections.Specialized
 @model ServerCore.Pages.Threads.PuzzleThreadModel
 
 @{
@@ -49,7 +51,18 @@
             string goToPuzzleLabel = singlePlayerPuzzleState != null ? "Go to single player puzzle" : "Go to puzzle";
             <a asp-page="/Puzzles/Edit" asp-route-puzzleId="@Model.Puzzle.ID">@goToPuzzleLabel</a>@(" |")
         }
-        <a asp-page="/Threads/PuzzleThreads">See all threads</a>
+
+        @if (Model.ReturnThreadQueryParams == null)
+        {
+            <a asp-page="/Threads/PuzzleThreads">See all threads</a>
+        }
+        else
+        {
+            var parameters = new Dictionary<string, string>();
+            NameValueCollection queryParameters = HttpUtility.ParseQueryString(Model.ReturnThreadQueryParams);
+            parameters = queryParameters.AllKeys.ToDictionary(k => k, k => queryParameters[k]);
+            <a asp-page="/Threads/PuzzleThreads" asp-all-route-data="parameters">Back to threads</a>
+        }
     </span>
 </div>
 

@@ -53,7 +53,12 @@ namespace ServerCore.Pages.Threads
         /// </summary>
         public List<Message> Messages { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int? puzzleId, int? teamId, int? playerId)
+        /// <summary>
+        /// Gets or sets the query parameters to add to the ReturnToThreads URI.
+        /// </summary>
+        public string ReturnThreadQueryParams { get; set; }
+
+        public async Task<IActionResult> OnGetAsync(int? puzzleId, int? teamId, int? playerId, string returnThreadQueryParams)
         {
             // Validate parameters
             if (LoggedInUser == null)
@@ -66,6 +71,7 @@ namespace ServerCore.Pages.Threads
                 return NotFound();
             }
 
+            this.ReturnThreadQueryParams = returnThreadQueryParams;
             Puzzle = await _context.Puzzles.Where(m => m.ID == puzzleId).FirstOrDefaultAsync();
             if (Puzzle == null
                 || (Puzzle.IsForSinglePlayer && !playerId.HasValue)
@@ -195,7 +201,7 @@ namespace ServerCore.Pages.Threads
             ModelState.Remove("EventId");
             if (!ModelState.IsValid)
             {
-                return await this.OnGetAsync(NewMessage.PuzzleID, NewMessage.TeamID, NewMessage.PlayerID);
+                return await this.OnGetAsync(NewMessage.PuzzleID, NewMessage.TeamID, NewMessage.PlayerID, this.ReturnThreadQueryParams);
             }
 
             var puzzle = await _context.Puzzles.Where(m => m.ID == NewMessage.PuzzleID).FirstOrDefaultAsync();
@@ -272,7 +278,7 @@ namespace ServerCore.Pages.Threads
             ModelState.Remove("EventId");
             if (!ModelState.IsValid)
             {
-                return await this.OnGetAsync(EditMessage.PuzzleID, EditMessage.TeamID, EditMessage.PlayerID);
+                return await this.OnGetAsync(EditMessage.PuzzleID, EditMessage.TeamID, EditMessage.PlayerID, this.ReturnThreadQueryParams);
             }
 
             var message = await _context.Messages.Where(m => m.ID == EditMessage.ID).FirstOrDefaultAsync();
