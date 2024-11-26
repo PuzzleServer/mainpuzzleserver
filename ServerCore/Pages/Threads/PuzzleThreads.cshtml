@@ -139,7 +139,10 @@
                     </td>
                 }
                 <td>
-                    <a asp-page="/Threads/PuzzleThread" asp-route-puzzleId="@item.PuzzleID" asp-route-teamId="@item.TeamID" asp-route-playerId="@item.PlayerID">@item.Subject</a>
+                    @{
+                        string returnQueryParams = ViewContext.HttpContext.Request.QueryString.Value;
+                    }
+                    <a asp-page="/Threads/PuzzleThread" asp-route-puzzleId="@item.PuzzleID" asp-route-teamId="@item.TeamID" asp-route-playerId="@item.PlayerID" asp-route-returnThreadQueryParams=@returnQueryParams>@item.Subject</a>
                 </td>
                 <td>
                     @if (@item.PuzzleID.HasValue)
