@@ -68,7 +68,8 @@ You have <b>
         <text>no</text>
     }
 </b> hint coins.
-@if (Model.Hints.Any(h => h.Hint.Cost < 0)) {
+@if (Model.HintViewStates.Any(h => h.BaseCost < 0))
+{
     <text>
         <br />
         Hints marked ★ are creditable hints:
@@ -90,16 +91,25 @@ You have <b>
         </tr>
     </thead>
     <tbody>
-        @foreach (var hint in Model.Hints)
+        @foreach (var hint in Model.HintViewStates)
         {
+            var hintViewState = hint as HintsModel.HintViewState;
+            var puzzleThreadViewState = hint as HintsModel.PuzzleThreadViewState;
             <tr>
                 <td>
-                    @hint.Hint.Description
+                    @hint.Description
                 </td>
                 <td>
                     @if (hint.IsUnlocked)
                     {
-                        @hint.Hint.Content
+                        if (hintViewState != null)
+                        {
+                            @hint.Content
+                        }
+                        else if (puzzleThreadViewState != null)
+                        {
+                            <a asp-Page="/Threads/PuzzleThread" asp-route-puzzleid="@Model.PuzzleID" asp-route-teamId="@Model.Team?.ID" asp-route-playerId="@Model.LoggedInUser.ID">Use this link to message the author!</a>
+                        }
                     }
                     else
                     {
@@ -117,7 +127,7 @@ You have <b>
                             @hint.AdjustedCost
                         }
                     }
-                    @if (hint.Hint.Cost < 0) {
+                    @if (hint.BaseCost < 0) {
                         <text>★</text>
                     }
 
@@ -128,14 +138,30 @@ You have <b>
                             {
                                 var clickString = hint.AdjustedCost == 0
                                     ? "return confirm('Are you sure you want to unlock this free hint?')"
-                                    : "return confirm('Are you sure you want to spend " + @hint.AdjustedCost + " coins to find out \\'" + @hint.Hint.Description + "\\'?')";
+                                    : "return confirm('Are you sure you want to spend " + @hint.AdjustedCost + " coins to find out \\'" + @hint.Description + "\\'?')";
 
-                                <button type="submit" asp-route-hintId="@hint.Hint.Id"
-                                    asp-route-teamId="@Model.Team.ID"
-                                    asp-route-puzzleId="@Model.PuzzleID"
-                                    asp-page-handler="Unlock"
-                                    onclick="@clickString"
-                                    style="margin-left: 5px; margin-right: 5px;">Unlock</button>
+                                if (hintViewState != null)
+                                {
+                                    <button type="submit" asp-route-hintId="@hintViewState.Id"
+                                            asp-route-teamId="@Model.Team.ID"
+                                            asp-route-puzzleId="@Model.PuzzleID"
+                                            asp-page-handler="UnlockHint"
+                                            onclick="@clickString"
+                                            style="margin-left: 5px; margin-right: 5px;">
+                                        Unlock
+                                    </button>
+                                }
+                                else if (puzzleThreadViewState != null)
+                                {
+                                    <button type="submit"
+                                        asp-route-teamId="@Model.Team.ID"
+                                        asp-route-puzzleId="@Model.PuzzleID"
+                                        asp-page-handler="UnlockPuzzleThread"
+                                        onclick="@clickString"
+                                        style="margin-left: 5px; margin-right: 5px;">
+                                        Unlock
+                                    </button>
+                                }
                             }
                             else
                             {

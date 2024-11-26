@@ -74,7 +74,26 @@ namespace ServerCore.Pages.Threads
                 return NotFound();
             }
 
-            Team team = null;
+            // If we are showing hints, only allow the thread to be seen if the user has unlocked it
+            if (!Event.HideHints)
+            {
+                if (Event.DefaultCostForHelpThread < 0)
+                {
+                    return Forbid();
+                }
+
+                PuzzleStateBase puzzleStateBase = await (
+                    from puzzleState in _context.PuzzleStatePerTeam
+                    where puzzleState.PuzzleID == Puzzle.ID && puzzleState.TeamID == teamId
+                    select puzzleState).FirstOrDefaultAsync();
+
+                if (puzzleStateBase == null || !puzzleStateBase.IsHelpThreadUnlockedByCoins)
+                {
+                    return Forbid();
+                }
+            }
+
+                Team team = null;
             PuzzleUser singlePlayerPuzzlePlayer = null;
             string subject = null;
             string threadId = null;
