@@ -234,11 +234,6 @@ namespace ServerCore.DataModel
         public bool HideHints { get; set; }
 
         /// <summary>
-        /// True if help threads should be shown to all game control (instead of just authors and their support).
-        /// </summary>
-        public bool ShowHelpThreadsToAllGameControl { get; set; }
-
-        /// <summary>
         /// The number of hint coins a team must have to unlock help threads for any puzzle.
         /// Note that this can be overridden by the puzzle itself as well.
         /// </summary>

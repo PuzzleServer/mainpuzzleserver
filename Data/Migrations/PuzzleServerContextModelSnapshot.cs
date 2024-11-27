@@ -416,9 +416,6 @@ namespace Data.Migrations
                     b.Property<bool>("ShowFastestSolves")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("ShowHelpThreadsToAllGameControl")
-                        .HasColumnType("bit");
-
                     b.Property<string>("SinglePlayerPuzzleTitle")
                         .HasColumnType("nvarchar(max)");
 
