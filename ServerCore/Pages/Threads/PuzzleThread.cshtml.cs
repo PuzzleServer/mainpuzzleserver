@@ -99,7 +99,7 @@ namespace ServerCore.Pages.Threads
                 }
             }
 
-                Team team = null;
+            Team team = null;
             PuzzleUser singlePlayerPuzzlePlayer = null;
             string subject = null;
             string threadId = null;

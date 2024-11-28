@@ -228,15 +228,15 @@
             </div>
             <div class="description-column">When hints are not hidden, players will need this number of hint coins to unlock help threads for a puzzle (individual puzzles can override this). Note that if you set this to -1, no help threads will be available.</div>
             <div class="form-group">
+                <label asp-for="EditableEvent.ShouldShowHelpMessageOnlyToAuthor"></label>
+                <input asp-for="EditableEvent.ShouldShowHelpMessageOnlyToAuthor" />
+            </div>
+            <div class="description-column">When enabled, allows help threads to be seen only by the admins, puzzle authors, and their supporters. When disabled, anyone in game control can see them.</div>
+            <div class="form-group">
                 <label asp-for="EditableEvent.AllowFeedback"></label>
                 <input asp-for="EditableEvent.AllowFeedback" />
             </div>
             <div class="description-column">Allows players to submit feedback for puzzles.</div>
-            <div class="form-group">
-                <label asp-for="EditableEvent.ShouldShowHelpMessageOnlyToAuthor"></label>
-                <input asp-for="EditableEvent.ShouldShowHelpMessageOnlyToAuthor" />
-            </div>
-            <div class="description-column">Allows all non-players in an event to view help messages when disabled, and only allows a puzzle's author to answer help messages for that puzzle when enabled.</div>
             <div class="form-group">
                 <label asp-for="EditableEvent.LockoutIncorrectGuessLimit" class="control-label"></label>
                 <input asp-for="EditableEvent.LockoutIncorrectGuessLimit" class="form-control" />

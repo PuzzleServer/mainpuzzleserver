@@ -84,15 +84,8 @@ namespace ServerCore.Pages.Threads
                     && message.EventID == Event.ID);
             this.Title = "All help threads";
 
-            // Based on the event role, filter the messages further.
-            if (EventRole == EventRole.play)
-            {
-                Team team = await GetTeamAsync();
-                messages = messages.Where(message => 
-                    (team != null && message.TeamID.Value == team.ID) 
-                    || message.SenderID == LoggedInUser.ID);
-            }
-            else if (puzzleId.HasValue)
+            // Filter the messages further based on filters.
+            if (puzzleId.HasValue)
             {
                 Puzzle puzzle = await this._context.Puzzles
                     .Where(puzzle => puzzle.EventID == this.Event.ID && puzzle.ID == puzzleId.Value)
@@ -105,7 +98,8 @@ namespace ServerCore.Pages.Threads
                 messages = messages.Where(message => message.PuzzleID == puzzleId.Value);
                 this.Title = $"Help threads for puzzle {puzzle.Name}";
             }
-            else if (teamId.HasValue)
+
+            if (teamId.HasValue)
             {
                 Team team = await this._context.Teams
                     .Where(team => team.EventID == this.Event.ID && team.ID == teamId.Value)
@@ -118,7 +112,8 @@ namespace ServerCore.Pages.Threads
                 messages = messages.Where(message => message.TeamID == teamId.Value);
                 this.Title = $"Help threads for team {team.Name}";
             }
-            else if (playerId.HasValue)
+
+            if (playerId.HasValue)
             {
                 PuzzleUser player = await this._context.PuzzleUsers
                     .Where(user => user.ID == playerId.Value)
@@ -130,6 +125,15 @@ namespace ServerCore.Pages.Threads
 
                 messages = messages.Where(message => message.PlayerID == playerId.Value);
                 this.Title = $"Help threads for player {player.Name}";
+            }
+
+            // Filter based on roles
+            if (EventRole == EventRole.play)
+            {
+                Team team = await GetTeamAsync();
+                messages = messages.Where(message =>
+                    (team != null && message.TeamID.Value == team.ID)
+                    || message.SenderID == LoggedInUser.ID);
             }
             else if ((EventRole == EventRole.author && Event.ShouldShowHelpMessageOnlyToAuthor)
                 || (filterToSupportingPuzzlesOnly.HasValue && filterToSupportingPuzzlesOnly.Value))
