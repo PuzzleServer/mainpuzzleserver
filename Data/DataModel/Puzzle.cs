@@ -368,6 +368,12 @@ namespace ServerCore.DataModel
         /// </summary>
         public int? CostForHelpThread { get; set; }
 
+        /// <summary>
+        /// Gets or sets whether the help threads should be shown to all game control and not just the author/their supporters.
+        /// Note that if <see cref="Event.ShouldShowHelpMessageOnlyToAuthor"/> is already set to false, the help threads will already be shown to all game control no matter what.
+        /// </summary>
+        public bool ShowHelpThreadsToAllGameControl { get; set; }
+
         //
         // WARNING: If you add new properties add them to the constructor as well so importing will work.
         //
