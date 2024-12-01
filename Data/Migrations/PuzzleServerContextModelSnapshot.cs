@@ -979,6 +979,9 @@ namespace Data.Migrations
                     b.Property<int>("PuzzleVersion")
                         .HasColumnType("int");
 
+                    b.Property<bool>("ShowHelpThreadsToAllGameControl")
+                        .HasColumnType("bit");
+
                     b.Property<int>("SolveValue")
                         .HasColumnType("int");
 

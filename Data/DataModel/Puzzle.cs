@@ -368,6 +368,12 @@ namespace ServerCore.DataModel
         /// </summary>
         public int? CostForHelpThread { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether to show this puzzle's help threads to all game control even if the <see cref="Event.ShouldShowHelpMessageOnlyToAuthor"/> is set to "true".
+        /// If <see cref="Event.ShouldShowHelpMessageOnlyToAuthor"/> is already set to false, this property is ignored and we will show help this puzzle's help threads to all game control.
+        /// </summary>
+        public bool ShowHelpThreadsToAllGameControl { get; set; }
+
         //
         // WARNING: If you add new properties add them to the constructor as well so importing will work.
         //
