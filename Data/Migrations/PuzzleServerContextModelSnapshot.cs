@@ -746,8 +746,8 @@ namespace Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Subject")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<int?>("TeamID")
                         .HasColumnType("int");
