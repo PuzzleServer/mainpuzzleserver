@@ -104,7 +104,7 @@ namespace ServerCore.Pages.Threads
             string subject = null;
             string threadId = null;
             bool isGameControl = IsGameControlRole();
-            if (Event.ShouldShowHelpMessageOnlyToAuthor && EventRole == EventRole.author)
+            if (Event.ShouldShowHelpMessageOnlyToAuthor && EventRole == EventRole.author && !Puzzle.ShowHelpThreadsToAllGameControl)
             {
                 PuzzleAuthors author = _context.PuzzleAuthors.Where(puzzleAuthor => puzzleAuthor.PuzzleID == puzzleId && puzzleAuthor.AuthorID == LoggedInUser.ID).FirstOrDefault();
                 if (author == null)

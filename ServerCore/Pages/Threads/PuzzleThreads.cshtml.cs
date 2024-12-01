@@ -141,11 +141,15 @@ namespace ServerCore.Pages.Threads
                 HashSet<int> authorPuzzleIds = UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser)
                     .Select(puzzle => puzzle.ID)
                     .ToHashSet();
-                messages = messages.Where(message => authorPuzzleIds.Contains(message.PuzzleID.Value));
 
-                if (!Event.ShouldShowHelpMessageOnlyToAuthor && filterToSupportingPuzzlesOnly.Value)
+                if (filterToSupportingPuzzlesOnly == true)
                 {
+                    messages = messages.Where(message => authorPuzzleIds.Contains(message.PuzzleID.Value));
                     this.Title = $"Help threads for puzzles you authored or are supporting";
+                }
+                else
+                {
+                    messages = messages.Where(message => authorPuzzleIds.Contains(message.PuzzleID.Value) || message.Puzzle.ShowHelpThreadsToAllGameControl);
                 }
             }
             else if (EventRole == EventRole.admin || EventRole == EventRole.author)
