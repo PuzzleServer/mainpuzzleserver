@@ -28,7 +28,7 @@ namespace ServerCore.DataModel
         /// <summary>
         /// Gets or sets the subject.
         /// </summary>
-        [MaxLength(50)]
+        [MaxLength(500)]
         public string Subject { get; set; }
 
         /// <summary>
