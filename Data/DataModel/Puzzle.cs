@@ -66,6 +66,7 @@ namespace ServerCore.DataModel
             PieceTag = source.PieceTag;
             PieceWeight = source.PieceWeight;
             CostForHelpThread = source.CostForHelpThread;
+            ShowHelpThreadsToAllGameControl = source.ShowHelpThreadsToAllGameControl;
         }
 
         /// <summary>

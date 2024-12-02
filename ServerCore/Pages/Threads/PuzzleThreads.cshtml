@@ -41,17 +41,14 @@
             <a asp-page="/Threads/PuzzleThreads" asp-route-showUnclaimedOnly="true" asp-route-puzzleId="@Model.InputParameters.PuzzleId" asp-route-playerId="@Model.InputParameters.PlayerId" asp-route-teamId="@Model.InputParameters.TeamId" asp-route-refreshInterval="@Model.InputParameters.RefreshInterval" asp-route-filterToSupportingPuzzlesOnly="@Model.InputParameters.FilterToSupportingPuzzlesOnly">Unclaimed only</a>
         }
 
-        @if (!Model.Event.ShouldShowHelpMessageOnlyToAuthor)
+        @(" | ")
+        @if (Model.InputParameters.FilterToSupportingPuzzlesOnly.HasValue && Model.InputParameters.FilterToSupportingPuzzlesOnly.Value)
         {
-            @(" | ")
-            @if (Model.InputParameters.FilterToSupportingPuzzlesOnly.HasValue && Model.InputParameters.FilterToSupportingPuzzlesOnly.Value)
-            {
-                <span>Your puzzles only</span>
-            }
-            else
-            {
-                <a asp-page="/Threads/PuzzleThreads" asp-route-showUnclaimedOnly="@Model.InputParameters.ShowUnclaimedOnly" asp-route-puzzleId="@Model.InputParameters.PuzzleId" asp-route-playerId="@Model.InputParameters.PlayerId" asp-route-teamId="@Model.InputParameters.TeamId" asp-route-refreshInterval="@Model.InputParameters.RefreshInterval" asp-route-filterToSupportingPuzzlesOnly="true">Your puzzles only</a>
-            }
+            <span>Your puzzles only</span>
+        }
+        else
+        {
+            <a asp-page="/Threads/PuzzleThreads" asp-route-showUnclaimedOnly="@Model.InputParameters.ShowUnclaimedOnly" asp-route-puzzleId="@Model.InputParameters.PuzzleId" asp-route-playerId="@Model.InputParameters.PlayerId" asp-route-teamId="@Model.InputParameters.TeamId" asp-route-refreshInterval="@Model.InputParameters.RefreshInterval" asp-route-filterToSupportingPuzzlesOnly="true">Your puzzles only</a>
         }
     }
 </div>
