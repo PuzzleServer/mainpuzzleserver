@@ -254,7 +254,8 @@ namespace ServerCore.Pages.Threads
                 }
             }
 
-            if (isMessageAdded)
+            // We don't really want to send an email non-module events because they are often already watching the site
+            if (isMessageAdded && !Event.IsInternEvent)
             {
                 await this.SendEmailNotifications(m, puzzle);
             }
