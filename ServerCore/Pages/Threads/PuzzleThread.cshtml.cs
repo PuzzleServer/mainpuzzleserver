@@ -19,6 +19,8 @@ namespace ServerCore.Pages.Threads
     [AllowAnonymous]
     public class PuzzleThreadModel : EventSpecificPageModel
     {
+        public const string DeletedMessage = "This message has been deleted";
+
         private IHubContext<ServerMessageHub> messageHub;
 
         public PuzzleThreadModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager, IHubContext<ServerMessageHub> messageHub) : base(serverContext, userManager)
@@ -298,7 +300,8 @@ namespace ServerCore.Pages.Threads
             var message = await _context.Messages.Where(m => m.ID == messageId).FirstOrDefaultAsync();
             if (message != null && IsAllowedToDeleteMessage(message))
             {
-                _context.Messages.Remove(message);
+                message.Text = PuzzleThreadModel.DeletedMessage;
+                message.ModifiedDateTimeInUtc = DateTime.UtcNow;
                 await _context.SaveChangesAsync();
             }
 
@@ -347,12 +350,12 @@ namespace ServerCore.Pages.Threads
 
         public bool IsAllowedToEditMessage(Message message)
         {
-            return !Event.AreAnswersAvailableNow && message.SenderID == LoggedInUser.ID;
+            return !Event.AreAnswersAvailableNow && message.SenderID == LoggedInUser.ID && message.Text != PuzzleThreadModel.DeletedMessage;
         }
 
         public bool IsAllowedToDeleteMessage(Message message)
         {
-            return !Event.AreAnswersAvailableNow && message.SenderID == LoggedInUser.ID;
+            return !Event.AreAnswersAvailableNow && message.SenderID == LoggedInUser.ID && message.Text != PuzzleThreadModel.DeletedMessage;
         }
 
         private async Task SendEmailNotifications(Message newMessage, Puzzle puzzle)

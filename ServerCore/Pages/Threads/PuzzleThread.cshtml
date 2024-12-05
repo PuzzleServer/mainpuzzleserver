@@ -112,7 +112,14 @@
             </div>
         }
         <div id="MessageText_@message.ID">
-            <p class="message-main-content" style="white-space: pre-wrap;">@message.Text</p>
+            @if (message.Text == PuzzleThreadModel.DeletedMessage)
+            {
+                <p class="message-main-content" style="white-space: pre-wrap;"><i>@message.Text</i></p>
+            }
+            else
+            {
+                <p class="message-main-content" style="white-space: pre-wrap;">@message.Text</p>
+            }
             <span>
                 @if (isAllowedToEditMessage)
                 {
