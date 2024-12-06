@@ -49,7 +49,7 @@
     </div>
 }
 
-@if (Model.Event.IsAlphaTestingEvent && Model.Event.EmbedPuzzles && Model.VisibleTeamPuzzleViews.Any())
+@if (Model.Event.IsAlphaTestingEvent && Model.Event.EmbedPuzzles && Model.UnclaimedAlphaPuzzleViews.Any())
 {
     <h2>Puzzles that need alpha testing!</h2>
     <table class="table">
