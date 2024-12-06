@@ -5,9 +5,9 @@ using ServerCore.DataModel;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
-namespace ServerCore.Pages.Events
+namespace ServerCore.Pages.Components
 {
-    public partial class AdminOrAuthorPicker
+    public partial class UserPicker
     {
         List<PuzzleUser> AllUsers { get; set; } = new List<PuzzleUser>();
         List<PuzzleUser> SelectedUsers { get; set; } = new List<PuzzleUser>();
