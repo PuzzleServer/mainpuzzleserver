@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Migrations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
+using ServerCore.ServerMessages;
 
 namespace ServerCore.Pages.Teams
 {
@@ -15,8 +18,11 @@ namespace ServerCore.Pages.Teams
         [BindProperty]
         public int SmallTeamThreshold { get; set; } = 6;
 
-        public IndexModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
+        private IHubContext<ServerMessageHub> messageHub;
+
+        public IndexModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager, IHubContext<ServerMessageHub> messageHub) : base(serverContext, userManager)
         {
+            this.messageHub = messageHub;
         }
 
         public async Task<IActionResult> OnGetAsync()
@@ -55,7 +61,9 @@ namespace ServerCore.Pages.Teams
                 MailHelper.Singleton.SendPlaintextBcc(
                     addresses,
                     MailSubject,
-                    MailBody);
+                MailBody);
+
+                await this.messageHub.SendNotification(team, $"Hey {team.Name}", (value ? "" : "[REVOKED!!!] ") + Event.TeamAnnouncement, isCritical: true);
 
                 await this._context.SaveChangesAsync();
             }

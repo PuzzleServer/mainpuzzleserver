@@ -70,7 +70,7 @@ namespace ServerCore.Pages.Teams
                 return NotFound();
             }
 
-            if (await (from member in _context.TeamMembers
+            if (EventRole != EventRole.admin && await (from member in _context.TeamMembers
                        where member.Member == LoggedInUser &&
                        member.Team.Event == Event
                        select member).AnyAsync())
