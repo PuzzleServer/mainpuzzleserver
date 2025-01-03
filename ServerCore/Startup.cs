@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -149,6 +150,13 @@ namespace ServerCore
             services.AddSingleton<ServerMessageListener>();
             services.AddSingleton<PresenceStore>();
             services.AddSingleton<NotificationHelper>();
+
+            // Require emails to be unique so that we can be resilient to external provider login changes.
+            // Search the codebase for "RequireUniqueEmail" for the code that requires this.
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.User.RequireUniqueEmail = true;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
