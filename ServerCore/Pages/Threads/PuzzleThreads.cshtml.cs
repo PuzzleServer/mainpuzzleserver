@@ -188,7 +188,7 @@ namespace ServerCore.Pages.Threads
                 {
                     IEnumerable<string> authorsForPuzzle = puzzleAuthors[message.PuzzleID.Value];
                     string authorList = authorsForPuzzle != null ? string.Join(", ", authorsForPuzzle) : "";
-                    AuthorsForPuzzleID.Add(message.PuzzleID.Value, authorList);
+                    AuthorsForPuzzleID[message.PuzzleID.Value] = authorList;
                 }
             }
 
