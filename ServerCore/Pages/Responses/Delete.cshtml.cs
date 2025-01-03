@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -41,6 +42,14 @@ namespace ServerCore.Pages.Responses
 
             if (PuzzleResponse != null)
             {
+                await _context.Submissions
+                    .Where(submission => submission.Response.ID == PuzzleResponse.ID)
+                    .ForEachAsync(submission => submission.Response = null);
+
+                await _context.SinglePlayerPuzzleSubmissions
+                    .Where(submission => submission.Response.ID == PuzzleResponse.ID)
+                    .ForEachAsync(submission => submission.Response = null);
+
                 _context.Responses.Remove(PuzzleResponse);
                 await _context.SaveChangesAsync();
             }
