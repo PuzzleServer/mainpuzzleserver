@@ -362,7 +362,7 @@ namespace ServerCore.Pages.Threads
         {
             // Send a notification email to further alert both authors and players.
             string emailTitle = $"{newMessage.Subject} thread update!";
-            string emailContent = "You have an update on your help message thread.";
+            string emailContent = newMessage.Text;
             string toastTitle = $"Help message from {(newMessage.IsFromGameControl ? "Game Control" : newMessage.Sender.Name)}";
             string toastContent = $"{newMessage.Subject}";
             string threadUrlSuffix = $"Threads/PuzzleThread/{newMessage.PuzzleID}?teamId={newMessage.TeamID}&playerId={newMessage.PlayerID}";
