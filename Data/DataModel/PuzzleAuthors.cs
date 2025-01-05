@@ -13,6 +13,7 @@ namespace ServerCore.DataModel
             // do not fill out the ID
             Puzzle = source.Puzzle;
             Author = source.Author;
+            SupportOnly = source.SupportOnly;
         }
 
         // ID for row
@@ -26,5 +27,7 @@ namespace ServerCore.DataModel
         public int AuthorID { get; set; }
 
         public virtual PuzzleUser Author { get; set; }
+
+        public bool SupportOnly { get; set; }
     }
 }

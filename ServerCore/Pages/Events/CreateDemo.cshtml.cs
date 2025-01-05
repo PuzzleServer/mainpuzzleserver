@@ -55,7 +55,7 @@ namespace ServerCore.Pages.Events
 
             for (int i = 1; ; i++)
             {
-                string name = $"Watership Demo {i}";
+                string name = $"Animal Farm {i}";
                 if (_context.Events.Where(e => e.Name == name).FirstOrDefault() == null)
                 {
                     Event.Name = name;
@@ -109,7 +109,7 @@ namespace ServerCore.Pages.Events
                 //
                 Puzzle start = new Puzzle
                 {
-                    Name = "!!!Get Hopping!!!",
+                    Name = "!!!Start the Event!!!",
                     Event = Event,
                     IsPuzzle = false,
                     IsGloballyVisiblePrerequisite = true,
@@ -119,44 +119,44 @@ namespace ServerCore.Pages.Events
 
                 Puzzle easy = new Puzzle
                 {
-                    Name = "Bunny Slope",
+                    Name = "Simple Snowball",
                     Event = Event,
                     IsPuzzle = true,
                     SolveValue = 10,
                     HintCoinsForSolve = 1,
-                    Group = "Thumper's Stumpers",
+                    Group = "Animal Farm",
                     OrderInGroup = 1,
                     MinPrerequisiteCount = 1,
-                    Description = "Bunsweeper",
+                    Description = "Snowball's Chance",
                 };
                 _context.Puzzles.Add(easy);
 
                 Puzzle intermediate = new Puzzle
                 {
-                    Name = "Rabbit Run (automatically solves in ~3 mins)",
+                    Name = "Clever Clover (automatically solves in ~3 mins)",
                     Event = Event,
                     IsPuzzle = true,
                     SolveValue = 10,
                     HintCoinsForSolve = 2,
-                    Group = "Thumper's Stumpers",
+                    Group = "Animal Farm",
                     OrderInGroup = 2,
                     MinPrerequisiteCount = 1,
                     MinutesToAutomaticallySolve = 3,
-                    Description = "Rabbit's Cube",
+                    Description = "So Clover",
                 };
                 _context.Puzzles.Add(intermediate);
 
                 Puzzle hard = new Puzzle
                 {
-                    Name = "Hare-Raising",
+                    Name = "Baffling Benjamin",
                     Event = Event,
                     IsPuzzle = true,
                     SolveValue = 10,
                     HintCoinsForSolve = 3,
-                    Group = "Thumper's Stumpers",
+                    Group = "Animal Farm",
                     OrderInGroup = 3,
                     MinPrerequisiteCount = 1,
-                    Description = "Lateral Leaping",
+                    Description = "Battleship",
                 };
                 _context.Puzzles.Add(hard);
 
@@ -192,22 +192,22 @@ namespace ServerCore.Pages.Events
 
                 Puzzle meta = new Puzzle
                 {
-                    Name = "Lagomorph Meta",
+                    Name = "Old Major Meta",
                     Event = Event,
                     IsPuzzle = true,
                     IsMetaPuzzle = true,
                     IsFinalPuzzle = true,
                     SolveValue = 100,
-                    Group = "Thumper's Stumpers",
+                    Group = "Animal Farm",
                     OrderInGroup = 99,
                     MinPrerequisiteCount = 2,
-                    Description = "Word Hutch",
+                    Description = "Meta",
                 };
                 _context.Puzzles.Add(meta);
 
                 Puzzle other = new Puzzle
                 {
-                    Name = "Rabbit Season",
+                    Name = "Duck Season",
                     Event = Event,
                     IsPuzzle = true,
                     SolveValue = 10,
@@ -215,7 +215,7 @@ namespace ServerCore.Pages.Events
                     OrderInGroup = 1,
                     MinPrerequisiteCount = 1,
                     Description = "Hip Hop Identification",
-                    CustomURL = "https://www.bing.com/images/search?q=%22rabbit%22",
+                    CustomURL = "https://www.bing.com/images/search?q=%22duck%22",
                 };
                 _context.Puzzles.Add(other);
 
@@ -442,13 +442,13 @@ namespace ServerCore.Pages.Events
                 //
                 // Create teams. Can we add players to these?
                 //
-                Team team1 = new Team { Name = "Team Bugs", Event = Event, IsLookingForTeammates = true, PrimaryContactEmail = "bugs@example.com", Password = Guid.NewGuid().ToString() };
+                Team team1 = new Team { Name = "Team Squealer", Event = Event, IsLookingForTeammates = true, PrimaryContactEmail = "squealer@example.com", Password = Guid.NewGuid().ToString() };
                 _context.Teams.Add(team1);
 
-                Team team2 = new Team { Name = "Team Babs", Event = Event, IsLookingForTeammates = true, PrimaryContactEmail = "babs@example.com", Password = Guid.NewGuid().ToString() };
+                Team team2 = new Team { Name = "Team Boxer", Event = Event, IsLookingForTeammates = true, PrimaryContactEmail = "boxer@example.com", Password = Guid.NewGuid().ToString() };
                 _context.Teams.Add(team2);
 
-                Team team3 = new Team { Name = "Team Buster", Event = Event, IsLookingForTeammates = false, PrimaryContactEmail = "buster@example.com", Password = Guid.NewGuid().ToString() };
+                Team team3 = new Team { Name = "Team Napoleon", Event = Event, IsLookingForTeammates = false, PrimaryContactEmail = "napoleon@example.com", Password = Guid.NewGuid().ToString() };
                 _context.Teams.Add(team3);
 
                 Team teamLoneWolf = null;
