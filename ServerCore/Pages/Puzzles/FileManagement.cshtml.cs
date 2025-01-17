@@ -288,6 +288,36 @@ namespace ServerCore.Pages.Puzzles
         }
 
         /// <summary>
+        /// Promotes files named "index.html" to the CustomURL or CustomSolutionURL properties of the puzzle.
+        /// </summary>
+        /// <param name="file">The file being uploaded</param>
+        private void UpdateCustomURLs(ContentFile file)
+        {
+            // Skip this if:
+            // - the file is not named index.html
+            // - the file is not a material or solution file
+            // - the appropriate Custom[Solution]URL is non-blank
+            if (!file.ShortName.EndsWith("index.html") ||
+                !(file.FileType == ContentFileType.PuzzleMaterial || file.FileType == ContentFileType.SolveToken) || 
+                (file.FileType == ContentFileType.PuzzleMaterial && !string.IsNullOrEmpty(Puzzle.CustomURL)) ||
+                (file.FileType == ContentFileType.SolveToken && !string.IsNullOrEmpty(Puzzle.CustomSolutionURL)))
+            {
+                return;
+            }
+
+            // lack of translation of {eventId} is very intentional - this is translated at runtime and makes the field value portable
+            string filePath = "/{eventId}/Files/" + file.ShortName;
+            if (file.FileType == ContentFileType.PuzzleMaterial)
+            {
+                Puzzle.CustomURL = filePath;
+            }
+            else
+            {
+                Puzzle.CustomSolutionURL = filePath;
+            }
+        }
+
+        /// <summary>
         /// Helper for taking an uploaded form file, uploading it, and tracking it in the database
         /// </summary>
         private async Task UploadFileAsync(IFormFile uploadedFile, ContentFileType fileType)
@@ -308,6 +338,7 @@ namespace ServerCore.Pages.Puzzles
 
             file.Url = await FileManager.UploadBlobAsync(fileName, Event.ID, uploadedFile.OpenReadStream());
 
+            this.UpdateCustomURLs(file);
             _context.ContentFiles.Add(file);
         }
 
@@ -345,6 +376,7 @@ namespace ServerCore.Pages.Puzzles
                     FileType = fileType,
                     Url = fileUrl.Value,
                 };
+                this.UpdateCustomURLs(file);
                 _context.ContentFiles.Add(file);
             }
         }
