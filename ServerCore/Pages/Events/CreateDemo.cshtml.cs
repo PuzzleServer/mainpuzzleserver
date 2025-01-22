@@ -55,7 +55,7 @@ namespace ServerCore.Pages.Events
 
             for (int i = 1; ; i++)
             {
-                string name = $"Animal Farm {i}";
+                string name = $"Demolicious {i}";
                 if (_context.Events.Where(e => e.Name == name).FirstOrDefault() == null)
                 {
                     Event.Name = name;
@@ -119,44 +119,44 @@ namespace ServerCore.Pages.Events
 
                 Puzzle easy = new Puzzle
                 {
-                    Name = "Simple Snowball",
+                    Name = "Simple Strawberry",
                     Event = Event,
                     IsPuzzle = true,
                     SolveValue = 10,
                     HintCoinsForSolve = 1,
-                    Group = "Animal Farm",
+                    Group = "Flavortown",
                     OrderInGroup = 1,
                     MinPrerequisiteCount = 1,
-                    Description = "Snowball's Chance",
+                    Description = "Strawberry",
                 };
                 _context.Puzzles.Add(easy);
 
                 Puzzle intermediate = new Puzzle
                 {
-                    Name = "Clever Clover (automatically solves in ~3 mins)",
+                    Name = "Automatic Apple (automatically solves in ~3 mins)",
                     Event = Event,
                     IsPuzzle = true,
                     SolveValue = 10,
                     HintCoinsForSolve = 2,
-                    Group = "Animal Farm",
+                    Group = "Flavortown",
                     OrderInGroup = 2,
                     MinPrerequisiteCount = 1,
                     MinutesToAutomaticallySolve = 3,
-                    Description = "So Clover",
+                    Description = "Apple",
                 };
                 _context.Puzzles.Add(intermediate);
 
                 Puzzle hard = new Puzzle
                 {
-                    Name = "Baffling Benjamin",
+                    Name = "Baffling Blueberry",
                     Event = Event,
                     IsPuzzle = true,
                     SolveValue = 10,
                     HintCoinsForSolve = 3,
-                    Group = "Animal Farm",
+                    Group = "Flavortown",
                     OrderInGroup = 3,
                     MinPrerequisiteCount = 1,
-                    Description = "Battleship",
+                    Description = "Blueberry",
                 };
                 _context.Puzzles.Add(hard);
 
@@ -192,13 +192,13 @@ namespace ServerCore.Pages.Events
 
                 Puzzle meta = new Puzzle
                 {
-                    Name = "Old Major Meta",
+                    Name = "Mango Meta",
                     Event = Event,
                     IsPuzzle = true,
                     IsMetaPuzzle = true,
                     IsFinalPuzzle = true,
                     SolveValue = 100,
-                    Group = "Animal Farm",
+                    Group = "Flavortown",
                     OrderInGroup = 99,
                     MinPrerequisiteCount = 2,
                     Description = "Meta",
@@ -207,26 +207,26 @@ namespace ServerCore.Pages.Events
 
                 Puzzle other = new Puzzle
                 {
-                    Name = "Duck Season",
+                    Name = "Puzzle Thyme",
                     Event = Event,
                     IsPuzzle = true,
                     SolveValue = 10,
-                    Group = "Daffy's Delights",
+                    Group = "Well Seasoned",
                     OrderInGroup = 1,
                     MinPrerequisiteCount = 1,
                     Description = "Hip Hop Identification",
-                    CustomURL = "https://www.bing.com/images/search?q=%22duck%22",
+                    CustomURL = "https://www.bing.com/images/search?q=%22clock%22",
                 };
                 _context.Puzzles.Add(other);
 
                 Puzzle cheat = new Puzzle
                 {
-                    Name = "You're Despicable (cheat code)",
+                    Name = "Rosemary's Baby (cheat code)",
                     Event = Event,
                     IsPuzzle = true,
                     IsCheatCode = true,
                     SolveValue = -1,
-                    Group = "Daffy's Delights",
+                    Group = "Well Seasoned",
                     OrderInGroup = 2,
                     MinPrerequisiteCount = 1,
                     Description = "Duck Konundrum",
@@ -442,13 +442,13 @@ namespace ServerCore.Pages.Events
                 //
                 // Create teams. Can we add players to these?
                 //
-                Team team1 = new Team { Name = "Team Squealer", Event = Event, IsLookingForTeammates = true, PrimaryContactEmail = "squealer@example.com", Password = Guid.NewGuid().ToString() };
+                Team team1 = new Team { Name = "Team Dextrose", Event = Event, IsLookingForTeammates = true, PrimaryContactEmail = "squealer@example.com", Password = Guid.NewGuid().ToString() };
                 _context.Teams.Add(team1);
 
-                Team team2 = new Team { Name = "Team Boxer", Event = Event, IsLookingForTeammates = true, PrimaryContactEmail = "boxer@example.com", Password = Guid.NewGuid().ToString() };
+                Team team2 = new Team { Name = "Team Glucose", Event = Event, IsLookingForTeammates = true, PrimaryContactEmail = "boxer@example.com", Password = Guid.NewGuid().ToString() };
                 _context.Teams.Add(team2);
 
-                Team team3 = new Team { Name = "Team Napoleon", Event = Event, IsLookingForTeammates = false, PrimaryContactEmail = "napoleon@example.com", Password = Guid.NewGuid().ToString() };
+                Team team3 = new Team { Name = "Team Sucrose", Event = Event, IsLookingForTeammates = false, PrimaryContactEmail = "napoleon@example.com", Password = Guid.NewGuid().ToString() };
                 _context.Teams.Add(team3);
 
                 Team teamLoneWolf = null;
