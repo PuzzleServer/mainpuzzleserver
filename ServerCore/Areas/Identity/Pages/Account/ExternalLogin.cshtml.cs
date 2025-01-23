@@ -71,6 +71,19 @@ namespace ServerCore.Areas.Identity.Pages.Account
                 return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
             }
 
+            // If this providerKey can't be found, it may mean that the providerKey for an existing user has been changed by the provider.
+            // This is fine, and just means that the new providerKey needs to be added as an extra login for the existing user.
+            // Use the email as a lookup for the existing user, and add the login there.
+            // Note that FindByEmailAsync says that in order to use it, you should also set IdentityOptions.User.RequireUniqueEmail = true; see Startup.cs.
+            if (await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey) == null && info.Principal.HasClaim(c => c.Type == ClaimTypes.Email))
+            {
+                var existingUser = await _userManager.FindByEmailAsync(info.Principal.FindFirstValue(ClaimTypes.Email));
+                if (existingUser != null)
+                {
+                    await _userManager.AddLoginAsync(existingUser, info);
+                }
+            }
+
             // Sign in the user with this external login provider if the user already has a login.
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
             if (result.Succeeded)
