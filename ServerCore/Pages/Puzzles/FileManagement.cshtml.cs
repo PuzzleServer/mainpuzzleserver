@@ -297,7 +297,7 @@ namespace ServerCore.Pages.Puzzles
             // - the file is not named index.html
             // - the file is not a material or solution file
             // - the appropriate Custom[Solution]URL is non-blank
-            if (!file.ShortName.EndsWith("index.html") ||
+            if (Path.GetFileName(file.ShortName).ToLower() != "index.html" ||
                 !(file.FileType == ContentFileType.PuzzleMaterial || file.FileType == ContentFileType.SolveToken) || 
                 (file.FileType == ContentFileType.PuzzleMaterial && !string.IsNullOrEmpty(Puzzle.CustomURL)) ||
                 (file.FileType == ContentFileType.SolveToken && !string.IsNullOrEmpty(Puzzle.CustomSolutionURL)))
