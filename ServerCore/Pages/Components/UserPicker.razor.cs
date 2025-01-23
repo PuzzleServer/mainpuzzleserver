@@ -1,62 +1,58 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using ServerCore.DataModel;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace ServerCore.Pages.Components
 {
-    public partial class UserPicker
+    public abstract partial class UserPicker
     {
         List<PuzzleUser> AllUsers { get; set; } = new List<PuzzleUser>();
         List<PuzzleUser> SelectedUsers { get; set; } = new List<PuzzleUser>();
+        string Filter { get; set; }
 
         [Parameter]
         public int EventId { get; set; }
 
-        [Parameter]
-        public bool AddAdmin { get; set; }
-
         [Inject]
         public PuzzleServerContext _context { get; set; }
 
+        protected abstract Task<List<PuzzleUser>> GetAllUsersAsync();
+
+        protected abstract Task OnUserAddedAsync(int addedUserId);
+
         protected override async Task OnParametersSetAsync()
         {
-            if (AddAdmin)
-            {
-                AllUsers = await (from user in _context.PuzzleUsers
-                                       where !((from eventAdmin in _context.EventAdmins
-                                                where eventAdmin.EventID == EventId
-                                                where eventAdmin.Admin == user
-                                                select eventAdmin).Any())
-                                       select user).ToListAsync();
-            }
-            else
-            {
-                AllUsers = await (from user in _context.PuzzleUsers
-                                       where !((from eventAuthor in _context.EventAuthors
-                                                where eventAuthor.EventID == EventId
-                                                where eventAuthor.Author == user
-                                                select eventAuthor).Any())
-                                       select user).ToListAsync();
-            }
+            AllUsers = await GetAllUsersAsync();
 
             await base.OnParametersSetAsync();
         }
 
         private void OnFilterChanged(ChangeEventArgs e)
         {
-            string filter = e.Value?.ToString();
-            if (filter?.Length < 3)
+            Filter = e.Value?.ToString();
+            UpdateSelectedUsers();
+        }
+
+        private void UpdateSelectedUsers()
+        {
+            if (Filter?.Length < 3)
             {
                 SelectedUsers = new List<PuzzleUser>();
                 return;
             }
 
             SelectedUsers = (from user in AllUsers
-                             where user.Name.Contains(filter) || user.Email.Contains(filter)
+                             where user.Name.Contains(Filter, StringComparison.OrdinalIgnoreCase) || user.Email.Contains(Filter, StringComparison.OrdinalIgnoreCase)
                              select user).ToList();
+        }
+        private async Task OnAddClick(int addedUserId)
+        {
+            await OnUserAddedAsync(addedUserId);
+            AllUsers = await GetAllUsersAsync();
+            UpdateSelectedUsers();
         }
     }
 }

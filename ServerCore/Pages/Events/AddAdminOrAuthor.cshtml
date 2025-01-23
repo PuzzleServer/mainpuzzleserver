@@ -12,12 +12,10 @@
     <h2>Add @roleString</h2>
 
     <div>
-        <a asp-page="/Events/Players">Cancel</a>
+        <a asp-page="/Events/Players">Back to player list</a>
     </div>
 
-    <h4>Select a user to make an @roleString</h4>
-
-    <component type="typeof(ServerCore.Pages.Events.AdminOrAuthorPicker)" render-mode="Server"
+    <component type="typeof(ServerCore.Pages.Events.AddAdminOrAuthorPicker)" render-mode="Server"
                param-EventId="@Model.Event.ID"
                param-AddAdmin="@Model.addAdmin" />
 </div>

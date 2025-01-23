@@ -28,16 +28,9 @@
                 <td>
                     @item.Email
                 </td>
-@*                 <td>
-                    @if (Model.addAdmin)
-                    {
-                        <a asp-page-handler="AddAdmin" asp-route-userId=@item.ID>Add</a>
-                    }
-                    else
-                    {
-                        <a asp-page-handler="AddAuthor" asp-route-userId=@item.ID>Add</a>
-                    }
-                </td> *@
+                <td>
+                    <button @onclick="async () => await OnAddClick(item.ID)">Add</button>
+                </td>
             </tr>
         }
     </tbody>
