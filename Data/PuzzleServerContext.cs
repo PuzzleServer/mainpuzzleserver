@@ -71,6 +71,7 @@ namespace ServerCore.DataModel
             modelBuilder.Entity<SinglePlayerPuzzleHintStatePerPlayer>().HasKey(state => new { state.PlayerID, state.HintID });
             modelBuilder.Entity<Event>().HasIndex(eventObj => new { eventObj.UrlString }).IsUnique();
             modelBuilder.Entity<Event>().Property(eventObj => eventObj.AllowBlazor).HasDefaultValue(true);
+            modelBuilder.Entity<Event>().Property(eventObj => eventObj.EmbedPuzzles).HasDefaultValue(true);
             modelBuilder.Entity<Annotation>().HasKey(state => new { state.PuzzleID, state.TeamID, state.Key });
             modelBuilder.Entity<Piece>().HasIndex(piece => new { piece.ProgressLevel });
             modelBuilder.Entity<Submission>().HasIndex(submission => new { submission.TeamID, submission.PuzzleID, submission.SubmissionText }).IsUnique();

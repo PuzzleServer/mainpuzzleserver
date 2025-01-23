@@ -328,7 +328,9 @@ namespace Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("EmbedPuzzles")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<string>("EphemeralHacks")
                         .HasColumnType("nvarchar(max)");

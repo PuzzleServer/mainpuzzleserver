@@ -100,6 +100,7 @@ namespace ServerCore.Pages.Events
                 Event.MaxExternalsPerTeam = 9;
                 Event.MaxTeamSize = 12;
                 Event.AllowBlazor = true;
+                Event.EmbedPuzzles = true;
                 _context.Events.Add(Event);
 
                 await _context.SaveChangesAsync();
