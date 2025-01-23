@@ -388,7 +388,7 @@ namespace ServerCore.Pages.Submissions
             }
             else
             {
-                IQueryable<PuzzleUser> currentAuthorsQ = _context.PuzzleAuthors.Where(m => m.Puzzle == Puzzle).Select(m => m.Author);
+                IQueryable<PuzzleUser> currentAuthorsQ = _context.PuzzleAuthors.Where(m => m.Puzzle == Puzzle && !m.SupportOnly).Select(m => m.Author);
                 List<PuzzleUser> CurrentAuthors = await currentAuthorsQ.OrderBy(p => p.Name).ToListAsync();
                 PuzzleAuthor = "";
                 for (int i = 0; i < CurrentAuthors.Count; i++)

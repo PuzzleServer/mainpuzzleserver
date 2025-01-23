@@ -1012,6 +1012,9 @@ namespace Data.Migrations
                     b.Property<int>("PuzzleID")
                         .HasColumnType("int");
 
+                    b.Property<bool>("SupportOnly")
+                        .HasColumnType("bit");
+
                     b.HasKey("ID");
 
                     b.HasIndex("AuthorID");

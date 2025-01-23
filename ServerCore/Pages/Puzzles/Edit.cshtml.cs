@@ -33,14 +33,19 @@ namespace ServerCore.Pages.Puzzles
         public int NewAuthorID { get; set; }
 
         [BindProperty]
+        public int NewSupportID { get; set; }
+
+        [BindProperty]
         public int NewPrerequisiteID { get; set; }
 
         [BindProperty]
         public int NewPrerequisiteOfID { get; set; }
 
-        public List<PuzzleUser> PotentialAuthors { get; set; }
+        public List<PuzzleUser> PotentialAuthorOrSupport { get; set; }
 
         public List<PuzzleUser> CurrentAuthors { get; set; }
+
+        public List<PuzzleUser> CurrentSupport { get; set; }
 
         public List<Puzzle> PotentialPrerequisites { get; set; }
 
@@ -65,11 +70,14 @@ namespace ServerCore.Pages.Puzzles
 
         private async Task PopulateUIAsync()
         {
-            IQueryable<PuzzleUser> currentAuthorsQ = _context.PuzzleAuthors.Where(m => m.Puzzle == Puzzle).Select(m => m.Author);
-            IQueryable<PuzzleUser> potentialAuthorsQ = _context.EventAuthors.Where(m => m.Event == Event).Select(m => m.Author).Except(currentAuthorsQ);
+            IQueryable<PuzzleUser> currentAuthorOrSupportQ = _context.PuzzleAuthors.Where(m => m.Puzzle == Puzzle).Select(m => m.Author);
+            IQueryable<PuzzleUser> currentAuthorsQ = _context.PuzzleAuthors.Where(m => m.Puzzle == Puzzle && !m.SupportOnly).Select(m => m.Author);
+            IQueryable<PuzzleUser> currentSupportQ = _context.PuzzleAuthors.Where(m => m.Puzzle == Puzzle && m.SupportOnly).Select(m => m.Author);
+            IQueryable<PuzzleUser> potentialAuthorOrSupportQ = _context.EventAuthors.Where(m => m.Event == Event).Select(m => m.Author).Except(currentAuthorOrSupportQ);
 
             CurrentAuthors = await currentAuthorsQ.OrderBy(p => p.Name).ToListAsync();
-            PotentialAuthors = await potentialAuthorsQ.OrderBy(p => p.Name).ToListAsync();
+            CurrentSupport = await currentSupportQ.OrderBy(p => p.Name).ToListAsync();
+            PotentialAuthorOrSupport = await potentialAuthorOrSupportQ.OrderBy(p => p.Name).ToListAsync();
 
             IQueryable<Puzzle> allVisiblePuzzles;
             IQueryable<Puzzle> allVisiblePuzzlesAndGlobalPrerequisites;
@@ -229,7 +237,23 @@ namespace ServerCore.Pages.Puzzles
 
             if (!(await _context.PuzzleAuthors.Where(m => m.PuzzleID == puzzleId && m.AuthorID == NewAuthorID).AnyAsync()))
             {
-                _context.PuzzleAuthors.Add(new PuzzleAuthors() { PuzzleID = puzzleId, AuthorID = NewAuthorID });
+                _context.PuzzleAuthors.Add(new PuzzleAuthors() { PuzzleID = puzzleId, AuthorID = NewAuthorID, SupportOnly = false });
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToPage();
+        }
+
+        public async Task<IActionResult> OnPostAddSupportAsync(int puzzleId)
+        {
+            if (!(await _context.EventAuthors.Where(m => m.Author.ID == NewSupportID && m.Event == Event).AnyAsync()))
+            {
+                return NotFound();
+            }
+
+            if (!(await _context.PuzzleAuthors.Where(m => m.PuzzleID == puzzleId && m.AuthorID == NewSupportID).AnyAsync()))
+            {
+                _context.PuzzleAuthors.Add(new PuzzleAuthors() { PuzzleID = puzzleId, AuthorID = NewSupportID, SupportOnly = true });
                 await _context.SaveChangesAsync();
             }
 
@@ -268,9 +292,9 @@ namespace ServerCore.Pages.Puzzles
             return RedirectToPage();
         }
 
-        public async Task<IActionResult> OnGetRemoveAuthorAsync(int puzzleId, int author)
+        public async Task<IActionResult> OnGetRemoveAuthorOrSupportAsync(int puzzleId, int support)
         {
-            PuzzleAuthors toRemove = await _context.PuzzleAuthors.Where(m => m.PuzzleID == puzzleId && m.AuthorID == author).FirstOrDefaultAsync();
+            PuzzleAuthors toRemove = await _context.PuzzleAuthors.Where(m => m.PuzzleID == puzzleId && m.AuthorID == support).FirstOrDefaultAsync();
 
             if (toRemove != null)
             {

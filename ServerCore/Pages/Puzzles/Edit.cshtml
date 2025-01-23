@@ -335,16 +335,49 @@
                                 @(author.Name)
                             </td>
                             <td>
-                                <a asp-page-handler="RemoveAuthor" asp-route-id="@Model.Puzzle.ID" asp-route-author="@(author.ID)">Remove</a>
+                                <a asp-page-handler="RemoveAuthorOrSupport" asp-route-id="@Model.Puzzle.ID" asp-route-author="@(author.ID)">Remove</a>
                             </td>
                         </tr>
                     }
                     <tr>
                         <td>
-                            <select class="form-control" asp-for="NewAuthorID" asp-items="@(new SelectList(Model.PotentialAuthors, "ID", "Name"))"></select>
+                            <select class="form-control" asp-for="NewAuthorID" asp-items="@(new SelectList(Model.PotentialAuthorOrSupport, "ID", "Name"))"></select>
                         </td>
                         <td>
                             <input type="submit" value="Add" asp-page-handler="AddAuthor" class="btn btn-default" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+        <h3>@Model.Puzzle.Name: Support</h3>
+        <form method="post" enctype="multipart/form-data">
+            <input type="hidden" asp-for="Puzzle.ID" />
+            <table>
+                <thead>
+                    <tr>
+                        <th>Support</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var support in Model.CurrentSupport)
+                    {
+                        <tr>
+                            <td>
+                                @(support.Name)
+                            </td>
+                            <td>
+                                <a asp-page-handler="RemoveAuthorOrSupport" asp-route-id="@Model.Puzzle.ID" asp-route-support="@(support.ID)">Remove</a>
+                            </td>
+                        </tr>
+                    }
+                    <tr>
+                        <td>
+                            <select class="form-control" asp-for="NewSupportID" asp-items="@(new SelectList(Model.PotentialAuthorOrSupport, "ID", "Name"))"></select>
+                        </td>
+                        <td>
+                            <input type="submit" value="Add" asp-page-handler="AddSupport" class="btn btn-default" />
                         </td>
                     </tr>
                 </tbody>
