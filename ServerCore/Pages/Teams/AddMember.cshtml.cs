@@ -20,8 +20,6 @@ namespace ServerCore.Pages.Teams
     {
         public Team Team { get; set; }
 
-        public IList<Tuple<PuzzleUser, int>> Users { get; set; }
-
         public AddMemberModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
         }
@@ -34,24 +32,7 @@ namespace ServerCore.Pages.Teams
                 return NotFound("Could not find team with ID '" + teamId + "'. Check to make sure you're accessing this page in the context of a team.");
             }
 
-            Users = await (from user in _context.PuzzleUsers
-                            where !((from teamMember in _context.TeamMembers
-                                    where teamMember.Team.Event == Event
-                                    where teamMember.Member == user
-                                    select teamMember).Any())
-                            select new Tuple<PuzzleUser, int>(user, -1)).ToListAsync();
-
             return Page();
-        }
-
-        public async Task<IActionResult> OnGetAddMemberAsync(int teamId, int userId, int applicationId)
-        {
-            Tuple<bool, string> result = await TeamHelper.AddMemberAsync(_context, Event, EventRole, teamId, userId);
-            if (result.Item1)
-            {
-                return RedirectToPage("./Details", new { teamId = teamId });
-            }
-            return NotFound(result.Item2);
         }
     }
 }

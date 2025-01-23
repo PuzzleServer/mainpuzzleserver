@@ -1,14 +1,7 @@
 ﻿@inherits ServerCore.Pages.Components.UserPicker;
 
 <h4>
-    @if (AddAdmin)
-    {
-        <span>Current Administrators</span>
-    }
-    else
-    {
-        <span>Current Authors</span>
-    }
+    <span>Current Members</span>
 </h4>
 <table class="table">
     <thead>
@@ -25,7 +18,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in CurrentAdminOrAuthors)
+        @foreach (var item in CurrentMembers)
         {
             <tr>
                 <td>
@@ -43,15 +36,7 @@
 </table>
 
 <h4>
-    Select a user to make 
-    @if (AddAdmin)
-    {
-        <span>administrator</span>
-    }
-    else
-    {
-        <span>author</span>
-    }
+    Select a user to add
 </h4>
 
 @{
