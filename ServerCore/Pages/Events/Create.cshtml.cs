@@ -48,6 +48,7 @@ namespace ServerCore.Pages.Events
             Event.MaxExternalsPerTeam = 9;
             Event.MaxTeamSize = 12;
             Event.AllowBlazor = true;
+            Event.EmbedPuzzles = true;
 
             return Page();
         }
