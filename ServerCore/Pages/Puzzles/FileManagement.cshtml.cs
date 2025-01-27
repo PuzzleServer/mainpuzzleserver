@@ -306,7 +306,7 @@ namespace ServerCore.Pages.Puzzles
             }
 
             // lack of translation of {eventId} is very intentional - this is translated at runtime and makes the field value portable
-            string filePath = "/{eventId}/Files/" + file.ShortName;
+            string filePath = this.HttpContext.Request.Scheme + "://" + this.HttpContext.Request.Host + "/{eventId}/Files/" + file.ShortName;
             if (file.FileType == ContentFileType.PuzzleMaterial)
             {
                 Puzzle.CustomURL = filePath;
