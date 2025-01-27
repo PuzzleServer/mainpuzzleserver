@@ -335,7 +335,7 @@
                                 @(author.Name)
                             </td>
                             <td>
-                                <a asp-page-handler="RemoveAuthorOrSupport" asp-route-id="@Model.Puzzle.ID" asp-route-author="@(author.ID)">Remove</a>
+                                <a asp-page-handler="RemoveAuthorOrSupport" asp-route-id="@Model.Puzzle.ID" asp-route-authorOrSupport="@(author.ID)">Remove</a>
                             </td>
                         </tr>
                     }
@@ -368,7 +368,7 @@
                                 @(support.Name)
                             </td>
                             <td>
-                                <a asp-page-handler="RemoveAuthorOrSupport" asp-route-id="@Model.Puzzle.ID" asp-route-support="@(support.ID)">Remove</a>
+                                <a asp-page-handler="RemoveAuthorOrSupport" asp-route-id="@Model.Puzzle.ID" asp-route-authorOrSupport="@(support.ID)">Remove</a>
                             </td>
                         </tr>
                     }
