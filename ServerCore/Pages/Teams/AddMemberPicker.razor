@@ -1,0 +1,45 @@
+﻿@inherits ServerCore.Pages.Components.UserPicker;
+
+<h4>
+    <span>Current Members</span>
+</h4>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Name
+            </th>
+            <th>
+                Email
+            </th>
+            <th>
+                EmployeeAlias
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in CurrentMembers)
+        {
+            <tr>
+                <td>
+                    @item.Name
+                </td>
+                <td>
+                    @item.Email
+                </td>
+                <td>
+                    @item.EmployeeAlias
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h4>
+    Select a user to add
+</h4>
+
+@{
+    // Render base component
+    base.BuildRenderTree(__builder);
+}
