@@ -288,6 +288,27 @@ namespace ServerCore.Pages.Puzzles
         }
 
         /// <summary>
+        /// Makes a clean link to the ContentFile based on ShortName, that is specific to this event.
+        /// </summary>
+        /// <param name="file">The ContentFile</param>
+        /// <returns>a link that explicitly includes the eventId</returns>
+        public string LinkFromShortName(ContentFile file)
+        {
+            return this.HttpContext.Request.Scheme + "://" + this.HttpContext.Request.Host + "/" + this.Event.ID + "/Files/" + file.ShortName;
+        }
+
+        /// <summary>
+        /// Makes a clean link to the ContentFile based on ShortName, that is not specific to this event.
+        /// </summary>
+        /// <param name="file">The ContentFile</param>
+        /// <returns>a link that replaces the explicit eventId with {eventId}, best used for Puzzle.CustomURL and Puzzle.CustomSolutionURL.</returns>
+        public string EventAgnosticLinkFromShortName(ContentFile file)
+        {
+            // lack of translation of {eventId} is very intentional - this is translated at runtime and makes the field value portable
+            return this.HttpContext.Request.Scheme + "://" + this.HttpContext.Request.Host + "/{eventId}/Files/" + file.ShortName;
+        }
+
+        /// <summary>
         /// Promotes files named "index.html" to the CustomURL or CustomSolutionURL properties of the puzzle.
         /// </summary>
         /// <param name="file">The file being uploaded</param>
@@ -305,8 +326,7 @@ namespace ServerCore.Pages.Puzzles
                 return;
             }
 
-            // lack of translation of {eventId} is very intentional - this is translated at runtime and makes the field value portable
-            string filePath = this.HttpContext.Request.Scheme + "://" + this.HttpContext.Request.Host + "/{eventId}/Files/" + file.ShortName;
+            string filePath = this.EventAgnosticLinkFromShortName(file);
             if (file.FileType == ContentFileType.PuzzleMaterial)
             {
                 Puzzle.CustomURL = filePath;
