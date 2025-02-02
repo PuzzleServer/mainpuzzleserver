@@ -53,7 +53,7 @@
                     if (puzzleFile != null)
                     {
                                         <input type="checkbox" asp-route-id="@Model.Puzzle.ID" name="SelectedFiles" value="@puzzleFile.ID" />
-                                        @Html.ActionLink(puzzleFile.ShortName, "Index", "Files", new { eventId = Model.Event.ID, filename = puzzleFile.ShortName })
+                                        <a href="@Model.LinkFromShortName(puzzleFile)">@puzzleFile.ShortName</a>
                                         <a href="@puzzleFile.UrlString">[Raw]</a>
                                         <button type="submit" asp-route-id="@Model.Puzzle.ID" asp-route-fileId="@puzzleFile.ID" asp-page-handler="Delete">Delete</button>
                     }
@@ -70,7 +70,7 @@
                     if (answerFile != null)
                     {
                                         <input type="checkbox" asp-route-id="@Model.Puzzle.ID" name="SelectedFiles" value="@answerFile.ID" />
-                                        @Html.ActionLink(answerFile.ShortName, "Index", "Files", new { eventId = Model.Event.ID, filename = answerFile.ShortName })
+                                        <a href="@Model.LinkFromShortName(answerFile)">@answerFile.ShortName</a>
                                         <a href="@answerFile.UrlString">[Raw]</a>
 
                                         <button type="submit" asp-route-id="@Model.Puzzle.ID" asp-route-fileId="@answerFile.ID" asp-page-handler="Delete">Delete</button>
@@ -89,7 +89,7 @@
             {
                 <p>
                     <input class="materialFileCheckbox" type="checkbox" asp-route-id="@Model.Puzzle.ID" name="SelectedFiles" value="@material.ID" />
-                    @Html.ActionLink(material.ShortName, "Index", "Files", new { eventId = Model.Event.ID, filename = material.ShortName })
+                    <a href="@Model.LinkFromShortName(material)">@material.ShortName</a>
                     <a href="@material.UrlString">[Raw]</a>
                     <button type="submit" asp-route-id="@Model.Puzzle.ID" asp-route-fileId="@material.ID" asp-page-handler="Delete">Delete</button>
                 </p>
@@ -103,7 +103,7 @@
             {
                 <p>
                     <input type="checkbox" asp-route-id="@Model.Puzzle.ID" name="SelectedFiles" value="@solveFile.ID" />
-                    @Html.ActionLink(solveFile.ShortName, "Index", "Files", new { eventId = Model.Event.ID, filename = solveFile.ShortName })
+                    <a href="@Model.LinkFromShortName(solveFile)">@solveFile.ShortName</a>
                     <a href="@solveFile.UrlString">[Raw]</a>
                     <button type="submit" asp-route-id="@Model.Puzzle.ID" asp-route-fileId="@solveFile.ID" asp-page-handler="Delete">Delete</button>
                 </p>
