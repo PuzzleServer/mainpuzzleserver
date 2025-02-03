@@ -58,7 +58,7 @@
         <script src="~/js/site.min.js" asp-append-version="true"></script>
     </environment>
 
-    <base href="~/" />
+    <base href="/" />
     <style>
         @@media print {
             .no-print {
@@ -69,8 +69,7 @@
 
     @if (ev != null && ev.AllowBlazor)
     {
-        <component type="typeof(Microsoft.AspNetCore.Components.Web.HeadOutlet)"
-                   render-mode="ServerPrerendered" />
+        @* <HeadOutlet @rendermode ="InteractiveServer" /> *@
     }
 
     @{
@@ -99,7 +98,7 @@
 <body class="body-customizable">
     @if (ev != null && ev.AllowBlazor)
     {
-        <script src="_framework/blazor.server.js"></script>
+        <script src="_framework/blazor.web.js"></script>
         <script>
             var lockResolver;
             if (navigator && navigator.locks && navigator.locks.request) {
