@@ -1,0 +1,12 @@
+﻿<h3>PuzzleSyncComponent</h3>
+
+<h3>@currentCount</h3>
+<button @onclick="Increment">Increment</button>
+
+@code {
+    int currentCount = 0;
+    private void Increment(MouseEventArgs e)
+    {
+        currentCount++;
+    }
+}
