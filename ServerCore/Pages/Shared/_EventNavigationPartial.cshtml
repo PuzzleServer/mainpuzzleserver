@@ -67,6 +67,10 @@
                                 <li><a class="dropdown-item" asp-page="/Events/Standings">Standings</a></li>
                                 <li><a class="dropdown-item" asp-page="/Events/FastestSolves">Fastest solves</a></li>
                                 <li><a class="dropdown-item" asp-page="/Events/Map">Puzzle state map</a></li>
+                                @if (Event.ShouldShowSinglePlayerPuzzles)
+                                {
+                                    <li><a class="dropdown-item" asp-page="/Events/SinglePlayerPuzzleStateMap">Single player puzzle state map</a></li>
+                                }
                                 <li><a class="dropdown-item" asp-page="/Events/PlayerSubmissions">Shared submissions</a></li>
                             </ul>
                         </div>
