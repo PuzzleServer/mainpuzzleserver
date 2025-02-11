@@ -1,0 +1,66 @@
+﻿@page  "/{eventId}/{eventRole}/Puzzles/BulkFiles/{handler?}"
+@model ServerCore.Pages.Puzzles.BulkFilesModel
+
+@{
+    ViewData["Title"] = "Bulk File management";
+    ViewData["AdminRoute"] = "../Puzzles/BulkFiles";
+    ViewData["AuthorRoute"] = "../Puzzles/BulkFiles";
+    ViewData["PlayRoute"] = "/Puzzles/Play";
+}
+
+<script type="text/javascript">
+</script>
+
+<h2>@Model.Event.Name: Bulk Files</h2>
+
+<p>
+    <a asp-page="/Puzzles/Index">Back to puzzle list</a>
+</p>
+
+<div>
+    <hr />
+    <h3>What the Bulk File Uploader WILL do</h3>
+    <ul>
+        <li>Upload new versions of files for puzzles/solutions, when stored in folders that match the folder names used previously</li>
+        <li>Correctly handle new files added to existing puzzles and solutions</li>
+        <li>Drill into root folders named "puzzles" and/or "solutions"</li>
+    </ul>
+    <h3>What the Bulk File Uploader WILL NOT do</h3>
+    <ul>
+        <li>Delete old files that are no longer needed</li>
+        <li>Add files to puzzles/solutions that have never had files uploaded before</li>
+    </ul>
+    <div class="form-group">
+        <form method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input asp-for="NewBulkFiles" class="form-control" style="height:auto" />
+            <span asp-validation-for="NewBulkFiles" class="text-danger"></span>
+
+            <div class="form-group">
+                <input type="submit" value="Upload" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+    @if (Model.FoldersCopied.Count > 0)
+    {
+        <br/>
+        <h3>Folders Copied:</h3>
+        <ul>
+            @foreach (var folder in Model.FoldersCopied)
+            {
+                <li>@folder</li>
+            }
+        </ul>
+    }
+    @if (Model.FilesIgnored.Count > 0)
+    {
+        <br/>
+        <h3>Files Ignored:</h3>
+        <ul>
+            @foreach (var file in Model.FilesIgnored)
+            {
+                <li>@file</li>
+            }
+        </ul>
+    }
+</div>
