@@ -245,17 +245,13 @@ namespace ServerCore.Pages.Events
             public DateTime FinalMetaSolveTime { get; set; } = DateTime.MaxValue;
         }
 
-        public class StateStats
+        public abstract class StateStatsBase
         {
-            public static StateStats Default { get; } = new StateStats();
-
             public PuzzleStats Puzzle { get; set; }
-            public TeamStats Team { get; set; }
-            public bool UnlockedAtStart { get; set; }
             public DateTime? UnlockedTime { get; set; }
+            public bool UnlockedAtStart { get; set; }
             public DateTime? SolvedTime { get; set; }
             public bool LockedOut { get; set; }
-            public bool IsPresent { get; set; }
 
             public string Classes
             {
@@ -298,6 +294,13 @@ namespace ServerCore.Pages.Events
                     return puzzleState != null ? $"statecell {puzzleType} {puzzleState}" : $"statecell {puzzleType}";
                 }
             }
+        }
+
+        public class StateStats : StateStatsBase
+        {
+            public static StateStats Default { get; } = new StateStats();
+            public TeamStats Team { get; set; }
+            public bool IsPresent { get; set; }
         }
     }
 }

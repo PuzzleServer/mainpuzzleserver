@@ -25,7 +25,7 @@
             <th>
                 Score
             </th>
-            @foreach (SinglePlayerPuzzleStateMapModel.PuzzleStats puzzleStat in Model.PuzzleStatList)
+            @foreach (MapModel.PuzzleStats puzzleStat in Model.PuzzleStatList)
             {
                 <th>
                     <a asp-page="/Puzzles/Status" asp-route-puzzleId="@puzzleStat.Puzzle.ID">@puzzleStat.Puzzle.PlaintextName (@puzzleStat.SolveCount)</a>

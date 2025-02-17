@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
 using ServerCore.ModelBases;
+using static ServerCore.Pages.Events.MapModel;
 
 namespace ServerCore.Pages.Events
 {
@@ -105,12 +106,6 @@ namespace ServerCore.Pages.Events
             return Page();
         }
 
-        public class PuzzleStats
-        {
-            public Puzzle Puzzle { get; set; }
-            public int SolveCount { get; set; }
-        }
-
         public class PlayerStats
         {
             public PuzzleUser Player { get; set; }
@@ -118,42 +113,14 @@ namespace ServerCore.Pages.Events
             public int Score { get; set; }
         }
 
-        public class StateStats
+        public class StateStats : StateStatsBase
         {
-            public static StateStats Default => new StateStats();
-
-            public DateTime? UnlockedTime { get; set; }
-            public DateTime? SolvedTime { get; set; }
-            public bool LockedOut { get; set; }
-
-            public string Classes
+            public StateStats()
             {
-                get
-                {
-                    string puzzleState = null;
-
-                    if (LockedOut)
-                    {
-                        puzzleState = "email-mode";
-                    }
-                    else if (SolvedTime != null)
-                    {
-                        int minutes = (int)((DateTime.UtcNow - SolvedTime.Value).TotalMinutes);
-                        puzzleState = minutes > 15 ? "solved-old" : "solved-recent";
-                    }
-                    else if (UnlockedTime == null)
-                    {
-                        puzzleState = "still-locked";
-                    }
-                    else
-                    {
-                        int minutes = (int)((DateTime.UtcNow - UnlockedTime.Value).TotalMinutes);
-                        puzzleState = minutes > 15 ? "unlocked-old" : "unlocked-recent";
-                    }
-
-                    return puzzleState != null ? $"statecell {puzzleState}" : "statecell";
-                }
+                this.UnlockedAtStart = false;
             }
+
+            public static StateStats Default => new StateStats();
         }
     }
 }
