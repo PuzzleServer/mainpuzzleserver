@@ -573,9 +573,8 @@ else
                 {
                     <div><b>Want to print?</b> <a href="@puzzleFilePath" target="_blank" download>Click this link</a> to download the file. Please allow popups!</div>
                 }
-                <h4>Before sync wasm</h4>
+                
                 <component type="typeof(ClientSyncComponent.Client.Pages.ClientSyncComponent)" render-mode="WebAssembly" />
-                <h4>After sync wasm</h4>
 
                 @if (!Model.IsPuzzleForSinglePlayer && Model.Event.AllowBlazor && !Model.Event.EphemeralHackKillPresence)
                 {
