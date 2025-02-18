@@ -1,3 +1,34 @@
 ﻿<h3>ClientSyncComponent</h3>
+<h4>Last updated: @LastSyncUtc</h4>
 <button @onclick="PushChangeAsync">Push Change</button>
 <button @onclick="SyncAsync">Sync</button>
+
+<script>
+
+    let hostComponent = null;
+
+    function registerDotNet(hostComponentArg) {
+        console.log("Registering dotNet");
+        hostComponent = hostComponentArg;
+    }
+
+    async function onVisibilityChangeAsync (ev) {
+        console.log("Visibility changed to: " + document.visibilityState);
+        if (hostComponent) {
+            await hostComponent.invokeMethodAsync("VisibilityChanged", document.visibilityState);
+        }
+    }
+
+    function getVisibility() {
+        return document.visibilityState;
+    }
+
+    console.log("ClientSyncComponent loaded");
+    addEventListener("visibilitychange", onVisibilityChangeAsync);
+    console.log("Visibility: " + document.visibilityState);
+</script>
+
+@foreach(string recievedValue in ReceivedValues)
+{
+    <p>@recievedValue</p>
+}
