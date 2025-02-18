@@ -70,7 +70,10 @@ namespace ServerCore.Pages.Puzzles
             if (Path.GetExtension(uploadedFile.FileName).Equals(".zip", StringComparison.OrdinalIgnoreCase))
             {
                 await UploadZipAsync(uploadedFile);
-                return;
+            }
+            else
+            {
+                FilesIgnored.Add(uploadedFile.FileName);
             }
         }
 
