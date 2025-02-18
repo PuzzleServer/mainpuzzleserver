@@ -31,8 +31,6 @@ namespace ClientSyncComponent.Client.Pages
             if (firstRender)
             {
                 await JSRuntime.InvokeVoidAsync("registerDotNet", DotNetObjectReference.Create(this));
-
-                Timer = new Timer(OnTimer, null, 1000, 1000);
             }
 
             await base.OnAfterRenderAsync(firstRender);
@@ -89,6 +87,16 @@ namespace ClientSyncComponent.Client.Pages
             else
             {
                 Timer.Change(Timeout.Infinite, Timeout.Infinite);
+            }
+        }
+
+        [JSInvokable]
+        public void OnSyncablePuzzleLoaded()
+        {
+            Console.WriteLine("Syncable puzzle loaded, starting sync timer");
+            if (Timer == null)
+            {
+                Timer = new Timer(OnTimer, null, 1000, 1000);
             }
         }
 

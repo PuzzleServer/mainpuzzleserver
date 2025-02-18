@@ -4,12 +4,27 @@
 <button @onclick="SyncAsync">Sync</button>
 
 <script>
-
     let hostComponent = null;
+    let puzzleLoaded = false;
+    let readyToSync = false;
 
-    function registerDotNet(hostComponentArg) {
+    async function registerDotNet(hostComponentArg) {
         console.log("Registering dotNet");
         hostComponent = hostComponentArg;
+
+        console.log("Visibility: " + document.visibilityState);
+        puzzleFrame = document.getElementById("puzzle-frame");
+        if (puzzleFrame) {
+            console.log("puzzleFrame found in register handler");
+            puzzleFrame.contentWindow.postMessage("syncComponentLoad", "*");
+            readyToSync = true;
+            if (puzzleLoaded) {
+                await hostComponent.invokeMethodAsync("OnSyncablePuzzleLoaded");
+            }
+        }
+        else {
+            console.warning("puzzleFrame not found in register handler!");
+        }
     }
 
     async function onVisibilityChangeAsync (ev) {
@@ -23,9 +38,32 @@
         return document.visibilityState;
     }
 
-    console.log("ClientSyncComponent loaded");
+    let puzzleFrame = null;
+    console.log("ClientSyncComponent loading...");
     addEventListener("visibilitychange", onVisibilityChangeAsync);
-    console.log("Visibility: " + document.visibilityState);
+    addEventListener("message", (ev) => {
+        console.log("Message received: " + ev.data);
+        if (!puzzleLoaded && ev.data === "puzzleLoad") {
+            console.log("got puzzle load message");
+            puzzleLoaded = true;
+
+            if (!puzzleFrame) {
+                puzzleFrame = document.getElementById("puzzle-frame");
+            }
+            if (puzzleFrame) {
+                console.log("puzzleFrame found in message handler");
+                puzzleFrame.contentWindow.postMessage("syncComponentLoad", "*");
+                readyToSync = true;
+                if (hostComponent) {
+                    hostComponent.invokeMethodAsync("OnSyncablePuzzleLoaded");
+                }
+            }
+            else {
+                console.warning("puzzleFrame not found in message handler!");
+            }
+        }
+    });
+
 </script>
 
 @foreach(string recievedValue in ReceivedValues)
