@@ -1,7 +1,4 @@
-﻿@* <h3>ClientSyncComponent</h3> *@
-<h4>Last updated: @LastSyncUtc</h4>
-@* <button @onclick="PushChangeAsync">Push Change</button>*@
-<button @onclick="SyncAsync">Sync</button>
+﻿<span>Progress last updated: @LastSyncUtc.LocalDateTime</span>
 
 <script>
     let hostComponent = null;
@@ -9,13 +6,11 @@
     let readyToSync = false;
 
     async function registerDotNet(hostComponentArg) {
-        console.log("Registering dotNet");
         hostComponent = hostComponentArg;
 
-        console.log("Visibility: " + document.visibilityState);
         puzzleFrame = document.getElementById("puzzle-frame");
         if (puzzleFrame) {
-            console.log("puzzleFrame found in register handler");
+            console.debug("puzzleFrame found in register handler");
             puzzleFrame.contentWindow.postMessage({type: "syncComponentLoad"}, "*");
             readyToSync = true;
             if (puzzleLoaded) {
@@ -28,14 +23,14 @@
     }
 
     async function onVisibilityChangeAsync (ev) {
-        console.log("Visibility changed to: " + document.visibilityState);
+        console.debug("Visibility changed to: " + document.visibilityState);
         if (hostComponent) {
             await hostComponent.invokeMethodAsync("VisibilityChanged", document.visibilityState);
         }
     }
 
     async function onPuzzleSynced (changes) {
-        console.log("Puzzle synced with changes: " + changes);
+        console.debug("Puzzle synced with changes: " + changes);
         puzzleFrame.contentWindow.postMessage({type: "puzzlesynced", changes: changes}, "*");
     }
 
@@ -44,19 +39,18 @@
     }
 
     let puzzleFrame = null;
-    console.log("ClientSyncComponent loading...");
     addEventListener("visibilitychange", onVisibilityChangeAsync);
     addEventListener("message", async (ev) => {
-        console.log("Message received: " + ev.data);
+        console.debug("Message received: " + ev.data);
         if (!puzzleLoaded && ev.data.type === "puzzleLoad") {
-            console.log("got puzzle load message");
+            console.debug("got puzzle load message");
             puzzleLoaded = true;
 
             if (!puzzleFrame) {
                 puzzleFrame = document.getElementById("puzzle-frame");
             }
             if (puzzleFrame) {
-                console.log("puzzleFrame found in message handler");
+                console.debug("puzzleFrame found in message handler");
                 puzzleFrame.contentWindow.postMessage({type: "syncComponentLoad"}, "*");
                 readyToSync = true;
                 if (hostComponent) {
@@ -68,14 +62,8 @@
             }
         }
         else if (ev.data.type === "puzzlechanged") {
-            console.log("got puzzle change message");
             await hostComponent.invokeMethodAsync("OnPuzzleChangedAsync", ev.data.changes);
         }
     });
 
 </script>
-
-@foreach(string recievedValue in ReceivedValues)
-{
-    <p>@recievedValue</p>
-}

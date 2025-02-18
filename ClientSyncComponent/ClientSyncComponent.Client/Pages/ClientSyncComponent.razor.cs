@@ -1,20 +1,30 @@
-﻿
-using System.Diagnostics;
-using System.Net;
-using System.Text;
-using System.Text.Unicode;
+﻿using System.Text;
 using Azure.Data.Tables;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.JSInterop;
 
 namespace ClientSyncComponent.Client.Pages
 {
+    /// <summary>
+    /// Component that integrates with puzzle.js to sync changes to Azure Tables
+    /// </summary>
     public partial class ClientSyncComponent
     {
         [Inject]
         IJSRuntime JSRuntime { get; set; }
+
+        [Parameter]
+        public int PuzzleId { get; set; }
+
+        [Parameter]
+        public int TeamId { get; set; }
+
+        [Parameter]
+        public int PuzzleUserId { get; set; }
+
+        [Parameter]
+        public Uri TableSASUrl { get; set; }
 
         DateTimeOffset LastSyncUtc = DateTimeOffset.MinValue;
 
@@ -26,7 +36,7 @@ namespace ClientSyncComponent.Client.Pages
 
         protected override Task OnParametersSetAsync()
         {
-            TableClient = new TableClient("UseDevelopmentStorage=true", "WasmTestTable");
+            TableClient = new TableClient(TableSASUrl);
             return base.OnParametersSetAsync();
         }
 
@@ -42,7 +52,7 @@ namespace ClientSyncComponent.Client.Pages
 
         private async void OnTimer(object? state)
         {
-            await SyncAsync(null);
+            await SyncAsync();
             string visibility = await JSRuntime.InvokeAsync<string>("getVisibility");
             Console.WriteLine("Timer ticked. Visibility is " + visibility);
 
@@ -56,7 +66,7 @@ namespace ClientSyncComponent.Client.Pages
         /// <returns>Interval in milliseconds to poll storage at</returns>
         private int CalculateInterval()
         {
-            // todo morganb: get a multiplier or override from the server for central updates?
+            // todo: get a multiplier or override from the server for central updates?
             TimeSpan timeSinceUpdate = DateTimeOffset.UtcNow - LastSyncUtc;
             if (timeSinceUpdate.TotalSeconds < 120)
             {
@@ -107,38 +117,31 @@ namespace ClientSyncComponent.Client.Pages
         [JSInvokable]
         public async void OnPuzzleChangedAsync(JsPuzzleChange[] puzzleChanges)
         {
-            Console.WriteLine("Puzzle changed: " + puzzleChanges.Length);
+            List<TableTransactionAction> actions = new List<TableTransactionAction>(puzzleChanges.Length);
 
             foreach (JsPuzzleChange change in puzzleChanges)
             {
                 Console.WriteLine($"Puzzle changed: {change.puzzleId} {change.teamId} {change.playerId} {change.locationKey} {change.propertyKey} {change.value}");
 
-                PuzzleEntry entry = new PuzzleEntry(
-                    puzzleId: testPuzzleId,
-                    teamId: testTeamId,
-                    playerId: testPlayerId,
-                    subPuzzleId: Base64UrlTextEncoder.Encode(Encoding.UTF8.GetBytes(change.puzzleId)),
-                    locationKey: change.locationKey,
-                    propertyKey: change.propertyKey,
-                    value: change.value,
-                    channel: change.channel);
+                PuzzleEntry puzzleEntry = new PuzzleEntry(
+                                    puzzleId: PuzzleId,
+                                    teamId: TeamId,
+                                    playerId: PuzzleUserId,
+                                    subPuzzleId: Base64UrlTextEncoder.Encode(Encoding.UTF8.GetBytes(change.puzzleId)),
+                                    locationKey: change.locationKey,
+                                    propertyKey: change.propertyKey,
+                                    value: change.value,
+                                    channel: change.channel);
 
-                await TableClient.UpsertEntityAsync(entry);
-
-                //ReceivedValues.Add(change.value);
+                await TableClient.UpsertEntityAsync(puzzleEntry);
             }
-            //await InvokeAsync(StateHasChanged);
         }
 
-        const int testPuzzleId = 1;
-        const int testTeamId = 2;
-        const int testPlayerId = 3;
-
-        private async Task SyncAsync(MouseEventArgs? _)
+        private async Task SyncAsync()
         {
             bool foundNewData = false;
 
-            var newChanges = TableClient.QueryAsync<PuzzleEntry>(entry => entry.PartitionKey == PuzzleEntry.CreatePartitionKey(testPuzzleId, testTeamId) && entry.Timestamp > LastSyncUtc);
+            var newChanges = TableClient.QueryAsync<PuzzleEntry>(entry => entry.PartitionKey == PuzzleEntry.CreatePartitionKey(PuzzleId, TeamId) && entry.Timestamp > LastSyncUtc);
             
             List<JsPuzzleChange> jsChanges = new List<JsPuzzleChange>();
             await foreach (PuzzleEntry entry in newChanges)
@@ -148,10 +151,10 @@ namespace ClientSyncComponent.Client.Pages
                 jsChanges.Add(new JsPuzzleChange()
                 {
                     locationKey = entry.LocationKey,
-                    playerId = entry.PlayerId.ToString(),
+                    playerId = PuzzleUserId.ToString(),
                     propertyKey = entry.PropertyKey,
                     puzzleId = Encoding.UTF8.GetString(Base64UrlTextEncoder.Decode(entry.SubPuzzleId)),
-                    teamId = testTeamId.ToString(),
+                    teamId = TeamId.ToString(),
                     value = entry.Value
                 });
                 LastSyncUtc = entry.Timestamp > LastSyncUtc ? entry.Timestamp.Value : LastSyncUtc;
@@ -162,21 +165,6 @@ namespace ClientSyncComponent.Client.Pages
                 await JSRuntime.InvokeVoidAsync("onPuzzleSynced", [jsChanges.ToArray()]);
                 await InvokeAsync(StateHasChanged);
             }
-        }
-
-        // todo morganb: changes are an array and sometimes have multiple items. Try to batch
-        private async Task PushChangeAsync(MouseEventArgs? _)
-        {
-            PuzzleEntry entry = new PuzzleEntry(
-                puzzleId: testPuzzleId,
-                teamId: testTeamId,
-                playerId: testPlayerId,
-                subPuzzleId: "subPuzzle",
-                locationKey: "location",
-                propertyKey: "property",
-                value: "value" + Random.Shared.Next(),
-                channel: "MTV");
-            await TableClient.UpsertEntityAsync(entry);
         }
     }
 }
