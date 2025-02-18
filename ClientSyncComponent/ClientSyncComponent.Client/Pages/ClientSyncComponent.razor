@@ -1,0 +1,69 @@
+﻿<span>Progress last updated: @LastSyncUtc.LocalDateTime</span>
+
+<script>
+    let hostComponent = null;
+    let puzzleLoaded = false;
+    let readyToSync = false;
+
+    async function registerDotNet(hostComponentArg) {
+        hostComponent = hostComponentArg;
+
+        puzzleFrame = document.getElementById("puzzle-frame");
+        if (puzzleFrame) {
+            console.debug("puzzleFrame found in register handler");
+            puzzleFrame.contentWindow.postMessage({type: "syncComponentLoad"}, "*");
+            readyToSync = true;
+            if (puzzleLoaded) {
+                await hostComponent.invokeMethodAsync("OnSyncablePuzzleLoaded");
+            }
+        }
+        else {
+            console.warning("puzzleFrame not found in register handler!");
+        }
+    }
+
+    async function onVisibilityChangeAsync (ev) {
+        console.debug("Visibility changed to: " + document.visibilityState);
+        if (hostComponent) {
+            await hostComponent.invokeMethodAsync("VisibilityChanged", document.visibilityState);
+        }
+    }
+
+    async function onPuzzleSynced (changes) {
+        console.debug("Puzzle synced with changes: " + changes);
+        puzzleFrame.contentWindow.postMessage({type: "puzzlesynced", changes: changes}, "*");
+    }
+
+    function getVisibility() {
+        return document.visibilityState;
+    }
+
+    let puzzleFrame = null;
+    addEventListener("visibilitychange", onVisibilityChangeAsync);
+    addEventListener("message", async (ev) => {
+        console.debug("Message received: " + ev.data);
+        if (!puzzleLoaded && ev.data.type === "puzzleLoad") {
+            console.debug("got puzzle load message");
+            puzzleLoaded = true;
+
+            if (!puzzleFrame) {
+                puzzleFrame = document.getElementById("puzzle-frame");
+            }
+            if (puzzleFrame) {
+                console.debug("puzzleFrame found in message handler");
+                puzzleFrame.contentWindow.postMessage({type: "syncComponentLoad"}, "*");
+                readyToSync = true;
+                if (hostComponent) {
+                    await hostComponent.invokeMethodAsync("OnSyncablePuzzleLoaded");
+                }
+            }
+            else {
+                console.warning("puzzleFrame not found in message handler!");
+            }
+        }
+        else if (ev.data.type === "puzzlechanged") {
+            await hostComponent.invokeMethodAsync("OnPuzzleChangedAsync", ev.data.changes);
+        }
+    });
+
+</script>
