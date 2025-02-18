@@ -3,6 +3,9 @@ using Azure.Data.Tables;
 
 namespace ClientSyncComponent.Client
 {
+    /// <summary>
+    /// Azure Table entity for puzzle state
+    /// </summary>
     public class PuzzleEntry : ITableEntity
     {
         // Default constructor required by Azure query API

@@ -67,11 +67,6 @@
         }
     </style>
 
-    @if (ev != null && ev.AllowBlazor)
-    {
-        @* <HeadOutlet @rendermode ="InteractiveServer" /> *@
-    }
-
     @{
         // Keep the old path for events prior to 2024 so they aren't broken
         if ((ev?.HomePartial != null) && ((ev.HomePartial.StartsWith("pd")) || (ev.HomePartial.StartsWith("nipd"))) && (ev.EventBegin.Year < 2024))

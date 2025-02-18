@@ -1,5 +1,8 @@
 ﻿namespace ClientSyncComponent.Client
 {
+    /// <summary>
+    /// Javascript entity for puzzle state matching puzzle.js
+    /// </summary>
     public class JsPuzzleChange
     {
         public string locationKey { get; set; }
