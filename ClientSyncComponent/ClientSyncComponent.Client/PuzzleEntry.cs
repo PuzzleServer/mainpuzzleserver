@@ -11,10 +11,11 @@ namespace ClientSyncComponent.Client
         }
         
         // todo morganb: translate from string player name to playerId
-        public PuzzleEntry(int puzzleId, int teamId, int playerId, string locationKey, string propertyKey, string value, string channel)
+        public PuzzleEntry(int puzzleId, int teamId, int playerId, string subPuzzleId, string locationKey, string propertyKey, string value, string channel)
         {
             PartitionKey = CreatePartitionKey(puzzleId, teamId);
-            RowKey = CreateRowKey(locationKey, propertyKey);
+            RowKey = CreateRowKey(subPuzzleId, locationKey, propertyKey);
+            SubPuzzleId = subPuzzleId;
             LocationKey = locationKey;
             PropertyKey = propertyKey;
             Value = value;
@@ -22,9 +23,9 @@ namespace ClientSyncComponent.Client
             Channel = channel;
         }
 
-        private static string CreateRowKey(string locationKey, string propertyKey)
+        private static string CreateRowKey(string subPuzzleId, string locationKey, string propertyKey)
         {
-            return $"{propertyKey}|{locationKey}";
+            return $"{subPuzzleId}|{propertyKey}|{locationKey}";
         }
 
         public static string CreatePartitionKey(int puzzleId, int teamId)
@@ -34,6 +35,7 @@ namespace ClientSyncComponent.Client
 
         public string PartitionKey { get; set; }
         public string RowKey { get; set; }
+        public string SubPuzzleId { get; set; }
         public string LocationKey { get; set; }
         public string PropertyKey { get; set; }
         public string Value { get; set; }

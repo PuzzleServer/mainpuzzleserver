@@ -1,8 +1,12 @@
 ﻿
 using System.Diagnostics;
+using System.Net;
+using System.Text;
+using System.Text.Unicode;
 using Azure.Data.Tables;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.JSInterop;
 
 namespace ClientSyncComponent.Client.Pages
@@ -100,23 +104,62 @@ namespace ClientSyncComponent.Client.Pages
             }
         }
 
+        [JSInvokable]
+        public async void OnPuzzleChangedAsync(JsPuzzleChange[] puzzleChanges)
+        {
+            Console.WriteLine("Puzzle changed: " + puzzleChanges.Length);
+
+            foreach (JsPuzzleChange change in puzzleChanges)
+            {
+                Console.WriteLine($"Puzzle changed: {change.puzzleId} {change.teamId} {change.playerId} {change.locationKey} {change.propertyKey} {change.value}");
+
+                PuzzleEntry entry = new PuzzleEntry(
+                    puzzleId: testPuzzleId,
+                    teamId: testTeamId,
+                    playerId: testPlayerId,
+                    subPuzzleId: Base64UrlTextEncoder.Encode(Encoding.UTF8.GetBytes(change.puzzleId)),
+                    locationKey: change.locationKey,
+                    propertyKey: change.propertyKey,
+                    value: change.value,
+                    channel: change.channel);
+
+                await TableClient.UpsertEntityAsync(entry);
+
+                //ReceivedValues.Add(change.value);
+            }
+            //await InvokeAsync(StateHasChanged);
+        }
+
         const int testPuzzleId = 1;
         const int testTeamId = 2;
+        const int testPlayerId = 3;
 
         private async Task SyncAsync(MouseEventArgs? _)
         {
             bool foundNewData = false;
 
             var newChanges = TableClient.QueryAsync<PuzzleEntry>(entry => entry.PartitionKey == PuzzleEntry.CreatePartitionKey(testPuzzleId, testTeamId) && entry.Timestamp > LastSyncUtc);
+            
+            List<JsPuzzleChange> jsChanges = new List<JsPuzzleChange>();
             await foreach (PuzzleEntry entry in newChanges)
             {
                 foundNewData = true;
                 ReceivedValues.Add(entry.Value);
+                jsChanges.Add(new JsPuzzleChange()
+                {
+                    locationKey = entry.LocationKey,
+                    playerId = entry.PlayerId.ToString(),
+                    propertyKey = entry.PropertyKey,
+                    puzzleId = Encoding.UTF8.GetString(Base64UrlTextEncoder.Decode(entry.SubPuzzleId)),
+                    teamId = testTeamId.ToString(),
+                    value = entry.Value
+                });
                 LastSyncUtc = entry.Timestamp > LastSyncUtc ? entry.Timestamp.Value : LastSyncUtc;
             }
 
             if (foundNewData)
             {
+                await JSRuntime.InvokeVoidAsync("onPuzzleSynced", [jsChanges.ToArray()]);
                 await InvokeAsync(StateHasChanged);
             }
         }
@@ -127,7 +170,8 @@ namespace ClientSyncComponent.Client.Pages
             PuzzleEntry entry = new PuzzleEntry(
                 puzzleId: testPuzzleId,
                 teamId: testTeamId,
-                playerId: 3,
+                playerId: testPlayerId,
+                subPuzzleId: "subPuzzle",
                 locationKey: "location",
                 propertyKey: "property",
                 value: "value" + Random.Shared.Next(),
