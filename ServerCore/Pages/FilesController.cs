@@ -44,9 +44,10 @@ namespace ServerCore.Pages
             // * Admins have access to all files in their event
             // * Authors have access to all files attached to puzzles they own
             // * Players can see puzzles and materials on puzzles they've unlocked
+            // * Players can see puzzles and materials in alpha-testing events when the puzzle needs alpha tests
             // * Players can see answers after the event's AnswersAvailable time
             // * Players can see solve tokens on puzzles they've solved
-            if (!await IsAuthorized(eventObj.ID, content.Puzzle, content))
+            if (!(eventObj.IsAlphaTestingEvent && content.Puzzle.AlphaTestsNeeded > 0) && !await IsAuthorized(eventObj.ID, content.Puzzle, content))
             {
                 return Unauthorized();
             }
