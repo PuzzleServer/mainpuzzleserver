@@ -353,5 +353,11 @@ namespace ServerCore.DataModel
         /// </summary>
         [NotMapped]
         public bool EphemeralHackKillLiveEventPage => EphemeralHacks?.Contains("kill-live-event-page") == true;
+
+        /// <summary>
+        /// True if puzzle syncing should be disabled
+        /// </summary>
+        [NotMapped]
+        public bool EphemeralHackKillSync => EphemeralHacks?.Contains("kill-sync") == true;
     }
 }
