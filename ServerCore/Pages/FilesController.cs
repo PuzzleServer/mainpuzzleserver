@@ -44,9 +44,10 @@ namespace ServerCore.Pages
             // * Admins have access to all files in their event
             // * Authors have access to all files attached to puzzles they own
             // * Players can see puzzles and materials on puzzles they've unlocked
+            // * Players can see puzzles and materials in alpha-testing events when the puzzle needs alpha tests
             // * Players can see answers after the event's AnswersAvailable time
             // * Players can see solve tokens on puzzles they've solved
-            if (!await IsAuthorized(eventObj.ID, content.Puzzle, content))
+            if (!await IsAuthorized(eventObj, content.Puzzle, content))
             {
                 return Unauthorized();
             }
@@ -60,11 +61,8 @@ namespace ServerCore.Pages
         /// <param name="eventId">The current event</param>
         /// <param name="puzzle">The puzzle the file belongs to</param>
         /// <param name="content">The file</param>
-        private async Task<bool> IsAuthorized(int eventId, Puzzle puzzle, ContentFile content)
+        private async Task<bool> IsAuthorized(Event currentEvent, Puzzle puzzle, ContentFile content)
         {
-            Event currentEvent = await (from ev in context.Events
-                                        where ev.ID == eventId
-                                        select ev).SingleAsync();
             PuzzleUser user = await PuzzleUser.GetPuzzleUserForCurrentUser(context, User, userManager);
 
             // Admins can see all files
@@ -75,6 +73,12 @@ namespace ServerCore.Pages
 
             // Authors can see all files attached to their puzzles
             if (await UserEventHelper.IsAuthorOfPuzzle(context, puzzle, user))
+            {
+                return true;
+            }
+
+            // Puzzles open for alpha testing are available
+            if (currentEvent.IsAlphaTestingEvent && content.Puzzle.AlphaTestsNeeded > 0 && (content.FileType == ContentFileType.Puzzle || content.FileType == ContentFileType.PuzzleMaterial))
             {
                 return true;
             }
