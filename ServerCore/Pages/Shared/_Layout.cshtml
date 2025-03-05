@@ -58,7 +58,7 @@
         <script src="~/js/site.min.js" asp-append-version="true"></script>
     </environment>
 
-    <base href="~/" />
+    <base href="/" />
     <style>
         @@media print {
             .no-print {
@@ -66,12 +66,6 @@
             }
         }
     </style>
-
-    @if (ev != null && ev.AllowBlazor)
-    {
-        <component type="typeof(Microsoft.AspNetCore.Components.Web.HeadOutlet)"
-                   render-mode="ServerPrerendered" />
-    }
 
     @{
         // Keep the old path for events prior to 2024 so they aren't broken
@@ -99,7 +93,7 @@
 <body class="body-customizable">
     @if (ev != null && ev.AllowBlazor)
     {
-        <script src="_framework/blazor.server.js"></script>
+        <script src="_framework/blazor.web.js"></script>
         <script>
             var lockResolver;
             if (navigator && navigator.locks && navigator.locks.request) {

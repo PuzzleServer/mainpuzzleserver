@@ -67,7 +67,9 @@ namespace ServerCore
                 }
             });
 
-            services.AddServerSideBlazor();
+            services.AddRazorComponents()
+                    .AddInteractiveServerComponents()
+                    .AddInteractiveWebAssemblyComponents();
 
             DeploymentConfiguration.ConfigureDatabase(Configuration, services, _hostEnv);
             FileManager.ConnectionString = Configuration.GetConnectionString("AzureStorageConnectionString");
@@ -164,6 +166,7 @@ namespace ServerCore
         {
             if (env.IsDevelopment() && String.IsNullOrEmpty(Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME")))
             {
+                app.UseWebAssemblyDebugging();
                 app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
                 PuzzleServerContext.UpdateDatabase(app);
@@ -204,9 +207,13 @@ namespace ServerCore
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseAntiforgery();
+
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapBlazorHub();
+                endpoints.MapRazorComponents<App>()
+                    .AddInteractiveServerRenderMode()
+                    .AddInteractiveWebAssemblyRenderMode();
                 endpoints.MapHub<ServerMessageHub>("/serverMessage");
             });
 
