@@ -1,0 +1,37 @@
+﻿<label>
+    Start typing a user name or email:
+    <form>
+        <input type="text" @oninput="OnFilterChanged" />
+    </form>
+</label>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Name
+            </th>
+            <th>
+                Email
+            </th>
+            <th>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in SelectedUsers)
+        {
+            <tr>
+                <td>
+                    @item.Name
+                </td>
+                <td>
+                    @item.Email
+                </td>
+                <td>
+                    <button @onclick="async () => await OnAddClick(item.ID)">Add</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -12,43 +12,9 @@
 <h2>@(Model.Team.Name): Add member</h2>
 
 <div>
-    <a asp-page="./Details" asp-route-teamId="@Model.Team.ID">Cancel</a>
+    <a asp-page="./Details" asp-route-teamId="@Model.Team.ID">Back to team details</a>
 </div>
 
-<h4>Select a user to add to this team:</h4>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                ID
-            </th>
-            <th>
-                Name
-            </th>
-            <th>
-                Email
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.Users)
-        {
-            <tr>
-                <td>
-                    @item.Item1.ID
-                </td>
-                <td>
-                    @item.Item1.Name
-                </td>
-                <td>
-                    @item.Item1.Email
-                </td>
-                <td>
-                    <a asp-page-handler="AddMember" asp-route-teamId="@Model.Team.ID" asp-route-userId="@item.Item1.ID" asp-route-applicationId="@item.Item2">Add</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<component type="typeof(ServerCore.Pages.Teams.AddMemberPicker)" render-mode="Server"
+           param-EventId="@Model.Event.ID"
+           param-TeamId="@Model.Team.ID" />
