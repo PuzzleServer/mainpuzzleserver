@@ -29,6 +29,12 @@ namespace ClientSyncComponent.Client.Pages
         [Parameter]
         public DateTimeOffset EventStartTimeUtc { get; set; }
 
+        [Parameter]
+        public bool SyncEnabled { get; set; } = true;
+
+        [Parameter]
+        public int FastestSyncInterval { get; set; } = 0;
+
         DateTimeOffset LastSyncUtc = DateTimeOffset.MinValue;
 
         DateTimeOffset DisplayLastSyncUtc = DateTimeOffset.MinValue;
@@ -43,6 +49,16 @@ namespace ClientSyncComponent.Client.Pages
         {
             TableClient = new TableClient(TableSASUrl);
             DisplayLastSyncUtc = EventStartTimeUtc;
+
+            if (!SyncEnabled)
+            {
+                Timer?.Change(Timeout.Infinite, Timeout.Infinite);
+            }
+            else
+            {
+                Timer?.Change(0, CalculateInterval());
+            }
+
             return base.OnParametersSetAsync();
         }
 
@@ -70,7 +86,11 @@ namespace ClientSyncComponent.Client.Pages
         /// <returns>Interval in milliseconds to poll storage at</returns>
         private int CalculateInterval()
         {
-            // todo: get a multiplier or override from the server for central updates?
+            return Math.Max(FastestSyncInterval, CalculateIntervalFromLastSync());
+        }
+
+        private int CalculateIntervalFromLastSync()
+        {
             TimeSpan timeSinceUpdate = DateTimeOffset.UtcNow - LastSyncUtc;
             if (timeSinceUpdate.TotalSeconds < 120)
             {
@@ -119,7 +139,10 @@ namespace ClientSyncComponent.Client.Pages
         [JSInvokable]
         public async void OnPuzzleChangedAsync(JsPuzzleChange[] puzzleChanges)
         {
-            List<TableTransactionAction> actions = new List<TableTransactionAction>(puzzleChanges.Length);
+            if (!SyncEnabled)
+            {
+                return;
+            }
 
             foreach (JsPuzzleChange change in puzzleChanges)
             {

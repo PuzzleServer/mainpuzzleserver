@@ -13,6 +13,9 @@
         public string puzzleId { get; set; }
         public string teamId { get; set; }
         public string value { get; set; }
+        /// <summary>
+        /// TODO: Implement channels beyond having the property
+        /// </summary>
         public string channel { get; set; }
     }
 #pragma warning restore IDE1006 // Naming Styles

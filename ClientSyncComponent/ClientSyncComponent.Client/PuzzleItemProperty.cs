@@ -43,6 +43,9 @@ namespace ClientSyncComponent.Client
         public string PropertyKey { get; set; }
         public string Value { get; set; }
         public int PlayerId { get; set; }
+        /// <summary>
+        /// TODO: Implement channels beyond having the property
+        /// </summary>
         public string Channel { get; set; }
 
         // Set automatically by the Table service

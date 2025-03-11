@@ -357,18 +357,21 @@ namespace ServerCore.Pages.Submissions
             }
             else
             {
-                string partitionKey = $"{Puzzle.ID}_{Team.ID}";
-                TableSasBuilder sasBuilder = new TableSasBuilder
+                if (!Event.EphemeralHackKillSync)
                 {
-                    ExpiresOn = DateTimeOffset.UtcNow.AddDays(7.0),
-                    PartitionKeyStart = partitionKey,
-                    PartitionKeyEnd = partitionKey,
-                    TableName = "PuzzleSyncData",
-                };
-                sasBuilder.SetPermissions(TableSasPermissions.All);
-                TableServiceClient tableServiceClient = new TableServiceClient(FileManager.ConnectionString);
-                TableClient tableClient = tableServiceClient.GetTableClient("PuzzleSyncData");
-                SyncTableSasUrl = tableClient.GenerateSasUri(sasBuilder);
+                    string partitionKey = $"{Puzzle.ID}_{Team.ID}";
+                    TableSasBuilder sasBuilder = new TableSasBuilder
+                    {
+                        ExpiresOn = DateTimeOffset.UtcNow.AddDays(7.0),
+                        PartitionKeyStart = partitionKey,
+                        PartitionKeyEnd = partitionKey,
+                        TableName = "PuzzleSyncData",
+                    };
+                    sasBuilder.SetPermissions(TableSasPermissions.All);
+                    TableServiceClient tableServiceClient = new TableServiceClient(FileManager.ConnectionString);
+                    TableClient tableClient = tableServiceClient.GetTableClient("PuzzleSyncData");
+                    SyncTableSasUrl = tableClient.GenerateSasUri(sasBuilder);
+                }
 
                 Team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
 

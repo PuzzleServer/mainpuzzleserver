@@ -5,12 +5,12 @@
     let puzzleLoaded = false;
     let readyToSync = false;
 
-    async function registerDotNet(hostComponentArg) {
-        hostComponent = hostComponentArg;
+    async function sendSyncComponentLoad() {
+        if (!puzzleFrame) {
+            puzzleFrame = document.getElementById("puzzle-frame");
+        }
 
-        puzzleFrame = document.getElementById("puzzle-frame");
         if (puzzleFrame) {
-            console.debug("puzzleFrame found in register handler");
             puzzleFrame.contentWindow.postMessage({type: "syncComponentLoad"}, "*");
             readyToSync = true;
             if (puzzleLoaded) {
@@ -18,8 +18,13 @@
             }
         }
         else {
-            console.warning("puzzleFrame not found in register handler!");
+            console.warning("puzzleFrame not found in message handler!");
         }
+    }
+
+    async function registerDotNet(hostComponentArg) {
+        hostComponent = hostComponentArg;
+        sendSyncComponentLoad();
     }
 
     async function onVisibilityChangeAsync (ev) {
@@ -43,19 +48,7 @@
             console.debug("got puzzle load message");
             puzzleLoaded = true;
 
-            if (!puzzleFrame) {
-                puzzleFrame = document.getElementById("puzzle-frame");
-            }
-            if (puzzleFrame) {
-                puzzleFrame.contentWindow.postMessage({type: "syncComponentLoad"}, "*");
-                readyToSync = true;
-                if (hostComponent) {
-                    await hostComponent.invokeMethodAsync("OnSyncablePuzzleLoaded");
-                }
-            }
-            else {
-                console.warning("puzzleFrame not found in message handler!");
-            }
+            sendSyncComponentLoad();
         }
         else if (ev.data.type === "puzzlechanged") {
             await hostComponent.invokeMethodAsync("OnPuzzleChangedAsync", ev.data.changes);
