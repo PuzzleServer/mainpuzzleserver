@@ -45,6 +45,8 @@ namespace ClientSyncComponent.Client.Pages
 
         Timer Timer { get; set; }
 
+        public bool SyncablePuzzleLoaded { get; set; } = false;
+
         protected override Task OnParametersSetAsync()
         {
             TableClient = new TableClient(TableSASUrl);
@@ -128,12 +130,15 @@ namespace ClientSyncComponent.Client.Pages
         }
 
         [JSInvokable]
-        public void OnSyncablePuzzleLoaded()
+        public async void OnSyncablePuzzleLoadedAsync()
         {
+            SyncablePuzzleLoaded = true;
             if (Timer == null)
             {
                 Timer = new Timer(OnTimer, null, 0, 1000);
             }
+            
+            await InvokeAsync(StateHasChanged);
         }
 
         [JSInvokable]

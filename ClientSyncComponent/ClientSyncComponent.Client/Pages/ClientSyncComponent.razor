@@ -1,4 +1,11 @@
-﻿<span>Last change made: @DisplayLastSyncUtc.LocalDateTime</span>
+﻿@if (SyncablePuzzleLoaded)
+{
+    <span>Last change made: @DisplayLastSyncUtc.LocalDateTime</span>
+}
+else
+{
+    <span>Syncing not enabled</span>
+}
 
 <script>
     let hostComponent = null;
@@ -14,7 +21,7 @@
             puzzleFrame.contentWindow.postMessage({type: "syncComponentLoad"}, "*");
             readyToSync = true;
             if (puzzleLoaded) {
-                await hostComponent.invokeMethodAsync("OnSyncablePuzzleLoaded");
+                await hostComponent.invokeMethodAsync("OnSyncablePuzzleLoadedAsync");
             }
         }
         else {
