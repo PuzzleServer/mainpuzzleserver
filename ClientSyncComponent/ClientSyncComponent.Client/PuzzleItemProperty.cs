@@ -6,15 +6,15 @@ namespace ClientSyncComponent.Client
     /// <summary>
     /// Azure Table entity for puzzle state
     /// </summary>
-    public class PuzzleEntry : ITableEntity
+    public class PuzzleItemProperty : ITableEntity
     {
         // Default constructor required by Azure query API
-        public PuzzleEntry()
+        public PuzzleItemProperty()
         {
         }
         
         // todo morganb: translate from string player name to playerId
-        public PuzzleEntry(int puzzleId, int teamId, int playerId, string subPuzzleId, string locationKey, string propertyKey, string value, string channel)
+        public PuzzleItemProperty(int puzzleId, int teamId, int playerId, string subPuzzleId, string locationKey, string propertyKey, string value, string channel)
         {
             PartitionKey = CreatePartitionKey(puzzleId, teamId);
             RowKey = CreateRowKey(subPuzzleId, locationKey, propertyKey);
