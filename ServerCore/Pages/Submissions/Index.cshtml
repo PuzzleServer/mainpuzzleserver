@@ -573,7 +573,17 @@ else
                 {
                     <div><b>Want to print?</b> <a href="@puzzleFilePath" target="_blank" download>Click this link</a> to download the file. Please allow popups!</div>
                 }
-
+                
+                @if (!Model.IsPuzzleForSinglePlayer && !Model.Event.EphemeralHackKillSync)
+                {
+                    <component type="typeof(ClientSyncComponent.Client.Pages.ClientSyncComponent)" render-mode="WebAssembly"
+                    param-PuzzleUserId="@Model.LoggedInUser.ID"
+                    param-TeamId="@Model.Team.ID"
+                    param-PuzzleId="@Model.Puzzle.ID"
+                    param-TableSASUrl="@Model.SyncTableSasUrl"
+                    param-EventStartTimeUtc="(DateTimeOffset)@Model.Event.EventBegin"
+                    />
+                }
                 @if (!Model.IsPuzzleForSinglePlayer && Model.Event.AllowBlazor && !Model.Event.EphemeralHackKillPresence)
                 {
                     <div>

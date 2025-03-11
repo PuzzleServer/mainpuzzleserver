@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using Azure.Data.Tables;
+using Azure.Data.Tables.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -170,6 +173,11 @@ namespace ServerCore
                 app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
                 PuzzleServerContext.UpdateDatabase(app);
+                TableServiceClient syncTableClient = new TableServiceClient(Configuration.GetConnectionString("AzureStorageConnectionString"));
+                syncTableClient.CreateTableIfNotExists("PuzzleSyncData");
+                TableServiceProperties tableServiceProperties = new TableServiceProperties();
+                tableServiceProperties.Cors.Add(new TableCorsRule("*", "GET,POST,PATCH,FETCH,PUT", "*", "*", Int32.MaxValue));
+                syncTableClient.SetProperties(tableServiceProperties);
             }
             else if (env.IsStaging() && Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") == "PuzzleServerTestDeploy")
             {
@@ -213,7 +221,9 @@ namespace ServerCore
             {
                 endpoints.MapRazorComponents<App>()
                     .AddInteractiveServerRenderMode()
-                    .AddInteractiveWebAssemblyRenderMode();
+                    .AddInteractiveWebAssemblyRenderMode()
+                    .AddAdditionalAssemblies(typeof(ClientSyncComponent.Client._Imports).Assembly);
+
                 endpoints.MapHub<ServerMessageHub>("/serverMessage");
             });
 
