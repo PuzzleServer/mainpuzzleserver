@@ -7,48 +7,15 @@
     var roleString = Model.addAdmin ? "admin" : "author";
 }
 
-<h2>Add @roleString</h2>
-
 <div>
-    <a asp-page="/Events/Players">Cancel</a>
+
+    <h2>Add @roleString</h2>
+
+    <div>
+        <a asp-page="/Events/Players">Back to player list</a>
+    </div>
+
+    <component type="typeof(ServerCore.Pages.Events.AddAdminOrAuthorPicker)" render-mode="Server"
+               param-EventId="@Model.Event.ID"
+               param-AddAdmin="@Model.addAdmin" />
 </div>
-
-<h4>Select a user to make an @roleString</h4>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Name
-            </th>
-            <th>
-                Email
-            </th>
-            <th>
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.Users)
-        {
-        <tr>
-            <td>
-                @item.Name
-            </td>
-            <td>
-                @item.Email
-            </td>
-            <td>
-                @if (Model.addAdmin)
-                {
-                    <a asp-page-handler="AddAdmin" asp-route-userId=@item.ID>Add</a>
-                }
-                else
-                {
-                    <a asp-page-handler="AddAuthor" asp-route-userId=@item.ID>Add</a>
-                }
-            </td>
-        </tr>
-        }
-    </tbody>
-</table>
