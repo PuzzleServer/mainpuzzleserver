@@ -576,7 +576,13 @@ else
                 
                 @if (!Model.IsPuzzleForSinglePlayer && !Model.Event.EphemeralHackKillSync)
                 {
-                    <component type="typeof(ClientSyncComponent.Client.Pages.ClientSyncComponent)" render-mode="WebAssembly" param-PuzzleUserId="@Model.LoggedInUser.ID" param-TeamId="@Model.Team.ID" param-PuzzleId="@Model.Puzzle.ID" param-TableSASUrl="@Model.SyncTableSasUrl"/>
+                    <component type="typeof(ClientSyncComponent.Client.Pages.ClientSyncComponent)" render-mode="WebAssembly"
+                    param-PuzzleUserId="@Model.LoggedInUser.ID"
+                    param-TeamId="@Model.Team.ID"
+                    param-PuzzleId="@Model.Puzzle.ID"
+                    param-TableSASUrl="@Model.SyncTableSasUrl"
+                    param-EventStartTimeUtc="(DateTimeOffset)@Model.Event.EventBegin"
+                    />
                 }
                 @if (!Model.IsPuzzleForSinglePlayer && Model.Event.AllowBlazor && !Model.Event.EphemeralHackKillPresence)
                 {

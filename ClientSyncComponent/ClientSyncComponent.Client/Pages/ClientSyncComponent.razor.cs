@@ -26,7 +26,12 @@ namespace ClientSyncComponent.Client.Pages
         [Parameter]
         public Uri TableSASUrl { get; set; }
 
+        [Parameter]
+        public DateTimeOffset EventStartTimeUtc { get; set; }
+
         DateTimeOffset LastSyncUtc = DateTimeOffset.MinValue;
+
+        DateTimeOffset DisplayLastSyncUtc = DateTimeOffset.MinValue;
 
         TableClient TableClient { get; set; }
 
@@ -37,6 +42,7 @@ namespace ClientSyncComponent.Client.Pages
         protected override Task OnParametersSetAsync()
         {
             TableClient = new TableClient(TableSASUrl);
+            DisplayLastSyncUtc = EventStartTimeUtc;
             return base.OnParametersSetAsync();
         }
 
@@ -53,8 +59,6 @@ namespace ClientSyncComponent.Client.Pages
         private async void OnTimer(object? state)
         {
             await SyncAsync();
-            string visibility = await JSRuntime.InvokeAsync<string>("getVisibility");
-            Console.WriteLine("Timer ticked. Visibility is " + visibility);
 
             int newInterval = CalculateInterval();
             Timer.Change(newInterval, newInterval);
@@ -93,7 +97,6 @@ namespace ClientSyncComponent.Client.Pages
         [JSInvokable]
         public void VisibilityChanged(string visibility)
         {
-            Console.WriteLine($".NET Visibility changed to {visibility}");
             if (visibility == "visible")
             {
                 Timer.Change(0, CalculateInterval());
@@ -107,10 +110,9 @@ namespace ClientSyncComponent.Client.Pages
         [JSInvokable]
         public void OnSyncablePuzzleLoaded()
         {
-            Console.WriteLine("Syncable puzzle loaded, starting sync timer");
             if (Timer == null)
             {
-                Timer = new Timer(OnTimer, null, 1000, 1000);
+                Timer = new Timer(OnTimer, null, 0, 1000);
             }
         }
 
@@ -121,9 +123,7 @@ namespace ClientSyncComponent.Client.Pages
 
             foreach (JsPuzzleChange change in puzzleChanges)
             {
-                Console.WriteLine($"Puzzle changed: {change.puzzleId} {change.teamId} {change.playerId} {change.locationKey} {change.propertyKey} {change.value}");
-
-                PuzzleEntry puzzleEntry = new PuzzleEntry(
+                PuzzleItemProperty puzzleEntry = new PuzzleItemProperty(
                                     puzzleId: PuzzleId,
                                     teamId: TeamId,
                                     playerId: PuzzleUserId,
@@ -141,10 +141,10 @@ namespace ClientSyncComponent.Client.Pages
         {
             bool foundNewData = false;
 
-            var newChanges = TableClient.QueryAsync<PuzzleEntry>(entry => entry.PartitionKey == PuzzleEntry.CreatePartitionKey(PuzzleId, TeamId) && entry.Timestamp > LastSyncUtc);
+            var newChanges = TableClient.QueryAsync<PuzzleItemProperty>(entry => entry.PartitionKey == PuzzleItemProperty.CreatePartitionKey(PuzzleId, TeamId) && entry.Timestamp > LastSyncUtc);
             
             List<JsPuzzleChange> jsChanges = new List<JsPuzzleChange>();
-            await foreach (PuzzleEntry entry in newChanges)
+            await foreach (PuzzleItemProperty entry in newChanges)
             {
                 foundNewData = true;
                 ReceivedValues.Add(entry.Value);
@@ -158,6 +158,7 @@ namespace ClientSyncComponent.Client.Pages
                     value = entry.Value
                 });
                 LastSyncUtc = entry.Timestamp > LastSyncUtc ? entry.Timestamp.Value : LastSyncUtc;
+                DisplayLastSyncUtc = entry.Timestamp > DisplayLastSyncUtc ? entry.Timestamp.Value : DisplayLastSyncUtc;
             }
 
             if (foundNewData)
