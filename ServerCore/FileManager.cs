@@ -37,7 +37,7 @@ namespace ServerCore
         private static async Task<Uri> UploadBlobToContainerAsync(string fileName, Stream contents, BlobContainerClient containerClient, string blobPath)
         {
             BlobClient blob = containerClient.GetBlobClient(blobPath);
-            await blob.UploadAsync(contents);
+            await blob.UploadAsync(contents, overwrite: true);
 
             if (fileExtensionProvider.TryGetContentType(fileName, out string contentType))
             {
