@@ -35,7 +35,7 @@ namespace ClientSyncComponent.Client.Pages
         [Parameter]
         public int FastestSyncInterval { get; set; } = 0;
 
-        DateTimeOffset LastSyncUtc = DateTimeOffset.MinValue;
+        DateTimeOffset LastSyncUtc = new DateTimeOffset(2024, 1, 1, 1, 1, 1, TimeSpan.Zero);
 
         DateTimeOffset DisplayLastSyncUtc = DateTimeOffset.MinValue;
 
