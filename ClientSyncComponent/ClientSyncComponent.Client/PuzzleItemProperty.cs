@@ -21,7 +21,9 @@ namespace ClientSyncComponent.Client
             SubPuzzleId = subPuzzleId;
             LocationKey = locationKey;
             PropertyKey = propertyKey;
-            Value = value;
+
+            // Azure tables can't store null values, so substitute empty string (which puzzle.js can handle equivalently to null)
+            Value = value ?? String.Empty;
             PlayerId = playerId;
             Channel = channel;
         }
