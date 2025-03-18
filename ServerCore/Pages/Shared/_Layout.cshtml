@@ -93,7 +93,14 @@
 <body class="body-customizable">
     @if (ev != null && ev.AllowBlazor)
     {
-        <script src="_framework/blazor.web.js"></script>
+        <script src="_framework/blazor.web.js" autostart="false"></script>
+        <script>
+            // disableDomPreservation disables Blazor Enhanced Navigation, which causes a reload on every page,
+            // hurting perf and breaking requests that change the db
+            Blazor.start({
+              ssr: { disableDomPreservation: true }
+            });
+        </script>
         <script>
             var lockResolver;
             if (navigator && navigator.locks && navigator.locks.request) {
