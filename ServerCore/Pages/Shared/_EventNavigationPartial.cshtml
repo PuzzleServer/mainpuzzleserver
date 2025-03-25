@@ -429,6 +429,7 @@
                 notificationList.innerHTML = "";
                 criticalEventToasts = JSON.parse(localStorage.getItem("userToasts-@(Model.Event.ID)-critical"));
                 if (criticalEventToasts) { for (const [key, value] of Object.entries(criticalEventToasts)) { popToast(notificationList, value, false, false); } }
+                else { criticalEventToasts = {}; }
                 newToastCount = localStorage.getItem("userToasts-@(Model.Event.ID)-new");
                 newToastCount = newToastCount ? parseInt(newToastCount) : 0;
                 updateToastCount();
