@@ -12,7 +12,6 @@
 
     function resetAllPageToasts() {
         navigator.locks.request("toastStorage", async (lock) => {
-            debugger;
             var notificationList = document.querySelector("#notification-page-list");
             notificationList.innerHTML = "";
             allEventToasts = JSON.parse(localStorage.getItem("userToasts-@(Model.Event.ID)"));
