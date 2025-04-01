@@ -1,6 +1,13 @@
 ﻿@if (SyncablePuzzleLoaded)
 {
-    <span>Last change made: @DisplayLastSyncUtc.LocalDateTime</span>
+    if (!Paused)
+    {
+        <span>Last change made: @DisplayLastSyncUtc.LocalDateTime</span>
+    }
+    else
+    {
+        <span>Sync paused</span>
+    }
 }
 else
 {
@@ -59,6 +66,12 @@ else
         }
         else if (ev.data.type === "puzzlechanged") {
             await hostComponent.invokeMethodAsync("OnPuzzleChangedAsync", ev.data.changes);
+        }
+        else if (ev.data.type == "pausesync") {
+            await hostComponent.invokeMethodAsync("OnPauseSyncAsync");
+        }
+        else if (ev.data.type == "resumesync") {
+            await hostComponent.invokeMethodAsync("OnResumeSyncAsync");
         }
     });
 

@@ -581,7 +581,8 @@ else
                     param-TeamId="@Model.Team.ID"
                     param-PuzzleId="@Model.Puzzle.ID"
                     param-TableSASUrl="@Model.SyncTableSasUrl"
-                    param-EventStartTimeUtc="(DateTimeOffset)@Model.Event.EventBegin"
+                    param-PuzzleUnlockTimeUtc="(DateTimeOffset)@Model.PuzzleState.UnlockedTime.Value"
+                    param-EventEndTimeUtc="(DateTimeOffset)@Model.Event.AnswerSubmissionEnd"
                     />
                 }
                 @if (!Model.IsPuzzleForSinglePlayer && Model.Event.AllowBlazor && !Model.Event.EphemeralHackKillPresence)

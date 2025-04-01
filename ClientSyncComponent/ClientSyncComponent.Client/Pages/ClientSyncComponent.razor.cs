@@ -27,7 +27,10 @@ namespace ClientSyncComponent.Client.Pages
         public Uri TableSASUrl { get; set; }
 
         [Parameter]
-        public DateTimeOffset EventStartTimeUtc { get; set; }
+        public DateTimeOffset PuzzleUnlockTimeUtc { get; set; }
+
+        [Parameter]
+        public DateTimeOffset EventEndTimeUtc { get; set; }
 
         [Parameter]
         public bool SyncEnabled { get; set; } = true;
@@ -35,7 +38,8 @@ namespace ClientSyncComponent.Client.Pages
         [Parameter]
         public int FastestSyncInterval { get; set; } = 0;
 
-        DateTimeOffset LastSyncUtc = new DateTimeOffset(2024, 1, 1, 1, 1, 1, TimeSpan.Zero);
+        static readonly DateTimeOffset TablesMinTime = new DateTimeOffset(2024, 1, 1, 1, 1, 1, TimeSpan.Zero);
+        DateTimeOffset LastSyncUtc = TablesMinTime;
 
         DateTimeOffset DisplayLastSyncUtc = DateTimeOffset.MinValue;
 
@@ -45,12 +49,14 @@ namespace ClientSyncComponent.Client.Pages
 
         Timer Timer { get; set; }
 
+        bool Paused { get; set; } = false;
+
         public bool SyncablePuzzleLoaded { get; set; } = false;
 
         protected override Task OnParametersSetAsync()
         {
             TableClient = new TableClient(TableSASUrl);
-            DisplayLastSyncUtc = EventStartTimeUtc;
+            DisplayLastSyncUtc = PuzzleUnlockTimeUtc;
 
             if (!SyncEnabled)
             {
@@ -58,6 +64,7 @@ namespace ClientSyncComponent.Client.Pages
             }
             else
             {
+                // Sync immediately and then change the timer as necessary
                 Timer?.Change(0, CalculateInterval());
             }
 
@@ -76,6 +83,11 @@ namespace ClientSyncComponent.Client.Pages
 
         private async void OnTimer(object? state)
         {
+            if (Paused)
+            {
+                return;
+            }
+
             await SyncAsync();
 
             int newInterval = CalculateInterval();
@@ -109,6 +121,10 @@ namespace ClientSyncComponent.Client.Pages
             else if (timeSinceUpdate.TotalHours < 6)
             {
                 return 10000;
+            }
+            else if (EventEndTimeUtc > DateTimeOffset.UtcNow)
+            {
+                return 20000;
             }
             else
             {
@@ -163,6 +179,32 @@ namespace ClientSyncComponent.Client.Pages
 
                 await TableClient.UpsertEntityAsync(puzzleEntry);
             }
+        }
+
+        [JSInvokable]
+        public async void OnPauseSyncAsync()
+        {
+            Paused = true;
+            if (Timer != null)
+            {
+                Timer.Change(Timeout.Infinite, Timeout.Infinite);
+            }
+
+            // Since we're pausing, we'll lose track of state and need to start from the beginning on unpause
+            LastSyncUtc = TablesMinTime;
+            DisplayLastSyncUtc = PuzzleUnlockTimeUtc;
+            await InvokeAsync(StateHasChanged);
+        }
+
+        [JSInvokable]
+        public async void OnResumeSyncAsync()
+        {
+            Paused = false;
+            if (Timer != null)
+            {
+                Timer.Change(0, CalculateInterval());
+            }
+            await InvokeAsync(StateHasChanged);
         }
 
         private async Task SyncAsync()
