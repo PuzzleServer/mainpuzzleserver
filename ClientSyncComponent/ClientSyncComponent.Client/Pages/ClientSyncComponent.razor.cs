@@ -27,7 +27,7 @@ namespace ClientSyncComponent.Client.Pages
         public Uri TableSASUrl { get; set; }
 
         [Parameter]
-        public DateTimeOffset PuzzleUnlockTimeUtc { get; set; }
+        public DateTimeOffset? PuzzleUnlockTimeUtc { get; set; }
 
         [Parameter]
         public DateTimeOffset EventEndTimeUtc { get; set; }
@@ -56,7 +56,7 @@ namespace ClientSyncComponent.Client.Pages
         protected override Task OnParametersSetAsync()
         {
             TableClient = new TableClient(TableSASUrl);
-            DisplayLastSyncUtc = PuzzleUnlockTimeUtc;
+            DisplayLastSyncUtc = PuzzleUnlockTimeUtc ?? TablesMinTime;
 
             if (!SyncEnabled)
             {
@@ -192,7 +192,7 @@ namespace ClientSyncComponent.Client.Pages
 
             // Since we're pausing, we'll lose track of state and need to start from the beginning on unpause
             LastSyncUtc = TablesMinTime;
-            DisplayLastSyncUtc = PuzzleUnlockTimeUtc;
+            DisplayLastSyncUtc = PuzzleUnlockTimeUtc ?? TablesMinTime;
             await InvokeAsync(StateHasChanged);
         }
 
