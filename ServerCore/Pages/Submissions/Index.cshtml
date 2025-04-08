@@ -581,7 +581,7 @@ else
                     param-TeamId="@Model.Team.ID"
                     param-PuzzleId="@Model.Puzzle.ID"
                     param-TableSASUrl="@Model.SyncTableSasUrl"
-                    param-PuzzleUnlockTimeUtc="(DateTimeOffset)@Model.PuzzleState.UnlockedTime.Value"
+                    param-PuzzleUnlockTimeUtc="(DateTimeOffset)(@Model.PuzzleState.UnlockedTime.HasValue ? @Model.PuzzleState.UnlockedTime.Value : DateTime.MaxValue)"
                     param-EventEndTimeUtc="(DateTimeOffset)@Model.Event.AnswerSubmissionEnd"
                     />
                 }
