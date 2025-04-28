@@ -25,7 +25,7 @@
     int embedType = 0; // Nothing
     if (Model.Puzzle.CustomURL != null)
     {
-        puzzleFilePath = @PuzzleHelper.GetFormattedUrl(Model.Puzzle, Model.Event.ID);
+        puzzleFilePath = @PuzzleHelper.GetFormattedUrl(Model.Puzzle, Model.Event.ID, Model.Team.Password);
     }
     else if (Model.Puzzle.PuzzleFile != null)
     {
@@ -752,7 +752,7 @@ else
                 urlSuffix += "?";
             }
             urlSuffix += "embed=true";
-            <iframe id="puzzle-frame" class="unsized" title="@Model.Puzzle.Name" sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-downloads allow-modals" src="@puzzleFilePath@urlSuffix"></iframe>
+            <iframe id="puzzle-frame" class="unsized" title="@Model.Puzzle.Name" sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-downloads allow-modals allow-forms" src="@puzzleFilePath@urlSuffix"></iframe>
             break;
         case 4: // Images
             <img id="img-frame" src="@puzzleFilePath" alt="An image containing a puzzle" />
