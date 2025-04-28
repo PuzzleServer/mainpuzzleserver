@@ -56,9 +56,9 @@ namespace ServerCore.Helpers
             await context.SaveChangesAsync();
         }
 
-        public static string GetFormattedUrl(Puzzle puzzle, int eventId)
+        public static string GetFormattedUrl(Puzzle puzzle, int eventId, string teamPassword = null)
         {
-            return GetFormattedUrl(puzzle.CustomURL, puzzle.ID, eventId, null);
+            return GetFormattedUrl(puzzle.CustomURL, puzzle.ID, eventId, teamPassword);
         }
 
         public static string GetFormattedSolutionUrl(Puzzle puzzle, int eventId)
