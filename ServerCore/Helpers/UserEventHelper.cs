@@ -35,7 +35,7 @@ namespace ServerCore.Helpers
         }
 
         /// <summary>
-        /// Returns whether the user is an author of this puzzle
+        /// Returns whether the user is an admin of the event containing this puzzle
         /// </summary>
         /// <param name="puzzle">The puzzle that's being checked</param>
         /// <param name="puzzleServerContext">Current PuzzleServerContext</param>
