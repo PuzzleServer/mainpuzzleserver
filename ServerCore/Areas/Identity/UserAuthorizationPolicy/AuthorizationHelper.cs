@@ -75,6 +75,29 @@ namespace ServerCore.Areas.Identity
             return EventRole.play;
         }
 
+        public async Task IsPuzzleAdminCheck(AuthorizationHandlerContext authContext, IAuthorizationRequirement requirement)
+        {
+            EventRole role = GetEventRoleFromRoute();
+            if (role != EventRole.admin)
+            {
+                return;
+            }
+
+            PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
+            Puzzle puzzle = await GetPuzzleFromRoute();
+            Event thisEvent = await GetEventFromRoute();
+
+            if (thisEvent != null && await UserEventHelper.IsAdminOfPuzzle(dbContext, puzzle, puzzleUser))
+            {
+                authContext.Succeed(requirement);
+            }
+
+            if (puzzle != null)
+            {
+                dbContext.Entry(puzzle).State = EntityState.Detached;
+            }
+        }
+
         public async Task IsEventAdminCheck(AuthorizationHandlerContext authContext, IAuthorizationRequirement requirement)
         {
             EventRole role = GetEventRoleFromRoute();

@@ -27,7 +27,7 @@ namespace ServerCore.Areas.Identity.UserAuthorizationPolicy
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext authContext,
                                                        IsEventAdminOrAuthorOfPuzzleRequirement requirement)
         {
-            await authHelper.IsEventAdminCheck(authContext, requirement);
+            await authHelper.IsPuzzleAdminCheck(authContext, requirement);
         }
     }
 
