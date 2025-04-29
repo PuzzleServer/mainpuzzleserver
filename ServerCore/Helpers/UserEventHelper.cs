@@ -35,6 +35,16 @@ namespace ServerCore.Helpers
         }
 
         /// <summary>
+        /// Returns whether the user is an author of this puzzle
+        /// </summary>
+        /// <param name="puzzle">The puzzle that's being checked</param>
+        /// <param name="puzzleServerContext">Current PuzzleServerContext</param>
+        public static Task<bool> IsAdminOfPuzzle(PuzzleServerContext dbContext, Puzzle puzzle, PuzzleUser user)
+        {
+            return dbContext.EventAdmins.Where(ea => ea.Admin.ID == user.ID && ea.Event.ID == puzzle.Event.ID).AnyAsync();
+        }
+
+        /// <summary>
         /// Returns the the team for the given player
         /// </summary>
         /// <param name="dbContext">Current PuzzleServerContext</param>
