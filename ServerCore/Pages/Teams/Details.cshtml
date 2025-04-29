@@ -46,16 +46,16 @@
 <!--TODO: Consider moving if other pages use this format-->
 <style>
     .column {
-        float: left;
-        width: calc(50% - 40px);
-        margin: 0px 20px;
+    float: left;
+    width: calc(50% - 40px);
+    margin: 0px 20px;
     }
 
     /* Clear floats after the columns */
     .row:after {
-        content: "";
-        display: table;
-        clear: both;
+    content: "";
+    display: table;
+    clear: both;
     }
 </style>
 
@@ -91,11 +91,11 @@
         @if (Model.EventRole == ModelBases.EventRole.admin)
         {
             <a asp-page="./Disqualify"
-               asp-route-teamId="@Model.Team.ID">
+            asp-route-teamId="@Model.Team.ID">
                 @(Model.Team.IsDisqualified ? "Requalify Team" : "Disqualify Team")
             </a>
         }
-    <br />
+        <br />
     </div>
 }
 
@@ -105,79 +105,98 @@
     <div class="row">
         <div class="column">
             <div class="row">
-            <h3>Team details</h3>
-            <dl>
-                <!-- class="dl-horizontal"> -->
-                <dt>
-                    Team name
-                </dt>
-                <dd>
-                    @Model.Team.Name
-                </dd>
-                <!-- TODO: Add new room dropdown here and clean up custom room-->
-                @if (!Model.Event.IsRemote)
-                {
+                <h3>Team details</h3>
+                <dl>
+                    <!-- class="dl-horizontal"> -->
                     <dt>
-                        Team room
+                        Team name
                     </dt>
                     <dd>
-                        @if (Model.Team.CustomRoom == null)
-                        {
-                            @if (Model.Event.IsInternEvent)
+                        @Model.Team.Name
+                    </dd>
+                    <!-- TODO: Add new room dropdown here and clean up custom room-->
+                    @if (!Model.Event.IsRemote)
+                    {
+                        <dt>
+                            Team room
+                        </dt>
+                        <dd>
+                            @if (Model.Team.CustomRoom == null)
                             {
-                                <div>@Model.TeamRoom</div>
+                                @if (Model.Event.IsInternEvent)
+                                {
+                                    <div>@Model.TeamRoom</div>
+                                }
+                                else
+                                {
+                                    <div>(none - please enter this before the start of the event)</div>
+                                }
                             }
                             else
                             {
+                                @Model.Team.CustomRoom
+                            }
+                        </dd>
+
+                        <dt>
+                            Primary phone number
+                        </dt>
+                        <dd>
+                            @if (Model.Team.PrimaryPhoneNumber == null)
+                            {
                                 <div>(none - please enter this before the start of the event)</div>
                             }
-                        }
-                        else
-                        {
-                            @Model.Team.CustomRoom
-                        }
-                    </dd>
-
+                            else
+                            {
+                                @Model.Team.PrimaryPhoneNumber
+                            }
+                        </dd>
+                        <dt>
+                            Secondary phone number (optional)
+                        </dt>
+                        <dd>
+                            @if (Model.Team.SecondaryPhoneNumber == null)
+                            {
+                                <div>(none)</div>
+                            }
+                            else
+                            {
+                                @Model.Team.SecondaryPhoneNumber
+                            }
+                        </dd>
+                    }
                     <dt>
-                        Primary phone number
+                        Primary contact e-mail
                     </dt>
                     <dd>
-                        @if (Model.Team.PrimaryPhoneNumber == null)
-                        {
-                            <div>(none - please enter this before the start of the event)</div>
-                        }
-                        else
-                        {
-                            @Model.Team.PrimaryPhoneNumber
-                        }
-                    </dd>
-                    <dt>
-                        Secondary phone number (optional)
-                    </dt>
-                    <dd>
-                        @if (Model.Team.SecondaryPhoneNumber == null)
+                        @if (Model.Team.PrimaryContactEmail == null)
                         {
                             <div>(none)</div>
                         }
                         else
                         {
-                            @Model.Team.SecondaryPhoneNumber
+                            @Model.Team.PrimaryContactEmail
                         }
                     </dd>
-                }
-                <dt>
-                    Primary contact e-mail
-                </dt>
-                <dd>
-                    @if (Model.Team.PrimaryContactEmail == null)
+                    @if (Model.Event.AllowsRemoteTeams)
                     {
-                    <div>(none)</div>
+                        <dt>
+                            Team is playing remotely
+                        </dt>
+                        <dd>
+                            @if (Model.Event.AllowsRemoteTeams)
+                            {
+                                if (Model.Team.IsRemoteTeam)
+                                {
+                                    <div>Yes</div>
+                                }
+                                else
+                                {
+                                    <div>No</div>
+                                }
+                            }
+                        </dd>
                     }
-                    else
-                    {
-                    @Model.Team.PrimaryContactEmail
-                    }
-                </dd>
                 @if (!Model.Team.AutoTeamType.HasValue)
                 {
                     <dt>

@@ -286,10 +286,15 @@
             </div>
             <div class="description-column">Specifies if an event will have a presence on Microsoft's campus. Non-remote events will allow teams to select a room to use as their base of operations.</div>
             <div class="form-group">
-                <label asp-for="EditableEvent.AllowsRemote"></label>
-                <input asp-for="EditableEvent.AllowsRemote" />
+                <label asp-for="EditableEvent.AllowsRemotePlayers"></label>
+                <input asp-for="EditableEvent.AllowsRemotePlayers" />
             </div>
             <div class="description-column">Specifies if an event allows remote attendees.</div>
+            <div class="form-group">
+                <label asp-for="EditableEvent.AllowsRemoteTeams"></label>
+                <input asp-for="EditableEvent.AllowsRemoteTeams" />
+            </div>
+            <div class="description-column">Specifies if an event allows remote teams.</div>
             <div class="form-group">
                 <label asp-for="EditableEvent.IsInternEvent"></label>
                 <input asp-for="EditableEvent.IsInternEvent" />

@@ -43,7 +43,10 @@ namespace ServerCore.DataModel
 
         public bool HasIndividualLunch { get; set; }
         public bool HasTShirts { get; set; }
-        public bool AllowsRemote { get; set; }
+
+        [Column("AllowsRemote")]
+        public bool AllowsRemotePlayers { get; set; }
+        public bool AllowsRemoteTeams { get; set; }
         public bool IsRemote { get; set; }
 
         /// <summary>

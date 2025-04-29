@@ -303,7 +303,11 @@ namespace Data.Migrations
                     b.Property<bool>("AllowFeedback")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("AllowsRemote")
+                    b.Property<bool>("AllowsRemotePlayers")
+                        .HasColumnType("bit")
+                        .HasColumnName("AllowsRemote");
+
+                    b.Property<bool>("AllowsRemoteTeams")
                         .HasColumnType("bit");
 
                     b.Property<string>("Announcement")
@@ -1414,6 +1418,9 @@ namespace Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsLookingForTeammates")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsRemoteTeam")
                         .HasColumnType("bit");
 
                     b.Property<string>("MergedTeams")
