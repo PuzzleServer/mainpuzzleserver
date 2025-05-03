@@ -281,7 +281,7 @@ namespace ServerCore.Pages.Submissions
             {
                 Submission = submission,
                 Response = submission.Response,
-                SubmitterName = LoggedInUser.Name,
+                SubmitterName = String.IsNullOrEmpty(submission.SubmitterDisplayName) ? submission.Submitter.Name : submission.SubmitterDisplayName,
                 IsFreeform = Puzzle.IsFreeform
             });
 
@@ -348,7 +348,7 @@ namespace ServerCore.Pages.Submissions
                                          {
                                              Submission = submission,
                                              Response = response,
-                                             SubmitterName = LoggedInUser.Name,
+                                             SubmitterName = String.IsNullOrEmpty(submission.SubmitterDisplayName) ? submission.Submitter.Name : submission.SubmitterDisplayName,
                                              FreeformReponse = submission.FreeformResponse,
                                              IsFreeform = Puzzle.IsFreeform
                                          }).ToListAsync();
@@ -394,7 +394,7 @@ namespace ServerCore.Pages.Submissions
                                          {
                                              Submission = submission,
                                              Response = response,
-                                             SubmitterName = user.Name,
+                                             SubmitterName = String.IsNullOrEmpty(submission.SubmitterDisplayName) ? submission.Submitter.Name : submission.SubmitterDisplayName,
                                              FreeformReponse = submission.FreeformResponse,
                                              IsFreeform = Puzzle.IsFreeform
                                          }).ToListAsync();

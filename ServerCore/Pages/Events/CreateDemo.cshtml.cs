@@ -101,6 +101,7 @@ namespace ServerCore.Pages.Events
                 Event.MaxTeamSize = 12;
                 Event.AllowBlazor = true;
                 Event.EmbedPuzzles = true;
+                Event.EventPassword = Guid.NewGuid().ToString();
                 _context.Events.Add(Event);
 
                 await _context.SaveChangesAsync();

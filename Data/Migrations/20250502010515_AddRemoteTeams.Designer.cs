@@ -12,7 +12,7 @@ using ServerCore.DataModel;
 namespace Data.Migrations
 {
     [DbContext(typeof(PuzzleServerContext))]
-    [Migration("20250429220909_AddRemoteTeams")]
+    [Migration("20250502010515_AddRemoteTeams")]
     partial class AddRemoteTeams
     {
         /// <inheritdoc />
@@ -348,8 +348,14 @@ namespace Data.Migrations
                     b.Property<bool>("EventHasTeamSwag")
                         .HasColumnType("bit");
 
+                    b.Property<string>("EventPassword")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("FAQContent")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("FastestSyncIntervalMs")
+                        .HasColumnType("int");
 
                     b.Property<bool>("HasIndividualLunch")
                         .HasColumnType("bit");
@@ -415,6 +421,9 @@ namespace Data.Migrations
 
                     b.Property<int?>("PlayersPerLunch")
                         .HasColumnType("int");
+
+                    b.Property<bool>("PuzzleSyncEnabled")
+                        .HasColumnType("bit");
 
                     b.Property<string>("RulesContent")
                         .HasColumnType("nvarchar(max)");
@@ -1289,6 +1298,9 @@ namespace Data.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
+                    b.Property<string>("SubmitterDisplayName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("SubmitterID")
                         .HasColumnType("int");
 
@@ -1355,6 +1367,9 @@ namespace Data.Migrations
                         .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("SubmitterDisplayName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("SubmitterID")
                         .HasColumnType("int");
