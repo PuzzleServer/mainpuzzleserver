@@ -43,7 +43,10 @@ namespace ServerCore.DataModel
 
         public bool HasIndividualLunch { get; set; }
         public bool HasTShirts { get; set; }
-        public bool AllowsRemote { get; set; }
+
+        [Column("AllowsRemote")]
+        public bool AllowsRemotePlayers { get; set; }
+        public bool AllowsRemoteTeams { get; set; }
         public bool IsRemote { get; set; }
 
         /// <summary>
@@ -323,6 +326,16 @@ namespace ServerCore.DataModel
         /// True if this is an alpha testing event (meaning authors can mark puzzles for testing)
         /// </summary>
         public bool IsAlphaTestingEvent { get; set; }
+
+        /// <summary>
+        /// Used to confirm the validity of external API requests for event-wide actions
+        /// This is a GUID by default unless there is a good reason to use something else
+        /// </summary>
+        public string EventPassword { get; set; }
+
+        // Morgan TODO: Add descriptions for these properties
+        public bool PuzzleSyncEnabled { get; set; }
+        public int FastestSyncIntervalMs { get; set; }
 
         /// <summary>
         /// Short-term hacks for modifying behavior without adding new properties all the time.

@@ -128,5 +128,11 @@ namespace ServerCore.DataModel
         /// Null if the team is manually created.
         /// </summary>
         public AutoTeamType? AutoTeamType { get; set; }
+
+        /// <summary>
+        /// True if the team will all be playing remote from the event location
+        /// This option only displays on the team page if the event allows remote players
+        /// </summary>
+        public bool IsRemoteTeam { get; set; }
     }
 }

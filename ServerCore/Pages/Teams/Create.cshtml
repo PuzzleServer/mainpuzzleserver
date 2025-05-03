@@ -56,6 +56,15 @@ else
                 <input asp-for="Team.PrimaryContactEmail" class="form-control" />
                 <span asp-validation-for="Team.PrimaryContactEmail" class="text-danger"></span>
             </div>
+            @if (Model.Event.AllowsRemoteTeams)
+            {
+                <div class="form-group">
+                    <label asp-for="Team.IsRemoteTeam" class="control-label">Team is playing remotely</label>
+                    <div style="width:50px;vertical-align:top;">
+                        <input asp-for="Team.IsRemoteTeam" />
+                    </div>
+                </div>
+            }
             @if (!Model.Event.IsRemote)
             {
                 <div class="form-group">

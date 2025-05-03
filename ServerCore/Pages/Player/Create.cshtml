@@ -20,7 +20,7 @@ else
     </div>
 }
 
-@if (Model.Event.AllowsRemote || Model.Event.HasIndividualLunch || Model.Event.HasTShirts)
+@if (Model.Event.AllowsRemotePlayers || Model.Event.HasIndividualLunch || Model.Event.HasTShirts)
 {
     <h4>Please provide the following information to register for this event.</h4>
     <hr />
@@ -30,7 +30,7 @@ else
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            @if (Model.Event.AllowsRemote)
+            @if (Model.Event.AllowsRemotePlayers)
             {
                 <div class="form-group">
                     <div class="checkbox">

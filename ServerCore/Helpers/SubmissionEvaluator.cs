@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 
@@ -320,6 +321,145 @@ namespace ServerCore.Helpers
             {
                 context.SinglePlayerPuzzleSubmissions.Add(playerSubmission);
             }
+            await context.SaveChangesAsync();
+
+            // Send back responses for cases where the database has been updated
+            // Correct response
+            if (submission.Response != null && submission.Response.IsSolution)
+            {
+                return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.Correct, CompleteResponse = submission.Response.ResponseText };
+            }
+
+            // Partial response
+            if (submission.Response != null && !submission.Response.IsSolution)
+            {
+                return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.Partial, CompleteResponse = submission.Response.ResponseText };
+            }
+
+            // Freeform response
+            if (puzzle.IsFreeform)
+            {
+                return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.Freeform, FreeformResponse = submission.FreeformResponse };
+            }
+
+            // Default to incorrect
+            return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.Incorrect };
+        }
+                
+        /// <summary>
+        /// Evaulates player submissions then either saves them to the database or returns an error to the caller
+        /// This method is designed for use by admins and bypasses checks on the submission
+        /// </summary>
+        /// <param name="submittingUser">The user who will be credited with the submission</param>
+        /// <param name="submissionTime">The timestap for the submission, DateTime.UtcNow if null</param>
+        /// <returns></returns>
+        public static async Task<SubmissionResponse> EvaluateSubmissionAdmin(PuzzleServerContext context, PuzzleUser submittingUser, Event thisEvent, int puzzleId, string submissionText, bool allowFreeformSharing, DateTime? submissionTime, string submitterDisplayName = "")
+        {
+            //Query data needed to process submission
+            Puzzle puzzle = await context.Puzzles.Where(
+                (p) => p.ID == puzzleId).FirstOrDefaultAsync();
+
+            // Check if the submission is a duplicate
+            string formattedSubmission = Response.FormatSubmission(submissionText);
+
+            Team team = null;
+            if (!puzzle.IsForSinglePlayer)
+            {
+                team = await UserEventHelper.GetTeamForPlayer(context, thisEvent, submittingUser);
+
+                bool isDuplicate = await (from sub in context.Submissions
+                                          where sub.Puzzle == puzzle &&
+                                          sub.Team == team &&
+                                          sub.SubmissionText == formattedSubmission
+                                          select sub.SubmissionText).AnyAsync();
+
+                if (isDuplicate)
+                {
+                    return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.DuplicateSubmission };
+                }
+            }
+            else
+            {
+                bool isDuplicate = await (from sub in context.Submissions
+                                          where sub.Puzzle == puzzle &&
+                                          sub.Submitter == submittingUser &&
+                                          sub.SubmissionText == formattedSubmission
+                                          select sub.SubmissionText).AnyAsync();
+
+                if (isDuplicate)
+                {
+                    return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.DuplicateSubmission };
+                }
+            }
+
+                // Create submission
+                SubmissionBase submission = (!puzzle.IsForSinglePlayer)
+                    ? new Submission
+                    {
+                        TimeSubmitted = submissionTime == null ? DateTime.UtcNow : submissionTime.Value,
+                        Puzzle = puzzle,
+                        Team = team,
+                        Submitter = submittingUser,
+                        SubmitterDisplayName = submitterDisplayName,
+                        AllowFreeformSharing = allowFreeformSharing
+                    }
+                    : new SinglePlayerPuzzleSubmission
+                    {
+                        TimeSubmitted = submissionTime == null ? DateTime.UtcNow : submissionTime.Value,
+                        Puzzle = puzzle,
+                        Submitter = submittingUser,
+                        SubmitterDisplayName = submitterDisplayName,
+                        AllowFreeformSharing = allowFreeformSharing
+                    };
+
+            string submissionTextToCheck = Response.FormatSubmission(submissionText);
+
+            if (puzzle.IsFreeform)
+            {
+                submission.UnformattedSubmissionText = submissionText;
+            }
+            else
+            {
+                submission.SubmissionText = submissionText;
+            }
+
+            submission.Response = await context.Responses.Where(
+                r => r.Puzzle.ID == puzzleId &&
+                     submissionTextToCheck == r.SubmittedText)
+                .FirstOrDefaultAsync();
+
+            // Update puzzle state if submission was correct
+            if (submission.Response != null && submission.Response.IsSolution)
+            {
+                if (!puzzle.IsForSinglePlayer)
+                {
+                    await PuzzleStateHelper.SetSolveStateAsync(context,
+                        thisEvent,
+                        submission.Puzzle,
+                        team,
+                        submission.TimeSubmitted);
+                }
+                else
+                {
+                    await SinglePlayerPuzzleStateHelper.SetSolveStateAsync(context,
+                        thisEvent,
+                        submission.Puzzle,
+                        submittingUser.ID,
+                        submission.TimeSubmitted);
+                }
+            }
+
+            Submission teamSubmission = submission as Submission;
+            SinglePlayerPuzzleSubmission playerSubmission = submission as SinglePlayerPuzzleSubmission;
+            if (teamSubmission != null)
+            {
+                context.Submissions.Add(teamSubmission);
+            }
+            else if (playerSubmission != null)
+            {
+                context.SinglePlayerPuzzleSubmissions.Add(playerSubmission);
+            }
+
             await context.SaveChangesAsync();
 
             // Send back responses for cases where the database has been updated

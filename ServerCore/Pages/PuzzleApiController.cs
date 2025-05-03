@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
@@ -121,12 +122,41 @@ namespace ServerCore.Pages
         }
 
         [HttpPost]
-        [Route ("api/puzzleapi/liveevent/triggernotifications")]
+        [Route("api/puzzleapi/submitanswer/{eventId}/{puzzleId}/{userId}")]
+        public async Task<ActionResult<SubmissionResponse>> PostSubmitAnswerAdminAsync([FromBody] AdminAnswerSubmission submission, [FromRoute] string eventId, [FromRoute] int puzzleId, [FromRoute] int userId)
+        {
+            Event currentEvent = await EventHelper.GetEventFromEventId(context, eventId);
+
+            if (IsValidEventPassword(currentEvent, submission.EventPassword))
+            {
+                PuzzleUser user = await context.PuzzleUsers.Where(user => user.ID == userId).FirstOrDefaultAsync();
+
+                return await SubmissionEvaluator.EvaluateSubmissionAdmin(context, user, currentEvent, puzzleId, submission.SubmissionText, submission.AllowFreeformSharing, submission.Timestamp, submission.SubmitterDisplayName);
+            }
+
+            return Unauthorized();
+        }
+
+        [HttpPost]
+        [Route("api/puzzleapi/liveevent/triggernotifications")]
         public async Task TriggerLiveEventNotifications(string eventId, int timerWindow)
         {
             Event currentEvent = await EventHelper.GetEventFromEventId(context, eventId);
 
-           await LiveEventHelper.TriggerNotifications(context, currentEvent, timerWindow, hubContext);
+            await LiveEventHelper.TriggerNotifications(context, currentEvent, timerWindow, hubContext);
+        }
+
+        /// <summary>
+        /// Allows an external service to authenticate as an admin for the event
+        /// </summary>
+        private bool IsValidEventPassword(Event currentEvent, string eventPassword)
+        {
+            if (string.IsNullOrWhiteSpace(eventPassword))
+            {
+                return false;
+            }
+
+            return currentEvent.EventPassword == eventPassword;
         }
     }
 
@@ -134,6 +164,15 @@ namespace ServerCore.Pages
     {
         public string SubmissionText { get; set; }
         public bool AllowFreeformSharing { get; set; }
+    }
+
+    public class AdminAnswerSubmission
+    {
+        public bool AllowFreeformSharing { get; set; }
+        public string EventPassword { get; set; }
+        public string SubmissionText { get; set; }
+        public string SubmitterDisplayName { get; set; }
+        public DateTime Timestamp { get; set; }
     }
 
     public class MailInfo
