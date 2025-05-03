@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 
@@ -354,40 +355,62 @@ namespace ServerCore.Helpers
         /// <returns></returns>
         public static async Task<SubmissionResponse> EvaluateSubmissionAdmin(PuzzleServerContext context, PuzzleUser submittingUser, Event thisEvent, int puzzleId, string submissionText, bool allowFreeformSharing, DateTime? submissionTime, string submitterDisplayName = "")
         {
-            if (submissionTime == null)
-            {
-                submissionTime = DateTime.UtcNow;
-            }
-
             //Query data needed to process submission
             Puzzle puzzle = await context.Puzzles.Where(
                 (p) => p.ID == puzzleId).FirstOrDefaultAsync();
+
+            // Check if the submission is a duplicate
+            string formattedSubmission = Response.FormatSubmission(submissionText);
 
             Team team = null;
             if (!puzzle.IsForSinglePlayer)
             {
                 team = await UserEventHelper.GetTeamForPlayer(context, thisEvent, submittingUser);
+
+                bool isDuplicate = await (from sub in context.Submissions
+                                          where sub.Puzzle == puzzle &&
+                                          sub.Team == team &&
+                                          sub.SubmissionText == formattedSubmission
+                                          select sub.SubmissionText).AnyAsync();
+
+                if (isDuplicate)
+                {
+                    return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.DuplicateSubmission };
+                }
+            }
+            else
+            {
+                bool isDuplicate = await (from sub in context.Submissions
+                                          where sub.Puzzle == puzzle &&
+                                          sub.Submitter == submittingUser &&
+                                          sub.SubmissionText == formattedSubmission
+                                          select sub.SubmissionText).AnyAsync();
+
+                if (isDuplicate)
+                {
+                    return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.DuplicateSubmission };
+                }
             }
 
-            // Create submission
-            SubmissionBase submission = (!puzzle.IsForSinglePlayer)
-                ? new Submission
-                {
-                    TimeSubmitted = DateTime.UtcNow,
-                    Puzzle = puzzle,
-                    Team = team,
-                    Submitter = submittingUser,
-                    SubmitterDisplayName = submitterDisplayName,
-                    AllowFreeformSharing = allowFreeformSharing
-                }
-                : new SinglePlayerPuzzleSubmission
-                {
-                    TimeSubmitted = DateTime.UtcNow,
-                    Puzzle = puzzle,
-                    Submitter = submittingUser,
-                    SubmitterDisplayName = submitterDisplayName,
-                    AllowFreeformSharing = allowFreeformSharing
-                };
+                // Create submission
+                SubmissionBase submission = (!puzzle.IsForSinglePlayer)
+                    ? new Submission
+                    {
+                        TimeSubmitted = submissionTime == null ? DateTime.UtcNow : submissionTime.Value,
+                        Puzzle = puzzle,
+                        Team = team,
+                        Submitter = submittingUser,
+                        SubmitterDisplayName = submitterDisplayName,
+                        AllowFreeformSharing = allowFreeformSharing
+                    }
+                    : new SinglePlayerPuzzleSubmission
+                    {
+                        TimeSubmitted = submissionTime == null ? DateTime.UtcNow : submissionTime.Value,
+                        Puzzle = puzzle,
+                        Submitter = submittingUser,
+                        SubmitterDisplayName = submitterDisplayName,
+                        AllowFreeformSharing = allowFreeformSharing
+                    };
 
             string submissionTextToCheck = Response.FormatSubmission(submissionText);
 
