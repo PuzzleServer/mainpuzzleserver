@@ -146,6 +146,29 @@ namespace ServerCore.Pages
             await LiveEventHelper.TriggerNotifications(context, currentEvent, timerWindow, hubContext);
         }
 
+        [HttpGet]
+        [Route("api/puzzleapi/state/puzzleunlockstate/{eventId}")]
+        public async Task<UnlockDetail[]> GetPuzzlesUnlockedInLastXMins([FromRoute] string eventId, int minutes, string eventPassword)
+        {
+            Event currentEvent = await EventHelper.GetEventFromEventId(context, eventId);
+
+            if (IsValidEventPassword(currentEvent, eventPassword))
+            {
+                return await (from state in context.PuzzleStatePerTeam
+                              where state.Puzzle.Event == currentEvent &&
+                              state.UnlockedTime != null &&
+                              EF.Functions.DateDiffMinute(state.UnlockedTime, DateTime.UtcNow) < minutes
+                              select new UnlockDetail()
+                              {
+                                  PuzzleId = state.PuzzleID,
+                                  TeamId = state.TeamID,
+                                  UnlockTime = state.UnlockedTime.Value,
+                              }).ToArrayAsync();
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// Allows an external service to authenticate as an admin for the event
         /// </summary>
@@ -181,5 +204,12 @@ namespace ServerCore.Pages
         public string PuzzleSupportAlias { get; set; }
         public string TeamName { get; set; }
         public string TeamContactEmail { get; set; }
+    }
+
+    public class UnlockDetail
+    {
+        public int TeamId { get; set; }
+        public int PuzzleId { get; set; }
+        public DateTime UnlockTime { get; set; }
     }
 }
