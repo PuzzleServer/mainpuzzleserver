@@ -2,11 +2,17 @@
 {
     if (!Paused)
     {
-        <span>Last change made: @DisplayLastSyncUtc.LocalDateTime</span>
+        <span>
+            Last change made: @DisplayLastSyncUtc.LocalDateTime
+            <input type="button" @onclick="OnPauseSyncAsync" value="Switch to Solo Mode" />
+        </span>
     }
     else
     {
-        <span>Sync paused</span>
+        <span>
+            Sync paused
+            <input type="button" @onclick="OnResumeSyncAsync" value="Switch to Co-Op Mode" />
+        </span>
     }
 }
 else
@@ -18,8 +24,9 @@ else
     let hostComponent = null;
     let puzzleLoaded = false;
     let readyToSync = false;
+    let savedMode = null;
 
-    async function sendSyncComponentLoad() {
+    async function sendSyncComponentLoad(mode) {
         if (!puzzleFrame) {
             puzzleFrame = document.getElementById("puzzle-frame");
         }
@@ -28,17 +35,17 @@ else
             puzzleFrame.contentWindow.postMessage({type: "syncComponentLoad"}, "*");
             readyToSync = true;
             if (puzzleLoaded) {
-                await hostComponent.invokeMethodAsync("OnSyncablePuzzleLoadedAsync");
+                await hostComponent.invokeMethodAsync("OnSyncablePuzzleLoadedAsync", mode);
             }
         }
         else {
-            console.warning("puzzleFrame not found in message handler!");
+            console.warn("puzzleFrame not found in message handler!");
         }
     }
 
     async function registerDotNet(hostComponentArg) {
         hostComponent = hostComponentArg;
-        sendSyncComponentLoad();
+        sendSyncComponentLoad(savedMode);
     }
 
     async function onVisibilityChangeAsync (ev) {
@@ -51,6 +58,10 @@ else
         puzzleFrame.contentWindow.postMessage({type: "puzzlesynced", changes: changes}, "*");
     }
 
+    async function onSetCoopMode(mode) {
+        puzzleFrame.contentWindow.postMessage({ type: "setCoopMode", mode: mode }, "*");
+    }
+
     function getVisibility() {
         return document.visibilityState;
     }
@@ -59,19 +70,14 @@ else
     window.addEventListener("visibilitychange", onVisibilityChangeAsync);
     window.addEventListener("message", async (ev) => {
         if (!puzzleLoaded && ev.data.type === "puzzleLoad") {
-            console.debug("got puzzle load message");
+            savedMode = ev.data.mode;
+            console.debug(`got puzzle load message with mode ${savedMode}`);
             puzzleLoaded = true;
 
-            sendSyncComponentLoad();
+            sendSyncComponentLoad(savedMode);
         }
         else if (ev.data.type === "puzzlechanged") {
             await hostComponent.invokeMethodAsync("OnPuzzleChangedAsync", ev.data.changes);
-        }
-        else if (ev.data.type == "pausesync") {
-            await hostComponent.invokeMethodAsync("OnPauseSyncAsync");
-        }
-        else if (ev.data.type == "resumesync") {
-            await hostComponent.invokeMethodAsync("OnResumeSyncAsync");
         }
     });
 

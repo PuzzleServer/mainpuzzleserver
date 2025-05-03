@@ -146,12 +146,17 @@ namespace ClientSyncComponent.Client.Pages
         }
 
         [JSInvokable]
-        public async void OnSyncablePuzzleLoadedAsync()
+        public async void OnSyncablePuzzleLoadedAsync(string mode)
         {
             SyncablePuzzleLoaded = true;
             if (Timer == null)
             {
                 Timer = new Timer(OnTimer, null, 0, 1000);
+            }
+
+            if (mode != "coop")
+            {
+                await OnPauseSyncAsync();
             }
             
             await InvokeAsync(StateHasChanged);
@@ -160,7 +165,7 @@ namespace ClientSyncComponent.Client.Pages
         [JSInvokable]
         public async void OnPuzzleChangedAsync(JsPuzzleChange[] puzzleChanges)
         {
-            if (!SyncEnabled)
+            if (!SyncEnabled || Paused)
             {
                 return;
             }
@@ -182,7 +187,7 @@ namespace ClientSyncComponent.Client.Pages
         }
 
         [JSInvokable]
-        public async void OnPauseSyncAsync()
+        public async Task OnPauseSyncAsync()
         {
             Paused = true;
             if (Timer != null)
@@ -193,12 +198,25 @@ namespace ClientSyncComponent.Client.Pages
             // Since we're pausing, we'll lose track of state and need to start from the beginning on unpause
             LastSyncUtc = TablesMinTime;
             DisplayLastSyncUtc = PuzzleUnlockTimeUtc ?? TablesMinTime;
+
+            await JSRuntime.InvokeVoidAsync("onSetCoopMode", "solo");
             await InvokeAsync(StateHasChanged);
         }
 
         [JSInvokable]
         public async void OnResumeSyncAsync()
         {
+            if (Paused)
+            {
+                bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to switch to co-op mode? You will lose your local changes and sync up with the group.");
+                if (!confirmed)
+                {
+                    return;
+                }
+            }
+
+            await JSRuntime.InvokeVoidAsync("onSetCoopMode", "coop");
+
             Paused = false;
             if (Timer != null)
             {
