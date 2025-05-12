@@ -84,8 +84,8 @@ namespace ServerCore.Helpers
                                       where teamMember.Team == team
                                       select teamMember.Member.Email).ToListAsync();
             var applicationEmails = await (from app in context.TeamApplications
-                                      where app.Team == team
-                                      select app.Player.Email).ToListAsync();
+                                           where app.Team == team
+                                           select app.Player.Email).ToListAsync();
 
             var puzzleStates = from puzzleState in context.PuzzleStatePerTeam
                                where puzzleState.TeamID == team.ID
@@ -109,16 +109,16 @@ namespace ServerCore.Helpers
 
             var liveEventSchedules = from liveEventSchedule in context.LiveEventsSchedule
                                      where liveEventSchedule.Team == team
-                                    select liveEventSchedule;
+                                     select liveEventSchedule;
             context.LiveEventsSchedule.RemoveRange(liveEventSchedules);
 
             IEnumerable<Message> messages = from message in context.Messages
-                                      where message.Team == team
-                                      select message;
+                                            where message.Team == team
+                                            select message;
             context.Messages.RemoveRange(messages);
 
             var rooms = context.Rooms.Where(r => r.TeamID == team.ID).ToList();
-            foreach(var r in rooms)
+            foreach (var r in rooms)
             {
                 r.TeamID = null;
                 r.Team = null;
@@ -210,20 +210,49 @@ namespace ServerCore.Helpers
                                   select app;
             context.TeamApplications.RemoveRange(allApplications);
 
+            // If event has PlayerClasses: Assign the user a random available PlayerClass
+            // This ensures that they have some class when the event starts
+            // Better flow for picking their own class TBD
+            PlayerClass playerClass = null;
+
+            if (Event.HasPlayerClasses)
+            {
+                playerClass = await PlayerClassHelper.GetRandomPlayerClassFromAvailable(context, Event.ID, EventRole, teamId);
+                Member.Class = playerClass;
+            }
+
+
             context.TeamMembers.Add(Member);
             await TeamHelper.OnTeamMemberChange(context, team);
             await context.SaveChangesAsync();
 
+            string emailBody = $"Have a great time!";
+
+            if (Event.HasPlayerClasses)
+            {
+                if (playerClass != null)
+                {
+                    emailBody = string.Concat($"This event has assigned a {Event.PlayerClassName} for each player. " +
+                        $"You have been assigned the {Event.PlayerClassName} of {playerClass.Name}. " +
+                        $"To change this {Event.PlayerClassName} go to Teams -> My Team on the website. \r\n", emailBody);
+                }
+                else
+                {
+                    emailBody = string.Concat($"This event has assigned a {Event.PlayerClassName} for each player. " +
+                        $"Please go to Teams -> My Team on the website to choose your {Event.PlayerClassName}!\r\n", emailBody);
+                }
+            }
+
             MailHelper.Singleton.SendPlaintextWithoutBcc(new string[] { team.PrimaryContactEmail, user.Email },
                 $"{Event.Name}: {user.Name} has now joined {team.Name}!",
-                $"Have a great time!");
+                emailBody);
 
             var teamCount = await context.TeamMembers.Where(members => members.Team.ID == team.ID).CountAsync();
             if (teamCount >= Event.MaxTeamSize)
             {
                 var extraApplications = await (from app in context.TeamApplications
-                                        where app.Team == team
-                                        select app).ToListAsync();
+                                               where app.Team == team
+                                               select app).ToListAsync();
                 context.TeamApplications.RemoveRange(extraApplications);
 
                 var extraApplicationMails = from app in extraApplications
@@ -314,12 +343,14 @@ namespace ServerCore.Helpers
                             rune.Value != 0x2062 && // Disallow invisible times
                             rune.Value != 0x2063 && // Disallow invisible separator
                             rune.Value != 0x2064 && // Disallow invisible plus
-                            rune.Value != 0xFEFF) { // Disallow zero-width no-break space
+                            rune.Value != 0xFEFF)
+                        { // Disallow zero-width no-break space
                             newString.Append(rune.ToString());
                         }
                         break;
                     case UnicodeCategory.SpaceSeparator:
-                        if (rune.Value == 0x20) { // Allow regular spaces
+                        if (rune.Value == 0x20)
+                        { // Allow regular spaces
                             newString.Append(rune.ToString());
                         }
                         break;

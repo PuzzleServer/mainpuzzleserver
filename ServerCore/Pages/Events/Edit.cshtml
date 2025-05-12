@@ -307,6 +307,18 @@
                 <input asp-for="EditableEvent.IsInternEvent" />
             </div>
             <div class="description-column">Controls whether teams are able to edit their own team room. Intern events do not allow this because rooms are instead chosen by Puzzleday staff.</div>
+            <div class="form-group">
+                <label asp-for="EditableEvent.HasPlayerClasses"></label>
+                <input asp-for="EditableEvent.HasPlayerClasses" />
+            </div>
+            <div class="description-column">Specifies if an event uses the PlayerClass concept to assign classes to individual players. If the PlayerClassName is not also set then the display name will be Player Class.</div>
+            <div class="form-group">
+                <label asp-for="EditableEvent.PlayerClassName" class="control-label"></label>
+                <input asp-for="EditableEvent.PlayerClassName" class="form-control" />
+                <span asp-validation-for="EditableEvent.PlayerClassName" class="text-danger"></span>
+            </div>
+            <div class="description-column">The text shown instead of "Player Class" on the Team Details page. Only shown if HasPlayerClasses is true.</div>
+
             <h4>Swag</h4><div></div>
             <div class="form-group">
                 <label asp-for="EditableEvent.HasSwag"></label>

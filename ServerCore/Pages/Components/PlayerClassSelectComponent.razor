@@ -1,0 +1,30 @@
+﻿@using ServerCore.DataModel
+
+@inherits OwningComponentBase<PuzzleServerContext>
+
+@if (Event != null)
+{
+    <InputSelect @bind-Value="SelectedPlayerClassID" @bind-Value:after="UpdatePlayerClassID">
+
+        @if (AvailablePlayerClasses != null)
+        {
+            @if (CurrentTeamMember != null)
+            {
+                @if (CurrentTeamMember.Class == null)
+                {
+                    <option value="123456789">No @Event.PlayerClassName set</option>
+                }
+                else
+                {
+                    <option value="@CurrentTeamMember.Class.ID">@CurrentTeamMember.Class.Name</option>
+                    <option value="123456789">No @Event.PlayerClassName set</option>
+                }
+            }
+
+            @foreach (var pc in AvailablePlayerClasses)
+            {
+                <option value="@pc.ID">@pc.Name</option>
+            }
+        }
+    </InputSelect>
+}

@@ -328,6 +328,27 @@ namespace ServerCore.DataModel
         public bool IsAlphaTestingEvent { get; set; }
 
         /// <summary>
+        /// True if the event uses the PlayerClass system to assign classes to individual players
+        /// PlayerClassName should also be set in this case, otherwise the display name will be "Player Class"
+        /// </summary>
+        public bool HasPlayerClasses { get; set; }
+
+        /// <summary>
+        /// Determines the display name for PlayerClasses (e.g. Class, Job, Color, Duty Assignment)
+        /// </summary>
+        public string PlayerClassName { get; set; }
+
+        /// <summary>
+        /// True if the players can change their own PlayerClass (admins can always make changes)
+        /// Currently locks PlayerClass changes when the event starts (add additional logic if needed for future events)
+        /// </summary>
+        [NotMapped]
+        public bool CanChangePlayerClass
+        {
+            get { return !EventHasStarted; }
+        }
+
+        /// <summary>
         /// Used to confirm the validity of external API requests for event-wide actions
         /// This is a GUID by default unless there is a good reason to use something else
         /// </summary>

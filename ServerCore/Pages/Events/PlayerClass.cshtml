@@ -1,0 +1,10 @@
+﻿@page "/{eventId}/{eventRole}/Events/PlayerClass"
+@model ServerCore.Pages.Events.PlayerClassModel
+@{
+    ViewData["Title"] = "Player Class Management";
+    ViewData["AdminRoute"] = "/Events/PlayerClass";
+<div>
+    <component type="typeof(ServerCore.Pages.Events.PlayerClassComponent)" render-mode="Server"
+               param-EventID="@Model.Event.ID" />
+</div>
+}

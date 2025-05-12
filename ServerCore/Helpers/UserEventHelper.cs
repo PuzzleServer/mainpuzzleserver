@@ -93,6 +93,19 @@ namespace ServerCore.Helpers
         }
 
         /// <summary>
+        /// Gets the TeamMember object for the given player and event
+        /// </summary>
+        public static async Task<TeamMembers> GetTeamMemberForPlayer(PuzzleServerContext puzzleServerContext, Event thisEvent, int userId)
+        {
+            if (thisEvent == null)
+            {
+                return null;
+            }
+
+            return await puzzleServerContext.TeamMembers.Where(t => t.Member.ID == userId && t.Team.Event.ID == thisEvent.ID).FirstOrDefaultAsync();
+        }
+
+        /// <summary>
         /// Returns the registration details for the given player in the given event
         /// </summary>
         /// <param name="dbContext">Current PuzzleServerContext</param>
