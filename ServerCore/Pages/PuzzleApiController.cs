@@ -94,7 +94,7 @@ namespace ServerCore.Pages
 
             MailInfo mailInfo = new MailInfo();
 
-            mailInfo.PuzzleName = puzzle.Name;
+            mailInfo.PuzzleName = puzzle.PlaintextName;
             mailInfo.PuzzleSupportAlias = puzzle.SupportEmailAlias ?? currentEvent.ContactEmail ?? "puzzhunt@microsoft.com";
             mailInfo.TeamName = team.Name;
 

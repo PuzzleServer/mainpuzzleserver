@@ -6,7 +6,7 @@
     ViewData["RoutingPuzzleId"] = ViewContext.RouteData.Values["puzzleId"];
 }
 
-<h2>@Model.Puzzle.Name:  Create puzzle piece</h2>
+<h2>@Model.Puzzle.PlaintextName:  Create puzzle piece</h2>
 <div>
     <a asp-page="./Index" asp-route-puzzleid="@Model.PuzzleId">Cancel</a>
 </div>

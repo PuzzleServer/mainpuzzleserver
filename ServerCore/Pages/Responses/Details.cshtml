@@ -8,7 +8,7 @@
     //Needs route data - ViewData["PlayRoute"] = "/Submissions/Index";
 }
 
-<h2>@Model.PuzzleResponse.Puzzle.Name: Response details</h2>
+<h2>@Model.PuzzleResponse.Puzzle.PlaintextName: Response details</h2>
 <div>
     <a asp-page="./Edit" asp-route-id="@Model.PuzzleResponse.ID" asp-route-puzzleid="@Model.PuzzleId">Edit</a> |
     <a asp-page="./Delete" asp-route-id="@Model.PuzzleResponse.ID" asp-route-puzzleid="@Model.PuzzleId">Delete</a> |

@@ -70,7 +70,7 @@ namespace ServerCore.Pages.Events
 
             FreeformPuzzles = await (puzzleQuery.Select(puzzle => new SelectListItem()
                                      {
-                                         Text = puzzle.Name,
+                                         Text = puzzle.PlaintextName,
                                          Value = puzzle.ID.ToString(),
                                          Selected = (puzzleId != null && puzzle.ID == puzzleId.Value)
                                      })).ToListAsync();
@@ -89,7 +89,7 @@ namespace ServerCore.Pages.Events
                 return NotFound();
             }
 
-            PuzzleName = selectedPuzzle.Name;
+            PuzzleName = selectedPuzzle.PlaintextName;
 
             Submissions = await (from submission in _context.Submissions
                                  join puzzle in _context.Puzzles on submission.PuzzleID equals puzzle.ID

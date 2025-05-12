@@ -169,7 +169,7 @@ namespace ServerCore.Pages.Puzzles
             PuzzleID = puzzleId;
             PuzzleName = await (from Puzzle in _context.Puzzles
                                 where Puzzle.ID == puzzleId
-                                select Puzzle.Name).FirstOrDefaultAsync();
+                                select Puzzle.PlaintextName).FirstOrDefaultAsync();
             Hints = await GetHints(puzzleId);
 
             if (this.PlayerInEvent == null)

@@ -129,7 +129,7 @@ namespace ServerCore.Pages.Threads
                     return NotFound();
                 }
 
-                subject = $"[{singlePlayerPuzzlePlayer.Name}]{Puzzle.Name}";
+                subject = $"[{singlePlayerPuzzlePlayer.Name}]{Puzzle.PlaintextName}";
                 threadId = MessageHelper.GetSinglePlayerPuzzleThreadId(Puzzle.ID, playerId.Value);
                 teamId = null;
                 PuzzleState = await SinglePlayerPuzzleStateHelper.GetOrAddStateIfNotThere(
@@ -153,7 +153,7 @@ namespace ServerCore.Pages.Threads
                     return NotFound();
                 }
 
-                subject = $"[{team.Name}]{Puzzle.Name}";
+                subject = $"[{team.Name}]{Puzzle.PlaintextName}";
                 threadId = MessageHelper.GetTeamPuzzleThreadId(Puzzle.ID, teamId.Value);
                 playerId = null;
                 PuzzleState = await PuzzleStateHelper

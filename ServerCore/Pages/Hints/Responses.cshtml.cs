@@ -32,14 +32,14 @@ namespace ServerCore.Pages.Hints
             if (EventRole == EventRole.admin)
             {
                 HintViews = await _context.Hints.Where(h => h.Puzzle.Event == Event)
-                    .Select(h => new HintView { PuzzleId = h.Puzzle.ID, PuzzleName = h.Puzzle.Name, Description = h.Description, Content=h.Content, Cost = h.Cost })
+                    .Select(h => new HintView { PuzzleId = h.Puzzle.ID, PuzzleName = h.Puzzle.PlaintextName, Description = h.Description, Content=h.Content, Cost = h.Cost })
                     .ToListAsync();
             }
             else
             {
                 HintViews = await (from p in UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser)
                                    join h in _context.Hints on p equals h.Puzzle
-                                   select new HintView { PuzzleId = p.ID, PuzzleName = p.Name, Description = h.Description, Content = h.Content, Cost = h.Cost })
+                                   select new HintView { PuzzleId = p.ID, PuzzleName = p.PlaintextName, Description = h.Description, Content = h.Content, Cost = h.Cost })
                                    .ToListAsync();
             }
 

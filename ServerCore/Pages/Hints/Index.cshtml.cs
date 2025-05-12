@@ -26,7 +26,7 @@ namespace ServerCore.Pages.Hints
         {
             PuzzleId = puzzleId;
             Hints = await _context.Hints.Where(hint => hint.Puzzle.ID == puzzleId).OrderBy(hint => hint.DisplayOrder).ThenBy(hint => hint.Description).ToListAsync();
-            PuzzleName = await _context.Puzzles.Where(puzzle => puzzle.ID == puzzleId).Select(puzzle => puzzle.Name).FirstOrDefaultAsync();
+            PuzzleName = await _context.Puzzles.Where(puzzle => puzzle.ID == puzzleId).Select(puzzle => puzzle.PlaintextName).FirstOrDefaultAsync();
         }
     }
 }

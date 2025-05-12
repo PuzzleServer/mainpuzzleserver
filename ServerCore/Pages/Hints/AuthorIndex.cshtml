@@ -18,7 +18,7 @@
     // TODO: Do we need a combined layout, or is that rare enough as to be unnecessary? Maybe those bar layouts should be sections/components?
 }
 
-<h2>@if (Model.Puzzle != null) { <text>@Model.Puzzle.Name:</text> } Hints @if (Model.Team != null) { <text>by @Model.Team.Name</text> }</h2>
+<h2>@if (Model.Puzzle != null) { <text>@Model.Puzzle.PlaintextName:</text> } Hints @if (Model.Team != null) { <text>by @Model.Team.Name</text> }</h2>
 <a asp-page="/Puzzles/Index">Back to puzzle list</a>
 
 <br />
