@@ -60,7 +60,6 @@ namespace ServerCore.Pages.Components
                 SelectedPlayerClassID = CurrentTeamMember.Class?.ID ?? NoClassSetValue;
 
                 // This will get unassigned classes for a player or all classes for an admin
-                // Admin UI currently shows the player's current class twice, that's a known bug and can be safely ignored
                 AvailablePlayerClasses = await PlayerClassHelper.GetAvailablePlayerClassesSorted(context, EventId, CurrentUserEventRole, CurrentTeamMember.Team.ID);
             }
 

@@ -221,7 +221,6 @@ namespace ServerCore.Helpers
                 Member.Class = playerClass;
             }
 
-
             context.TeamMembers.Add(Member);
             await TeamHelper.OnTeamMemberChange(context, team);
             await context.SaveChangesAsync();

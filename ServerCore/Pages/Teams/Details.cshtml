@@ -388,9 +388,18 @@
                             <td>
                                 @if (Model.Event.HasPlayerClasses)
                                 {
-                                    <div>
-                                        <component type="typeof(ServerCore.Pages.Components.PlayerClassSelectComponent)" render-mode="Server" param-UserId="@item.Member.ID" param-EventId="@Model.Event.ID" param-CurrentUserEventRole="@Model.EventRole" param-IsTempClass="false" />
-                                    </div>
+                                    if (Model.Event.EventHasStarted && Model.EventRole != ModelBases.EventRole.admin)
+                                    {
+                                        <div>
+                                            <p>@item.Class.Name</p>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div>
+                                            <component type="typeof(ServerCore.Pages.Components.PlayerClassSelectComponent)" render-mode="Server" param-UserId="@item.Member.ID" param-EventId="@Model.Event.ID" param-CurrentUserEventRole="@Model.EventRole" param-IsTempClass="false" />
+                                        </div>
+                                    }
                                 }
                             </td>
                             @if (Model.EventRole == ModelBases.EventRole.admin)
