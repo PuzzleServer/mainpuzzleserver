@@ -8,23 +8,20 @@
 
         @if (AvailablePlayerClasses != null)
         {
-            @if (CurrentTeamMember != null)
+            @foreach (var pc in AllPlayerClasses)
             {
-                @if (CurrentTeamMember.Class == null)
+                if(SelectedPlayerClassID == @pc.ID || AvailablePlayerClasses.Contains(pc))
                 {
-                    <option value="123456789">No @Event.PlayerClassName set</option>
+                    <option value="@pc.ID">@pc.Name</option>
                 }
                 else
                 {
-                    <option value="@CurrentTeamMember.Class.ID">@CurrentTeamMember.Class.Name</option>
-                    <option value="123456789">No @Event.PlayerClassName set</option>
+                    <option value="@pc.ID" disabled>@pc.Name</option>
                 }
             }
 
-            @foreach (var pc in AvailablePlayerClasses)
-            {
-                <option value="@pc.ID">@pc.Name</option>
-            }
+            // Add the "not set" option using a special value
+            <option value=@NoClassSetValue>No @Event.PlayerClassName set</option>
         }
     </InputSelect>
 }

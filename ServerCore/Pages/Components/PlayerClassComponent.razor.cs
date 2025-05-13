@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Migrations;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
@@ -17,6 +16,7 @@ namespace ServerCore.Pages.Components
         public PuzzleServerContext _context { get; set; }
 
         public string ClassName { get; set; }
+        public string UniqueName { get; set; }
         public int ClassOrder { get; set; }
 
         List<PlayerClass> PlayerClasses = new List<PlayerClass>();
@@ -29,7 +29,7 @@ namespace ServerCore.Pages.Components
 
         private async Task OnAddClick()
         {
-            await OnPlayerClassAddedAsync(ClassName, ClassOrder);
+            await OnPlayerClassAddedAsync(ClassName, UniqueName, ClassOrder);
             await UpdatePlayerClasses();
         }
 
@@ -39,9 +39,9 @@ namespace ServerCore.Pages.Components
             await UpdatePlayerClasses();
         }
 
-        async Task OnPlayerClassAddedAsync(string playerClassName, int playerClassOrder)
+        async Task OnPlayerClassAddedAsync(string playerClassName, string uniqueName, int playerClassOrder)
         {
-            PlayerClass newClass = new PlayerClass() { EventID = EventID, Name = playerClassName, Order = playerClassOrder };
+            PlayerClass newClass = new PlayerClass() { EventID = EventID, Name = playerClassName, UniqueName = uniqueName, Order = playerClassOrder };
             _context.PlayerClasses.Add(newClass);
             await _context.SaveChangesAsync();
         }

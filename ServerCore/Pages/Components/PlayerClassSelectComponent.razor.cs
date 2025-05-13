@@ -10,6 +10,7 @@ namespace ServerCore.Pages.Components
     public partial class PlayerClassSelectComponent
     {
         public int SelectedPlayerClassID { get; set; }
+        public List<PlayerClass> AllPlayerClasses { get; set; }
         public List<PlayerClass> AvailablePlayerClasses { get; set; }
 
         [Parameter]
@@ -27,6 +28,8 @@ namespace ServerCore.Pages.Components
         [Parameter]
         public bool IsTempClass { get; set; }
 
+        public const int NoClassSetValue = PlayerClassHelper.NoClassSetValue;
+
         PuzzleServerContext context
         {
             get
@@ -39,21 +42,22 @@ namespace ServerCore.Pages.Components
         {
             Event = await context.Events.FindAsync(EventId);
             CurrentTeamMember = await UserEventHelper.GetTeamMemberForPlayer(context, Event, UserId);
+            AllPlayerClasses = await PlayerClassHelper.GetAllPlayerClassesSorted(context, EventId);
 
             // If a player doesn't have a class in the DB, then set the bound value to the ID for "no class selected"
             if (CurrentTeamMember.Class == null)
             {
-                SelectedPlayerClassID = 123456789;
+                SelectedPlayerClassID = NoClassSetValue;
             }
 
             if (IsTempClass && CurrentTeamMember.TemporaryClass != null)
             {
                 SelectedPlayerClassID = CurrentTeamMember.TemporaryClass.ID;
-                AvailablePlayerClasses = await PlayerClassHelper.GetAllPlayerClassesSorted(context, EventId);
+                AvailablePlayerClasses = AllPlayerClasses;
             }
             else
             {
-                SelectedPlayerClassID = CurrentTeamMember.Class.ID;
+                SelectedPlayerClassID = CurrentTeamMember.Class?.ID ?? NoClassSetValue;
 
                 // This will get unassigned classes for a player or all classes for an admin
                 // Admin UI currently shows the player's current class twice, that's a known bug and can be safely ignored

@@ -25,18 +25,9 @@
     <None Remove="Pages\Play\**" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="Pages\Events\PlayerClass.cshtml.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Remove="Pages\Events\PlayerClass.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <None Remove="Content\nipd.png" />
     <None Remove="Content\puzzleday.png" />
     <None Remove="Content\puzzlehunt.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Pages\Events\PlayerClass.cshtml.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.16.0" />
@@ -74,7 +65,6 @@
     <Folder Include="Content\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Pages\Events\PlayerClass.cshtml" />
     <None Include="wwwroot\css\pd2019\styles.css" />
   </ItemGroup>
   <ItemGroup>

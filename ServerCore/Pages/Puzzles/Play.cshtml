@@ -14,28 +14,28 @@
 }
 <style>
     .radioButton {
-        padding: 0px 5px;
-        color: inherit;
-        text-decoration: none;
+    padding: 0px 5px;
+    color: inherit;
+    text-decoration: none;
     }
 
-        .radioButton:hover {
-            color: inherit;
-            text-decoration: none;
-            cursor: pointer;
-        }
+    .radioButton:hover {
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    }
 </style>
 
 @if (Model.Event.AllowBlazor && canUsePresence && Model.Team != null)
 {
     <script>
         window.showPresence = (allPresence) => {
-            allPresence.forEach(p => {
-                let presenceId = document.querySelector(`#presence-${p.puzzleId}`);
-                if (presenceId) {
-                    presenceId.textContent = p.presenceText;
-                }
-            });
+        allPresence.forEach(p => {
+        let presenceId = document.querySelector(`#presence-${p.puzzleId}`);
+        if (presenceId) {
+        presenceId.textContent = p.presenceText;
+        }
+        });
         }
     </script>
     <component type="typeof(ServerCore.Pages.Components.TeamPresenceToJSComponent)" render-mode="Server" param-TeamId="@Model.Team.ID" param-MaxUsers=2 />
@@ -83,9 +83,9 @@
 }
 <div>
     <a asp-page="./Play"
-       asp-route-singlePlayerPuzzleSort="@Model.SinglePlayerPuzzleSort"
-       asp-route-teamPuzzleSort="@Model.TeamPuzzleSort"
-       asp-route-stateFilter=@(unsolvedFilter ? PlayModel.PuzzleStateFilter.All : PlayModel.PuzzleStateFilter.Unsolved)>
+    asp-route-singlePlayerPuzzleSort="@Model.SinglePlayerPuzzleSort"
+    asp-route-teamPuzzleSort="@Model.TeamPuzzleSort"
+    asp-route-stateFilter=@(unsolvedFilter ? PlayModel.PuzzleStateFilter.All : PlayModel.PuzzleStateFilter.Unsolved)>
         Show @(unsolvedFilter ? "All" : "only unsolved") puzzles
     </a> | 
     @if (Model.Event.HideHints || Model.Event.DefaultCostForHelpThread >= 0)
@@ -112,8 +112,18 @@
 
 @if (Model.Team == null)
 {
-    <p>You cannot see team puzzles because you are not yet on a team!<br/>
-        Create or join a team <a asp-page="/Player/Create">HERE</a>.</p>
+    if (EventHelper.EventRequiresActivePlayerRegistration(Model.Event))
+    {
+        <p>You cannot see team puzzles because you are not yet on a team!<br/>
+            Create or join a team <a asp-page="/Player/Create">HERE</a>.</p>
+    }
+    else
+    {
+        <p>
+            You cannot see team puzzles because you are not yet on a team!<br />
+            Create or join a team <a asp-page="/Teams">HERE</a>.
+        </p>
+    }
 }
 else if (!Model.VisibleTeamPuzzleViews.Any())
 {

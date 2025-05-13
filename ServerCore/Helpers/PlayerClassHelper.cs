@@ -1,16 +1,18 @@
-﻿using ServerCore.DataModel;
-using ServerCore.ModelBases;
+﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using ServerCore.DataModel;
+using ServerCore.ModelBases;
 
 namespace ServerCore.Helpers
 {
     public class PlayerClassHelper
     {
+        public const int NoClassSetValue = 123456789;
+
         /// <summary>
         /// Get the PlayerClass associated with a given classId
         /// </summary>
@@ -149,7 +151,7 @@ namespace ServerCore.Helpers
             {
                 // This value is set in the UI and can be changed if needed in the future,
                 // it just needs to be a number big enough that there won't be a matching valid ID in the database
-                if (playerClassId == 123456789)
+                if (playerClassId == NoClassSetValue)
                 {
                     if (IsTempClass)
                     {
