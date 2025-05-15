@@ -176,7 +176,7 @@ namespace ServerCore.Pages.Submissions
                 {
                     SubmitterName = String.IsNullOrEmpty(s.SubmitterDisplayName) ? s.Submitter.Name : s.Submitter.Name + ", " + s.SubmitterDisplayName,
                     PuzzleID = s.Puzzle.ID,
-                    PuzzleName = s.Puzzle.Name,
+                    PuzzleName = s.Puzzle.PlaintextName,
                     TeamID = s.Team.ID,
                     TeamName = s.Team.Name,
                     IsFreeform = s.Puzzle.IsFreeform,

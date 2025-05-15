@@ -5,7 +5,7 @@
     ViewData["Title"] = "Unlock single player puzzle for player";
 }
 
-<h2>Unlock @Model.Puzzle.Name for a player</h2>
+<h2>Unlock @Model.Puzzle.PlaintextName for a player</h2>
 
 <div>
     <a asp-page="/Puzzles/SinglePlayerPuzzleStatus" asp-route-puzzleid=@Model.Puzzle.ID>Cancel</a>

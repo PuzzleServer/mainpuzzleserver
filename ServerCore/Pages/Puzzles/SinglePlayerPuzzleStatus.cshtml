@@ -10,7 +10,7 @@
     Layout = "_puzzleManagementLayout.cshtml";
 }
 
-<h2>@Model.Puzzle.Name: Status</h2>
+<h2>@Model.Puzzle.PlaintextName: Status</h2>
 @if (Model.UnlockedTime != null)
 {
     <h4 style="color:green">Puzzle was unlocked for all players at @Html.Raw(Model.LocalTime(Model.UnlockedTime))</h4>

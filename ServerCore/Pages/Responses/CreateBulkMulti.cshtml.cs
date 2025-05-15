@@ -72,7 +72,7 @@ namespace ServerCore.Pages.Responses
                 if (puzzleName != null && !puzzleTitleLookup.TryGetValue(puzzleName, out puzzleId))
                 {
                     Puzzle puzzle = await (from Puzzle p in _context.Puzzles
-                                           where p.Name == puzzleName && p.EventID == this.Event.ID
+                                           where p.PlaintextName == puzzleName && p.EventID == this.Event.ID
                                            select p).FirstOrDefaultAsync();
 
                     if (puzzle == null)

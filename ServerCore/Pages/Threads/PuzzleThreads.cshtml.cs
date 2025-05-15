@@ -96,7 +96,7 @@ namespace ServerCore.Pages.Threads
                 }
 
                 messages = messages.Where(message => message.PuzzleID == puzzleId.Value);
-                this.Title = $"Help threads for puzzle {puzzle.Name}";
+                this.Title = $"Help threads for puzzle {puzzle.PlaintextName}";
             }
 
             if (teamId.HasValue)

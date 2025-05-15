@@ -212,7 +212,7 @@ namespace ServerCore
                 // only send this notification when puzzles are embedded; otherwise, the notification is sent when there are no pages connected!
                 if (eventObj.EmbedPuzzles && puzzle.IsPuzzle)
                 {
-                    await ServiceProvider.GetRequiredService<IHubContext<ServerMessageHub>>().SendNotification(team, "Puzzle solved!", $"{puzzle.Name} has been solved!", $"/{puzzle.Event.EventID}/play/Submissions/{puzzle.ID}");
+                    await ServiceProvider.GetRequiredService<IHubContext<ServerMessageHub>>().SendNotification(team, "Puzzle solved!", $"{puzzle.PlaintextName} has been solved!", $"/{puzzle.Event.EventID}/play/Submissions/{puzzle.ID}");
                 }
 
                 await UnlockAnyPuzzlesThatThisSolveUnlockedAsync(context,
@@ -525,7 +525,7 @@ namespace ServerCore
 
                         foreach (var puzzle in puzzles)
                         {
-                            await ServiceProvider.GetRequiredService<IHubContext<ServerMessageHub>>().SendNotification(t, "New puzzle!", $"{puzzle.Name} has been unlocked!", $"/{eventObj.EventID}/play/Submissions/{puzzle.ID}");
+                            await ServiceProvider.GetRequiredService<IHubContext<ServerMessageHub>>().SendNotification(t, "New puzzle!", $"{puzzle.PlaintextName} has been unlocked!", $"/{eventObj.EventID}/play/Submissions/{puzzle.ID}");
                         }
                     }
                 }

@@ -48,18 +48,18 @@ namespace ServerCore.Pages.Hints
                     if (teamId == null)
                     {
                         HintViews = await _context.HintStatePerTeam.Where((h) => h.UnlockTime != null && h.Team.Event == Event)
-                            .Select(hspt => new HintView { TeamId = hspt.TeamID, TeamName = hspt.Team.Name, PuzzleId = hspt.Hint.Puzzle.ID, PuzzleName = hspt.Hint.Puzzle.Name, Description = hspt.Hint.Description, Cost = hspt.Hint.Cost, UnlockTime = hspt.UnlockTime  })
+                            .Select(hspt => new HintView { TeamId = hspt.TeamID, TeamName = hspt.Team.Name, PuzzleId = hspt.Hint.Puzzle.ID, PuzzleName = hspt.Hint.Puzzle.PlaintextName, Description = hspt.Hint.Description, Cost = hspt.Hint.Cost, UnlockTime = hspt.UnlockTime  })
                             .ToListAsync();
                     }
                     else
                     {
                         HintViews = await _context.HintStatePerTeam.Where((h) => h.UnlockTime != null && h.TeamID == teamId)
-                            .Select(hspt => new HintView { TeamId = hspt.TeamID, TeamName = hspt.Team.Name, PuzzleId = hspt.Hint.Puzzle.ID, PuzzleName = hspt.Hint.Puzzle.Name, Description = hspt.Hint.Description, Cost = hspt.Hint.Cost, UnlockTime = hspt.UnlockTime })
+                            .Select(hspt => new HintView { TeamId = hspt.TeamID, TeamName = hspt.Team.Name, PuzzleId = hspt.Hint.Puzzle.ID, PuzzleName = hspt.Hint.Puzzle.PlaintextName, Description = hspt.Hint.Description, Cost = hspt.Hint.Cost, UnlockTime = hspt.UnlockTime })
                             .ToListAsync();
                     }
 
                     SinglePlayerPuzzleHintViews = await _context.SinglePlayerPuzzleHintStatePerPlayer.Where((h) => h.UnlockTime != null && h.Hint.Puzzle.Event == Event)
-                            .Select(hspp => new SinglePlayerPuzzleHintView { PlayerId = hspp.PlayerID, PlayerName = hspp.Player.Name, PuzzleId = hspp.Hint.Puzzle.ID, PuzzleName = hspp.Hint.Puzzle.Name, Description = hspp.Hint.Description, Cost = hspp.Hint.Cost, UnlockTime = hspp.UnlockTime })
+                            .Select(hspp => new SinglePlayerPuzzleHintView { PlayerId = hspp.PlayerID, PlayerName = hspp.Player.Name, PuzzleId = hspp.Hint.Puzzle.ID, PuzzleName = hspp.Hint.Puzzle.PlaintextName, Description = hspp.Hint.Description, Cost = hspp.Hint.Cost, UnlockTime = hspp.UnlockTime })
                             .ToListAsync();
                 }
                 else
@@ -69,7 +69,7 @@ namespace ServerCore.Pages.Hints
                         HintViews = await (from p in UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser)
                                            join hspt in _context.HintStatePerTeam on p equals hspt.Hint.Puzzle
                                            where hspt.UnlockTime != null
-                                           select new HintView { TeamId = hspt.TeamID, TeamName = hspt.Team.Name, PuzzleId = hspt.Hint.Puzzle.ID, PuzzleName = hspt.Hint.Puzzle.Name, Description = hspt.Hint.Description, Cost = hspt.Hint.Cost, UnlockTime = hspt.UnlockTime })
+                                           select new HintView { TeamId = hspt.TeamID, TeamName = hspt.Team.Name, PuzzleId = hspt.Hint.Puzzle.ID, PuzzleName = hspt.Hint.Puzzle.PlaintextName, Description = hspt.Hint.Description, Cost = hspt.Hint.Cost, UnlockTime = hspt.UnlockTime })
                                            .ToListAsync();
                     }
                     else
@@ -77,14 +77,14 @@ namespace ServerCore.Pages.Hints
                         HintViews = await (from p in UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser)
                                            join hspt in _context.HintStatePerTeam on p equals hspt.Hint.Puzzle
                                            where hspt.UnlockTime != null && hspt.TeamID == teamId
-                                           select new HintView { TeamId = hspt.TeamID, TeamName = hspt.Team.Name, PuzzleId = hspt.Hint.Puzzle.ID, PuzzleName = hspt.Hint.Puzzle.Name, Description = hspt.Hint.Description, Cost = hspt.Hint.Cost, UnlockTime = hspt.UnlockTime })
+                                           select new HintView { TeamId = hspt.TeamID, TeamName = hspt.Team.Name, PuzzleId = hspt.Hint.Puzzle.ID, PuzzleName = hspt.Hint.Puzzle.PlaintextName, Description = hspt.Hint.Description, Cost = hspt.Hint.Cost, UnlockTime = hspt.UnlockTime })
                                            .ToListAsync();
                     }
 
                     SinglePlayerPuzzleHintViews = await (from p in UserEventHelper.GetPuzzlesForAuthorAndEvent(_context, Event, LoggedInUser)
                                                          join hspp in _context.SinglePlayerPuzzleHintStatePerPlayer on p.ID equals hspp.Hint.PuzzleID
                                                          where hspp.UnlockTime != null
-                                                         select new SinglePlayerPuzzleHintView { PlayerId = hspp.PlayerID, PlayerName = hspp.Player.Name, PuzzleId = hspp.Hint.Puzzle.ID, PuzzleName = hspp.Hint.Puzzle.Name, Description = hspp.Hint.Description, Cost = hspp.Hint.Cost, UnlockTime = hspp.UnlockTime })
+                                                         select new SinglePlayerPuzzleHintView { PlayerId = hspp.PlayerID, PlayerName = hspp.Player.Name, PuzzleId = hspp.Hint.Puzzle.ID, PuzzleName = hspp.Hint.Puzzle.PlaintextName, Description = hspp.Hint.Description, Cost = hspp.Hint.Cost, UnlockTime = hspp.UnlockTime })
                                                          .ToListAsync();
                 }
             }
@@ -110,7 +110,7 @@ namespace ServerCore.Pages.Hints
                 {
                     HintViews = new List<HintView>();
                     SinglePlayerPuzzleHintViews = await _context.SinglePlayerPuzzleHintStatePerPlayer.Where((h) => h.UnlockTime != null && h.Hint.PuzzleID == puzzleId)
-                            .Select(hspp => new SinglePlayerPuzzleHintView { PlayerId = hspp.PlayerID, PlayerName = hspp.Player.Name, PuzzleId = hspp.Hint.Puzzle.ID, PuzzleName = hspp.Hint.Puzzle.Name, Description = hspp.Hint.Description, Cost = hspp.Hint.Cost, UnlockTime = hspp.UnlockTime })
+                            .Select(hspp => new SinglePlayerPuzzleHintView { PlayerId = hspp.PlayerID, PlayerName = hspp.Player.Name, PuzzleId = hspp.Hint.Puzzle.ID, PuzzleName = hspp.Hint.Puzzle.PlaintextName, Description = hspp.Hint.Description, Cost = hspp.Hint.Cost, UnlockTime = hspp.UnlockTime })
                             .ToListAsync();
                 }
                 else
@@ -119,13 +119,13 @@ namespace ServerCore.Pages.Hints
                     if (teamId == null)
                     {
                         HintViews = await _context.HintStatePerTeam.Where((h) => h.UnlockTime != null && h.Hint.Puzzle == Puzzle)
-                                .Select(hspt => new HintView { TeamId = hspt.TeamID, TeamName = hspt.Team.Name, PuzzleId = hspt.Hint.Puzzle.ID, PuzzleName = hspt.Hint.Puzzle.Name, Description = hspt.Hint.Description, Cost = hspt.Hint.Cost, UnlockTime = hspt.UnlockTime })
+                                .Select(hspt => new HintView { TeamId = hspt.TeamID, TeamName = hspt.Team.Name, PuzzleId = hspt.Hint.Puzzle.ID, PuzzleName = hspt.Hint.Puzzle.PlaintextName, Description = hspt.Hint.Description, Cost = hspt.Hint.Cost, UnlockTime = hspt.UnlockTime })
                                 .ToListAsync();
                     }
                     else
                     {
                         HintViews = await _context.HintStatePerTeam.Where((h) => h.UnlockTime != null && h.TeamID == teamId && h.Hint.Puzzle == Puzzle)
-                                .Select(hspt => new HintView { TeamId = hspt.TeamID, TeamName = hspt.Team.Name, PuzzleId = hspt.Hint.Puzzle.ID, PuzzleName = hspt.Hint.Puzzle.Name, Description = hspt.Hint.Description, Cost = hspt.Hint.Cost, UnlockTime = hspt.UnlockTime })
+                                .Select(hspt => new HintView { TeamId = hspt.TeamID, TeamName = hspt.Team.Name, PuzzleId = hspt.Hint.Puzzle.ID, PuzzleName = hspt.Hint.Puzzle.PlaintextName, Description = hspt.Hint.Description, Cost = hspt.Hint.Cost, UnlockTime = hspt.UnlockTime })
                                 .ToListAsync();
                     }
                 }

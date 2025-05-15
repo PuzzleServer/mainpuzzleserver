@@ -230,7 +230,7 @@ namespace ServerCore.Pages.Submissions
                     var authors = await _context.PuzzleAuthors.Where((pa) => pa.Puzzle == submission.Puzzle).Select((pa) => pa.Author.Email).ToListAsync();
                     string affectedEntity = IsPuzzleForSinglePlayer ? $"User {LoggedInUser.Name ?? LoggedInUser.Email}" : $"Team {Team.Name}";
                     MailHelper.Singleton.SendPlaintextBcc(authors,
-                        $"{Event.Name}: {affectedEntity} is in email mode for {submission.Puzzle.Name}",
+                        $"{Event.Name}: {affectedEntity} is in email mode for {submission.Puzzle.PlaintextName}",
                         "");
                 }
                 else
@@ -312,7 +312,7 @@ namespace ServerCore.Pages.Submissions
                 .Where(pa => pa.Puzzle.ID == Puzzle.ID)
                 .Select(pa => pa.Author).ToArrayAsync();
 
-            string claimMessage = $"{LoggedInUser.Name} has claimed {Puzzle.Name} for testing.";
+            string claimMessage = $"{LoggedInUser.Name} has claimed {Puzzle.PlaintextName} for testing.";
             foreach (var author in authors)
             {
                 await messageHub.SendNotification(author, "Puzzle Claimed", claimMessage);

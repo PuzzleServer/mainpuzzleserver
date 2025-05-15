@@ -279,7 +279,7 @@ namespace ServerCore.Helpers
                     var authors = await context.PuzzleAuthors.Where((pa) => pa.Puzzle == submission.Puzzle).Select((pa) => pa.Author.Email).ToListAsync();
                     string affectedEntity = (!puzzle.IsForSinglePlayer) ? $"Team {team.Name}" : $"User {loggedInUser.Name ?? loggedInUser.Email}";
                     MailHelper.Singleton.SendPlaintextBcc(authors,
-                        $"{thisEvent.Name}: {affectedEntity} is in email mode for {submission.Puzzle.Name}",
+                        $"{thisEvent.Name}: {affectedEntity} is in email mode for {submission.Puzzle.PlaintextName}",
                         "");
                 }
                 else
