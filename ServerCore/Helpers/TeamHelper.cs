@@ -42,11 +42,22 @@ namespace ServerCore.Helpers
 
                     PuzzleUser user = await context.PuzzleUsers.SingleAsync(m => m.ID == userId);
 
+                    if (!(await user.IsRegisteredForEvent(context, ev)) && !(EventHelper.EventRequiresActivePlayerRegistration(ev)))
+                    {
+                        await EventHelper.RegisterPlayerForEvent(context, ev, user);
+                    }
+
                     TeamMembers teamMember = new TeamMembers()
                     {
                         Team = team,
                         Member = user
                     };
+
+                    if (ev.HasPlayerClasses)
+                    {
+                        await PlayerClassHelper.AssignRandomPlayerClass(context, teamMember, ev, EventRole.play);
+                    }
+
                     context.TeamMembers.Add(teamMember);
                     await TeamHelper.OnTeamMemberChange(context, team);
                 }
