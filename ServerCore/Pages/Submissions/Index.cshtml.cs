@@ -46,6 +46,8 @@ namespace ServerCore.Pages.Submissions
 
         public Team Team { get; set; }
 
+        public TeamMembers CurrentTeamMember { get; set; }
+
         public string AnswerToken { get; set; }
 
         public IList<Puzzle> PuzzlesCausingGlobalLockout { get; set; }
@@ -325,6 +327,8 @@ namespace ServerCore.Pages.Submissions
         private async Task SetupContext(int puzzleId)
         {
             Team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
+
+            CurrentTeamMember = await UserEventHelper.GetTeamMemberForPlayer(_context, Event, LoggedInUser.ID);
 
             Puzzle = await _context.Puzzles.Where(
                 (p) => p.ID == puzzleId).FirstOrDefaultAsync();

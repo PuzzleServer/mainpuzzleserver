@@ -25,7 +25,7 @@
     int embedType = 0; // Nothing
     if (Model.Puzzle.CustomURL != null)
     {
-        puzzleFilePath = @PuzzleHelper.GetFormattedUrl(Model.Puzzle, Model.Event.ID, Model.Team?.Password);
+        puzzleFilePath = @PuzzleHelper.GetFormattedUrl(Model.Puzzle, Model.Event.ID, Model.Team?.Password, Model.CurrentTeamMember?.Class?.UniqueName);
     }
     else if (Model.Puzzle.PuzzleFile != null)
     {

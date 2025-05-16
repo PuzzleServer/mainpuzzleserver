@@ -72,6 +72,14 @@ namespace ServerCore.Helpers
             {
                 return null;
             }
+
+            // Admins/authors/anyone who doesn't currently have a PlayerClass set needs a fallback url path
+            // A file for this path needs to be included in any puzzles that use playerClass as part of the route
+            if(playerClass == null)
+            {
+                playerClass = "noPlayerClass";
+            }
+
             string formattedUrl = customUrl.Replace("{puzzleId}", $"{puzzleId}").Replace("{eventId}", $"{eventId}")
                 .Replace("{teamPass}", teamPassword).Replace("{playerClass}", playerClass);
             return formattedUrl;
