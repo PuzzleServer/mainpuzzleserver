@@ -48,6 +48,8 @@ namespace ServerCore.Pages.Submissions
 
         public TeamMembers CurrentTeamMember { get; set; }
 
+        public string ActivePlayerClass { get; set; }
+
         public string AnswerToken { get; set; }
 
         public IList<Puzzle> PuzzlesCausingGlobalLockout { get; set; }
@@ -328,7 +330,11 @@ namespace ServerCore.Pages.Submissions
         {
             Team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
 
-            CurrentTeamMember = await UserEventHelper.GetTeamMemberForPlayer(_context, Event, LoggedInUser.ID);
+            if (Event.HasPlayerClasses)
+            {
+                CurrentTeamMember = await UserEventHelper.GetTeamMemberForPlayer(_context, Event, LoggedInUser.ID);
+                ActivePlayerClass = PlayerClassHelper.GetActiveClassForPlayer(CurrentTeamMember)?.UniqueName ?? "";
+            }
 
             Puzzle = await _context.Puzzles.Where(
                 (p) => p.ID == puzzleId).FirstOrDefaultAsync();

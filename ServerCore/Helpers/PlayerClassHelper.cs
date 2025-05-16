@@ -13,6 +13,16 @@ namespace ServerCore.Helpers
     {
         public const int NoClassSetValue = 123456789;
 
+        public static PlayerClass GetActiveClassForPlayer(TeamMembers teamMember)
+        {
+            if(teamMember.TemporaryClass != null)
+            {
+                return teamMember.TemporaryClass;
+            }
+
+            return teamMember.Class;
+        }
+
         /// <summary>
         /// Get the PlayerClass associated with a given classId
         /// </summary>
