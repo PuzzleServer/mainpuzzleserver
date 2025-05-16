@@ -22,6 +22,10 @@
 
 <a asp-page="./Edit">Edit</a> | <a asp-page="./Import">Import</a> | <a asp-page="./Delete">Delete</a>
 
+<br /><br />
+<h4>Additional Event Settings</h4>
+<a asp-page="./PlayerClass">Player Class Management</a>
+
 <hr />
 <div class="details-list">
     <h4>General Properties</h4><div></div>
@@ -261,6 +265,18 @@
     </div>
     <div>
         @Model.Event.IsInternEvent
+    </div>
+    <div>
+        HasPlayerClasses
+    </div>
+    <div>
+        @Model.Event.HasPlayerClasses
+    </div>
+    <div>
+        PlayerClassName
+    </div>
+    <div>
+        @Model.Event.PlayerClassName
     </div>
     <h4>Swag</h4><div></div>
     <div>

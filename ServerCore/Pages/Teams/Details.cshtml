@@ -46,16 +46,16 @@
 <!--TODO: Consider moving if other pages use this format-->
 <style>
     .column {
-    float: left;
-    width: calc(50% - 40px);
-    margin: 0px 20px;
+        float: left;
+        width: calc(50% - 40px);
+        margin: 0px 20px;
     }
 
     /* Clear floats after the columns */
     .row:after {
-    content: "";
-    display: table;
-    clear: both;
+        content: "";
+        display: table;
+        clear: both;
     }
 </style>
 
@@ -91,7 +91,7 @@
         @if (Model.EventRole == ModelBases.EventRole.admin)
         {
             <a asp-page="./Disqualify"
-            asp-route-teamId="@Model.Team.ID">
+               asp-route-teamId="@Model.Team.ID">
                 @(Model.Team.IsDisqualified ? "Requalify Team" : "Disqualify Team")
             </a>
         }
@@ -197,36 +197,55 @@
                             }
                         </dd>
                     }
-                @if (!Model.Team.AutoTeamType.HasValue)
-                {
-                    <dt>
-                        Allow unsolicited applications
-                    </dt>
-                    <dd>
-                        @if (Model.Team.IsLookingForTeammates)
-                        {
-                        <div>Yes (this team shows up on the list of teams that anyone can apply to)</div>
-                        }
-                        else
-                        {
-                        <div>No (only people who are sent an application link directly will be able to apply)</div>
-                        }
-                    </dd>
-                    <dt>
-                        Bio for unsolicited applications (visible to applicants)
-                    </dt>
-                    <dd>
-                        @if (Model.Team.Bio == null)
-                        {
-                        <div>(none)</div>
-                        }
-                        else
-                        {
-                        @Model.Team.Bio
-                        }
-                    </dd>
-                }
-            </dl>
+                    @if (!Model.Team.AutoTeamType.HasValue)
+                    {
+                        <dt>
+                            Allow unsolicited applications
+                        </dt>
+                        <dd>
+                            @if (Model.Team.IsLookingForTeammates)
+                            {
+                                <div>Yes (this team shows up on the list of teams that anyone can apply to)</div>
+                            }
+                            else
+                            {
+                                <div>No (only people who are sent an application link directly will be able to apply)</div>
+                            }
+                        </dd>
+                        <dt>
+                            Bio for unsolicited applications (visible to applicants)
+                        </dt>
+                        <dd>
+                            @if (Model.Team.Bio == null)
+                            {
+                                <div>(none)</div>
+                            }
+                            else
+                            {
+                                @Model.Team.Bio
+                            }
+                        </dd>
+                    }
+                    @if (Model.Event.HasPlayerClasses && Model.EventRole != ModelBases.EventRole.admin)
+                    {
+                        <dt>
+                            <br /><br />
+
+                            @if (Model.Event.PlayerClassName != null)
+                            {
+                                <span>Temporary @Model.Event.PlayerClassName</span>
+                            }
+                            else
+                            {
+                                <span>Temporary Player Class</span>
+                            }
+                        </dt>
+
+                        <div>
+                            <component type="typeof(ServerCore.Pages.Components.PlayerClassSelectComponent)" render-mode="Server" param-UserId="@Model.LoggedInUser.ID" param-EventId="@Model.Event.ID" param-CurrentUserEventRole="@Model.EventRole" param-IsTempClass="true" />
+                        </div>
+                    }
+                </dl>
             </div>
             @if (Model.Event.EventHasTeamSwag)
             {
@@ -266,7 +285,8 @@
                     @foreach (TeamLunch lunch in Model.Lunches)
                     {
                         <p>
-                            <span>@lunch.Lunch
+                            <span>
+                                @lunch.Lunch
                                 @if (Model.Event.CanChangeLunch)
                                 {
                                     <a asp-page-handler="RemoveLunch" asp-route-teamId="@Model.Team.ID" asp-route-lunchId="@lunch.ID">Remove</a>
@@ -291,7 +311,9 @@
 
             <div>
                 <h3>Current members (@(Model.Members.Count))</h3>
-                @{ bool canAdd = Model.EventRole == ModelBases.EventRole.admin; }
+                @{
+                    bool canAdd = Model.EventRole == ModelBases.EventRole.admin;
+                }
 
             </div>
             <table class="table">
@@ -306,6 +328,33 @@
                         <th>
                             EmployeeAlias
                         </th>
+                        @if (Model.Event.HasPlayerClasses)
+                        {
+                            <th>
+                                @if (Model.Event.PlayerClassName != null)
+                                {
+                                    @Model.Event.PlayerClassName
+                                }
+                                else
+                                {
+                                    <span>Player Class</span>
+                                }
+                            </th>
+
+                            @if (Model.EventRole == ModelBases.EventRole.admin)
+                            {
+                                <th>
+                                    @if (Model.Event.PlayerClassName != null)
+                                    {
+                                        <span>Temporary @Model.Event.PlayerClassName</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Temporary Player Class</span>
+                                    }
+                                </th>
+                            }
+                        }
                         <th></th>
                     </tr>
                 </thead>
@@ -336,6 +385,34 @@
                                     @item.Member.EmployeeAlias
                                 }
                             </td>
+                            <td>
+                                @if (Model.Event.HasPlayerClasses)
+                                {
+                                    if (!Model.Event.CanChangePlayerClass && Model.EventRole != ModelBases.EventRole.admin)
+                                    {
+                                        <div>
+                                            <p>@(item.Class?.Name ?? $"No {Model.Event.PlayerClassName} selected")</p>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div>
+                                            <component type="typeof(ServerCore.Pages.Components.PlayerClassSelectComponent)" render-mode="Server" param-UserId="@item.Member.ID" param-EventId="@Model.Event.ID" param-CurrentUserEventRole="@Model.EventRole" param-IsTempClass="false" />
+                                        </div>
+                                    }
+                                }
+                            </td>
+                            @if (Model.EventRole == ModelBases.EventRole.admin)
+                            {
+                                <td>
+                                    @if (Model.Event.HasPlayerClasses)
+                                    {
+                                        <div>
+                                            <component type="typeof(ServerCore.Pages.Components.PlayerClassSelectComponent)" render-mode="Server" param-UserId="@item.Member.ID" param-EventId="@Model.Event.ID" param-CurrentUserEventRole="@Model.EventRole" param-IsTempClass="true" />
+                                        </div>
+                                    }
+                                </td>
+                            }
                             @if (Model.EventRole == ModelBases.EventRole.admin || Model.Event.IsTeamMembershipChangeActive)
                             {
                                 if (Model.EventRole == ModelBases.EventRole.play && Model.Members.Count == 1 && !Model.Team.AutoTeamType.HasValue)
@@ -349,7 +426,7 @@
                                     <td>
                                         @if (Model.EventRole != ModelBases.EventRole.play || !Model.Team.AutoTeamType.HasValue || item.Member == Model.LoggedInUser)
                                         {
-                                            <a asp-page-handler="RemoveMember" asp-route-teamId="@Model.Team.ID" asp-route-teamMemberId="@item.ID" onclick="return confirm('Are you sure you want to remove @item.Member.Name from @Model.Team.Name?')">Remove</a>
+                                            <a asp-page-handler="RemoveMember" asp-route-teamId="@Model.Team.ID" asp-route-teamMemberId="@item.ID" onclick="return confirm('Are you sure you want to remove @item.Member.Name from @Model.Team.Name?')">Remove Player</a>
                                         }
                                     </td>
                                 }

@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +30,11 @@ namespace ServerCore.Helpers
             }
 
             return result;
+        }
+
+        public static bool EventRequiresActivePlayerRegistration(Event thisEvent)
+        {
+            return thisEvent.HasTShirts || thisEvent.HasSwag || thisEvent.HasIndividualLunch || thisEvent.ShouldShowSinglePlayerPuzzles || thisEvent.AllowsRemotePlayers;
         }
     }
 }

@@ -12,6 +12,18 @@
                         <InputText @bind-Value="TeamModel.Name" class="form-control" />
                     </label>
                 </div>
+                <div class="form-group">
+                    <label>
+                        Team will be playing remotely
+                        <table>
+                            <tr>
+                                <td style="width:50px;vertical-align:top;">
+                                    <InputCheckbox @bind-Value="TeamModel.IsRemoteTeam" />
+                                </td>
+                            </tr>
+                        </table>
+                    </label>
+                </div>
                 @* TODO: Handle puzzleday room assignment and check hunt/safari requirements *@
                 @if (!Event.IsRemote)
                 {

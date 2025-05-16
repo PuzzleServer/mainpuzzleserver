@@ -81,6 +81,8 @@ namespace ServerCore.Pages.Teams
         public bool IsLookingForTeammates { get; set; }
         [MaxLength(500)]
         public string Bio { get; set; }
+
+        public bool IsRemoteTeam { get; set; }
     }
 
     public partial class CreateTeam
@@ -127,7 +129,8 @@ namespace ServerCore.Pages.Teams
                 PrimaryPhoneNumber = TeamModel.PrimaryPhoneNumber,
                 SecondaryPhoneNumber = TeamModel.SecondaryPhoneNumber,
                 IsLookingForTeammates = TeamModel.IsLookingForTeammates,
-                Bio = TeamModel.Bio,                
+                Bio = TeamModel.Bio, 
+                IsRemoteTeam = TeamModel.IsRemoteTeam
             };
 
             int? idToAdd = null;
