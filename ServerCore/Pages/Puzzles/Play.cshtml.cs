@@ -47,6 +47,8 @@ namespace ServerCore.Pages.Puzzles
 
         public bool HasLiveEvents { get; set; }
 
+        public string LoggedInPlayerClass { get; set; }
+
         public async Task OnGetAsync(
             SortOrder? teamPuzzleSort,
             SortOrder? singlePlayerPuzzleSort,
@@ -85,6 +87,7 @@ namespace ServerCore.Pages.Puzzles
             }
 
             Team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
+
             if (Team != null)
             {
                 await PuzzleStateHelper.CheckForTimedUnlocksAsync(_context, Event, Team);
@@ -93,6 +96,11 @@ namespace ServerCore.Pages.Puzzles
                 if (!AnyErrata)
                 {
                     AnyErrata = VisibleTeamPuzzleViews.Any(v => v.Errata != null);
+                }
+
+                if (Event.HasPlayerClasses)
+                {
+                    LoggedInPlayerClass = _context.TeamMembers.Where(tm => tm.Team == Team && tm.Member == LoggedInUser).FirstOrDefault().Class.UniqueName;
                 }
             }
 

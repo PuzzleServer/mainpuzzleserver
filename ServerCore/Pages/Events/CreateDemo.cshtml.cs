@@ -520,6 +520,11 @@ namespace ServerCore.Pages.Events
 
                 if (teamLoneWolf != null)
                 {
+                    if(!EventHelper.EventRequiresActivePlayerRegistration(Event))
+                    {
+                        await EventHelper.RegisterPlayerForEvent(_context, Event, demoCreatorUser);
+                    }
+
                     _context.TeamMembers.Add(new TeamMembers() { Team = teamLoneWolf, Member = demoCreatorUser });
                 }
 

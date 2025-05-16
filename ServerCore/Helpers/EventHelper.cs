@@ -36,5 +36,20 @@ namespace ServerCore.Helpers
         {
             return thisEvent.HasTShirts || thisEvent.HasSwag || thisEvent.HasIndividualLunch || thisEvent.ShouldShowSinglePlayerPuzzles || thisEvent.AllowsRemotePlayers;
         }
+
+        public static async Task<PlayerInEvent> RegisterPlayerForEvent(PuzzleServerContext context, Event thisEvent, PuzzleUser player)
+        {
+            PlayerInEvent newPlayer = new PlayerInEvent
+            {
+                EventId = thisEvent.ID,
+                Event = thisEvent,
+                PlayerId = player.ID,
+                Player = player
+            };
+
+            context.PlayerInEvent.Add(newPlayer);
+            await context.SaveChangesAsync();
+            return newPlayer;
+        }
     }
 }

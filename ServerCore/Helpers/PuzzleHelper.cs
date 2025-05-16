@@ -56,23 +56,24 @@ namespace ServerCore.Helpers
             await context.SaveChangesAsync();
         }
 
-        public static string GetFormattedUrl(Puzzle puzzle, int eventId, string teamPassword = null)
+        public static string GetFormattedUrl(Puzzle puzzle, int eventId, string teamPassword = null, string playerClass = null)
         {
-            return GetFormattedUrl(puzzle.CustomURL, puzzle.ID, eventId, teamPassword);
+            return GetFormattedUrl(puzzle.CustomURL, puzzle.ID, eventId, teamPassword, playerClass);
         }
 
         public static string GetFormattedSolutionUrl(Puzzle puzzle, int eventId)
         {
-            return GetFormattedUrl(puzzle.CustomSolutionURL, puzzle.ID, eventId, null);
+            return GetFormattedUrl(puzzle.CustomSolutionURL, puzzle.ID, eventId, null, null);
         }
 
-        public static string GetFormattedUrl(string customUrl, int puzzleId, int eventId, string teamPassword)
+        public static string GetFormattedUrl(string customUrl, int puzzleId, int eventId, string teamPassword, string playerClass)
         {
             if (customUrl == null)
             {
                 return null;
             }
-            string formattedUrl = customUrl.Replace("{puzzleId}", $"{puzzleId}").Replace("{eventId}", $"{eventId}").Replace("{teamPass}", teamPassword);
+            string formattedUrl = customUrl.Replace("{puzzleId}", $"{puzzleId}").Replace("{eventId}", $"{eventId}")
+                .Replace("{teamPass}", teamPassword).Replace("{playerClass}", playerClass);
             return formattedUrl;
         }
 

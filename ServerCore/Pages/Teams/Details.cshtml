@@ -46,16 +46,16 @@
 <!--TODO: Consider moving if other pages use this format-->
 <style>
     .column {
-        float: left;
-        width: calc(50% - 40px);
-        margin: 0px 20px;
+    float: left;
+    width: calc(50% - 40px);
+    margin: 0px 20px;
     }
 
     /* Clear floats after the columns */
     .row:after {
-        content: "";
-        display: table;
-        clear: both;
+    content: "";
+    display: table;
+    clear: both;
     }
 </style>
 
@@ -91,7 +91,7 @@
         @if (Model.EventRole == ModelBases.EventRole.admin)
         {
             <a asp-page="./Disqualify"
-               asp-route-teamId="@Model.Team.ID">
+            asp-route-teamId="@Model.Team.ID">
                 @(Model.Team.IsDisqualified ? "Requalify Team" : "Disqualify Team")
             </a>
         }
