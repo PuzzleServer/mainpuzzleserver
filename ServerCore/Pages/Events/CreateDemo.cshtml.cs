@@ -521,6 +521,12 @@ namespace ServerCore.Pages.Events
                 if (teamLoneWolf != null)
                 {
                     _context.TeamMembers.Add(new TeamMembers() { Team = teamLoneWolf, Member = demoCreatorUser });
+
+                    if (!EventHelper.EventRequiresActivePlayerRegistration(Event))
+                    {
+                        await EventHelper.RegisterPlayerForEvent(_context, Event, demoCreatorUser);
+                    }
+
                 }
 
                 // line up all hints

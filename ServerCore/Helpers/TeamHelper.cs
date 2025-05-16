@@ -42,11 +42,22 @@ namespace ServerCore.Helpers
 
                     PuzzleUser user = await context.PuzzleUsers.SingleAsync(m => m.ID == userId);
 
+                    if (!(await user.IsRegisteredForEvent(context, ev)) && !(EventHelper.EventRequiresActivePlayerRegistration(ev)))
+                    {
+                        await EventHelper.RegisterPlayerForEvent(context, ev, user);
+                    }
+
                     TeamMembers teamMember = new TeamMembers()
                     {
                         Team = team,
                         Member = user
                     };
+
+                    if (ev.HasPlayerClasses)
+                    {
+                        await PlayerClassHelper.AssignRandomPlayerClass(context, teamMember, ev, EventRole.play);
+                    }
+
                     context.TeamMembers.Add(teamMember);
                     await TeamHelper.OnTeamMemberChange(context, team);
                 }
@@ -186,7 +197,7 @@ namespace ServerCore.Helpers
                 return new Tuple<bool, string>(false, $"Could not find user with ID '{userId}'. Check to make sure the user hasn't been removed.");
             }
 
-            if (user.EmployeeAlias == null && currentTeamMembers.Where((m) => m.Member.EmployeeAlias == null).Count() >= Event.MaxExternalsPerTeam)
+            if (!team.IsRemoteTeam && user.EmployeeAlias == null && currentTeamMembers.Where((m) => m.Member.EmployeeAlias == null).Count() >= Event.MaxExternalsPerTeam)
             {
                 return new Tuple<bool, string>(false, $"The team '{team.Name}' is already at its maximum count of non-employee players, and '{user.Email}' has no registered alias.");
             }
