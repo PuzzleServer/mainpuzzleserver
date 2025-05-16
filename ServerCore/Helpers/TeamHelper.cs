@@ -231,14 +231,14 @@ namespace ServerCore.Helpers
             {
                 if (playerClass != null)
                 {
-                    emailBody = string.Concat($"This event has assigned a {Event.PlayerClassName} for each player. " +
+                    emailBody = $"This event has assigned a {Event.PlayerClassName} for each player. " +
                         $"You have been assigned the {Event.PlayerClassName} of {playerClass.Name}. " +
-                        $"To change this {Event.PlayerClassName} go to Teams -> My Team on the website. \r\n", emailBody);
+                        $"To change this {Event.PlayerClassName} go to Teams -> My Team on the website.\r\n{emailBody}";
                 }
                 else
                 {
-                    emailBody = string.Concat($"This event has assigned a {Event.PlayerClassName} for each player. " +
-                        $"Please go to Teams -> My Team on the website to choose your {Event.PlayerClassName}!\r\n", emailBody);
+                    emailBody = $"This event has assigned a {Event.PlayerClassName} for each player. " +
+                        $"Please go to Teams -> My Team on the website to choose your {Event.PlayerClassName}!\r\n{emailBody}";
                 }
             }
 

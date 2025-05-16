@@ -388,10 +388,10 @@
                             <td>
                                 @if (Model.Event.HasPlayerClasses)
                                 {
-                                    if (Model.Event.EventHasStarted && Model.EventRole != ModelBases.EventRole.admin)
+                                    if (!Model.Event.CanChangePlayerClass && Model.EventRole != ModelBases.EventRole.admin)
                                     {
                                         <div>
-                                            <p>@item.Class.Name</p>
+                                            <p>@(item.Class?.Name ?? $"No {Model.Event.PlayerClassName} selected")</p>
                                         </div>
                                     }
                                     else

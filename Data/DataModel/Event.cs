@@ -345,7 +345,7 @@ namespace ServerCore.DataModel
         [NotMapped]
         public bool CanChangePlayerClass
         {
-            get { return !EventHasStarted; }
+            get { return IsTeamMembershipChangeActive; }
         }
 
         /// <summary>

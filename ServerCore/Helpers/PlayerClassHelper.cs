@@ -88,8 +88,7 @@ namespace ServerCore.Helpers
             }
 
             List<PlayerClass> availableClasses = await GetAvailablePlayerClasses(context, eventId, eventRole, teamId);
-            Random rand = new Random();
-            return availableClasses[rand.Next(availableClasses.Count - 1)];
+            return GetRandomPlayerClassFromAvailable(availableClasses);
         }
 
         /// <summary>
@@ -125,7 +124,7 @@ namespace ServerCore.Helpers
                 // Admins can set multiple players to the same class, so pick any random class
                 // If this feature gets a lot of use we'll want to make sure the additional players are distributed,
                 // but in most cases there won't be more than one or two extra players so it's not a likely case
-                member.Class = GetRandomPlayerClassFromAvailable(await GetAllPlayerClassesSorted(context, currentEvent.ID));
+                member.Class = GetRandomPlayerClassFromAvailable(context.PlayerClasses.ToList());
             }
             else
             {
