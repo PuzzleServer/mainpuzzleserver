@@ -31,16 +31,7 @@ namespace ServerCore.Pages.Player
             // Immediately create the PlayerInEvent and redirect if the event doesn't require specific information from the player
             if (!EventHelper.EventRequiresActivePlayerRegistration(Event))
             {
-                player = new PlayerInEvent
-                {
-                    EventId = Event.ID,
-                    Event = Event,
-                    PlayerId = LoggedInUser.ID,
-                    Player = LoggedInUser
-                };
-
-                _context.PlayerInEvent.Add(player);
-                await _context.SaveChangesAsync();
+               player = await  EventHelper.RegisterPlayerForEvent(_context, Event, LoggedInUser);
             }
 
             if (player != null)

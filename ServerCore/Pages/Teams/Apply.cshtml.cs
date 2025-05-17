@@ -73,16 +73,7 @@ namespace ServerCore.Pages.Teams
                         }
                         else
                         {
-                            PlayerInEvent player = new PlayerInEvent
-                            {
-                                EventId = Event.ID,
-                                Event = Event,
-                                PlayerId = LoggedInUser.ID,
-                                Player = LoggedInUser
-                            };
-
-                            _context.PlayerInEvent.Add(player);
-                            await _context.SaveChangesAsync();
+                            await EventHelper.RegisterPlayerForEvent(_context, Event, LoggedInUser);
                         }
                     }
                     return RedirectToPage("./Details", new { teamId = teamID });
