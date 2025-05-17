@@ -150,11 +150,11 @@ namespace ServerCore.Helpers
         /// </summary>
         public static async Task<Tuple<bool, string>> SetPlayerClass(PuzzleServerContext context, Event currentEvent, EventRole eventRole, TeamMembers member, int playerClassId, bool IsTempClass = false)
         {
-            // Once the event has started the player's class is locked in unless changed by a admin
+            // Once team membership has been locked the player's class is locked in unless changed by an admin
             // Temporary classes can be changed at any time and to any class, whether or not the class is assigned to another player on the team
-            if (currentEvent.EventHasStarted && eventRole != EventRole.admin && !IsTempClass)
+            if (!currentEvent.IsTeamMembershipChangeActive && eventRole != EventRole.admin && !IsTempClass)
             {
-                return new Tuple<bool, string>(false, $"The event has started and your {currentEvent.PlayerClassName} cannot be changed. Temporary overrides to your {currentEvent.PlayerClassName} can be made using the {currentEvent.PlayerClassName} Override menu on the Team Details page.");
+                return new Tuple<bool, string>(false, $"Team membership has been locked and your {currentEvent.PlayerClassName} cannot be changed. Temporary overrides to your {currentEvent.PlayerClassName} can be made using the {currentEvent.PlayerClassName} Override menu on the Team Details page.");
             }
             else
             {
