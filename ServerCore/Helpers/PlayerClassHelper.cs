@@ -15,6 +15,11 @@ namespace ServerCore.Helpers
 
         public static PlayerClass GetActiveClassForPlayer(TeamMembers teamMember)
         {
+            if(teamMember == null)
+            {
+                return null;
+            }
+
             if(teamMember.TemporaryClass != null)
             {
                 return teamMember.TemporaryClass;
