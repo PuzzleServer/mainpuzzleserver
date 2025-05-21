@@ -91,7 +91,7 @@
         @if (Model.EventRole == ModelBases.EventRole.admin)
         {
             <a asp-page="./Disqualify"
-            asp-route-teamId="@Model.Team.ID">
+                asp-route-teamId="@Model.Team.ID">
                 @(Model.Team.IsDisqualified ? "Requalify Team" : "Disqualify Team")
             </a>
         }
