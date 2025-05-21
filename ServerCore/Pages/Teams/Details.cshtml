@@ -226,25 +226,6 @@
                             }
                         </dd>
                     }
-                    @if (Model.Event.HasPlayerClasses && Model.EventRole != ModelBases.EventRole.admin)
-                    {
-                        <dt>
-                            <br /><br />
-
-                            @if (Model.Event.PlayerClassName != null)
-                            {
-                                <span>@Model.Event.PlayerClassName Override</span>
-                            }
-                            else
-                            {
-                                <span>Player Class Override</span>
-                            }
-                        </dt>
-
-                        <div>
-                            <component type="typeof(ServerCore.Pages.Components.PlayerClassSelectComponent)" render-mode="Server" param-UserId="@Model.LoggedInUser.ID" param-EventId="@Model.Event.ID" param-CurrentUserEventRole="@Model.EventRole" param-IsTempClass="true" />
-                        </div>
-                    }
                 </dl>
             </div>
             @if (Model.Event.EventHasTeamSwag)
@@ -341,7 +322,7 @@
                                 }
                             </th>
 
-                            @if (Model.EventRole == ModelBases.EventRole.admin)
+                            @if (!Model.Event.CanChangePlayerClass)
                             {
                                 <th>
                                     @if (Model.Event.PlayerClassName != null)
@@ -386,33 +367,42 @@
                                 }
                             </td>
                             <td>
-                                @if (Model.Event.HasPlayerClasses)
+                            @if (Model.Event.HasPlayerClasses)
                                 {
-                                    if (!Model.Event.CanChangePlayerClass && Model.EventRole != ModelBases.EventRole.admin)
-                                    {
-                                        <div>
-                                            <p>@(item.Class?.Name ?? $"No {Model.Event.PlayerClassName} selected")</p>
-                                        </div>
-                                    }
-                                    else
+                                    if (Model.EventRole == ModelBases.EventRole.admin || (Model.Event.CanChangePlayerClass && item.Member == Model.LoggedInUser))
                                     {
                                         <div>
                                             <component type="typeof(ServerCore.Pages.Components.PlayerClassSelectComponent)" render-mode="Server" param-UserId="@item.Member.ID" param-EventId="@Model.Event.ID" param-CurrentUserEventRole="@Model.EventRole" param-IsTempClass="false" />
                                         </div>
                                     }
+                                    else
+                                    {
+                                        <div>
+                                            <p>@(item.Class?.Name ?? $"No {Model.Event.PlayerClassName} selected")</p>
+                                        </div>
+                                    }
                                 }
                             </td>
-                            @if (Model.EventRole == ModelBases.EventRole.admin)
-                            {
-                                <td>
-                                    @if (Model.Event.HasPlayerClasses)
+                            <td>
+                                 @* Only display the class override if player classes can't be changed *@
+                                @if (Model.Event.HasPlayerClasses && !Model.Event.CanChangePlayerClass)
+                                {
+                                    if (Model.EventRole == ModelBases.EventRole.admin || item.Member == Model.LoggedInUser)
                                     {
                                         <div>
                                             <component type="typeof(ServerCore.Pages.Components.PlayerClassSelectComponent)" render-mode="Server" param-UserId="@item.Member.ID" param-EventId="@Model.Event.ID" param-CurrentUserEventRole="@Model.EventRole" param-IsTempClass="true" />
                                         </div>
+
                                     }
-                                </td>
-                            }
+                                    else
+                                    {
+                                        <div>
+                                            <p>@(item.TemporaryClass?.Name ?? $"No {Model.Event.PlayerClassName} selected")</p>
+                                        </div>
+                                    }
+                                }
+                            </td>
+
                             @if (Model.EventRole == ModelBases.EventRole.admin || Model.Event.IsTeamMembershipChangeActive)
                             {
                                 if (Model.EventRole == ModelBases.EventRole.play && Model.Members.Count == 1 && !Model.Team.AutoTeamType.HasValue)
