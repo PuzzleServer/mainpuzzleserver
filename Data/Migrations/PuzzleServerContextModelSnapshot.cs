@@ -934,6 +934,9 @@ namespace Data.Migrations
                     b.Property<int>("AlphaTestsNeeded")
                         .HasColumnType("int");
 
+                    b.Property<int>("Availability")
+                        .HasColumnType("int");
+
                     b.Property<int?>("CostForHelpThread")
                         .HasColumnType("int");
 

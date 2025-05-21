@@ -1,4 +1,5 @@
 ﻿@page "/{eventId}/{eventRole}/Checklist"
+@using ServerCore.DataModel
 @model ServerCore.Pages.Puzzles.PuzzleChecklistModel
 
 @{
@@ -52,6 +53,12 @@
                 </th>
                 <th>
                     Hint cost
+                </th>
+            }
+            @if (Model.Event.AllowsRemoteTeams)
+            {
+                <th>
+                    Availability
                 </th>
             }
         </tr>
@@ -120,7 +127,24 @@
                     @(item.TotalHintCost)
                 </td>
             }
-        </tr>
+            @if (Model.Event.AllowsRemoteTeams)
+            {
+                <td>
+                    @if (item.Puzzle.Availability == Puzzle.PuzzleAvailability.AllPlayers)
+                    {
+                        <p>All Players</p>
+                    }
+                    else if (item.Puzzle.Availability == Puzzle.PuzzleAvailability.RemoteOnly)
+                    {
+                        <p>Remote</p>
+                    }
+                    else if (item.Puzzle.Availability == Puzzle.PuzzleAvailability.LocalOnly)
+                    {
+                        <p>Local</p>
+                    }
+                </td>
+            }
+            </tr>
         }
         <tr>
             <td>

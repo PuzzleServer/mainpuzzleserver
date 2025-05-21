@@ -67,6 +67,7 @@ namespace ServerCore.DataModel
             PieceWeight = source.PieceWeight;
             CostForHelpThread = source.CostForHelpThread;
             ShowHelpThreadsToAllGameControl = source.ShowHelpThreadsToAllGameControl;
+            Availability = source.Availability;
         }
 
         /// <summary>
@@ -374,6 +375,23 @@ namespace ServerCore.DataModel
         /// If <see cref="Event.ShouldShowHelpMessageOnlyToAuthor"/> is already set to false, this property is ignored and we will show help this puzzle's help threads to all game control.
         /// </summary>
         public bool ShowHelpThreadsToAllGameControl { get; set; }
+
+        /// <summary>
+        /// Which players can solve this puzzle
+        /// This is used for puzzles that are only available to remote players or local players
+        /// </summary>
+        public enum PuzzleAvailability
+        {
+            AllPlayers = 0,
+            RemoteOnly,
+            LocalOnly,
+            Max,
+        }
+
+        /// <summary>
+        /// Which players can solve this puzzle
+        /// </summary>
+        public PuzzleAvailability Availability { get; set; }
 
         //
         // WARNING: If you add new properties add them to the constructor as well so importing will work.
