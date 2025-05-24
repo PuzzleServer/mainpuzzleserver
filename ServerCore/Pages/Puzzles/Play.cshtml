@@ -94,7 +94,10 @@
     }
     @if ((Model.Team != null) && (Model.VisibleTeamPuzzleViews.Any()))
     {
+        <a asp-page="/Teams/AllSubmissions" asp-route-teamId="@Model.Team.ID">View all answer submissions</a><text> | </text>
+        <div class="submissionFilter">
         <a asp-page="/Teams/Answers" asp-route-teamId="@Model.Team.ID">View all correct team answers</a><text> | </text>
+        </div>
     }
     @if (Model.Event.ShowFastestSolves) 
     {
