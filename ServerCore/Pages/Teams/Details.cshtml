@@ -115,7 +115,7 @@
                         @Model.Team.Name
                     </dd>
                     <!-- TODO: Add new room dropdown here and clean up custom room-->
-                    @if (!Model.Event.IsRemote)
+                    @if (!Model.Event.IsRemote && !Model.Team.IsRemoteTeam)
                     {
                         <dt>
                             Team room
