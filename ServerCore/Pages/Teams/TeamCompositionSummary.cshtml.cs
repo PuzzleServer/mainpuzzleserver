@@ -72,7 +72,7 @@ namespace ServerCore.Pages.Teams
         public int TotalNonMicrosoftCount { get; set; }
         public int TotalTotal { get; set; }
         public int TotalPossibleEmployeeAliasesCount { get; set; }
-        public bool TeamIsRemote { get; set; }
+        public int TotalRemoteCount { get; set; }
 
         public int TotalAutoTeamCount { get; set; }
         public int TotalManualTeamCount { get; set; }
@@ -118,7 +118,7 @@ namespace ServerCore.Pages.Teams
                 TotalInternCount += t.InternCount;
                 TotalEmployeeCount += t.EmployeeCount;
                 TotalPossibleEmployeeAliasesCount += t.PossibleEmployeeAliases.Count;
-                TeamIsRemote = t.TeamIsRemote;
+                TotalRemoteCount += t.TeamIsRemote ? 1 : 0;
 
                 if (t.AutoTeamType != null)
                 {
