@@ -460,6 +460,11 @@
             });
         };
 
+        window.getBrowserTimeZone = function() {
+            const options = Intl.DateTimeFormat().resolvedOptions();
+            return options.timeZone;
+        }
+
         document.addEventListener("DOMContentLoaded", function () { resetAllToasts(); documentLoaded = true; });
         window.addEventListener("focus", function() { if (documentLoaded) { resetAllToasts(); } });
     </script>

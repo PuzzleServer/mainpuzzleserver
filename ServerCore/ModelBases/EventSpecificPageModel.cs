@@ -204,7 +204,7 @@ namespace ServerCore.ModelBases
 
         public string LocalTime(DateTime? date)
         {
-            return TimeHelper.LocalTime(date);
+            return TimeHelper.LocalTime(date, LoggedInUser.ID);
         }
 
         public bool IsGameControlRole()

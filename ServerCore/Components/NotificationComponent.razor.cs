@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using ServerCore.Helpers;
 
 namespace ServerCore.Components
 {
@@ -30,6 +31,20 @@ namespace ServerCore.Components
         {
             NotificationHelper.RegisterForNotifications(EventID, TeamID, UserID, this.OnNotify);
             base.OnInitialized();
+        }
+
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender && UserID.HasValue && !TimeHelper.TryGetTimeZone(UserID.Value, out var timeZoneInfo))
+            {
+                string timeZone = await this.JS.InvokeAsync<string>("getBrowserTimeZone");
+                if (!TimeZoneInfo.TryFindSystemTimeZoneById(timeZone, out timeZoneInfo))
+                {
+                    timeZoneInfo = null;
+                }
+                TimeHelper.SetTimeZone(UserID.Value, timeZoneInfo);
+            }
+            base.OnAfterRender(firstRender);
         }
 
         private Task OnNotify(Notification notification)
