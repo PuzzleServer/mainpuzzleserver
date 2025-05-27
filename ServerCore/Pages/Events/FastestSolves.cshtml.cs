@@ -84,7 +84,7 @@ namespace ServerCore.Pages.Events
                                     !pspt.Team.IsDisqualified &&
                                     pspt.Puzzle.Event == Event &&
                                     (EventRole != EventRole.author || authorPuzzleIds.Contains(pspt.PuzzleID))
-                                    let puzzleToGroup = new { PuzzleID = pspt.Puzzle.ID, PuzzleName = pspt.Puzzle.PlaintextName } // Using 'let' to work around EF grouping limitations (https://www.codeproject.com/Questions/5266406/Invalidoperationexception-the-LINQ-expression-for)
+                                    let puzzleToGroup = new { PuzzleID = pspt.Puzzle.ID, PuzzleName = pspt.Puzzle.Name } // Using 'let' to work around EF grouping limitations (https://www.codeproject.com/Questions/5266406/Invalidoperationexception-the-LINQ-expression-for)
                                     group puzzleToGroup by puzzleToGroup.PuzzleID into puzzleGroup
                                     orderby puzzleGroup.Count() descending, puzzleGroup.Max(puzzleGroup => puzzleGroup.PuzzleName) // Using Max(PuzzleName) because only aggregate operators are allowed
                                     select new { PuzzleID = puzzleGroup.Key, PuzzleName = puzzleGroup.Max(puzzleGroup => puzzleGroup.PuzzleName), SolveCount = puzzleGroup.Count() }).ToListAsync();
@@ -223,7 +223,7 @@ namespace ServerCore.Pages.Events
                                      let puzzleToGroup = new
                                      {
                                          PuzzleID = statePerPlayer.Puzzle.ID,
-                                         PuzzleName = statePerPlayer.Puzzle.PlaintextName,
+                                         PuzzleName = statePerPlayer.Puzzle.Name,
                                          PuzzleUserId = statePerPlayer.PlayerID,
                                          IsUnlocked = statePerPlayer.UnlockedTime.HasValue,
                                          SolveTime = statePerPlayer.SolvedTime
