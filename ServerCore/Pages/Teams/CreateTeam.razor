@@ -14,14 +14,20 @@
                 </div>
                 @if (Event.AllowsRemoteTeams)
                 {
+                    // If either remote & local has reached the cap then show a message to that effect and default the team to the one that isn't full
                     <div class="form-group">
                         <label>
-                        Team will be playing remotely
-                        <table>
+                            This event allows both local and remote teams.
+                            @if(Event.LockChangesToRemoteStatus)
+                            {
+                                <div> This can only be changed by contacting the organizers once the team has been created.</div>
+                            }
+                            <table>
                             <tr>
-                                <td style="width:50px;vertical-align:top;">
-                                    <InputCheckbox @bind-Value="TeamModel.IsRemoteTeam" />
-                                </td>
+                                <InputSelect @bind-Value="TeamModel.IsRemoteTeam">
+                                    <option value=false>Local</option>
+                                    <option value=true>Remote</option>
+                                </InputSelect>
                             </tr>
                         </table>
                         </label>

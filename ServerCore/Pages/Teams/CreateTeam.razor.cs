@@ -105,6 +105,8 @@ namespace ServerCore.Pages.Teams
         public TeamModel TeamModel { get; set; } = new TeamModel();
 
         public bool EventFull { get; set; }
+        public bool LocalTeamsFull { get; set; }
+        public bool RemoteTeamsFull { get; set; }
 
         protected override async Task OnParametersSetAsync()
         {
@@ -113,6 +115,16 @@ namespace ServerCore.Pages.Teams
             if (EventRole == EventRole.play && await _context.Teams.Where((t) => t.EventID == Event.ID).CountAsync() >= Event.MaxNumberOfTeams)
             {
                 EventFull = true;
+            }
+
+            if (EventRole == EventRole.play && await _context.Teams.Where((t) => t.EventID == Event.ID && !t.IsRemoteTeam).CountAsync() >= Event.MaxNumberOfLocalTeams)
+            {
+                LocalTeamsFull = true;
+            }
+
+            if (EventRole == EventRole.play && await _context.Teams.Where((t) => t.EventID == Event.ID && t.IsRemoteTeam).CountAsync() >= Event.MaxNumberOfRemoteTeams)
+            {
+                RemoteTeamsFull = true;
             }
 
             await base.OnParametersSetAsync();
