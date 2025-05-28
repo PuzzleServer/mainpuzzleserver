@@ -15,7 +15,7 @@ namespace ServerCore.Helpers
         /// <returns></returns>
         public static string LocalTime(DateTime? date)
         {
-            return date == null ? "&nbsp;" : $"<time>{date.Value.ToString("yyyy-MM-ddTHH:mm:ssZ")}</time>";
+            return date == null ? "&nbsp;" : $"<time dateTime=\"{date.Value.ToString("yyyy-MM-ddTHH:mm:ssZ")}\"></time>";
         }
     }
 }
