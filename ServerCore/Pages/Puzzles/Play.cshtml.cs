@@ -101,7 +101,7 @@ namespace ServerCore.Pages.Puzzles
                 if (Event.HasPlayerClasses)
                 {
                     TeamMembers tm = _context.TeamMembers.Where(tm => tm.Team == Team && tm.Member == LoggedInUser).FirstOrDefault();
-                    LoggedInPlayerClass = PlayerClassHelper.GetActiveClassForPlayer(tm)?.UniqueName ?? "";
+                    LoggedInPlayerClass = PlayerClassHelper.GetActiveClassForPlayer(Event,tm)?.UniqueName ?? "";
                 }
             }
 

@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-md-4">
-        @if (!EventFull)
+        @if (!EventFull && !(LocalTeamsFull && RemoteTeamsFull))
         {
             <EditForm Model="TeamModel" OnValidSubmit="OnSubmit">
                 <DataAnnotationsValidator />
@@ -20,21 +20,36 @@
                             This event allows both local and remote teams.
                             @if(Event.LockChangesToRemoteStatus)
                             {
-                                <div> This can only be changed by contacting the organizers once the team has been created.</div>
+                                <div> Once the team is created this can only be changed by contacting the organizers.</div>
                             }
                             <table>
-                            <tr>
-                                <InputSelect @bind-Value="TeamModel.IsRemoteTeam">
-                                    <option value=false>Local</option>
-                                    <option value=true>Remote</option>
-                                </InputSelect>
+                                <tr>
+                                    <InputSelect @bind-Value="TeamModel.IsRemoteTeam">
+                                        <option value=null>Select An Option</option>
+                                        @if (LocalTeamsFull)
+                                        {
+                                            <option disabled value=false>Local</option>
+                                        }
+                                        else
+                                        {
+                                            <option value=false>Local</option>
+                                        }
+                                        @if (RemoteTeamsFull)
+                                        {
+                                            <option disabled value=true>Remote</option>
+                                        }
+                                        else
+                                        {
+                                            <option value=true>Remote</option>
+                                        }
+                                    </InputSelect>
                             </tr>
                         </table>
                         </label>
                     </div>
                 }
                 @* TODO: Handle puzzleday room assignment and check hunt/safari requirements *@
-                @if (!Event.IsRemote && !TeamModel.IsRemoteTeam)
+                @if (!Event.IsRemote && !TeamModel.IsRemoteTeam.GetValueOrDefault())
                 {
                     @if (!(Event.IsInternEvent && EventRole == ModelBases.EventRole.play))
                     {

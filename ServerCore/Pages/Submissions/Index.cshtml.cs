@@ -335,7 +335,7 @@ namespace ServerCore.Pages.Submissions
             if (Event.HasPlayerClasses)
             {
                 CurrentTeamMember = await UserEventHelper.GetTeamMemberForPlayer(_context, Event, LoggedInUser.ID);
-                PlayerClass pc = PlayerClassHelper.GetActiveClassForPlayer(CurrentTeamMember);
+                PlayerClass pc = PlayerClassHelper.GetActiveClassForPlayer(Event, CurrentTeamMember);
                 ActivePlayerClass = pc?.UniqueName ?? "";
                 ActivePlayerClassDisplay = pc?.Name ?? "";
             }
