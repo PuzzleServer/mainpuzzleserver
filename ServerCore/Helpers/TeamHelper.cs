@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.IdentityModel.Tokens;
 using ServerCore.DataModel;
 using ServerCore.ModelBases;
 
@@ -248,7 +249,23 @@ namespace ServerCore.Helpers
 
             if (Event.HasPlayerClasses)
             {
-                playerClass = await PlayerClassHelper.GetRandomPlayerClassFromAvailable(context, Event.ID, EventRole, teamId);
+                // If an admin is adding the player to the team try to get a class that hasn't been assigned, if that isn't possible then pick a random duplicate class
+                if (EventRole == EventRole.admin)
+                {
+                    var available = await PlayerClassHelper.GetAvailablePlayerClasses(context, Event.ID, EventRole.play, team.ID);
+
+                    if (available.IsNullOrEmpty())
+                    {
+                        available = await PlayerClassHelper.GetAvailablePlayerClasses(context, Event.ID, EventRole.admin, team.ID);
+                    }
+
+                    playerClass = PlayerClassHelper.GetRandomPlayerClassFromAvailable(available);
+                }
+                else
+                {
+                    playerClass = await PlayerClassHelper.GetRandomPlayerClassFromAvailable(context, Event.ID, EventRole, teamId);
+                }
+
                 Member.Class = playerClass;
             }
 
