@@ -56,6 +56,10 @@ namespace ServerCore.Pages.Components
                 {
                     SelectedPlayerClassID = CurrentTeamMember.TemporaryClass.ID;
                 }
+                else
+                {
+                    SelectedPlayerClassID = CurrentTeamMember.Class.ID;
+                }
 
                 AvailablePlayerClasses = AllPlayerClasses;
             }
