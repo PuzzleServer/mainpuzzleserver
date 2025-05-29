@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-md-4">
-        @if (!EventFull && !(LocalTeamsFull && RemoteTeamsFull))
+        @if (!EventFull || !(LocalTeamsFull && RemoteTeamsFull))
         {
             <EditForm Model="TeamModel" OnValidSubmit="OnSubmit">
                 <DataAnnotationsValidator />
