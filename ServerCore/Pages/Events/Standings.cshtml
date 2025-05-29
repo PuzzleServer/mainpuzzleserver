@@ -10,6 +10,19 @@
 
 <h2>Standings</h2>
 
+@if(Model.Event.AllowsRemoteTeams)
+{ 
+    <p>
+        Filter standings to remote/local/all teams
+    </p>
+    <form method="GET" name="locationForm">
+        <select name="locationFilter" asp-items="@Model.TeamLocationFilter" onchange="this.form.submit();">
+            <option value="">Select Filter</option>
+        </select>
+    </form>
+    <div>@Model.TeamLocationFilter Teams</div>
+}
+
 <table class="table table-condensed">
     <thead>
         <tr>

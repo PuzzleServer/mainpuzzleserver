@@ -4,9 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
+using ServerCore.Helpers;
 using ServerCore.ModelBases;
+using static ServerCore.DataModel.Puzzle;
 
 namespace ServerCore.Pages.Events
 {
@@ -17,13 +21,24 @@ namespace ServerCore.Pages.Events
 
         public SortOrder? Sort { get; set; }
 
+        public List<SelectListItem> TeamLocationFilter { 
+            get
+            {
+                List<SelectListItem> values = new List<SelectListItem>();
+                values.Add(new SelectListItem("All Teams", "all"));
+                values.Add(new SelectListItem("Local Teams", "local"));
+                values.Add(new SelectListItem("Remote Teams", "remote"));
+                return values;
+            } 
+        }
+
         private const SortOrder DefaultSort = SortOrder.RankAscending;
 
         public StandingsModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
         }
 
-        public async Task OnGetAsync(SortOrder? sort)
+        public async Task OnGetAsync(SortOrder? sort, TeamLocation locationFilter)
         {
             Sort = sort;
 
@@ -43,6 +58,16 @@ namespace ServerCore.Pages.Events
             var teams = await _context.Teams
                 .Where(t => t.Event == Event && t.IsDisqualified == false)
                 .ToListAsync();
+
+            // Filter
+            if (locationFilter == TeamLocation.Local)
+            {
+                teams = teams.Where(t => t.IsRemoteTeam == false).ToList();
+            }
+            else if (locationFilter == TeamLocation.Remote)
+            {
+                teams = teams.Where(t => t.IsRemoteTeam == true).ToList();
+            }
 
             Dictionary<int, TeamStats> teamStats = new Dictionary<int, TeamStats>(teams.Count);
             foreach (var t in teams)
@@ -192,6 +217,13 @@ namespace ServerCore.Pages.Events
             HintsEarnedDescending,
             HintsUsedAscending,
             HintsUsedDescending
+        }
+
+        public enum TeamLocation
+        {
+            All,
+            Local,
+            Remote
         }
     }
 }
