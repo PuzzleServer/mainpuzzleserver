@@ -220,6 +220,16 @@ namespace ServerCore.Helpers
                 return new Tuple<bool, string>(false, $"'{user.Email}' is already on a team in this event.");
             }
 
+            // If some flow got here without registering the player for the event, do it now
+            // This only applies to events that don't require active registration since events that do require it will prompt on the nav bar
+            if (!EventHelper.EventRequiresActivePlayerRegistration(Event))
+            {
+                if(await UserEventHelper.GetPlayerInEvent(context, Event, user) == null)
+                {
+                    await EventHelper.RegisterPlayerForEvent(context, Event, user);
+                }
+            }
+
             TeamMembers Member = new TeamMembers();
             Member.Team = team;
             Member.Member = user;
