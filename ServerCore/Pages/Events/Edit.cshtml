@@ -276,6 +276,18 @@
             </div>
             <div class="description-column">The max number of teams that can be registered for this event.</div>
             <div class="form-group">
+                <label asp-for="EditableEvent.MaxNumberOfLocalTeams" class="control-label"></label>
+                <input asp-for="EditableEvent.MaxNumberOfLocalTeams" class="form-control" />
+                <span asp-validation-for="EditableEvent.MaxNumberOfLocalTeams" class="text-danger"></span>
+            </div>
+            <div class="description-column">The max number of local teams that can be registered for this event.</div>
+            <div class="form-group">
+                <label asp-for="EditableEvent.MaxNumberOfRemoteTeams" class="control-label"></label>
+                <input asp-for="EditableEvent.MaxNumberOfRemoteTeams" class="form-control" />
+                <span asp-validation-for="EditableEvent.MaxNumberOfRemoteTeams" class="text-danger"></span>
+            </div>
+            <div class="description-column">The max number of remote teams that can be registered for this event.</div>
+            <div class="form-group">
                 <label asp-for="EditableEvent.MaxTeamSize" class="control-label"></label>
                 <input asp-for="EditableEvent.MaxTeamSize" class="form-control" />
                 <span asp-validation-for="EditableEvent.MaxTeamSize" class="text-danger"></span>

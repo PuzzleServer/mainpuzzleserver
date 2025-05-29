@@ -262,6 +262,16 @@
                 <input asp-for="Event.MaxNumberOfTeams" class="form-control" />
                 <span asp-validation-for="Event.MaxNumberOfTeams" class="text-danger"></span>
             </div>
+            <div class="form-group">
+                <label asp-for="Event.MaxNumberOfLocalTeams" class="control-label"></label>
+                <input asp-for="Event.MaxNumberOfLocalTeams" class="form-control" />
+                <span asp-validation-for="Event.MaxNumberOfLocalTeams" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Event.MaxNumberOfRemoteTeams" class="control-label"></label>
+                <input asp-for="Event.MaxNumberOfRemoteTeams" class="form-control" />
+                <span asp-validation-for="Event.MaxNumberOfRemoteTeams" class="text-danger"></span>
+            </div>
             <div class="description-column">The max number of teams that can be registered for this event.</div>
             <div class="form-group">
                 <label asp-for="Event.MaxTeamSize" class="control-label"></label>
