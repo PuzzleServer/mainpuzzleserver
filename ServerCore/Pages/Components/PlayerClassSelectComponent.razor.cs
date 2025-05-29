@@ -50,9 +50,13 @@ namespace ServerCore.Pages.Components
                 SelectedPlayerClassID = NoClassSetValue;
             }
 
-            if (IsTempClass && CurrentTeamMember.TemporaryClass != null)
+            if (IsTempClass)
             {
-                SelectedPlayerClassID = CurrentTeamMember.TemporaryClass.ID;
+                if (CurrentTeamMember.TemporaryClass != null)
+                {
+                    SelectedPlayerClassID = CurrentTeamMember.TemporaryClass.ID;
+                }
+
                 AvailablePlayerClasses = AllPlayerClasses;
             }
             else
