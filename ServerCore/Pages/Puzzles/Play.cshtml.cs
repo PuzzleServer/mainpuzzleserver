@@ -196,6 +196,15 @@ namespace ServerCore.Pages.Puzzles
             // all puzzles for this event that are real puzzles
             var puzzlesInEventQ = _context.Puzzles.Where(puzzle => puzzle.Event.ID == this.Event.ID && puzzle.IsPuzzle && !puzzle.IsForSinglePlayer);
 
+            if (team.IsRemoteTeam)
+            {
+                puzzlesInEventQ = puzzlesInEventQ.Where(puzzle => puzzle.Availability == Puzzle.PuzzleAvailability.AllPlayers || puzzle.Availability == Puzzle.PuzzleAvailability.RemoteOnly);
+            }
+            else
+            {
+                puzzlesInEventQ = puzzlesInEventQ.Where(puzzle => puzzle.Availability == Puzzle.PuzzleAvailability.AllPlayers || puzzle.Availability == Puzzle.PuzzleAvailability.LocalOnly);
+            }
+                
             // unless we're in a global lockout, then filter to those!
             var puzzlesCausingGlobalLockoutQ = PuzzleStateHelper.PuzzlesCausingGlobalLockout(_context, Event, team);
             if (await puzzlesCausingGlobalLockoutQ.AnyAsync())
