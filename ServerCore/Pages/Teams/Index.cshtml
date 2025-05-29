@@ -30,6 +30,10 @@
     }
 </p>
 <h4>Registered Teams: @Model.Teams.Count/@Model.Event.MaxNumberOfTeams, Registered Players: @Model.PlayerCount/@(Model.Event.MaxNumberOfTeams * Model.Event.MaxTeamSize)</h4>
+@if (Model.Event.AllowsRemoteTeams)
+{
+    <p>Local Teams: <b>@Model.Teams.Where(t => !t.IsRemoteTeam).Count()/@Model.Event.MaxNumberOfLocalTeams</b>, Remote Teams: <b>@Model.Teams.Where(t => t.IsRemoteTeam).Count()/@Model.Event.MaxNumberOfRemoteTeams</b>></p>
+}
 @if (Model.EventRole == ModelBases.EventRole.admin)
 {
     <div>
