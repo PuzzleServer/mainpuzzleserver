@@ -36,17 +36,17 @@ namespace ServerCore.Helpers
                         throw new Exception("You are already on a team. Leave that team before creating a new one");
                     }
 
-                    if (team.IsRemoteTeam && await context.Teams.Where((t) => t.Event == ev && t.IsRemoteTeam).CountAsync() >= ev.MaxNumberOfRemoteTeams)
+                    if (ev.MaxNumberOfRemoteTeams > 0 && team.IsRemoteTeam && await context.Teams.Where((t) => t.Event == ev && t.IsRemoteTeam).CountAsync() >= ev.MaxNumberOfRemoteTeams)
                     {
                         throw new Exception("Remote team registration is full. No further remote teams may be created at the present time.");
                     }
 
-                    if (!team.IsRemoteTeam && await context.Teams.Where((t) => t.Event == ev && !t.IsRemoteTeam).CountAsync() >= ev.MaxNumberOfLocalTeams)
+                    if (ev.MaxNumberOfLocalTeams > 0 && !team.IsRemoteTeam && await context.Teams.Where((t) => t.Event == ev && !t.IsRemoteTeam).CountAsync() >= ev.MaxNumberOfLocalTeams)
                     {
                         throw new Exception("Local team registration is full. No further local teams may be created at the present time.");
                     }
 
-                    if (await context.Teams.Where((t) => t.Event == ev).CountAsync() >= ev.MaxNumberOfTeams)
+                    if (ev.MaxNumberOfTeams > 0 && await context.Teams.Where((t) => t.Event == ev).CountAsync() >= ev.MaxNumberOfTeams)
                     {
                         throw new Exception("Registration is full. No further teams may be created at the present time.");
                     }

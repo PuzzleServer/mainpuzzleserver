@@ -19,6 +19,7 @@
                     // If either remote & local has reached the cap then show a message to that effect and default the team to the one that isn't full
                     <div class="form-group">
                         <label>
+                            <br/>
                             This event allows both local and remote teams.
                             @if(Event.LockChangesToRemoteStatus)
                             {
@@ -26,18 +27,19 @@
                             }
                             <table>
                                 <tr>
-                                    <InputSelect @bind-Value="TeamModel.IsRemoteTeam">
-                                        <option value=null>Select An Option</option>
-                                        <option @disabled=LocalTeamsFull value=false>Local</option>
-                                        <option @disabled=RemoteTeamsFull value=false>Remote</option>
-                                    </InputSelect>
+                                    <p>The team will be playing</p>
+                                    <InputRadioGroup Name="TeamLocation" @bind-Value="TeamModel.IsRemoteTeam">
+                                        <label><InputRadio Name="TeamLocation" Value="false"></InputRadio> Locally</label><br />
+                                        <label><InputRadio Name="TeamLocation" Value="true"></InputRadio> Remotely</label><br />
+                                    </InputRadioGroup>
+                                    <br />
                             </tr>
                         </table>
                         </label>
                     </div>
                 }
                 @* TODO: Handle puzzleday room assignment and check hunt/safari requirements *@
-                @if (!Event.IsRemote && !TeamModel.IsRemoteTeam.GetValueOrDefault())
+                @if (!Event.IsRemote && (TeamModel.IsRemoteTeam.HasValue && !TeamModel.IsRemoteTeam.Value))
                 {
                     @if (!(Event.IsInternEvent && EventRole == ModelBases.EventRole.play))
                     {

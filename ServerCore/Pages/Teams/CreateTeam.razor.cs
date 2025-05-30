@@ -128,6 +128,11 @@ namespace ServerCore.Pages.Teams
                 RemoteTeamsFull = true;
             }
 
+            if (!Event.AllowsRemoteTeams)
+            {
+                TeamModel.IsRemoteTeam = false;
+            }
+
             await base.OnParametersSetAsync();
         }
 
