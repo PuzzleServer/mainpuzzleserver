@@ -15,6 +15,10 @@ namespace ServerCore.DataModel
         // Commitment level
         Casual = 0x4,
         Serious = 0x8,
+
+        // Location
+        Local = 0x10,
+        Remote = 0x20,
     }
 
     public class Team

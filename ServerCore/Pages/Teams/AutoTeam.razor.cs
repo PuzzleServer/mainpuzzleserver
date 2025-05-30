@@ -21,6 +21,9 @@ namespace ServerCore.Pages.Teams
         [Parameter]
         public EventRole EventRole { get; set; }
 
+        [Parameter]
+        public bool IsMicrosoft { get; set; }
+
         [Inject]
         public PuzzleServerContext _context { get; set; }
 
@@ -33,6 +36,8 @@ namespace ServerCore.Pages.Teams
         [Required]
         public AutoTeamType? PlayerCommitment { get; set; } = null;
 
+        public AutoTeamType? PlayerLocation { get; set; } = null;
+
         bool CantCreateTeam { get; set; }
 
         public async Task OnSubmit()
@@ -40,6 +45,22 @@ namespace ServerCore.Pages.Teams
             CantCreateTeam = false;
 
             AutoTeamType playerType = PlayerExperience.Value | PlayerCommitment.Value;
+            bool isRemote = false;
+
+            if (PlayerLocation.HasValue)
+            {
+                playerType |= PlayerLocation.Value;
+
+                if (PlayerLocation.Value == AutoTeamType.Remote)
+                {
+                    isRemote = true;
+                }
+            }
+            else if (Event.AllowsRemoteTeams)
+            {
+                playerType |= AutoTeamType.Remote;
+                isRemote = true;
+            }
 
             int maxAutoTeamSize = (int)Math.Round(0.8 * Event.MaxTeamSize);
 
@@ -89,9 +110,19 @@ namespace ServerCore.Pages.Teams
                     AutoTeamType = playerType,
                     Name = name,
                     PrimaryContactEmail = captain.Email,
+                    IsRemoteTeam = isRemote,
                 };
 
-                await TeamHelper.CreateTeamAsync(_context, team, Event, LoggedInUserId);
+                try
+                {
+                    await TeamHelper.CreateTeamAsync(_context, team, Event, LoggedInUserId);
+                }
+                catch
+                {
+                    // Most exceptions from here are because the team type isn't available
+                    CantCreateTeam = true;
+                    return;
+                }
             }
             else
             {
