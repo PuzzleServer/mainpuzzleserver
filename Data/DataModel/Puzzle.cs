@@ -295,16 +295,6 @@ namespace ServerCore.DataModel
         public bool IsForSinglePlayer { get; set; }
 
         /// <summary>
-        /// True if the puzzle is only available to remote teams (currently only uses team checks but logic can be added for single player in the future)
-        /// </summary>
-        public bool IsForRemoteOnly { get; set; }
-
-        /// <summary>
-        /// True if the puzzle is only available to local teams (currently only uses team checks but logic can be added for single player in the future)
-        /// </summary>
-        public bool IsForLocalOnly { get; set; }
-
-        /// <summary>
         /// Number of alpha members who can sign up for a puzzle
         /// </summary>
         public int AlphaTestsNeeded { get; set; }

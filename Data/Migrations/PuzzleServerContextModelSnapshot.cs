@@ -988,12 +988,6 @@ namespace Data.Migrations
                     b.Property<bool>("IsFinalPuzzle")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsForLocalOnly")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsForRemoteOnly")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsForSinglePlayer")
                         .HasColumnType("bit");
 

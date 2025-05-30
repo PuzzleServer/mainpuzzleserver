@@ -1,5 +1,7 @@
 <div class="row">
     <div class="col-md-4">
+        @*In order to register there has to either be space in the overall cap or in in one of the two sub caps *@
+        @*For the future, consider modifying this logic so that local+remote can be capped by total instead of them being independent*@
         @if (!EventFull || !(LocalTeamsFull && RemoteTeamsFull))
         {
             <EditForm Model="TeamModel" OnValidSubmit="OnSubmit">
@@ -26,22 +28,8 @@
                                 <tr>
                                     <InputSelect @bind-Value="TeamModel.IsRemoteTeam">
                                         <option value=null>Select An Option</option>
-                                        @if (LocalTeamsFull)
-                                        {
-                                            <option disabled value=false>Local</option>
-                                        }
-                                        else
-                                        {
-                                            <option value=false>Local</option>
-                                        }
-                                        @if (RemoteTeamsFull)
-                                        {
-                                            <option disabled value=true>Remote</option>
-                                        }
-                                        else
-                                        {
-                                            <option value=true>Remote</option>
-                                        }
+                                        <option @disabled=LocalTeamsFull value=false>Local</option>
+                                        <option @disabled=RemoteTeamsFull value=false>Remote</option>
                                     </InputSelect>
                             </tr>
                         </table>
