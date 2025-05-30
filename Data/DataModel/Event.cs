@@ -37,6 +37,9 @@ namespace ServerCore.DataModel
         public string ContactEmail { get; set; }
 
         public int MaxNumberOfTeams { get; set; }
+        public int MaxNumberOfRemoteTeams { get; set; }
+        public int MaxNumberOfLocalTeams { get; set; }
+
         public int MaxTeamSize { get; set; }
         public int MaxExternalsPerTeam { get; set; }
         public bool IsInternEvent { get; set; }
@@ -48,6 +51,9 @@ namespace ServerCore.DataModel
         public bool AllowsRemotePlayers { get; set; }
         public bool AllowsRemoteTeams { get; set; }
         public bool IsRemote { get; set; }
+
+        // If this is true then teams cannot change whether they are remote or local themselves, it requires an admin
+        public bool LockChangesToRemoteStatus { get; set; }
 
         /// <summary>
         /// True if puzzles will be shown in an iframe on the answer submission page

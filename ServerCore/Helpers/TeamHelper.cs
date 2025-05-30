@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.IdentityModel.Tokens;
 using ServerCore.DataModel;
 using ServerCore.ModelBases;
 
@@ -33,6 +34,16 @@ namespace ServerCore.Helpers
                                select member).AnyAsync())
                     {
                         throw new Exception("You are already on a team. Leave that team before creating a new one");
+                    }
+
+                    if (ev.MaxNumberOfRemoteTeams > 0 && team.IsRemoteTeam && await context.Teams.Where((t) => t.Event == ev && t.IsRemoteTeam).CountAsync() >= ev.MaxNumberOfRemoteTeams)
+                    {
+                        throw new Exception("Remote team registration is full. No further remote teams may be created at the present time.");
+                    }
+
+                    if (ev.MaxNumberOfLocalTeams > 0 && !team.IsRemoteTeam && await context.Teams.Where((t) => t.Event == ev && !t.IsRemoteTeam).CountAsync() >= ev.MaxNumberOfLocalTeams)
+                    {
+                        throw new Exception("Local team registration is full. No further local teams may be created at the present time.");
                     }
 
                     if (await context.Teams.Where((t) => t.Event == ev).CountAsync() >= ev.MaxNumberOfTeams)
@@ -210,6 +221,16 @@ namespace ServerCore.Helpers
                 return new Tuple<bool, string>(false, $"'{user.Email}' is already on a team in this event.");
             }
 
+            // If some flow got here without registering the player for the event, do it now
+            // This only applies to events that don't require active registration since events that do require it will prompt on the nav bar
+            if (!EventHelper.EventRequiresActivePlayerRegistration(Event))
+            {
+                if(await UserEventHelper.GetPlayerInEvent(context, Event, user) == null)
+                {
+                    await EventHelper.RegisterPlayerForEvent(context, Event, user);
+                }
+            }
+
             TeamMembers Member = new TeamMembers();
             Member.Team = team;
             Member.Member = user;
@@ -228,7 +249,23 @@ namespace ServerCore.Helpers
 
             if (Event.HasPlayerClasses)
             {
-                playerClass = await PlayerClassHelper.GetRandomPlayerClassFromAvailable(context, Event.ID, EventRole, teamId);
+                // If an admin is adding the player to the team try to get a class that hasn't been assigned, if that isn't possible then pick a random duplicate class
+                if (EventRole == EventRole.admin)
+                {
+                    var available = await PlayerClassHelper.GetAvailablePlayerClasses(context, Event.ID, EventRole.play, team.ID);
+
+                    if (available.IsNullOrEmpty())
+                    {
+                        available = await PlayerClassHelper.GetAvailablePlayerClasses(context, Event.ID, EventRole.admin, team.ID);
+                    }
+
+                    playerClass = PlayerClassHelper.GetRandomPlayerClassFromAvailable(available);
+                }
+                else
+                {
+                    playerClass = await PlayerClassHelper.GetRandomPlayerClassFromAvailable(context, Event.ID, EventRole, teamId);
+                }
+
                 Member.Class = playerClass;
             }
 

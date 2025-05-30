@@ -21,7 +21,10 @@
             }
 
             // Add the "not set" option using a special value
-            <option value=@NoClassSetValue>No @Event.PlayerClassName set</option>
+            if(!IsTempClass)
+            {
+                <option value=@NoClassSetValue>No @Event.PlayerClassName set</option>
+            }
         }
     </InputSelect>
 }

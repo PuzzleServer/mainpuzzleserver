@@ -385,6 +385,9 @@ namespace Data.Migrations
                     b.Property<bool>("IsRemote")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("LockChangesToRemoteStatus")
+                        .HasColumnType("bit");
+
                     b.Property<double>("LockoutDurationMultiplier")
                         .HasColumnType("float");
 
@@ -404,6 +407,12 @@ namespace Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int>("MaxExternalsPerTeam")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MaxNumberOfLocalTeams")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MaxNumberOfRemoteTeams")
                         .HasColumnType("int");
 
                     b.Property<int>("MaxNumberOfTeams")

@@ -13,14 +13,16 @@ namespace ServerCore.Helpers
     {
         public const int NoClassSetValue = 123456789;
 
-        public static PlayerClass GetActiveClassForPlayer(TeamMembers teamMember)
+        public static PlayerClass GetActiveClassForPlayer(Event thisEvent, TeamMembers teamMember)
         {
             if(teamMember == null)
             {
                 return null;
             }
 
-            if(teamMember.TemporaryClass != null)
+            // The temporary class should override the base class if the player can't change their class
+            // If they can change their class then temporary is hidden and so the site shouldn't use the hidden value
+            if(!thisEvent.CanChangePlayerClass && teamMember.TemporaryClass != null)
             {
                 return teamMember.TemporaryClass;
             }

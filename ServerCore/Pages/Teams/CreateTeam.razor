@@ -1,6 +1,8 @@
 <div class="row">
     <div class="col-md-4">
-        @if (!EventFull)
+        @*In order to register there has to either be space in the overall cap or in in one of the two sub caps *@
+        @*For the future, consider modifying this logic so that local+remote can be capped by total instead of them being independent*@
+        @if (!EventFull || !(LocalTeamsFull && RemoteTeamsFull))
         {
             <EditForm Model="TeamModel" OnValidSubmit="OnSubmit">
                 <DataAnnotationsValidator />
@@ -14,21 +16,30 @@
                 </div>
                 @if (Event.AllowsRemoteTeams)
                 {
+                    // If either remote & local has reached the cap then show a message to that effect and default the team to the one that isn't full
                     <div class="form-group">
                         <label>
-                        Team will be playing remotely
-                        <table>
-                            <tr>
-                                <td style="width:50px;vertical-align:top;">
-                                    <InputCheckbox @bind-Value="TeamModel.IsRemoteTeam" />
-                                </td>
+                            <br/>
+                            This event allows both local and remote teams.
+                            @if(Event.LockChangesToRemoteStatus)
+                            {
+                                <div> Once the team is created this can only be changed by contacting the organizers.</div>
+                            }
+                            <table>
+                                <tr>
+                                    <p>The team will be playing</p>
+                                    <InputRadioGroup Name="TeamLocation" @bind-Value="TeamModel.IsRemoteTeam">
+                                        <label><InputRadio Name="TeamLocation" Value="false"></InputRadio> Locally</label><br />
+                                        <label><InputRadio Name="TeamLocation" Value="true"></InputRadio> Remotely</label><br />
+                                    </InputRadioGroup>
+                                    <br />
                             </tr>
                         </table>
                         </label>
                     </div>
                 }
                 @* TODO: Handle puzzleday room assignment and check hunt/safari requirements *@
-                @if (!Event.IsRemote && !TeamModel.IsRemoteTeam)
+                @if (!Event.IsRemote && (TeamModel.IsRemoteTeam.HasValue && !TeamModel.IsRemoteTeam.Value))
                 {
                     @if (!(Event.IsInternEvent && EventRole == ModelBases.EventRole.play))
                     {
