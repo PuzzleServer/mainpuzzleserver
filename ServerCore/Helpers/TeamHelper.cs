@@ -46,7 +46,7 @@ namespace ServerCore.Helpers
                         throw new Exception("Local team registration is full. No further local teams may be created at the present time.");
                     }
 
-                    if (ev.MaxNumberOfTeams > 0 && await context.Teams.Where((t) => t.Event == ev).CountAsync() >= ev.MaxNumberOfTeams)
+                    if (await context.Teams.Where((t) => t.Event == ev).CountAsync() >= ev.MaxNumberOfTeams)
                     {
                         throw new Exception("Registration is full. No further teams may be created at the present time.");
                     }
