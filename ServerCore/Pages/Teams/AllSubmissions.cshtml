@@ -12,12 +12,30 @@
     <a asp-page="/Puzzles/Play" asp-route-teamId="@Model.TeamID">Back to puzzle list</a>
 </div>
 <br />
+<form method="post">
+    <div class="form-group">
+        <div class="checkbox">
+            <label>
+                <input asp-for="SolutionsOnly" /> Show only solutions
+            </label>
+        </div>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Filter" class="btn btn-default" />
+    </div>
+</form>
+
 <table class="table">
     <thead>
         <tr>
             <th>
-                <a asp-page="./AllSubmissions" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(AllSubmissionsModel.SortOrder.SolvedTimeAscending, AllSubmissionsModel.SortOrder.SolvedTimeDecending))">
-                    Solved Time
+                <a asp-page="./AllSubmissions" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(AllSubmissionsModel.SortOrder.SubmissionTimeAscending, AllSubmissionsModel.SortOrder.SubmissionTimeDescending))">
+                    Submission Time
+                </a>
+            </th>
+            <th>
+                <a asp-page="./AllSubmissions" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(AllSubmissionsModel.SortOrder.SubmissionTimeAscending, AllSubmissionsModel.SortOrder.SubmitterDescending))">
+                    Submitter Name
                 </a>
             </th>
             <th>
@@ -43,7 +61,10 @@
         {
             <tr>
                 <td>
-                    @Html.Raw(Model.LocalTime(item.SolvedTime))
+                    @Html.Raw(Model.LocalTime(item.SubmissionTime))
+                </td>
+                <td>
+                    @item.SubmitterName
                 </td>
                 <td class="puzzle-list-group-customizable">
                     @ServerCore.Helpers.RawHtmlHelper.Display(item.Group, Model.Event.ID, Html)
