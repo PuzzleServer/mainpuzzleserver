@@ -65,7 +65,7 @@
             </div>
             @if(Model.Event.AllowsRemoteTeams)
             {
-                if(!Model.Event.LockChangesToRemoteStatus)
+                if(!Model.Event.LockChangesToRemoteStatus || Model.EventRole == ModelBases.EventRole.admin)
                 {
                     <div class="form-group">
                         <label asp-for="Team.IsRemoteTeam" class="control-label">Team is playing remotely</label>
@@ -73,6 +73,18 @@
                             <input asp-for="Team.IsRemoteTeam" />
                         </div>
                     </div>
+                }
+                else
+                {
+                    <div>Team Location (contact organizers to change): </div>
+                    if(Model.Team.IsRemoteTeam)
+                    {
+                        <div>Remote</div>
+                    }
+                    else
+                    {
+                        <div>Local</div>
+                    }
                 }
             }
             @if (!Model.Event.IsRemote && !Model.Team.IsRemoteTeam)
