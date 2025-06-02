@@ -9,33 +9,19 @@
 <h2>All Team Submissions</h2>
 <hr />
 <div>
-    <a asp-page="/Puzzles/Play" asp-route-teamId="@Model.TeamID">Back to puzzle list</a>
+    <a asp-page="./Answers" asp-route-teamId="@Model.TeamID"> Show only solutions </a>  |  <a asp-page="/Puzzles/Play" asp-route-teamId="@Model.TeamID">Back to puzzle list</a>
 </div>
 <br />
-<form method="post">
-    <div class="form-group">
-        <div class="checkbox">
-            <label>
-                <input asp-for="SolutionsOnly" /> Show only solutions
-            </label>
-        </div>
-    </div>
-    <div class="form-group">
-        <input type="submit" value="Filter" class="btn btn-default" />
-    </div>
-</form>
 
 <table class="table">
     <thead>
         <tr>
             <th>
-                <a asp-page="./AllSubmissions" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(AllSubmissionsModel.SortOrder.SubmissionTimeAscending, AllSubmissionsModel.SortOrder.SubmissionTimeDescending))">
-                    Submission Time
-                </a>
+                Submission
             </th>
             <th>
-                <a asp-page="./AllSubmissions" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(AllSubmissionsModel.SortOrder.SubmissionTimeAscending, AllSubmissionsModel.SortOrder.SubmitterDescending))">
-                    Submitter Name
+                <a asp-page="./AllSubmissions" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(AllSubmissionsModel.SortOrder.PuzzleNameAscending, AllSubmissionsModel.SortOrder.PuzzleNameDescending))">
+                    Puzzle
                 </a>
             </th>
             <th>
@@ -44,12 +30,14 @@
                 </a>
             </th>
             <th>
-                <a asp-page="./AllSubmissions" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(AllSubmissionsModel.SortOrder.PuzzleNameAscending, AllSubmissionsModel.SortOrder.PuzzleNameDescending))">
-                    Puzzle
+                <a asp-page="./AllSubmissions" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(AllSubmissionsModel.SortOrder.SubmissionTimeAscending, AllSubmissionsModel.SortOrder.SubmissionTimeDescending))">
+                    Submission Time
                 </a>
             </th>
             <th>
-                Submission
+                <a asp-page="./AllSubmissions" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(AllSubmissionsModel.SortOrder.SubmitterAscending, AllSubmissionsModel.SortOrder.SubmitterDescending))">
+                    Submitter Name
+                </a>
             </th>
             <th>
                 Response
@@ -60,28 +48,30 @@
         @foreach (var item in Model.AllSubmissions)
         {
             <tr>
+                @if (string.IsNullOrEmpty(item.SubmissionText))
+                {
+                    <td class="puzzle-list-submission-customizable">
+                        None (marked as solved by admin)
+                    </td>
+                }
+                else
+                {
+                    <td class="puzzle-list-submission-customizable">
+                        @item.SubmissionText
+                    </td>
+                }
+                <td class="puzzle-list-title-customizable">
+                    @ServerCore.Helpers.RawHtmlHelper.Display(item.Name, Model.Event.ID, Html)
+                </td>
+                <td class="puzzle-list-group-customizable">
+                    @ServerCore.Helpers.RawHtmlHelper.Display(item.Group, Model.Event.ID, Html)
+                </td>
                 <td>
                     @Html.Raw(Model.LocalTime(item.SubmissionTime))
                 </td>
                 <td>
                     @item.SubmitterName
                 </td>
-                <td class="puzzle-list-group-customizable">
-                    @ServerCore.Helpers.RawHtmlHelper.Display(item.Group, Model.Event.ID, Html)
-                </td>
-                <td class="puzzle-list-title-customizable">
-                    @ServerCore.Helpers.RawHtmlHelper.Display(item.Name, Model.Event.ID, Html)
-                </td>
-                @if(string.IsNullOrEmpty(item.SubmissionText)) {
-                    <td class="puzzle-list-submission-customizable">
-                        None (marked as solved by admin)
-                    </td>
-                }
-                else {
-                    <td class="puzzle-list-submission-customizable">
-                        @item.SubmissionText
-                    </td>
-                }
                 <td class="puzzle-list-response-customizable">
                     @ServerCore.Helpers.RawHtmlHelper.Display(item.ResponseText, Model.Event.ID, Html)
                 </td>
