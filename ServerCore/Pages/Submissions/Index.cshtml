@@ -542,8 +542,7 @@ else
             <div class="inlinewrapper">
                 @if (Model.Event.HasPlayerClasses)
                 {
-                    <div><h3><b>@Model.Event.PlayerClassName: @Model.ActivePlayerClassDisplay</b></h3></div>
-                    <div><b>@Model.Event.PlayerClassName Override</b> <a asp-page="/Teams/Details" asp-route-teamId="@Model.Team.ID" target="_blank">Click this link</a> to override your class designation.</div>
+                    <div><b>@Model.Event.PlayerClassName: @Model.ActivePlayerClassDisplay - </b> <a asp-page="/Teams/Details" asp-route-teamId="@Model.Team.ID" target="_blank">@Model.Event.PlayerClassName Override</a></div>
                 }
 
                 @if (!Model.Event.HideHints)

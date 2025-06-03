@@ -315,6 +315,11 @@
             </div>
             <div class="description-column">Specifies if an event allows remote teams.</div>
             <div class="form-group">
+                <label asp-for="EditableEvent.LockChangesToRemoteStatus"></label>
+                <input asp-for="EditableEvent.LockChangesToRemoteStatus" />
+            </div>
+            <div class="description-column">If this is true then teams can't change their status between local and remote (does not affect player remote settings). Admins can still make changes.</div>
+            <div class="form-group">
                 <label asp-for="EditableEvent.IsInternEvent"></label>
                 <input asp-for="EditableEvent.IsInternEvent" />
             </div>

@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
-using ServerCore.Helpers;
 using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Teams
@@ -51,7 +50,9 @@ namespace ServerCore.Pages.Teams
                     Group = state.Puzzle.Group,
                     Name = state.Puzzle.Name,
                     SubmissionText = joinedSubmission.SubmissionText,
-                    ResponseText = joinedSubmission.Response.ResponseText
+                    ResponseText = joinedSubmission.Response.ResponseText,
+                    OrderInGroup = state.Puzzle.OrderInGroup,
+                    SubmitterName = joinedSubmission.Submitter.Name,
                 };
 
             this.Sort = sort;
@@ -63,16 +64,22 @@ namespace ServerCore.Pages.Teams
                     finalSubmissions = finalSubmissions.OrderByDescending(s => s.Name);
                     break;
                 case SortOrder.SolvedTimeAscending:
-                    finalSubmissions = finalSubmissions.OrderBy(s => s.SolvedTime);
+                    finalSubmissions = finalSubmissions.OrderBy(s => s.SolvedTime).ThenBy(s => s.Group).ThenBy(s => s.OrderInGroup);
                     break;
                 case SortOrder.SolvedTimeDecending:
-                    finalSubmissions = finalSubmissions.OrderByDescending(s => s.SolvedTime);
+                    finalSubmissions = finalSubmissions.OrderByDescending(s => s.SolvedTime).ThenByDescending(s => s.Group).ThenByDescending(s => s.OrderInGroup);
                     break;
                 case SortOrder.GroupAscending:
-                    finalSubmissions = finalSubmissions.OrderBy(s => s.Group);
+                    finalSubmissions = finalSubmissions.OrderBy(s => s.Group).ThenBy(s => s.OrderInGroup);
                     break;
                 case SortOrder.GroupDescending:
-                    finalSubmissions = finalSubmissions.OrderByDescending(s => s.Group);
+                    finalSubmissions = finalSubmissions.OrderByDescending(s => s.Group).ThenByDescending(s => s.OrderInGroup);
+                    break;
+                case SortOrder.SubmitterAscending:
+                    finalSubmissions = finalSubmissions.OrderBy(s => s.SubmitterName).ThenBy(s => s.Group).ThenBy(s => s.OrderInGroup);
+                    break;
+                case SortOrder.SubmitterDescending:
+                    finalSubmissions = finalSubmissions.OrderByDescending(s => s.SubmitterName).ThenByDescending(s => s.Group).ThenByDescending(s => s.OrderInGroup);
                     break;
                 default:
                     throw new Exception("Sort order is not mapped");
@@ -101,7 +108,9 @@ namespace ServerCore.Pages.Teams
             PuzzleNameAscending,
             PuzzleNameDescending,
             GroupAscending,
-            GroupDescending
+            GroupDescending,
+            SubmitterAscending,
+            SubmitterDescending
         }
 
         public class SubmissionView
@@ -111,6 +120,8 @@ namespace ServerCore.Pages.Teams
             public string Name { get; set; }
             public string SubmissionText { get; set; }
             public string ResponseText { get; set; }
+            public string SubmitterName { get; set; }
+            public int OrderInGroup { get; set; }
         }
     }
 }

@@ -49,24 +49,24 @@ namespace ServerCore.Pages.Components
             {
                 SelectedPlayerClassID = NoClassSetValue;
             }
+            else
+            { 
+                SelectedPlayerClassID = CurrentTeamMember.Class?.ID ?? NoClassSetValue; 
+            }
 
             if (IsTempClass)
             {
+                // Display their temp override if it's been set, otherwise display their regular class (set above)
                 if (CurrentTeamMember.TemporaryClass != null)
                 {
                     SelectedPlayerClassID = CurrentTeamMember.TemporaryClass.ID;
                 }
-                else
-                {
-                    SelectedPlayerClassID = CurrentTeamMember.Class.ID;
-                }
 
+                // Temporary classes can be any class, whether or not it's assigned, so if the dropdown in temp then get the whole set
                 AvailablePlayerClasses = AllPlayerClasses;
             }
             else
             {
-                SelectedPlayerClassID = CurrentTeamMember.Class?.ID ?? NoClassSetValue;
-
                 // This will get unassigned classes for a player or all classes for an admin
                 AvailablePlayerClasses = await PlayerClassHelper.GetAvailablePlayerClassesSorted(context, EventId, CurrentUserEventRole, CurrentTeamMember.Team.ID);
             }

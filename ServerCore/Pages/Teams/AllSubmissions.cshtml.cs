@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
-using ServerCore.Helpers;
 using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Teams
@@ -36,24 +35,26 @@ namespace ServerCore.Pages.Teams
             TeamID = teamId;
 
             IQueryable<PuzzleStatePerTeam> puzzleStates = _context.PuzzleStatePerTeam
-                .Where((state) => state.TeamID == teamId && state.SolvedTime != null && state.Puzzle.IsPuzzle);
+                .Where((state) => state.TeamID == teamId && state.Puzzle.IsPuzzle);
 
             IQueryable<Submission> submissions = _context.Submissions
                 .Where((s) => s.TeamID == teamId);
 
             IQueryable<SubmissionView> finalSubmissions =
                 from state in puzzleStates
-                join submission in submissions on state.PuzzleID equals submission.PuzzleID into joinedStateSubmission
-                from joinedSubmission in joinedStateSubmission.DefaultIfEmpty()
+                join submission in submissions on state.PuzzleID equals submission.PuzzleID //into joinedStateSubmission
+                //from joinedSubmission in joinedStateSubmission.DefaultIfEmpty()
                 select new SubmissionView
                 {
-                    SolvedTime = state.SolvedTime.Value,
+                    SubmissionTime = submission.TimeSubmitted,
+                    SubmitterName = submission.Submitter.Name,
                     Group = state.Puzzle.Group,
                     OrderInGroup = state.Puzzle.OrderInGroup,
                     Name = state.Puzzle.Name,
-                    SubmissionText = joinedSubmission.SubmissionText,
-                    ResponseText = joinedSubmission.Response.ResponseText
+                    SubmissionText = submission.SubmissionText,
+                    ResponseText = submission.Response != null ? submission.Response.ResponseText : ""
                 };
+            await finalSubmissions.ToListAsync();
 
             this.Sort = sort;
             switch (sort ?? DefaultSort) {
@@ -63,17 +64,23 @@ namespace ServerCore.Pages.Teams
                 case SortOrder.PuzzleNameDescending:
                     finalSubmissions = finalSubmissions.OrderByDescending(s => s.Name);
                     break;
-                case SortOrder.SolvedTimeAscending:
-                    finalSubmissions = finalSubmissions.OrderBy(s => s.SolvedTime).ThenBy(s => s.Group).ThenBy(s => s.OrderInGroup);
+                case SortOrder.SubmissionTimeAscending:
+                    finalSubmissions = finalSubmissions.OrderBy(s => s.SubmissionTime).ThenBy(s => s.Group).ThenBy(s => s.OrderInGroup);
                     break;
-                case SortOrder.SolvedTimeDecending:
-                    finalSubmissions = finalSubmissions.OrderByDescending(s => s.SolvedTime).ThenByDescending(s => s.Group).ThenByDescending(s => s.OrderInGroup);
+                case SortOrder.SubmissionTimeDescending:
+                    finalSubmissions = finalSubmissions.OrderByDescending(s => s.SubmissionTime).ThenByDescending(s => s.Group).ThenByDescending(s => s.OrderInGroup);
                     break;
                 case SortOrder.GroupAscending:
                     finalSubmissions = finalSubmissions.OrderBy(s => s.Group).ThenBy(s => s.OrderInGroup);
                     break;
                 case SortOrder.GroupDescending:
                     finalSubmissions = finalSubmissions.OrderByDescending(s => s.Group).ThenByDescending(s => s.OrderInGroup);
+                    break;
+                case SortOrder.SubmitterAscending:
+                    finalSubmissions = finalSubmissions.OrderBy(s => s.SubmitterName).ThenBy(s => s.Group).ThenBy(s => s.OrderInGroup);
+                    break;
+                case SortOrder.SubmitterDescending:
+                    finalSubmissions = finalSubmissions.OrderByDescending(s => s.SubmitterName).ThenByDescending(s => s.Group).ThenByDescending(s => s.OrderInGroup);
                     break;
                 default:
                     throw new Exception("Sort order is not mapped");
@@ -97,17 +104,20 @@ namespace ServerCore.Pages.Teams
 
         public enum SortOrder
         {
-            SolvedTimeAscending,
-            SolvedTimeDecending,
             PuzzleNameAscending,
             PuzzleNameDescending,
             GroupAscending,
-            GroupDescending
+            GroupDescending,
+            SubmissionTimeAscending,
+            SubmissionTimeDescending,
+            SubmitterAscending,
+            SubmitterDescending
         }
 
         public class SubmissionView
         {
-            public DateTime SolvedTime { get; set; }
+            public DateTime SubmissionTime { get; set; }
+            public string SubmitterName { get; set; }
             public string Group { get; set; }
             public int OrderInGroup { get; set; }
             public string Name { get; set; }
