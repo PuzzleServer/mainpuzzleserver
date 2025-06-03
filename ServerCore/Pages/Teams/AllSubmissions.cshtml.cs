@@ -38,11 +38,6 @@ namespace ServerCore.Pages.Teams
 
             IQueryable<PuzzleStatePerTeam> puzzleStates = _context.PuzzleStatePerTeam
                 .Where((state) => state.TeamID == teamId && state.Puzzle.IsPuzzle);
-            
-            if(SolutionsOnly)
-            {
-                puzzleStates = puzzleStates.Where((state) => state.SolvedTime != null);
-            }
 
             IQueryable<Submission> submissions = _context.Submissions
                 .Where((s) => s.TeamID == teamId);
