@@ -31,6 +31,9 @@ Registered Teams: <b>@Model.Teams.Count/@Model.Event.MaxNumberOfTeams</b>, Regis
             <th>
                 Qualification Status
             </th>
+            <th>
+                Team Location
+            </th>
             }
         </tr>
     </thead>
@@ -52,6 +55,16 @@ Registered Teams: <b>@Model.Teams.Count/@Model.Event.MaxNumberOfTeams</b>, Regis
                     {
                         <text>Disqualified</text>
                     }
+                    </td>
+                    <td>
+                        if (item.IsRemoteTeam)
+                        {
+                        <text>Remote</text>
+                        }
+                        else
+                        {
+                            <text>Local</text>
+                        }
                     </td>
                 }
             </tr>

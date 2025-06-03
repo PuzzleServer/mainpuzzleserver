@@ -23,6 +23,7 @@ namespace ServerCore.Pages.Puzzles
         {
             public Puzzle Puzzle { get; set; }
             public string Authors { get; set; }
+            public string CustomAuthorText { get; set; }
             public ContentFile PuzzleFile { get; set; }
             public ContentFile AnswerFile { get; set; }
             public string Prerequisites { get; set; }
@@ -108,6 +109,7 @@ namespace ServerCore.Pages.Puzzles
                 {
                     Puzzle = puzzle,
                     Authors = authors != null ? string.Join(", ", authors) : "",
+                    CustomAuthorText = puzzle.CustomAuthorText,
                     PuzzleFile = puzzleFile,
                     AnswerFile = puzzleAnswer,
                     Prerequisites = prereqs != null ? string.Join(", ", prereqs.OrderBy(prereq => prereq)) : "",

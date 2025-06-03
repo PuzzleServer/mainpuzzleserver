@@ -79,6 +79,12 @@
             <th>
                 Support
             </th>
+            @if (Model.Event.AllowsRemoteTeams)
+            {
+                <th>
+                    Puzzle Availability
+                </th>
+            }
             <th>
                 Shortcuts
             </th>
@@ -153,6 +159,12 @@
                 <td>
                     @item.Puzzle.SupportEmailAlias
                 </td>
+                @if (Model.Event.AllowsRemoteTeams)
+                {
+                    <td>
+                        @item.Puzzle.Availability
+                    </td>
+                }
                 <td>
                     <div class="shortcut-menu-dropdown">
                         <span><a>Jump to...</a></span>

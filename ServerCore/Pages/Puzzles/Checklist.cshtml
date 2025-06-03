@@ -26,6 +26,9 @@
                 Author(s)
             </th>
             <th>
+                Custom Author Text
+            </th>
+            <th>
                 Puzzle file
             </th>
             <th>
@@ -36,6 +39,9 @@
             </th>
             <th>
                 Pre-requisites
+            </th>
+            <th>
+                Prerequisite Weight
             </th>
             <th>
                 Min in group count
@@ -77,6 +83,9 @@
                 @item.Authors
             </td>
             <td>
+                @item.CustomAuthorText
+            </td>
+            <td>
                 @if (item.Puzzle.CustomURL != null)
                 {
                     <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.Puzzle, Model.Event.ID)" target="_blank">Link</a>
@@ -105,6 +114,9 @@
                 {
                     <font color="red">WARNING: Fewer prereqs than min</font>
                 }
+            </td>
+            <td>
+                @item.Puzzle.PrerequisiteWeight
             </td>
             <td>
                 @(item.Puzzle.MinInGroupCount)
