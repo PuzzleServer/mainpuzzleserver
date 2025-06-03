@@ -28,8 +28,6 @@ namespace ServerCore.Pages.Teams
 
         public SortOrder? Sort { get; set; }
 
-        public bool SolutionsOnly { get; set; }
-
         private const SortOrder DefaultSort = SortOrder.GroupAscending;
 
         public async Task OnGetAsync(SortOrder? sort, int teamId)
