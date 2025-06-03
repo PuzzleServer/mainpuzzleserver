@@ -824,12 +824,21 @@ else
                 // Add the Submit button click handler
                 // Submission conversion mirrors what takes place in DataModel\Response::FormatSubmission
                 // For local testing, set host to http://localhost:44319
-                // Note that AllowFreeformSharing uses string trickery due to C# returning a Boolean value instead of a boolean value
                 const submit = document.querySelector("#submitButton");
                 async function submitClickHandler (e) {
                     const rawText = document.querySelector("#submitBox").value;
                     const cleanedText = rawText.normalize("NFKD").replace(/[^a-zA-Z\d]/gi, "").toUpperCase();
-                    let submission = {SubmissionText: cleanedText, AllowFreeformSharing: @Model.Puzzle.IsFreeform.ToString().ToLower()};
+                    const submissionText = @Model.Puzzle.IsFreeform.ToString().ToLower() ? rawText : cleanedText;
+
+                    const freeformBoxes = document.getElementsByName("allowFreeformSharing");
+                    let allowFreeformSharing = false;
+                    if (freeformBoxes) {
+                        // If the puzzle is freeform, check the box to allow sharing
+                        // Otherwise, default to false
+                        allowFreeformSharing = freeformBoxes[0].checked;
+                    }
+
+                    let submission = {SubmissionText: submissionText, AllowFreeformSharing: allowFreeformSharing};
                     const response = await fetch("/api/puzzleapi/submitanswer/@Model.Event.ID/@Model.Puzzle.ID", {
                         method: "POST", mode: "cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(submission), credentials: "include"});
                     const responseData = await response.json();
@@ -912,7 +921,7 @@ else
                         wrapper.appendChild(name);
                         const text = document.createElement("div");
                         text.classList.add("panelitem");
-                        text.innerText = cleanedText;
+                        text.innerText = submissionText;
                         wrapper.appendChild(text);
                         const resp = document.createElement("div");
                         resp.classList.add("panelitem");
