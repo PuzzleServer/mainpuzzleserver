@@ -23,7 +23,8 @@ namespace ServerCore.Helpers
         EmptySubmission,
         TeamLockedOut,
         AlreadySolved,
-        DuplicateSubmission
+        DuplicateSubmission,
+        GlobalLockout,
     }
 
     /// <summary>
@@ -139,7 +140,7 @@ namespace ServerCore.Helpers
             // The user or team is under a global lockout
             if (puzzlesCausingGlobalLockout.Count != 0 && !puzzlesCausingGlobalLockout.Contains(puzzle))
             {
-                return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.TeamLockedOut };
+                return new SubmissionResponse() { ResponseCode = SubmissionResponseCode.GlobalLockout };
             }
 
             List<SubmissionView> submissionViews = null;

@@ -640,7 +640,7 @@ else
         {
             <div class="alert alert-danger" role="alert">
                 <h4>Answer Submission Locked</h4>
-                <span>You're in global lockout until time expires on <a href="./@Model.PuzzlesCausingGlobalLockout[0].ID" target="_blank">@Model.PuzzlesCausingGlobalLockout[0].Name</a>, or it is solved. @(Model.IsPuzzleForSinglePlayer ? "" : "Go help your teammates with that puzzle!")</span>
+                <span>You're in global lockout until time expires on <a asp-Page="/Submissions/Index" asp-route-puzzleid="@Model.PuzzlesCausingGlobalLockout[0].ID" target="_blank">@Model.PuzzlesCausingGlobalLockout[0].Name</a>, or it is solved. @(Model.IsPuzzleForSinglePlayer ? "" : "Go help your teammates with that puzzle!")</span>
             </div>
         }
         else if (Model.PuzzleState.UnlockedTime == null)
@@ -832,7 +832,7 @@ else
 
                     const freeformBoxes = document.getElementsByName("allowFreeformSharing");
                     let allowFreeformSharing = false;
-                    if (freeformBoxes) {
+                    if (freeformBoxes.length > 0) {
                         // If the puzzle is freeform, check the box to allow sharing
                         // Otherwise, default to false
                         allowFreeformSharing = freeformBoxes[0].checked;
@@ -903,6 +903,10 @@ else
                         case 10: // Duplicate submission
                             updateVal = `<div class="alert alert-warning" role="alert">You've already submitted ` + cleanedText + `.</div>`;
                             break;
+                        case 11: // Global lockout
+                            updateVal = `<div class="alert alert-danger" role="alert"><h4>Answer Submission Locked</h4><span>You're in global lockout until time expires on a different puzzle or it is solved, see the puzzle list for which one. @(Model.IsPuzzleForSinglePlayer ? "" : "Go help your teammates with that puzzle!")</span></div>`;
+                            break;
+
                     }
                     messageArea.innerHTML = updateVal;
 
