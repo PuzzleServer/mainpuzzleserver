@@ -5,12 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
-using ServerCore.Helpers;
 using ServerCore.ModelBases;
-using static ServerCore.DataModel.Puzzle;
 
 namespace ServerCore.Pages.Events
 {
@@ -40,10 +37,15 @@ namespace ServerCore.Pages.Events
         {
         }
 
-        public async Task OnGetAsync(SortOrder? sort, TeamLocation locationFilter)
+        public async Task OnGetAsync(SortOrder? sort, TeamLocation? locationFilter)
         {
             Sort = sort;
-            LocationDisplayName = Enum.GetName(locationFilter);
+
+            if (locationFilter == null)
+            {
+                locationFilter = TeamLocation.All;
+            }
+            LocationDisplayName = Enum.GetName(locationFilter.Value);
 
             var puzzleData = await _context.Puzzles
                 .Where(p => p.Event == Event)
