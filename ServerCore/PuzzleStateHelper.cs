@@ -236,7 +236,7 @@ namespace ServerCore
             if (puzzle != null && value != null)
             {
                 // only send this notification when puzzles are embedded; otherwise, the notification is sent when there are no pages connected!
-                if (eventObj.EmbedPuzzles && puzzle.IsPuzzle)
+                if (team != null && eventObj.EmbedPuzzles && puzzle.IsPuzzle)
                 {
                     await ServiceProvider.GetRequiredService<IHubContext<ServerMessageHub>>().SendNotification(team, "Puzzle solved!", $"{puzzle.PlaintextName} has been solved!", $"/{puzzle.Event.EventID}/play/Submissions/{puzzle.ID}");
                 }
