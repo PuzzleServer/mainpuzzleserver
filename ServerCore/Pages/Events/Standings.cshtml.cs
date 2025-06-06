@@ -21,6 +21,8 @@ namespace ServerCore.Pages.Events
 
         public SortOrder? Sort { get; set; }
 
+        public string LocationDisplayName { get; set; }
+
         public List<SelectListItem> TeamLocationFilter { 
             get
             {
@@ -41,6 +43,7 @@ namespace ServerCore.Pages.Events
         public async Task OnGetAsync(SortOrder? sort, TeamLocation locationFilter)
         {
             Sort = sort;
+            LocationDisplayName = Enum.GetName(locationFilter);
 
             var puzzleData = await _context.Puzzles
                 .Where(p => p.Event == Event)
