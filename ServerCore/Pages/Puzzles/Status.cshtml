@@ -82,7 +82,14 @@
                 @if (Model.Event.AllowsRemoteTeams)
                 {
                     <td>
-                        @item.Team.IsRemoteTeam ? Remote : Local
+                        @if(item.Team.IsRemoteTeam)
+                        {
+                            <div>Remote</div>
+                        }
+                        else
+                        {
+                            <div>Local</div>
+                        }
                     </td>
                 }
                 <td>

@@ -11,9 +11,9 @@
 <h2>All teams</h2>
 @if(Model.PlayerNotOnTeam)
 {
-<p>
-    You are not yet part of a team. To join a team, go to the register page.
-</p>
+    <p>
+        You are not yet part of a team. To join a team, go to the register page.
+    </p>
 }
 Registered Teams: <b>@Model.Teams.Count/@Model.Event.MaxNumberOfTeams</b>, Registered Players: <b>@Model.PlayerCount/@(Model.Event.MaxNumberOfTeams * Model.Event.MaxTeamSize)</b>
 <table class="table">
@@ -26,13 +26,16 @@ Registered Teams: <b>@Model.Teams.Count/@Model.Event.MaxNumberOfTeams</b>, Regis
                 Team size
             </th>
             @if (Model.EventRole == ModelBases.EventRole.admin ||
-               Model.EventRole == ModelBases.EventRole.author)
+              Model.EventRole == ModelBases.EventRole.author)
             {
+                @if (Model.Event.AllowsRemoteTeams)
+                {
+                    <th>
+                        Team Location
+                    </th>
+                }
             <th>
                 Qualification Status
-            </th>
-            <th>
-                Team Location
             </th>
             }
         </tr>
@@ -50,21 +53,22 @@ Registered Teams: <b>@Model.Teams.Count/@Model.Event.MaxNumberOfTeams</b>, Regis
                 @if (Model.EventRole == ModelBases.EventRole.admin ||
                      Model.EventRole == ModelBases.EventRole.author)
                 {
-                    <td>
-                    if (item.IsDisqualified)
+                    @if (Model.Event.AllowsRemoteTeams)
                     {
-                        <text>Disqualified</text>
-                    }
-                    </td>
-                    <td>
-                        if (item.IsRemoteTeam)
+                        @if (item.IsRemoteTeam)
                         {
-                            <text>Remote</text>
+                            <td>Remote</td>
                         }
                         else
                         {
-                            <text>Local</text>
+                            <td>Local</td>
                         }
+                    }
+                    <td>
+                    @if (item.IsDisqualified)
+                    {
+                        <text>Disqualified</text>
+                    }
                     </td>
                 }
             </tr>

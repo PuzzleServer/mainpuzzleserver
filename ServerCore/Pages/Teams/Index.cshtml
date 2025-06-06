@@ -70,9 +70,9 @@
             </th>
             @if (Model.EventRole == ModelBases.EventRole.admin && !string.IsNullOrEmpty(Model.Event.TeamAnnouncement))
             {
-            <th>
-                TeamAnnouncement
-            </th>
+                <th>
+                    TeamAnnouncement
+                </th>
             }
             <th>
                 PrimaryContactEmail
@@ -83,6 +83,12 @@
             <th>
                 SecondaryPhoneNumber
             </th>
+            @if (Model.Event.AllowsRemoteTeams)
+            {
+                <th>
+                    Team Location
+                </th>
+            }
             <th>
                 IsDisqualified
             </th>
@@ -135,6 +141,17 @@
                 <td>
                     @item.SecondaryPhoneNumber
                 </td>
+                @if (Model.Event.AllowsRemoteTeams)
+                {
+                    @if (item.IsRemoteTeam)
+                    {
+                        <td>Remote</td>
+                    }
+                    else
+                    {
+                        <td>Local</td>
+                    }
+                }
                 <td>
                     @if(item.IsDisqualified)
                     {
