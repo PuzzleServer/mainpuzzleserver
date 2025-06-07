@@ -52,7 +52,7 @@ namespace ServerCore.Pages.Teams
                     SubmissionText = joinedSubmission.SubmissionText,
                     ResponseText = joinedSubmission.Response.ResponseText,
                     OrderInGroup = state.Puzzle.OrderInGroup,
-                    SubmitterName = joinedSubmission.Submitter.Name,
+                    SubmitterName = joinedSubmission.SubmitterDisplayName ?? joinedSubmission.Submitter.Name,
                 };
 
             this.Sort = sort;

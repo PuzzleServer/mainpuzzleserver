@@ -169,6 +169,33 @@ namespace ServerCore.Pages
             return null;
         }
 
+
+        [HttpGet]
+        [Route("api/puzzleapi/state/eventteammembers/{eventId}")]
+        public async Task<TeamMemberInfo[]> GetEventTeamMembers([FromRoute] string eventId, string eventPassword)
+        {
+
+            Event currentEvent = await EventHelper.GetEventFromEventId(context, eventId);
+
+            if (!IsValidEventPassword(currentEvent, eventPassword))
+            {
+                return null;
+            }
+
+            return await (from team in context.Teams
+                          where team.Event == currentEvent
+                          join member in context.TeamMembers on team equals member.Team
+                          select new TeamMemberInfo()
+                          {
+                              TeamId = team.ID,
+                              TeamName = team.Name,
+                              TeamIsRemote = team.IsRemoteTeam,
+                              PuzzleUserId = member.Member.ID,
+                              PlayerName = member.Member.Name,
+                              PlayerClassUniqueName = (member.Class != null ? member.Class.UniqueName : string.Empty),
+                          }).ToArrayAsync();
+        }
+
         /// <summary>
         /// Allows an external service to authenticate as an admin for the event
         /// </summary>
@@ -211,5 +238,15 @@ namespace ServerCore.Pages
         public int TeamId { get; set; }
         public int PuzzleId { get; set; }
         public DateTime UnlockTime { get; set; }
+    }
+
+    public class TeamMemberInfo
+    {
+        public int TeamId { get; set; }
+        public string TeamName { get; set; }
+        public bool TeamIsRemote { get; set; }
+        public int PuzzleUserId { get; set; }
+        public string PlayerName { get; set; }
+        public string PlayerClassUniqueName { get; set; }
     }
 }
