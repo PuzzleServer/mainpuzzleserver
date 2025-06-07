@@ -47,7 +47,7 @@ namespace ServerCore.Pages.Teams
                 select new SubmissionView
                 {
                     SubmissionTime = submission.TimeSubmitted,
-                    SubmitterName = submission.Submitter.Name,
+                    SubmitterName = submission.SubmitterDisplayName ?? submission.Submitter.Name,
                     Group = state.Puzzle.Group,
                     OrderInGroup = state.Puzzle.OrderInGroup,
                     Name = state.Puzzle.Name,
