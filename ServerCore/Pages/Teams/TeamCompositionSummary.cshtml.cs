@@ -37,6 +37,22 @@ namespace ServerCore.Pages.Teams
             Ascend
         }
 
+        private HashSet<string> NonAliasStrings = new HashSet<string>
+        {
+            "na",
+            "NA",
+            "Na",
+            "none",
+            "None",
+            "123",
+            "secret",
+            "kk",
+            "npl",
+            "NPL",
+            "x",
+            "X" 
+        };
+
         public TeamCompositionSummaryModel(
             PuzzleServerContext serverContext,
             UserManager<IdentityUser> userManager)
@@ -229,7 +245,7 @@ namespace ServerCore.Pages.Teams
                         toReturn.EmployeeCount += 1;
                     }
                 }
-                else if (!string.IsNullOrEmpty(alias) && aliasRegex.IsMatch(alias))
+                else if (IsPossibleAlias(alias))
                 {
                     toReturn.PossibleEmployeeAliases.Add(alias);
                 }
@@ -240,6 +256,15 @@ namespace ServerCore.Pages.Teams
             }
 
             return toReturn;
+        }
+
+        private bool IsPossibleAlias(string alias)
+        {
+            if (string.IsNullOrEmpty(alias)) { return false; }
+            if (!aliasRegex.IsMatch(alias)) { return false; }
+            if(NonAliasStrings.Contains(alias)) { return false; }    
+            
+            return true;
         }
 
         private class IntermediateTeamMember
