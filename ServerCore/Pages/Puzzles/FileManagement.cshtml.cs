@@ -315,25 +315,31 @@ namespace ServerCore.Pages.Puzzles
         private void UpdateCustomURLs(ContentFile file)
         {
             // Skip this if:
-            // - the file is not named index.html
             // - the file is not a material or solution file
             // - the appropriate Custom[Solution]URL is non-blank
-            if (Path.GetFileName(file.ShortName).ToLower() != "index.html" ||
-                !(file.FileType == ContentFileType.PuzzleMaterial || file.FileType == ContentFileType.SolveToken) || 
+            if (!(file.FileType == ContentFileType.PuzzleMaterial || file.FileType == ContentFileType.SolveToken) || 
                 (file.FileType == ContentFileType.PuzzleMaterial && !string.IsNullOrEmpty(Puzzle.CustomURL)) ||
                 (file.FileType == ContentFileType.SolveToken && !string.IsNullOrEmpty(Puzzle.CustomSolutionURL)))
             {
                 return;
             }
 
-            string filePath = this.EventAgnosticLinkFromShortName(file);
-            if (file.FileType == ContentFileType.PuzzleMaterial)
+            string fileNameLower = Path.GetFileName(file.ShortName).ToLower();
+            if (fileNameLower == "index.html")
             {
-                Puzzle.CustomURL = filePath;
+                string filePath = this.EventAgnosticLinkFromShortName(file);
+                if (file.FileType == ContentFileType.PuzzleMaterial)
+                {
+                    Puzzle.CustomURL = filePath;
+                }
+                else
+                {
+                    Puzzle.CustomSolutionURL = filePath;
+                }
             }
-            else
+            else if (fileNameLower.EndsWith("_client.html") && file.FileType == ContentFileType.PuzzleMaterial)
             {
-                Puzzle.CustomSolutionURL = filePath;
+                Puzzle.CustomURL = this.HttpContext.Request.Scheme + "://" + this.HttpContext.Request.Host + "/{eventId}/{puzzleId}/api/Sync/client/?eventId={eventId}";
             }
         }
 
