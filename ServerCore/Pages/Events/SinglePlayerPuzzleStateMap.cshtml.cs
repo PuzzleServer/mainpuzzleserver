@@ -77,8 +77,8 @@ namespace ServerCore.Pages.Events
 
             this.PlayerStatList = playerIdToPlayerStatsMap
                 .Values
-                .OrderBy(playerStat => playerStat.Score)
-                .ThenBy(playerStat => playerStat.SolveCount)
+                .OrderByDescending(playerStat => playerStat.Score)
+                .ThenByDescending(playerStat => playerStat.SolveCount)
                 .ThenBy(playerStat => playerStat.Player.Name)
                 .ToList();
 
