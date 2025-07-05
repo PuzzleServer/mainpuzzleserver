@@ -256,8 +256,7 @@ namespace ServerCore.Pages.Threads
                 }
             }
 
-            // We don't really want to send an email non-module events because they are often already watching the site
-            if (isMessageAdded && !Event.IsInternEvent)
+            if (isMessageAdded)
             {
                 await this.SendEmailNotifications(m, puzzle);
             }
@@ -389,7 +388,7 @@ namespace ServerCore.Pages.Threads
                     }
                 }
             }
-            else
+            else if (!Event.IsInternEvent) // For game control, we don't really want to send an email non-module events because they are often already watching the site
             {
                 // Send notification to authors and any game control person on the thread if message from player.
 
