@@ -58,6 +58,11 @@ else
         puzzleFrame.contentWindow.postMessage({type: "puzzlesynced", changes: changes}, "*");
     }
 
+    async function onPuzzleResetSynced (reset) {
+        console.log ("got onPuzzleResetSynced", reset)
+        puzzleFrame.contentWindow.postMessage({type: "puzzleresetsynced", reset: reset}, "*");
+    }
+
     async function onSetCoopMode(mode) {
         puzzleFrame.contentWindow.postMessage({ type: "setCoopMode", mode: mode }, "*");
     }
@@ -69,6 +74,7 @@ else
     let puzzleFrame = null;
     window.addEventListener("visibilitychange", onVisibilityChangeAsync);
     window.addEventListener("message", async (ev) => {
+        console.log("got message", ev);
         if (!puzzleLoaded && ev.data.type === "puzzleLoad") {
             savedMode = ev.data.mode;
             console.debug(`got puzzle load message with mode ${savedMode}`);
@@ -77,7 +83,13 @@ else
             sendSyncComponentLoad(savedMode);
         }
         else if (ev.data.type === "puzzlechanged") {
+            console.log("got puzzle changed message outside frame", ev.data.changes);
             await hostComponent.invokeMethodAsync("OnPuzzleChangedAsync", ev.data.changes);
+        }
+        else if (ev.data.type === "puzzlereset") {
+            console.log("got puzzle reset message", ev.data.changes);
+
+            await hostComponent.invokeMethodAsync("OnPuzzleResetAsync", ev.data.changes);
         }
     });
 

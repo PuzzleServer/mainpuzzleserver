@@ -18,5 +18,11 @@
         /// </summary>
         public string channel { get; set; }
     }
+
+    public class JsPuzzleReset
+    {
+        public string[] puzzleIds { get; set; }
+        public string channel { get; set; }
+    }
 #pragma warning restore IDE1006 // Naming Styles
 }

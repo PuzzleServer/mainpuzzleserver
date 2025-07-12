@@ -12,7 +12,7 @@ namespace ClientSyncComponent.Client
         public PuzzleItemProperty()
         {
         }
-        
+
         // todo morganb: translate from string player name to playerId
         public PuzzleItemProperty(int puzzleId, int teamId, int playerId, string subPuzzleId, string locationKey, string propertyKey, string value, string channel)
         {
@@ -26,6 +26,14 @@ namespace ClientSyncComponent.Client
             Value = value ?? String.Empty;
             PlayerId = playerId;
             Channel = channel;
+        }
+
+        public static PuzzleItemProperty CreateReset(int puzzleId, int teamId, string subPuzzleId, int playerId, string channel)
+        {
+            return new PuzzleItemProperty(puzzleId, teamId, playerId, subPuzzleId, String.Empty, String.Empty, String.Empty, channel)
+            {
+                IsReset = true
+            };
         }
 
         private static string CreateRowKey(string subPuzzleId, string locationKey, string propertyKey)
@@ -49,6 +57,7 @@ namespace ClientSyncComponent.Client
         /// TODO: Implement channels beyond having the property
         /// </summary>
         public string Channel { get; set; }
+        public bool IsReset { get; set; } = false;
 
         // Set automatically by the Table service
         public DateTimeOffset? Timestamp { get; set; }

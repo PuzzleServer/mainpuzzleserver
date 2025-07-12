@@ -45,8 +45,6 @@ namespace ClientSyncComponent.Client.Pages
 
         TableClient TableClient { get; set; }
 
-        List<string> ReceivedValues { get; set; } = new List<string>();
-
         Timer Timer { get; set; }
 
         bool Paused { get; set; } = false;
@@ -165,6 +163,7 @@ namespace ClientSyncComponent.Client.Pages
         [JSInvokable]
         public async void OnPuzzleChangedAsync(JsPuzzleChange[] puzzleChanges)
         {
+            Console.WriteLine($"PuzzleChangedAsync. SyncEnabled: {SyncEnabled} Paused: {Paused}");
             if (!SyncEnabled || Paused)
             {
                 return;
@@ -182,7 +181,25 @@ namespace ClientSyncComponent.Client.Pages
                                     value: change.value,
                                     channel: change.channel);
 
-                await TableClient.UpsertEntityAsync(puzzleEntry);
+                Console.WriteLine($"Upserting puzzle entry: {change.puzzleId} {puzzleEntry.PartitionKey} {puzzleEntry.RowKey} {puzzleEntry.Value}");
+
+                await TableClient.UpsertEntityAsync(puzzleEntry, TableUpdateMode.Replace);
+            }
+        }
+
+        [JSInvokable]
+        public async Task OnPuzzleResetAsync(JsPuzzleReset resets)
+        {
+            if (!SyncEnabled || Paused)
+            {
+                return;
+            }
+
+            // Create a reset entry for each sub-puzzle
+            foreach (string subPuzzleId in resets.puzzleIds)
+            {
+                PuzzleItemProperty resetEntry = PuzzleItemProperty.CreateReset(PuzzleId, TeamId, Base64UrlTextEncoder.Encode(Encoding.UTF8.GetBytes(subPuzzleId)), PuzzleUserId, channel: resets.channel);
+                await TableClient.UpsertEntityAsync(resetEntry, TableUpdateMode.Replace);
             }
         }
 
@@ -235,16 +252,29 @@ namespace ClientSyncComponent.Client.Pages
             await foreach (PuzzleItemProperty entry in newChanges)
             {
                 foundNewData = true;
-                ReceivedValues.Add(entry.Value);
-                jsChanges.Add(new JsPuzzleChange()
+                if (entry.IsReset)
                 {
-                    locationKey = entry.LocationKey,
-                    playerId = PuzzleUserId.ToString(),
-                    propertyKey = entry.PropertyKey,
-                    puzzleId = Encoding.UTF8.GetString(Base64UrlTextEncoder.Decode(entry.SubPuzzleId)),
-                    teamId = TeamId.ToString(),
-                    value = entry.Value
-                });
+                    // If this is a reset, we need to send a reset message to the JS side
+                    await JSRuntime.InvokeVoidAsync("onPuzzleResetSynced", new JsPuzzleReset()
+                    {
+                        puzzleIds = new[] { Encoding.UTF8.GetString(Base64UrlTextEncoder.Decode(entry.SubPuzzleId)) },
+                        channel = entry.Channel
+                    });
+                }
+                else
+                {
+                    jsChanges.Add(new JsPuzzleChange()
+                    {
+                        locationKey = entry.LocationKey,
+                        playerId = PuzzleUserId.ToString(),
+                        propertyKey = entry.PropertyKey,
+                        puzzleId = Encoding.UTF8.GetString(Base64UrlTextEncoder.Decode(entry.SubPuzzleId)),
+                        teamId = TeamId.ToString(),
+                        value = entry.Value,
+                        channel = entry.Channel
+                    });
+                }
+
                 LastSyncUtc = entry.Timestamp > LastSyncUtc ? entry.Timestamp.Value : LastSyncUtc;
                 DisplayLastSyncUtc = entry.Timestamp > DisplayLastSyncUtc ? entry.Timestamp.Value : DisplayLastSyncUtc;
             }
