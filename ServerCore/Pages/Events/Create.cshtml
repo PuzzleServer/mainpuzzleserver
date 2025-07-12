@@ -156,6 +156,13 @@
                 <span asp-validation-for="Event.StandingsAvailableBegin" class="text-danger"></span>
             </div>
             <div class="description-column">Players can view event standings after this date, even if answer submission is still active.</div>
+            <div class="form-group">
+                <label asp-for="Event.EventPassword" class="control-label"></label>
+                <input asp-for="Event.EventPassword" class="form-control" />
+                <span asp-validation-for="Event.EventPassword" class="text-danger"></span>
+            </div>
+            <div class="description-column">A unique string that can be used to verify a request from an external service</div>
+
             <h4>Content</h4><div></div>
             <div class="form-group">
                 <label asp-for="Event.Announcement" class="control-label"></label>
@@ -255,6 +262,16 @@
                 <input asp-for="Event.MaxNumberOfTeams" class="form-control" />
                 <span asp-validation-for="Event.MaxNumberOfTeams" class="text-danger"></span>
             </div>
+            <div class="form-group">
+                <label asp-for="Event.MaxNumberOfLocalTeams" class="control-label"></label>
+                <input asp-for="Event.MaxNumberOfLocalTeams" class="form-control" />
+                <span asp-validation-for="Event.MaxNumberOfLocalTeams" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Event.MaxNumberOfRemoteTeams" class="control-label"></label>
+                <input asp-for="Event.MaxNumberOfRemoteTeams" class="form-control" />
+                <span asp-validation-for="Event.MaxNumberOfRemoteTeams" class="text-danger"></span>
+            </div>
             <div class="description-column">The max number of teams that can be registered for this event.</div>
             <div class="form-group">
                 <label asp-for="Event.MaxTeamSize" class="control-label"></label>
@@ -274,15 +291,33 @@
             </div>
             <div class="description-column">Specifies if an event will have a presence on Microsoft's campus. Non-remote events will allow teams to select a room to use as their base of operations.</div>
             <div class="form-group">
-                <label asp-for="Event.AllowsRemote"></label>
-                <input asp-for="Event.AllowsRemote" />
+                <label asp-for="Event.AllowsRemotePlayers"></label>
+                <input asp-for="Event.AllowsRemotePlayers" />
             </div>
             <div class="description-column">Specifies if an event allows remote attendees.</div>
+            <div class="form-group">
+                <label asp-for="Event.AllowsRemoteTeams"></label>
+                <input asp-for="Event.AllowsRemoteTeams" />
+            </div>
+            <div class="description-column">Specifies if an event allows remote teams.</div>
+
             <div class="form-group">
                 <label asp-for="Event.IsInternEvent"></label>
                 <input asp-for="Event.IsInternEvent" />
             </div>
             <div class="description-column">Controls whether teams are able to edit their own team room. Intern events do not allow this because rooms are instead chosen by Puzzleday staff.</div>
+            <div class="form-group">
+                <label asp-for="Event.HasPlayerClasses"></label>
+                <input asp-for="Event.HasPlayerClasses" />
+            </div>
+            <div class="description-column">Specifies if an event uses the PlayerClass concept to assign classes to individual players. If the PlayerClassName is not also set then the display name will be Player Class.</div>
+            <div class="form-group">
+                <label asp-for="Event.PlayerClassName" class="control-label"></label>
+                <input asp-for="Event.PlayerClassName" class="form-control" />
+                <span asp-validation-for="Event.PlayerClassName" class="text-danger"></span>
+            </div>
+            <div class="description-column">The text shown instead of "Player Class" on the Team Details page. Only shown if HasPlayerClasses is true.</div>
+
             <h4>Swag</h4><div></div>
             <div class="form-group">
                 <label asp-for="Event.HasSwag"></label>

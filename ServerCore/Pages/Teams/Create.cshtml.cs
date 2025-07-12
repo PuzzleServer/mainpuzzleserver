@@ -104,6 +104,16 @@ namespace ServerCore.Pages.Teams
                 return Page();
             }
 
+            if (EventRole != EventRole.admin && await _context.Teams.Where((t) => t.Event == Event && !t.IsRemoteTeam).CountAsync() >= Event.MaxNumberOfLocalTeams)
+            {
+                return NotFound("Local team registration is full. No further local teams may be created at the present time.");
+            }
+
+            if (EventRole != EventRole.admin && await _context.Teams.Where((t) => t.Event == Event && t.IsRemoteTeam).CountAsync() >= Event.MaxNumberOfRemoteTeams)
+            {
+                return NotFound("Remote team registration is full. No further remote teams may be created at the present time.");
+            }
+
             if (EventRole != EventRole.admin && await _context.Teams.Where((t) => t.Event == Event).CountAsync() >= Event.MaxNumberOfTeams)
             {
                 return NotFound("Registration is full. No further teams may be created at the present time.");

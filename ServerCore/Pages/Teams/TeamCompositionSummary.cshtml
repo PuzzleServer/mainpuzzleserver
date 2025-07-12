@@ -9,11 +9,11 @@
 
 <style>
     td, th {
-        text-align:center;
+    text-align:center;
     }
 
     .sortButton {
-        padding: 0px 20px;
+    padding: 0px 20px;
     }
 </style>
 <a asp-page="/Teams/Index">Back to team list</a>
@@ -47,6 +47,13 @@
                 <th>
                     Automatic Team Type
                 </th>
+                @if (Model.Event.AllowsRemoteTeams)
+                {
+                    <th>
+                        Team Location <br />
+                        (Count Remote)
+                    </th>
+                }
                 <th>
                     Total
                 </th>
@@ -77,6 +84,17 @@
                     <td>
                         @teamComp.AutoTeamTypeString
                     </td>
+                    @if(Model.Event.AllowsRemoteTeams)
+                    {
+                        @if(teamComp.TeamIsRemote)
+                        {
+                            <td>Remote</td>
+                        }
+                        else
+                        {
+                            <td>Local</td>
+                        }
+                    }
                     <td>
                         @teamComp.Total
                     </td>
@@ -107,6 +125,12 @@
                 </td>
                 <td>
                 </td>
+                @if (Model.Event.AllowsRemoteTeams)
+                {
+                    <td>
+                        <b>@Model.TotalRemoteCount</b>
+                    </td>
+                }
                 <td>
                     <b>@Model.TotalTotal</b>
                 </td>

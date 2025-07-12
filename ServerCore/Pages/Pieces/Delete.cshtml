@@ -5,7 +5,7 @@
     ViewData["Title"] = "Delete";
 }
 
-<h2>@Model.Piece.Puzzle.Name:  Delete piece</h2>
+<h2>@Model.Piece.Puzzle.PlaintextName:  Delete piece</h2>
 <div>
     <a asp-page="./Index" asp-route-puzzleid="@Model.PuzzleId">Cancel</a>
 </div>
@@ -19,7 +19,7 @@
             Puzzle
         </dt>
         <dd>
-            @Model.Piece.Puzzle.Name
+            @Model.Piece.Puzzle.PlaintextName
         </dd>
         <dt>
             ProgressLevel

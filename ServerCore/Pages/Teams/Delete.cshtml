@@ -25,7 +25,7 @@
         <dd>
             @Model.Team.Name
         </dd>        
-        @if (!Model.Event.IsRemote)
+        @if (!Model.Event.IsRemote && !Model.Team.IsRemoteTeam)
         {
             <dt>
                 Team room

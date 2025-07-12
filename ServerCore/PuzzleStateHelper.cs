@@ -89,6 +89,12 @@ namespace ServerCore
 
             if (puzzle != null && team != null)
             {
+                if ((puzzle.Availability == Puzzle.PuzzleAvailability.LocalOnly && team.IsRemoteTeam) ||
+                    (puzzle.Availability == Puzzle.PuzzleAvailability.RemoteOnly && !team.IsRemoteTeam))
+                {
+                    return Enumerable.Empty<PuzzleStatePerTeam>().AsQueryable();
+                }
+
                 return context.PuzzleStatePerTeam.Where(state => state.Puzzle == puzzle && state.Team == team);
             }
 
@@ -101,15 +107,35 @@ namespace ServerCore
             {
                 if (author != null)
                 {
-                    return from state in context.PuzzleStatePerTeam
+                    var authorPuzzleQuery = from state in context.PuzzleStatePerTeam
                            join auth in context.PuzzleAuthors on state.PuzzleID equals auth.PuzzleID
                            where state.Team == team &&
                            auth.Author == author
                            select state;
+
+                    var remoteFilteredQuery = authorPuzzleQuery;
+                    if (team.IsRemoteTeam)
+                    {
+                        remoteFilteredQuery = remoteFilteredQuery.Where(state => state.Puzzle.Availability == Puzzle.PuzzleAvailability.RemoteOnly || state.Puzzle.Availability == Puzzle.PuzzleAvailability.AllPlayers);
+                    }
+                    else
+                    {
+                        remoteFilteredQuery = remoteFilteredQuery.Where(state => state.Puzzle.Availability == Puzzle.PuzzleAvailability.LocalOnly || state.Puzzle.Availability == Puzzle.PuzzleAvailability.AllPlayers);
+                    }
+                    return remoteFilteredQuery;
                 }
                 else
                 {
-                    return context.PuzzleStatePerTeam.Where(state => state.Team == team);
+                    if (team.IsRemoteTeam)
+                    {
+                        return context.PuzzleStatePerTeam.Where(state => state.Team == team &&
+                        (state.Puzzle.Availability == Puzzle.PuzzleAvailability.AllPlayers || state.Puzzle.Availability == Puzzle.PuzzleAvailability.RemoteOnly));
+                    }
+                    else
+                    {
+                        return context.PuzzleStatePerTeam.Where(state => state.Team == team &&
+                        (state.Puzzle.Availability == Puzzle.PuzzleAvailability.AllPlayers || state.Puzzle.Availability == Puzzle.PuzzleAvailability.LocalOnly));
+                    }
                 }
             }
 
@@ -210,9 +236,9 @@ namespace ServerCore
             if (puzzle != null && value != null)
             {
                 // only send this notification when puzzles are embedded; otherwise, the notification is sent when there are no pages connected!
-                if (eventObj.EmbedPuzzles && puzzle.IsPuzzle)
+                if (team != null && eventObj.EmbedPuzzles && puzzle.IsPuzzle)
                 {
-                    await ServiceProvider.GetRequiredService<IHubContext<ServerMessageHub>>().SendNotification(team, "Puzzle solved!", $"{puzzle.Name} has been solved!", $"/{puzzle.Event.EventID}/play/Submissions/{puzzle.ID}");
+                    await ServiceProvider.GetRequiredService<IHubContext<ServerMessageHub>>().SendNotification(team, "Puzzle solved!", $"{puzzle.PlaintextName} has been solved!", $"/{puzzle.Event.EventID}/play/Submissions/{puzzle.ID}");
                 }
 
                 await UnlockAnyPuzzlesThatThisSolveUnlockedAsync(context,
@@ -525,7 +551,7 @@ namespace ServerCore
 
                         foreach (var puzzle in puzzles)
                         {
-                            await ServiceProvider.GetRequiredService<IHubContext<ServerMessageHub>>().SendNotification(t, "New puzzle!", $"{puzzle.Name} has been unlocked!", $"/{eventObj.EventID}/play/Submissions/{puzzle.ID}");
+                            await ServiceProvider.GetRequiredService<IHubContext<ServerMessageHub>>().SendNotification(t, "New puzzle!", $"{puzzle.PlaintextName} has been unlocked!", $"/{eventObj.EventID}/play/Submissions/{puzzle.ID}");
                         }
                     }
                 }

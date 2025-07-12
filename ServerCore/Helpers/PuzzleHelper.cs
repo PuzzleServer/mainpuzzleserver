@@ -56,23 +56,32 @@ namespace ServerCore.Helpers
             await context.SaveChangesAsync();
         }
 
-        public static string GetFormattedUrl(Puzzle puzzle, int eventId)
+        public static string GetFormattedUrl(Puzzle puzzle, int eventId, string teamPassword = null, string playerClass = null)
         {
-            return GetFormattedUrl(puzzle.CustomURL, puzzle.ID, eventId, null);
+            return GetFormattedUrl(puzzle.CustomURL, puzzle.ID, eventId, teamPassword, playerClass);
         }
 
         public static string GetFormattedSolutionUrl(Puzzle puzzle, int eventId)
         {
-            return GetFormattedUrl(puzzle.CustomSolutionURL, puzzle.ID, eventId, null);
+            return GetFormattedUrl(puzzle.CustomSolutionURL, puzzle.ID, eventId, null, null);
         }
 
-        public static string GetFormattedUrl(string customUrl, int puzzleId, int eventId, string teamPassword)
+        public static string GetFormattedUrl(string customUrl, int puzzleId, int eventId, string teamPassword, string playerClass)
         {
             if (customUrl == null)
             {
                 return null;
             }
-            string formattedUrl = customUrl.Replace("{puzzleId}", $"{puzzleId}").Replace("{eventId}", $"{eventId}").Replace("{teamPass}", teamPassword);
+
+            // Admins/authors/anyone who doesn't currently have a PlayerClass set needs a fallback url path
+            // A file for this path needs to be included in any puzzles that use playerClass as part of the route
+            if(playerClass == null)
+            {
+                playerClass = "noPlayerClass";
+            }
+
+            string formattedUrl = customUrl.Replace("{puzzleId}", $"{puzzleId}").Replace("{eventId}", $"{eventId}")
+                .Replace("{teamPass}", teamPassword).Replace("{playerClass}", playerClass);
             return formattedUrl;
         }
 

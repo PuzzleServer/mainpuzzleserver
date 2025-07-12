@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
+using ServerCore.Helpers;
 using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Player
@@ -26,7 +27,14 @@ namespace ServerCore.Pages.Player
                                           p.Event == Event
                                           select p).FirstOrDefaultAsync();
 
-            if(player != null)
+
+            // Immediately create the PlayerInEvent and redirect if the event doesn't require specific information from the player
+            if (!EventHelper.EventRequiresActivePlayerRegistration(Event))
+            {
+               player = await  EventHelper.RegisterPlayerForEvent(_context, Event, LoggedInUser);
+            }
+
+            if (player != null)
             {
                 return RedirectToPage("/Teams/Signup");
             }

@@ -10,7 +10,7 @@
     Layout = "_puzzleManagementLayout.cshtml";
 }
 
-<h2>@Model.Puzzle.Name: Status</h2>
+<h2>@Model.Puzzle.PlaintextName: Status</h2>
 
 <table class="table">
     <thead>
@@ -30,11 +30,20 @@
                     SolvedTime
                 </a>
             </th>
+            @if (Model.Event.AllowsRemoteTeams)
+            {
+                <th>
+                    Team Location
+                </th>
+            }
             <th>
                 Printed
             </th>
             <th>
                 Notes
+            </th>
+            <th>
+                IsLockedOut
             </th>
             <th>
                 IsEmailOnlyMode
@@ -70,11 +79,27 @@
                         <a asp-page-handler="SolveState" asp-route-sort="@Model.Sort" asp-route-teamId="@item.Team.ID" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-value="false" onclick="return confirm('Are you sure you want to mark @(item.Team.Name) as unsolved?')"> X</a>
                     }
                 </td>
+                @if (Model.Event.AllowsRemoteTeams)
+                {
+                    <td>
+                        @if(item.Team.IsRemoteTeam)
+                        {
+                            <div>Remote</div>
+                        }
+                        else
+                        {
+                            <div>Local</div>
+                        }
+                    </td>
+                }
                 <td>
                     @item.Printed
                 </td>
                 <td>
                     @item.Notes
+                </td>
+                <td>
+                    @item.IsLockedOut
                 </td>
                 <td>
                     @if (item.IsEmailOnlyMode == true)

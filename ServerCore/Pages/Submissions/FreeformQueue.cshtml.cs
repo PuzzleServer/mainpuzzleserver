@@ -106,7 +106,7 @@ namespace ServerCore.Pages.Submissions
                                   select new SubmissionView()
                                   {
                                       PuzzleId = puzzle.ID,
-                                      PuzzleName = puzzle.Name,
+                                      PuzzleName = puzzle.PlaintextName,
                                       TeamName = pspt.Team.Name,
                                       SubmissionText = submission.UnformattedSubmissionText,
                                       SubmissionId = submission.ID,
@@ -176,9 +176,9 @@ namespace ServerCore.Pages.Submissions
 
             if (submission != null)
             {
-                MailHelper.Singleton.SendPlaintextOneAddress(submission.Submitter.Email, $"{submission.Puzzle.PlaintextName} Submission {Result}", $"Your submission for {submission.Puzzle.Name} has been {Result} with the response: {FreeformResponse}");
+                MailHelper.Singleton.SendPlaintextOneAddress(submission.Submitter.Email, $"{submission.Puzzle.PlaintextName} Submission {Result}", $"Your submission for {submission.Puzzle.PlaintextName} has been {Result} with the response: {FreeformResponse}");
 
-                await this.messageHub.SendNotification(submission.Submitter, $"{submission.Puzzle.PlaintextName} Submission {Result}", $"Your submission for {submission.Puzzle.Name} has been {Result} with the response: {FreeformResponse}");
+                await this.messageHub.SendNotification(submission.Submitter, $"{submission.Puzzle.PlaintextName} Submission {Result}", $"Your submission for {submission.Puzzle.PlaintextName} has been {Result} with the response: {FreeformResponse}");
             }
 
             return RedirectToPage();

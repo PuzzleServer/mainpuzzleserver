@@ -69,6 +69,10 @@
 <br />
 <h4>Total registrations</h4>
 <p>Registered Teams: <b>@Model.Teams.Count/@Model.Event.MaxNumberOfTeams</b>, Registered Players: <b>@Model.PlayerCount/@(Model.Event.MaxNumberOfTeams * Model.Event.MaxTeamSize)</b></p>
+@if(Model.Event.AllowsRemoteTeams)
+{
+    <p>Local Teams: <b>@Model.Teams.Where(t => !t.IsRemoteTeam).Count()/@Model.Event.MaxNumberOfLocalTeams</b>, Remote Teams: <b>@Model.Teams.Where(t => t.IsRemoteTeam).Count()/@Model.Event.MaxNumberOfRemoteTeams</b>></p>
+}
 <br />
 @if (Model.Event.IsTeamMembershipChangeActive)
 {

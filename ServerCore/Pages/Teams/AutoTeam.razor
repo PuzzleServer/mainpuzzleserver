@@ -1,20 +1,30 @@
 @using ServerCore.DataModel;
 
-<p>I&apos;m a...</p>
 <EditForm Model="this" OnValidSubmit="OnSubmit">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
+    @if (IsMicrosoft && Event != null && Event.AllowsRemoteTeams)
+    {
+        <p>I&apos;ll play...</p>
+        <InputRadioGroup Name="PlayerLocation" @bind-Value="PlayerLocation">
+            <label><InputRadio Name="PlayerLocation" Value="@AutoTeamType.Local"></InputRadio> Locally</label><br />
+            <label><InputRadio Name="PlayerLocation" Value="@AutoTeamType.Remote"></InputRadio> Remotely</label><br />
+        </InputRadioGroup>
+        <br />
+    }
+
+    <p>I&apos;m a...</p>
     <InputRadioGroup Name="PlayerExperienceSelector" @bind-Value="PlayerExperience">
-        <label><InputRadio Name="PlayerExperienceSelector" Value="@AutoTeamType.Beginner.ToString()"></InputRadio> Beginner Puzzler</label><br />
-        <label><InputRadio Name="PlayerExperienceSelector" Value="@AutoTeamType.Expert.ToString()"></InputRadio> Expert Puzzler</label><br />
+        <label><InputRadio Name="PlayerExperienceSelector" Value="@AutoTeamType.Beginner"></InputRadio> Beginner Puzzler</label><br />
+        <label><InputRadio Name="PlayerExperienceSelector" Value="@AutoTeamType.Expert"></InputRadio> Expert Puzzler</label><br />
     </InputRadioGroup>
 
     <br />
     <p>... and I&apos;m feeling...</p>
     <InputRadioGroup Name="PlayerCommitmentSelector" @bind-Value="PlayerCommitment">
-        <label><InputRadio Name="PlayerCommitmentSelector" Value="@AutoTeamType.Casual.ToString()"></InputRadio> Chill about the event -- I&apos;m just here to have fun</label><br />
-        <label><InputRadio Name="PlayerCommitmentSelector" Value="@AutoTeamType.Serious.ToString()"></InputRadio> Serious -- I&apos;m in it to win it</label><br />
+        <label><InputRadio Name="PlayerCommitmentSelector" Value="@AutoTeamType.Casual"></InputRadio> Chill about the event -- I&apos;m just here to have fun</label><br />
+        <label><InputRadio Name="PlayerCommitmentSelector" Value="@AutoTeamType.Serious"></InputRadio> Serious -- I&apos;m in it to win it</label><br />
     </InputRadioGroup>
 
     <input type="submit" value="Place me on a team" />

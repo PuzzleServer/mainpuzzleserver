@@ -6,24 +6,17 @@
     ViewData["AuthorRoute"] = "/Puzzles/Index";
 }
 
-<h2>Unlocked Answers</h2>
+<h2>Correct Answers</h2>
 <hr />
 <div>
-    <a asp-page="/Puzzles/Play" asp-route-teamId="@Model.TeamID">Back to puzzle list</a>
+    <a asp-page="./AllSubmissions" asp-route-teamId="@Model.TeamID"> Show all submissions</a>  |  <a asp-page="/Puzzles/Play" asp-route-teamId="@Model.TeamID">Back to puzzle list</a>
 </div>
 <br />
 <table class="table">
     <thead>
         <tr>
             <th>
-                <a asp-page="./Answers" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(AnswersModel.SortOrder.SolvedTimeAscending, AnswersModel.SortOrder.SolvedTimeDecending))">
-                    Solved Time
-                </a>
-            </th>
-            <th>
-                <a asp-page="./Answers" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(AnswersModel.SortOrder.GroupAscending, AnswersModel.SortOrder.GroupDescending))">
-                    Group
-                </a>
+                Submission
             </th>
             <th>
                 <a asp-page="./Answers" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(AnswersModel.SortOrder.PuzzleNameAscending, AnswersModel.SortOrder.PuzzleNameDescending))">
@@ -31,7 +24,19 @@
                 </a>
             </th>
             <th>
-                Submission
+                <a asp-page="./Answers" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(AnswersModel.SortOrder.GroupAscending, AnswersModel.SortOrder.GroupDescending))">
+                    @(Model.Event.TermForGroup ?? "Group")
+                </a>
+            </th>
+            <th>
+                <a asp-page="./Answers" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(AnswersModel.SortOrder.SolvedTimeAscending, AnswersModel.SortOrder.SolvedTimeDecending))">
+                    Solved Time
+                </a>
+            </th>
+            <th>
+                <a asp-page="./Answers" asp-route-teamId="@Model.TeamID" asp-route-sort="@(Model.SortForColumnLink(AnswersModel.SortOrder.SubmitterAscending, AnswersModel.SortOrder.SubmitterDescending))">
+                    Submitter Name
+                </a>
             </th>
             <th>
                 Response
@@ -42,25 +47,30 @@
         @foreach (var item in Model.CorrectSubmissions)
         {
             <tr>
-                <td>
-                    @Html.Raw(Model.LocalTime(item.SolvedTime))
-                </td>
-                <td class="puzzle-list-group-customizable">
-                    @item.Group
-                </td>
-                <td class="puzzle-list-title-customizable">
-                    @item.Name
-                </td>
-                @if(string.IsNullOrEmpty(item.SubmissionText)) {
+                @if (string.IsNullOrEmpty(item.SubmissionText))
+                {
                     <td class="puzzle-list-submission-customizable">
                         None (marked as solved by admin)
                     </td>
                 }
-                else {
+                else
+                {
                     <td class="puzzle-list-submission-customizable">
                         @item.SubmissionText
                     </td>
                 }
+                <td class="puzzle-list-title-customizable">
+                    @ServerCore.Helpers.RawHtmlHelper.Display(item.Name, Model.Event.ID, Html)
+                </td>
+                <td class="puzzle-list-group-customizable">
+                    @ServerCore.Helpers.RawHtmlHelper.Display(item.Group, Model.Event.ID, Html)
+                </td>
+                <td>
+                    @Html.Raw(Model.LocalTime(item.SolvedTime))
+                </td>
+                <td>
+                    @item.SubmitterName
+                </td>
                 <td class="puzzle-list-response-customizable">
                     @ServerCore.Helpers.RawHtmlHelper.Display(item.ResponseText, Model.Event.ID, Html)
                 </td>

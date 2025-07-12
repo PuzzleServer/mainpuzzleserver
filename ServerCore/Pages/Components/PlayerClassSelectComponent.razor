@@ -1,0 +1,30 @@
+﻿@using ServerCore.DataModel
+
+@inherits OwningComponentBase<PuzzleServerContext>
+
+@if (Event != null)
+{
+    <InputSelect @bind-Value="SelectedPlayerClassID" @bind-Value:after="UpdatePlayerClassID">
+
+        @if (AvailablePlayerClasses != null)
+        {
+            @foreach (var pc in AllPlayerClasses)
+            {
+                if(SelectedPlayerClassID == @pc.ID || AvailablePlayerClasses.Contains(pc))
+                {
+                    <option value="@pc.ID">@pc.Name</option>
+                }
+                else
+                {
+                    <option value="@pc.ID" disabled>@pc.Name</option>
+                }
+            }
+
+            // Add the "not set" option using a special value
+            if(!IsTempClass)
+            {
+                <option value=@NoClassSetValue>No @Event.PlayerClassName set</option>
+            }
+        }
+    </InputSelect>
+}

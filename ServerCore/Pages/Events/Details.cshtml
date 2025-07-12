@@ -22,6 +22,10 @@
 
 <a asp-page="./Edit">Edit</a> | <a asp-page="./Import">Import</a> | <a asp-page="./Delete">Delete</a>
 
+<br /><br />
+<h4>Additional Event Settings</h4>
+<a asp-page="./PlayerClass">Player Class Management</a>
+
 <hr />
 <div class="details-list">
     <h4>General Properties</h4><div></div>
@@ -146,6 +150,12 @@
     <div>
         @Model.Event.StandingsAvailableBegin
     </div>
+    <div>
+        EventPassword
+    </div>
+    <div>
+        @Model.Event.EventPassword
+    </div>
     <h4>Puzzle Options</h4><div></div>
     <div>
         SinglePlayerPuzzleTitle
@@ -221,6 +231,18 @@
         @Model.Event.MaxNumberOfTeams
     </div>
     <div>
+        MaxNumberOfLocalTeams
+    </div>
+    <div>
+        @Model.Event.MaxNumberOfLocalTeams
+    </div>
+    <div>
+        MaxNumberOfRemoteTeams
+    </div>
+    <div>
+        @Model.Event.MaxNumberOfRemoteTeams
+    </div>
+    <div>
         MaxTeamSize
     </div>
     <div>
@@ -239,16 +261,40 @@
         @Model.Event.IsRemote
     </div>
     <div>
-        AllowsRemote
+        AllowsRemotePlayers
     </div>
     <div>
-        @Model.Event.AllowsRemote
+        @Model.Event.AllowsRemotePlayers
+    </div>
+    <div>
+        AllowsRemoteTeams
+    </div>
+    <div>
+        @Model.Event.AllowsRemoteTeams
+    </div>
+    <div>
+        LockChangesToRemoteStatus
+    </div>
+    <div>
+        @Model.Event.LockChangesToRemoteStatus
     </div>
     <div>
         IsInternEvent
     </div>
     <div>
         @Model.Event.IsInternEvent
+    </div>
+    <div>
+        HasPlayerClasses
+    </div>
+    <div>
+        @Model.Event.HasPlayerClasses
+    </div>
+    <div>
+        PlayerClassName
+    </div>
+    <div>
+        @Model.Event.PlayerClassName
     </div>
     <h4>Swag</h4><div></div>
     <div>

@@ -29,5 +29,6 @@ namespace ServerCore.DataModel
         DbSet<Message> Messages { get; set; }
         public DbSet<LiveEvent> LiveEvents { get; set; }
         public DbSet<LiveEventSchedule> LiveEventsSchedule { get; set; }
+        DbSet<PlayerClass> PlayerClasses { get; set; }
     }
 }

@@ -38,6 +38,13 @@ namespace ServerCore.DataModel
         public virtual PuzzleUser Submitter { get; set; }
 
         /// <summary>
+        /// The display name to use for this submission when viewed by players
+        /// If this is set it overrides the Submitter.Name value on player views and appends this string on author/admin pages
+        /// Currently only used for submissions that come through the Admin submission API, not the on-page submission evaluator
+        /// </summary>
+        public virtual string SubmitterDisplayName { get; set; }
+
+        /// <summary>
         /// The time the submission was submitted
         /// </summary>
         public DateTime TimeSubmitted { get; set; }

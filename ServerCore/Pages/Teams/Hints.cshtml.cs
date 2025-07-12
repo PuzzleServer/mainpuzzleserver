@@ -147,7 +147,7 @@ namespace ServerCore.Pages.Teams
                 where Puzzle.ID == puzzleId
                 select Puzzle).FirstOrDefaultAsync();
 
-            PuzzleName = puzzle?.Name;
+            PuzzleName = puzzle?.PlaintextName;
 
             bool shouldShowThreadOption = Event.DefaultCostForHelpThread >= 0;
             HintViewStates = await GetAllTeamHints(puzzle, teamId);

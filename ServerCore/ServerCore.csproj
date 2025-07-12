@@ -63,11 +63,13 @@
   <ItemGroup>
     <Folder Include="Areas\Identity\Data\" />
     <Folder Include="Content\" />
+    <Folder Include="wwwroot\images\ph24\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="wwwroot\css\pd2019\styles.css" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ClientSyncComponent\ClientSyncComponent.Client\ClientSyncComponent.Client.csproj" />
     <ProjectReference Include="..\Data\Data.csproj" />
   </ItemGroup>
   <ItemGroup>

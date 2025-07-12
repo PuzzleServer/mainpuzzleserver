@@ -81,6 +81,9 @@ namespace ServerCore.Pages.Teams
         public bool IsLookingForTeammates { get; set; }
         [MaxLength(500)]
         public string Bio { get; set; }
+
+        [Required]
+        public bool? IsRemoteTeam { get; set; }
     }
 
     public partial class CreateTeam
@@ -103,6 +106,8 @@ namespace ServerCore.Pages.Teams
         public TeamModel TeamModel { get; set; } = new TeamModel();
 
         public bool EventFull { get; set; }
+        public bool LocalTeamsFull { get; set; }
+        public bool RemoteTeamsFull { get; set; }
 
         protected override async Task OnParametersSetAsync()
         {
@@ -111,6 +116,21 @@ namespace ServerCore.Pages.Teams
             if (EventRole == EventRole.play && await _context.Teams.Where((t) => t.EventID == Event.ID).CountAsync() >= Event.MaxNumberOfTeams)
             {
                 EventFull = true;
+            }
+
+            if (EventRole == EventRole.play && await _context.Teams.Where((t) => t.EventID == Event.ID && !t.IsRemoteTeam).CountAsync() >= Event.MaxNumberOfLocalTeams)
+            {
+                LocalTeamsFull = true;
+            }
+
+            if (EventRole == EventRole.play && await _context.Teams.Where((t) => t.EventID == Event.ID && t.IsRemoteTeam).CountAsync() >= Event.MaxNumberOfRemoteTeams)
+            {
+                RemoteTeamsFull = true;
+            }
+
+            if (!Event.AllowsRemoteTeams)
+            {
+                TeamModel.IsRemoteTeam = false;
             }
 
             await base.OnParametersSetAsync();
@@ -127,7 +147,8 @@ namespace ServerCore.Pages.Teams
                 PrimaryPhoneNumber = TeamModel.PrimaryPhoneNumber,
                 SecondaryPhoneNumber = TeamModel.SecondaryPhoneNumber,
                 IsLookingForTeammates = TeamModel.IsLookingForTeammates,
-                Bio = TeamModel.Bio,                
+                Bio = TeamModel.Bio, 
+                IsRemoteTeam = TeamModel.IsRemoteTeam.GetValueOrDefault()
             };
 
             int? idToAdd = null;
