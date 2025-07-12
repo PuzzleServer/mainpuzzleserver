@@ -13,7 +13,7 @@ namespace PuzzleTimerTrigger
         [FunctionName("TriggerLiveEventNotifications")]
         public void Run([TimerTrigger("0 */1 * * * *")]TimerInfo myTimer, ILogger log)
         {
-            const string eventId = "nipd2024";
+            const string eventId = "pd2025";
             HttpClient.PostAsync($"https://puzzlehunt.azurewebsites.net/api/puzzleapi/liveevent/triggernotifications?eventId={eventId}&timerWindow=10", null).Wait();
         }
     }
