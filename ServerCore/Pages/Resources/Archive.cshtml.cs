@@ -9,7 +9,7 @@ namespace ServerCore.Pages.Resources
     {
         public ActionResult OnGet()
         {
-            return Redirect("https://puzzlearchive.azurewebsites.net/");
+            return Redirect("https://puzzleserverteststore.z22.web.core.windows.net/archive/index.html");
         }
     }
 }
