@@ -108,7 +108,7 @@ You have <b>
                         }
                         else if (puzzleThreadViewState != null)
                         {
-                            <a asp-Page="/Threads/PuzzleThread" asp-route-puzzleid="@Model.PuzzleID" asp-route-teamId="@Model.Team?.ID" asp-route-playerId="@Model.LoggedInUser.ID">Use this link to message the author!</a>
+                            <a asp-Page="/Threads/PuzzleThread" asp-fragment="auto-scroll-target" asp-route-puzzleid="@Model.PuzzleID" asp-route-teamId="@Model.Team?.ID" asp-route-playerId="@Model.LoggedInUser.ID">Use this link to message the author!</a>
                         }
                     }
                     else

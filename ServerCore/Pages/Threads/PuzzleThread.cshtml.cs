@@ -261,7 +261,11 @@ namespace ServerCore.Pages.Threads
                 await this.SendEmailNotifications(m, puzzle);
             }
 
-            return RedirectToPage("/Threads/PuzzleThread", new { puzzleId = m.PuzzleID, teamId = m.TeamID, playerId = m.PlayerID });
+            return RedirectToPage(
+                "/Threads/PuzzleThread",
+                routeValues: new { puzzleId = m.PuzzleID, teamId = m.TeamID, playerId = m.PlayerID },
+                pageHandler: null,
+                fragment: "auto-scroll-target");
         }
 
         public async Task<IActionResult> OnPostEditMessageAsync()
@@ -291,7 +295,11 @@ namespace ServerCore.Pages.Threads
                 await _context.SaveChangesAsync();
             }
 
-            return RedirectToPage("/Threads/PuzzleThread", new { puzzleId = EditMessage.PuzzleID, teamId = EditMessage.TeamID, playerId = EditMessage.PlayerID });
+            return RedirectToPage(
+                "/Threads/PuzzleThread", 
+                routeValues: new { puzzleId = EditMessage.PuzzleID, teamId = EditMessage.TeamID, playerId = EditMessage.PlayerID },
+                pageHandler: null,
+                fragment: "auto-scroll-target");
         }
 
         public async Task<IActionResult> OnGetDeleteMessageAsync(int messageId, int puzzleId, int? teamId, int? playerId)
@@ -304,7 +312,11 @@ namespace ServerCore.Pages.Threads
                 await _context.SaveChangesAsync();
             }
 
-            return RedirectToPage("/Threads/PuzzleThread", new { puzzleId = puzzleId, teamId = teamId, playerId = playerId });
+            return RedirectToPage(
+                "/Threads/PuzzleThread",
+                routeValues: new { puzzleId = puzzleId, teamId = teamId, playerId = playerId },
+                pageHandler: null,
+                fragment: "auto-scroll-target");
         }
 
         public async Task<IActionResult> OnPostClaimThreadAsync(int messageId, int puzzleId, int? teamId, int? playerId)
@@ -324,7 +336,11 @@ namespace ServerCore.Pages.Threads
                 throw new InvalidOperationException("You cannot claim this thread! It may have already been claimed.");
             }
 
-            return RedirectToPage("/Threads/PuzzleThread", new { puzzleId = puzzleId, teamId = teamId, playerId = playerId });
+            return RedirectToPage(
+                "/Threads/PuzzleThread",
+                routeValues: new { puzzleId = puzzleId, teamId = teamId, playerId = playerId },
+                pageHandler: null,
+                fragment: "auto-scroll-target");
         }
 
         public async Task<IActionResult> OnPostUnclaimThreadAsync(int messageId, int puzzleId, int? teamId, int? playerId)
@@ -338,7 +354,11 @@ namespace ServerCore.Pages.Threads
                 await _context.SaveChangesAsync();
             }
 
-            return RedirectToPage("/Threads/PuzzleThread", new { puzzleId = puzzleId, teamId = teamId, playerId = playerId });
+            return RedirectToPage(
+                "/Threads/PuzzleThread",
+                routeValues: new { puzzleId = puzzleId, teamId = teamId, playerId = playerId },
+                pageHandler: null,
+                fragment: "auto-scroll-target");
         }
 
         public bool IsAllowedToClaimMessage()
