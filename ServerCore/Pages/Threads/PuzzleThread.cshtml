@@ -33,7 +33,7 @@
         originalText.classList.remove("hidden");
     }
 </script>
-<div class="sticky-component">
+<div>
     <span>
         @if (Model.EventRole == ServerCore.ModelBases.EventRole.play)
         {
@@ -69,8 +69,66 @@
 </div>
 
 <hr />
-@foreach (var message in Model.Messages)
+
+@if (Model.Event.AreAnswersAvailableNow)
 {
+    <div>No help is needed because answers are now available!</div>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4" style="width:100%">
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group message-subtitle">
+                    @if (Model.PuzzleState.IsEmailOnlyMode)
+                    {
+                        <p>Use this message to fully explain your thought process so we know you're not randomly spamming attempts!</p>
+                    }
+                    else
+                    {
+                        <p>The more details you add here, the more helpful the responses you'll get will be!</p>
+                    }
+                    <textarea asp-for="NewMessage.Text" class="form-control message-subtitle" rows="4" style="width:75%" placeholder="Type message here" autocomplete="off"></textarea>
+                    <span asp-validation-for="NewMessage.Text" class="text-danger"></span>
+                    <input type="hidden" asp-for="NewMessage.ThreadId" value="@Model.NewMessage.ThreadId" />
+                    <input type="hidden" asp-for="NewMessage.EventID" value="@Model.NewMessage.EventID" />
+                    <input type="hidden" asp-for="NewMessage.Subject" value="@Model.NewMessage.Subject" />
+                    <input type="hidden" asp-for="NewMessage.PuzzleID" value="@Model.NewMessage.PuzzleID" />
+                    <input type="hidden" asp-for="NewMessage.TeamID" value="@Model.NewMessage.TeamID" />
+                    <input type="hidden" asp-for="NewMessage.IsFromGameControl" value="@Model.NewMessage.IsFromGameControl" />
+                    <input type="hidden" asp-for="NewMessage.SenderID" value="@Model.NewMessage.SenderID" />
+                    <input type="hidden" asp-for="NewMessage.PlayerID" value="@Model.NewMessage.PlayerID" />
+                </div>
+                <div class="form-group message-subtitle">
+                    <input type="submit" value="Send" class="btn btn-default" />
+                </div>
+            </form>
+        </div>
+    </div>
+}
+
+@if (Model.IsAllowedToClaimMessage() && Model.Messages.Count > 0)
+{
+    Message lastMessage = Model.Messages.Last();
+    <form method="post">
+        @if (lastMessage.ClaimerID.HasValue)
+        {
+            <br />
+            <p>Question has already been marked as read by @lastMessage.Claimer.Name</p>
+            <button type="submit" asp-page-handler="UnclaimThread" asp-route-messageId="@lastMessage.ID" asp-route-puzzleId="@lastMessage.PuzzleID" asp-route-teamId="@lastMessage.TeamID" asp-route-playerId="@lastMessage.PlayerID">Undo mark as read</button>
+        }
+        else if (!lastMessage.IsFromGameControl)
+        {
+            <br />
+            <button type="submit" asp-page-handler="ClaimThread" asp-route-messageId="@lastMessage.ID" asp-route-puzzleId="@lastMessage.PuzzleID" asp-route-teamId="@lastMessage.TeamID" asp-route-playerId="@lastMessage.PlayerID">Mark as read</button>
+        }
+    </form>
+}
+
+@for (int i = Model.Messages.Count - 1; i >= 0; i--)
+{
+    var message = Model.Messages[i];
     string classString = "message-container";
     if (message.IsFromGameControl)
     {
@@ -136,61 +194,6 @@
             </span>
         </div>
     </div>
-}
-@if (Model.Event.AreAnswersAvailableNow)
-{
-    <div id="auto-scroll-target">No help is needed because answers are now available!</div>
-}
-else
-{
-    <div class="row" id="auto-scroll-target">
-        <div class="col-md-4" style="width:100%">
-            <form method="post">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="form-group message-subtitle">
-                    @if (Model.PuzzleState.IsEmailOnlyMode)
-                    {
-                        <p>Use this message to fully explain your thought process so we know you're not randomly spamming attempts!</p>
-                    }
-                    else
-                    {
-                        <p>The more details you add here, the more helpful the responses you'll get will be!</p>
-                    }
-                    <textarea asp-for="NewMessage.Text" class="form-control message-subtitle" rows="4" style="width:75%" placeholder="Type message here" autocomplete="off"></textarea>
-                    <span asp-validation-for="NewMessage.Text" class="text-danger"></span>
-                    <input type="hidden" asp-for="NewMessage.ThreadId" value="@Model.NewMessage.ThreadId" />
-                    <input type="hidden" asp-for="NewMessage.EventID" value="@Model.NewMessage.EventID" />
-                    <input type="hidden" asp-for="NewMessage.Subject" value="@Model.NewMessage.Subject" />
-                    <input type="hidden" asp-for="NewMessage.PuzzleID" value="@Model.NewMessage.PuzzleID" />
-                    <input type="hidden" asp-for="NewMessage.TeamID" value="@Model.NewMessage.TeamID" />
-                    <input type="hidden" asp-for="NewMessage.IsFromGameControl" value="@Model.NewMessage.IsFromGameControl" />
-                    <input type="hidden" asp-for="NewMessage.SenderID" value="@Model.NewMessage.SenderID" />
-                    <input type="hidden" asp-for="NewMessage.PlayerID" value="@Model.NewMessage.PlayerID" />
-                </div>
-                <div class="form-group message-subtitle">
-                    <input type="submit" value="Send" class="btn btn-default" />
-                </div>
-            </form>
-        </div>
-    </div>
-}
-
-@if (Model.IsAllowedToClaimMessage() && Model.Messages.Count > 0)
-{
-    Message lastMessage = Model.Messages.Last();
-    <form method="post">
-        @if (lastMessage.ClaimerID.HasValue)
-        {
-            <br/>
-            <p>Question has already been marked as read by @lastMessage.Claimer.Name</p>
-            <button type="submit" asp-page-handler="UnclaimThread" asp-route-messageId="@lastMessage.ID" asp-route-puzzleId="@lastMessage.PuzzleID" asp-route-teamId="@lastMessage.TeamID" asp-route-playerId="@lastMessage.PlayerID">Undo mark as read</button>
-        }
-        else if (!lastMessage.IsFromGameControl)
-        {
-            <br />
-            <button class="message-subtitle" type="submit" asp-page-handler="ClaimThread" asp-route-messageId="@lastMessage.ID" asp-route-puzzleId="@lastMessage.PuzzleID" asp-route-teamId="@lastMessage.TeamID" asp-route-playerId="@lastMessage.PlayerID">Mark as read</button>
-        }
-    </form>
 }
 
 @section Scripts {
