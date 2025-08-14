@@ -418,3 +418,9 @@ a.navbar-brand {
 .bolded-label {
     font-weight: 600;
 }
+
+.sticky-component {
+    position: sticky;
+    top: 0;
+    background-color: #ffffff;
+}
