@@ -60,7 +60,7 @@ namespace ServerCore.Pages.Threads
         /// </summary>
         public string ReturnThreadQueryParams { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int? puzzleId, int? teamId, int? playerId, string returnThreadQueryParams)
+        public async Task<IActionResult> OnGetAsync(int? puzzleId, int? teamId, int? playerId, string returnThreadQueryParams, string messageDraft = null)
         {
             // Validate parameters
             if (LoggedInUser == null)
@@ -182,6 +182,7 @@ namespace ServerCore.Pages.Threads
                 Sender = LoggedInUser,
                 PlayerID = playerId,
                 Player = singlePlayerPuzzlePlayer,
+                Text = messageDraft
             };
 
             return Page();
@@ -309,6 +310,7 @@ namespace ServerCore.Pages.Threads
 
         public async Task<IActionResult> OnPostClaimThreadAsync(int messageId, int puzzleId, int? teamId, int? playerId)
         {
+            var text = NewMessage.Text;
             var message = await _context.Messages.Where(m => m.ID == messageId).FirstOrDefaultAsync();
             if (message != null 
                 && IsAllowedToClaimMessage()
@@ -324,11 +326,12 @@ namespace ServerCore.Pages.Threads
                 throw new InvalidOperationException("You cannot claim this thread! It may have already been claimed.");
             }
 
-            return RedirectToPage("/Threads/PuzzleThread", new { puzzleId = puzzleId, teamId = teamId, playerId = playerId });
+            return RedirectToPage("/Threads/PuzzleThread", new { puzzleId = puzzleId, teamId = teamId, playerId = playerId, messageDraft = NewMessage.Text });
         }
 
         public async Task<IActionResult> OnPostUnclaimThreadAsync(int messageId, int puzzleId, int? teamId, int? playerId)
         {
+            var text = NewMessage.Text;
             var message = await _context.Messages.Where(m => m.ID == messageId).FirstOrDefaultAsync();
             if (message != null && IsAllowedToClaimMessage())
             {
@@ -338,7 +341,7 @@ namespace ServerCore.Pages.Threads
                 await _context.SaveChangesAsync();
             }
 
-            return RedirectToPage("/Threads/PuzzleThread", new { puzzleId = puzzleId, teamId = teamId, playerId = playerId });
+            return RedirectToPage("/Threads/PuzzleThread", new { puzzleId = puzzleId, teamId = teamId, playerId = playerId, messageDraft = NewMessage.Text });
         }
 
         public bool IsAllowedToClaimMessage()
