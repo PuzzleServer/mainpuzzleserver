@@ -985,6 +985,13 @@ else
             // The extra 30px added to the size undoes the widths of the scrollbars themselves
             // Keep the width at 100% by default so internal content can resize if needed
             window.addEventListener("message", (e) => {
+                // Pass on a submission, if submissions are allowed at the present time
+                if (e.data.submission && !document.querySelector("div.alert")) {
+                    document.querySelector("#submitBox").value = e.data.submission;
+                    document.querySelector("#submitButton").click();
+                }
+
+                // resize
                 if ((e.data.width > 0) && (e.data.height > 0)) {
                     const iframe = document.querySelector("#puzzle-frame");
                     iframe.classList.remove("unsized");
