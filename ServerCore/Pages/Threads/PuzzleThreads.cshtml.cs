@@ -192,7 +192,7 @@ namespace ServerCore.Pages.Threads
             }
 
             LatestMessagesFromEachThread = latestMessagesByThread
-                .OrderBy(message => message.ModifiedDateTimeInUtc)
+                .OrderByDescending(message => message.ModifiedDateTimeInUtc)
                 .ToList();
 
             return Page();
