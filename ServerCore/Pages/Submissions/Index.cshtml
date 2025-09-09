@@ -825,8 +825,7 @@ else
                 // Submission conversion mirrors what takes place in DataModel\Response::FormatSubmission
                 // For local testing, set host to http://localhost:44319
                 const submit = document.querySelector("#submitButton");
-                async function submitClickHandler (e) {
-                    const rawText = document.querySelector("#submitBox").value;
+                async function submitGuess (rawText) {
                     const cleanedText = rawText.normalize("NFKD").replace(/[^a-zA-Z\d]/gi, "").toUpperCase();
                     const submissionText = @Model.Puzzle.IsFreeform.ToString().ToLower() ? rawText : cleanedText;
 
@@ -943,7 +942,7 @@ else
                     }
                     document.querySelector("#submitBox").value = "";
                 }
-                submit.addEventListener("click", submitClickHandler);
+                submit.addEventListener("click", e => { submitGuess(document.querySelector("#submitBox").value); });
 
                 // Make hitting enter in the answer box trigger a submission
                 const submitBox = document.querySelector("#submitBox");
@@ -987,8 +986,7 @@ else
             window.addEventListener("message", (e) => {
                 // Pass on a submission, if submissions are allowed at the present time
                 if (e.data.submission && !document.querySelector("div.alert")) {
-                    document.querySelector("#submitBox").value = e.data.submission;
-                    document.querySelector("#submitButton").click();
+                    submitGuess(e.data.submission);
                 }
 
                 // resize
