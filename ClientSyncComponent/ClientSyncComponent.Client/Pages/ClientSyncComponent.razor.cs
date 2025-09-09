@@ -183,8 +183,6 @@ namespace ClientSyncComponent.Client.Pages
                                     value: change.value,
                                     channel: change.channel);
 
-                Console.WriteLine($"Upserting puzzle entry: {change.puzzleId} {puzzleEntry.PartitionKey} {puzzleEntry.RowKey} {puzzleEntry.Value}");
-
                 await TableClient.UpsertEntityAsync(puzzleEntry, TableUpdateMode.Replace);
             }
         }
@@ -271,7 +269,6 @@ namespace ClientSyncComponent.Client.Pages
                         // Remove all data entries for this sub-puzzle
                         int removedForReset = newChanges.RemoveAll(e => e.SubPuzzleId == entry.SubPuzzleId &&
                         e.Timestamp < entry.Timestamp && !e.IsReset);
-                        Console.WriteLine($"Removed {removedForReset} entries for reset of {entry.SubPuzzleId}");
                         if (removedForReset > 0)
                         {
                             removedEntries = true;
@@ -287,7 +284,6 @@ namespace ClientSyncComponent.Client.Pages
                 foundNewData = true;
                 if (entry.IsReset)
                 {
-                    Console.WriteLine($"Incoming reset for {entry.SubPuzzleId}");
                     // If this is a reset, we need to send a reset message to the JS side
                     await JSRuntime.InvokeVoidAsync("onPuzzleResetSynced", new JsPuzzleReset()
                     {
@@ -297,7 +293,6 @@ namespace ClientSyncComponent.Client.Pages
                 }
                 else
                 {
-                    Console.WriteLine($"Incoming puzzle change for {entry.SubPuzzleId}");
                     jsChanges.Add(new JsPuzzleChange()
                     {
                         locationKey = entry.LocationKey,
