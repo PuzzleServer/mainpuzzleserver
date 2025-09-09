@@ -310,7 +310,6 @@ namespace ServerCore.Pages.Threads
 
         public async Task<IActionResult> OnPostClaimThreadAsync(int messageId, int puzzleId, int? teamId, int? playerId)
         {
-            var text = NewMessage.Text;
             var message = await _context.Messages.Where(m => m.ID == messageId).FirstOrDefaultAsync();
             if (message != null 
                 && IsAllowedToClaimMessage()
@@ -331,7 +330,6 @@ namespace ServerCore.Pages.Threads
 
         public async Task<IActionResult> OnPostUnclaimThreadAsync(int messageId, int puzzleId, int? teamId, int? playerId)
         {
-            var text = NewMessage.Text;
             var message = await _context.Messages.Where(m => m.ID == messageId).FirstOrDefaultAsync();
             if (message != null && IsAllowedToClaimMessage())
             {
