@@ -440,6 +440,9 @@ namespace Data.Migrations
                     b.Property<string>("RulesContent")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("ShouldSendHelpThreadMailToGameControl")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("ShouldShowHelpMessageOnlyToAuthor")
                         .HasColumnType("bit");
 

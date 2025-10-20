@@ -80,6 +80,11 @@ namespace ServerCore.DataModel
         public bool ShouldShowHelpMessageOnlyToAuthor { get; set; }
 
         /// <summary>
+        /// True if we should send help thread mails to game control.
+        /// </summary>
+        public bool ShouldSendHelpThreadMailToGameControl { get; set; }
+
+        /// <summary>
         /// Returns whether or not team registration is active.
         /// </summary>
         /// <returns>True if the current date is between the team registration begin and end times.</returns>
