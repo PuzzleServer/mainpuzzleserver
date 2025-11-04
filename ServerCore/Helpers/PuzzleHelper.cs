@@ -56,17 +56,17 @@ namespace ServerCore.Helpers
             await context.SaveChangesAsync();
         }
 
-        public static string GetFormattedUrl(Puzzle puzzle, int eventId, string teamPassword = null, string playerClass = null)
+        public static string GetFormattedUrl(Puzzle puzzle, int eventId, int userId, string teamPassword = null, string playerClass = null)
         {
-            return GetFormattedUrl(puzzle.CustomURL, puzzle.ID, eventId, teamPassword, playerClass);
+            return GetFormattedUrl(puzzle.CustomURL, puzzle.ID, eventId, userId, teamPassword, playerClass);
         }
 
-        public static string GetFormattedSolutionUrl(Puzzle puzzle, int eventId)
+        public static string GetFormattedSolutionUrl(Puzzle puzzle, int eventId, int userId)
         {
-            return GetFormattedUrl(puzzle.CustomSolutionURL, puzzle.ID, eventId, null, null);
+            return GetFormattedUrl(puzzle.CustomSolutionURL, puzzle.ID, eventId, userId, null, null);
         }
 
-        public static string GetFormattedUrl(string customUrl, int puzzleId, int eventId, string teamPassword, string playerClass)
+        public static string GetFormattedUrl(string customUrl, int puzzleId, int eventId, int userId, string teamPassword, string playerClass)
         {
             if (customUrl == null)
             {
@@ -80,7 +80,7 @@ namespace ServerCore.Helpers
                 playerClass = "noPlayerClass";
             }
 
-            string formattedUrl = customUrl.Replace("{puzzleId}", $"{puzzleId}").Replace("{eventId}", $"{eventId}")
+            string formattedUrl = customUrl.Replace("{puzzleId}", $"{puzzleId}").Replace("{eventId}", $"{eventId}").Replace("{userId}", $"{userId}")
                 .Replace("{teamPass}", teamPassword).Replace("{playerClass}", playerClass);
             return formattedUrl;
         }

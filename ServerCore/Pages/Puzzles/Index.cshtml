@@ -100,7 +100,7 @@
                 <td>
                     @if (item.Puzzle.CustomURL != null)
                     {
-                        <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.Puzzle, Model.Event.ID)" target="_blank">Link</a>
+                        <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.Puzzle, Model.Event.ID, Model.LoggedInUser.ID)" target="_blank">Link</a>
                     }
                     else if (item.Content != null)
                     {
@@ -110,7 +110,7 @@
                 <td>
                     @if (item.Puzzle.CustomSolutionURL != null)
                     {
-                        <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedSolutionUrl(item.Puzzle, Model.Event.ID)" target="_blank">Link</a>
+                        <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedSolutionUrl(item.Puzzle, Model.Event.ID, Model.LoggedInUser.ID)" target="_blank">Link</a>
                     }
                     else if (item.Answer != null)
                     {
