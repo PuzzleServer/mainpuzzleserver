@@ -16,21 +16,21 @@
 }
 <script>
     function EditText(id) {
-        let textAreaId = "TextAreaEdit_" + id;
-        let textAreaEditBox = document.getElementById(textAreaId);
-        textAreaEditBox.classList.remove("hidden");
-        let originalTextId = "MessageText_" + id;
-        let originalText = document.getElementById(originalTextId);
-        originalText.classList.add("hidden");
+    let textAreaId = "TextAreaEdit_" + id;
+    let textAreaEditBox = document.getElementById(textAreaId);
+    textAreaEditBox.classList.remove("hidden");
+    let originalTextId = "MessageText_" + id;
+    let originalText = document.getElementById(originalTextId);
+    originalText.classList.add("hidden");
     }
 
     function CancelEdit(id) {
-        let textAreaId = "TextAreaEdit_" + id;
-        let textAreaEditBox = document.getElementById(textAreaId);
-        textAreaEditBox.classList.add("hidden");
-        let originalTextId = "MessageText_" + id;
-        let originalText = document.getElementById(originalTextId);
-        originalText.classList.remove("hidden");
+    let textAreaId = "TextAreaEdit_" + id;
+    let textAreaEditBox = document.getElementById(textAreaId);
+    textAreaEditBox.classList.add("hidden");
+    let originalTextId = "MessageText_" + id;
+    let originalText = document.getElementById(originalTextId);
+    originalText.classList.remove("hidden");
     }
 </script>
 <div>
@@ -50,6 +50,10 @@
 
             string goToPuzzleLabel = singlePlayerPuzzleState != null ? "Go to single player puzzle" : "Go to puzzle";
             <a asp-page="/Puzzles/Edit" asp-route-puzzleId="@Model.Puzzle.ID">@goToPuzzleLabel</a>@(" |")
+            if (teamPuzzleState != null)
+            {
+                <a asp-page="/Submissions/Index" asp-route-puzzleId="@Model.Puzzle.ID" asp-route-eventRole="@($"impersonate-{@teamPuzzleState.TeamID}")">Impersonate</a>@(" |")
+            }
         }
 
         @if (Model.ReturnThreadQueryParams == null)

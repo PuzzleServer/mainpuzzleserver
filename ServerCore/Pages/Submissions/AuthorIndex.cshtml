@@ -43,6 +43,10 @@
         <a asp-page="./AuthorIndex" asp-route-puzzleId="@Model.Puzzle?.ID" asp-route-teamId="@Model.Team?.ID" asp-route-hideFreeform="@Model.HideFreeform" asp-route-favoritesOnly="false" asp-route-sort="@Model.Sort">| Clear Favorite Filter</a>
     }
 </div>
+@if(Model.Team != null && Model.Puzzle != null)
+{
+    <a asp-page="/Submissions/Index" asp-route-puzzleId="@Model.Puzzle.ID" asp-route-eventRole="@($"impersonate-{@Model.Team.ID}")">Impersonate this Puzzle</a>
+}
 <br/>
 <div>
     Submitted answers shown below are capitalized and stripped of non-alphanumeric characters
