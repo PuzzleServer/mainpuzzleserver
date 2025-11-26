@@ -96,7 +96,7 @@ namespace ServerCore.Pages.Threads
                 }
 
                 messages = messages.Where(message => message.PuzzleID == puzzleId.Value);
-                this.Title = $"Help threads for puzzle {puzzle.Name}";
+                this.Title = $"Help threads for puzzle {puzzle.PlaintextName}";
             }
 
             if (teamId.HasValue)
@@ -163,7 +163,7 @@ namespace ServerCore.Pages.Threads
             }
 
             // Filter down to only latest messages
-            LatestMessagesFromEachThread = await messages
+            IEnumerable<Message> latestMessagesByThread = await messages
                 .GroupBy(message => message.ThreadId)
                 .Select(group => group.OrderByDescending(message => message.CreatedDateTimeInUtc).First())
                 .ToListAsync();
@@ -171,9 +171,8 @@ namespace ServerCore.Pages.Threads
             if (showUnclaimedOnly.HasValue && showUnclaimedOnly.Value)
             {
                 this.Title += " (unclaimed only)";
-                LatestMessagesFromEachThread = LatestMessagesFromEachThread
-                    .Where(IsLatestMessageUnclaimed)
-                    .ToList();
+                latestMessagesByThread = latestMessagesByThread
+                    .Where(IsLatestMessageUnclaimed);
             }
 
             ILookup<int, string> puzzleAuthors = (await (from author in _context.PuzzleAuthors
@@ -182,7 +181,7 @@ namespace ServerCore.Pages.Threads
 
             AuthorsForPuzzleID = new Dictionary<int, string>();
 
-            foreach (var message in LatestMessagesFromEachThread)
+            foreach (var message in latestMessagesByThread)
             {
                 if (message.PuzzleID.HasValue)
                 {
@@ -191,6 +190,10 @@ namespace ServerCore.Pages.Threads
                     AuthorsForPuzzleID[message.PuzzleID.Value] = authorList;
                 }
             }
+
+            LatestMessagesFromEachThread = latestMessagesByThread
+                .OrderBy(message => message.ModifiedDateTimeInUtc)
+                .ToList();
 
             return Page();
         }

@@ -32,7 +32,7 @@ namespace ServerCore.DataModel
 
         [PersonalData]
         [MaxLength(50)]
-        [DisplayName("Employee Alias")]
+        [DisplayName("Microsoft Employee Alias")]
         public string EmployeeAlias { get; set; }
 
         [PersonalData]

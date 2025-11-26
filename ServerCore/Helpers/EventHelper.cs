@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +30,26 @@ namespace ServerCore.Helpers
             }
 
             return result;
+        }
+
+        public static bool EventRequiresActivePlayerRegistration(Event thisEvent)
+        {
+            return thisEvent.HasTShirts || thisEvent.HasSwag || thisEvent.HasIndividualLunch || thisEvent.ShouldShowSinglePlayerPuzzles || thisEvent.AllowsRemotePlayers;
+        }
+
+        public static async Task<PlayerInEvent> RegisterPlayerForEvent(PuzzleServerContext context, Event thisEvent, PuzzleUser player)
+        {
+            PlayerInEvent newPlayer = new PlayerInEvent
+            {
+                EventId = thisEvent.ID,
+                Event = thisEvent,
+                PlayerId = player.ID,
+                Player = player
+            };
+
+            context.PlayerInEvent.Add(newPlayer);
+            await context.SaveChangesAsync();
+            return newPlayer;
         }
     }
 }

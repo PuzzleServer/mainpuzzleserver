@@ -2,10 +2,10 @@
 @model ServerCore.Pages.Pieces.SimpleMetaModel
 
 @{
-    ViewData["Title"] = $"{Model.Puzzle.Name} Meta";
+    ViewData["Title"] = $"{Model.Puzzle.PlaintextName} Meta";
 }
 
-<h2>@(Model.Puzzle.Name) Pieces Earned</h2>
+<h2>@ServerCore.Helpers.RawHtmlHelper.Display(@Model.Puzzle.Name, Model.Event.ID, Html) Pieces Earned</h2>
 
 <table class="table">
     <tbody>

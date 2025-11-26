@@ -1,4 +1,5 @@
 ﻿@page "/{eventId}/{eventRole}/Checklist"
+@using ServerCore.DataModel
 @model ServerCore.Pages.Puzzles.PuzzleChecklistModel
 
 @{
@@ -25,6 +26,9 @@
                 Author(s)
             </th>
             <th>
+                Custom Author Text
+            </th>
+            <th>
                 Puzzle file
             </th>
             <th>
@@ -35,6 +39,9 @@
             </th>
             <th>
                 Pre-requisites
+            </th>
+            <th>
+                Prerequisite Weight
             </th>
             <th>
                 Min in group count
@@ -54,6 +61,12 @@
                     Hint cost
                 </th>
             }
+            @if (Model.Event.AllowsRemoteTeams)
+            {
+                <th>
+                    Availability
+                </th>
+            }
         </tr>
     </thead>
     <tbody>
@@ -70,9 +83,12 @@
                 @item.Authors
             </td>
             <td>
+                @item.Puzzle.CustomAuthorText
+            </td>
+            <td>
                 @if (item.Puzzle.CustomURL != null)
                 {
-                    <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.Puzzle, Model.Event.ID)" target="_blank">Link</a>
+                    <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.Puzzle, Model.Event.ID, Model.LoggedInUser.ID)" target="_blank">Link</a>
                 }
                 else if (item.PuzzleFile != null)
                 {
@@ -82,7 +98,7 @@
             <td>
                 @if (item.Puzzle.CustomSolutionURL != null)
                 {
-                    <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.Puzzle.CustomSolutionURL, item.Puzzle.ID, Model.Event.ID, null)" target="_blank">Link</a>
+                    <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.Puzzle.CustomSolutionURL, item.Puzzle.ID, Model.Event.ID, Model.LoggedInUser.ID, null, null)" target="_blank">Link</a>
                 }
                 else if (item.AnswerFile != null)
                 {
@@ -98,6 +114,9 @@
                 {
                     <font color="red">WARNING: Fewer prereqs than min</font>
                 }
+            </td>
+            <td>
+                @item.Puzzle.PrerequisiteWeight
             </td>
             <td>
                 @(item.Puzzle.MinInGroupCount)
@@ -120,7 +139,24 @@
                     @(item.TotalHintCost)
                 </td>
             }
-        </tr>
+            @if (Model.Event.AllowsRemoteTeams)
+            {
+                <td>
+                    @if (item.Puzzle.Availability == Puzzle.PuzzleAvailability.AllPlayers)
+                    {
+                        <p>All Players</p>
+                    }
+                    else if (item.Puzzle.Availability == Puzzle.PuzzleAvailability.RemoteOnly)
+                    {
+                        <p>Remote</p>
+                    }
+                    else if (item.Puzzle.Availability == Puzzle.PuzzleAvailability.LocalOnly)
+                    {
+                        <p>Local</p>
+                    }
+                </td>
+            }
+            </tr>
         }
         <tr>
             <td>

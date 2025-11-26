@@ -22,7 +22,8 @@
         <a asp-page="/Hints/Responses">View all hint responses</a> @(" |")
     }
     <a asp-page="/Puzzles/Checklist">View puzzle checklist</a> |
-    <a asp-page="/Puzzles/ResourceManagement">Manage shared resources</a>
+    <a asp-page="/Puzzles/ResourceManagement">Manage shared resources</a> |
+    <a asp-page="/Puzzles/BulkFiles">Bulk File Upload</a>
 </p>
 <p>
     Support:
@@ -78,6 +79,12 @@
             <th>
                 Support
             </th>
+            @if (Model.Event.AllowsRemoteTeams)
+            {
+                <th>
+                    Puzzle Availability
+                </th>
+            }
             <th>
                 Shortcuts
             </th>
@@ -93,7 +100,7 @@
                 <td>
                     @if (item.Puzzle.CustomURL != null)
                     {
-                        <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.Puzzle, Model.Event.ID)" target="_blank">Link</a>
+                        <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.Puzzle, Model.Event.ID, Model.LoggedInUser.ID)" target="_blank">Link</a>
                     }
                     else if (item.Content != null)
                     {
@@ -103,7 +110,7 @@
                 <td>
                     @if (item.Puzzle.CustomSolutionURL != null)
                     {
-                        <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedSolutionUrl(item.Puzzle, Model.Event.ID)" target="_blank">Link</a>
+                        <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedSolutionUrl(item.Puzzle, Model.Event.ID, Model.LoggedInUser.ID)" target="_blank">Link</a>
                     }
                     else if (item.Answer != null)
                     {
@@ -152,6 +159,12 @@
                 <td>
                     @item.Puzzle.SupportEmailAlias
                 </td>
+                @if (Model.Event.AllowsRemoteTeams)
+                {
+                    <td>
+                        @item.Puzzle.Availability
+                    </td>
+                }
                 <td>
                     <div class="shortcut-menu-dropdown">
                         <span><a>Jump to...</a></span>

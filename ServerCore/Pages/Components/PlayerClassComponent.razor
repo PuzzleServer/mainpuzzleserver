@@ -1,0 +1,64 @@
+﻿@using ServerCore.DataModel
+<div class="row">
+    <div class="col-md-4">
+        <h3>Player Classes</h3>
+
+        <div class="form-group">
+            <label>
+                Enter a name for this player class
+                <input @bind="ClassName" class="form-control" />
+            </label>
+        </div>
+        <div class="form-group">
+            <label>
+                Enter a unique name (this will be used in urls and other paths so avoid spaces and special characters)
+                <input @bind="UniqueName" class="form-control" />
+            </label>
+        </div>
+        <div class="form-group">
+            <label>
+                Enter the relative order for this class
+                <input @bind="ClassOrder" class="form-control" />
+            </label>
+        </div>
+
+        <button @onclick="async () => await OnAddClick()">Add</button>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Name
+                    </th>
+                    <th>
+                        Unique Name
+                    </th>
+                    <th>
+                        Order
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in PlayerClasses)
+                {
+                    <tr>
+                        <td>
+                            @item.Name
+                        </td>
+                        <td>
+                            @item.UniqueName
+                        </td>
+                        <td>
+                            @item.Order
+                        </td>
+                        <td>
+                            <button @onclick="async () => await OnDeleteClick(item.ID)">Delete</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+</div>

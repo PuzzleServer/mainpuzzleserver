@@ -35,6 +35,16 @@ namespace ServerCore.Helpers
         }
 
         /// <summary>
+        /// Returns whether the user is an admin of the event containing this puzzle
+        /// </summary>
+        /// <param name="puzzle">The puzzle that's being checked</param>
+        /// <param name="puzzleServerContext">Current PuzzleServerContext</param>
+        public static Task<bool> IsAdminOfPuzzle(PuzzleServerContext dbContext, Puzzle puzzle, PuzzleUser user)
+        {
+            return dbContext.EventAdmins.Where(ea => ea.Admin.ID == user.ID && ea.Event.ID == puzzle.Event.ID).AnyAsync();
+        }
+
+        /// <summary>
         /// Returns the the team for the given player
         /// </summary>
         /// <param name="dbContext">Current PuzzleServerContext</param>
@@ -80,6 +90,19 @@ namespace ServerCore.Helpers
         {
             PuzzleUser pUser = await PuzzleUser.GetPuzzleUserForCurrentUser(puzzleServerContext, user, userManager);
             return await GetTeamForPlayer(puzzleServerContext, thisEvent, pUser.ID);
+        }
+
+        /// <summary>
+        /// Gets the TeamMember object for the given player and event
+        /// </summary>
+        public static async Task<TeamMembers> GetTeamMemberForPlayer(PuzzleServerContext puzzleServerContext, Event thisEvent, int userId)
+        {
+            if (thisEvent == null)
+            {
+                return null;
+            }
+
+            return await puzzleServerContext.TeamMembers.Where(t => t.Member.ID == userId && t.Team.Event.ID == thisEvent.ID).FirstOrDefaultAsync();
         }
 
         /// <summary>

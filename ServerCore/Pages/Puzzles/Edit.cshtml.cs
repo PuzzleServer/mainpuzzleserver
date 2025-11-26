@@ -292,9 +292,9 @@ namespace ServerCore.Pages.Puzzles
             return RedirectToPage();
         }
 
-        public async Task<IActionResult> OnGetRemoveAuthorOrSupportAsync(int puzzleId, int support)
+        public async Task<IActionResult> OnGetRemoveAuthorOrSupportAsync(int puzzleId, int authorOrSupport)
         {
-            PuzzleAuthors toRemove = await _context.PuzzleAuthors.Where(m => m.PuzzleID == puzzleId && m.AuthorID == support).FirstOrDefaultAsync();
+            PuzzleAuthors toRemove = await _context.PuzzleAuthors.Where(m => m.PuzzleID == puzzleId && m.AuthorID == authorOrSupport).FirstOrDefaultAsync();
 
             if (toRemove != null)
             {

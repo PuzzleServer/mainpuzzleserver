@@ -94,7 +94,7 @@ namespace ServerCore.Pages.Puzzles
                     return Forbid();
                 }
 
-                PuzzleName = puzzle.Name;
+                PuzzleName = puzzle.PlaintextName;
 
                 Dictionary<int, string> playerIdToTeamName = _context.TeamMembers
                     .Where(teamMember => teamMember.Team.Event == Event)

@@ -29,5 +29,11 @@ namespace ServerCore.Pages.Events
             await LiveEventHelper.DeleteLiveEventSchedule(PuzzleServerContext, EventId);
             await LiveEventHelper.GenerateScheduleForLiveEvents(PuzzleServerContext, Event, bigTeamsFirst: true);
         }
+
+        private async Task RegenerateScheduleRandomlyAsync(MouseEventArgs _)
+        {
+            await LiveEventHelper.DeleteLiveEventSchedule(PuzzleServerContext, EventId);
+            await LiveEventHelper.GenerateScheduleForLiveEvents(PuzzleServerContext, Event, bigTeamsFirst: false);
+        }
     }
 }

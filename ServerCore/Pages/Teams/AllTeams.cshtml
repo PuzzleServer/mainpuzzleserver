@@ -11,11 +11,15 @@
 <h2>All teams</h2>
 @if(Model.PlayerNotOnTeam)
 {
-<p>
-    You are not yet part of a team. To join a team, go to the register page.
-</p>
+    <p>
+        You are not yet part of a team. To join a team, go to the register page.
+    </p>
 }
 Registered Teams: <b>@Model.Teams.Count/@Model.Event.MaxNumberOfTeams</b>, Registered Players: <b>@Model.PlayerCount/@(Model.Event.MaxNumberOfTeams * Model.Event.MaxTeamSize)</b>
+@if (Model.Event.AllowsRemoteTeams)
+{
+    <p>Local Teams: <b>@Model.Teams.Where(t => !t.IsRemoteTeam).Count()/@Model.Event.MaxNumberOfLocalTeams</b>, Remote Teams: <b>@Model.Teams.Where(t => t.IsRemoteTeam).Count()/@Model.Event.MaxNumberOfRemoteTeams</b></p>
+}
 <table class="table">
     <thead>
         <tr>
@@ -26,8 +30,14 @@ Registered Teams: <b>@Model.Teams.Count/@Model.Event.MaxNumberOfTeams</b>, Regis
                 Team size
             </th>
             @if (Model.EventRole == ModelBases.EventRole.admin ||
-               Model.EventRole == ModelBases.EventRole.author)
+              Model.EventRole == ModelBases.EventRole.author)
             {
+                @if (Model.Event.AllowsRemoteTeams)
+                {
+                    <th>
+                        Team Location
+                    </th>
+                }
             <th>
                 Qualification Status
             </th>
@@ -47,8 +57,19 @@ Registered Teams: <b>@Model.Teams.Count/@Model.Event.MaxNumberOfTeams</b>, Regis
                 @if (Model.EventRole == ModelBases.EventRole.admin ||
                      Model.EventRole == ModelBases.EventRole.author)
                 {
+                    @if (Model.Event.AllowsRemoteTeams)
+                    {
+                        @if (item.IsRemoteTeam)
+                        {
+                            <td>Remote</td>
+                        }
+                        else
+                        {
+                            <td>Local</td>
+                        }
+                    }
                     <td>
-                    if (item.IsDisqualified)
+                    @if (item.IsDisqualified)
                     {
                         <text>Disqualified</text>
                     }

@@ -159,9 +159,9 @@ namespace ServerCore.Pages.Submissions
             IQueryable<SubmissionView> submissionViewQ = submissionsQ
                 .Select((s) => new SubmissionView
                 {
-                    SubmitterName = s.Submitter.Name,
+                    SubmitterName = String.IsNullOrEmpty(s.SubmitterDisplayName) ? s.Submitter.Name : s.Submitter.Name + ", " + s.SubmitterDisplayName,
                     PuzzleID = s.Puzzle.ID,
-                    PuzzleName = s.Puzzle.Name,
+                    PuzzleName = s.Puzzle.PlaintextName,
                     IsFreeform = s.Puzzle.IsFreeform,
                     SubmissionText = s.Puzzle.IsFreeform ? s.UnformattedSubmissionText : s.SubmissionText,
                     ResponseText = s.Response == null ? null : s.Response.ResponseText,

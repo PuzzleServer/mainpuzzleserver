@@ -38,7 +38,7 @@
             @if (Event?.AllowBlazor == true && Event?.EphemeralHackKillNotifications != true)
             {
                 <a class="nav-link position-relative" asp-page="/Events/Notifications">
-                    <span class="fab text-white">✉️</span>
+                    <span class="fab text-white">🔔</span>
                     <span id="unreadCounter" class="position-absolute hidden top-0 start-50 translate-middle badge rounded-pill bg-danger">1</span>
                 </a>
             }
@@ -67,6 +67,10 @@
                                 <li><a class="dropdown-item" asp-page="/Events/Standings">Standings</a></li>
                                 <li><a class="dropdown-item" asp-page="/Events/FastestSolves">Fastest solves</a></li>
                                 <li><a class="dropdown-item" asp-page="/Events/Map">Puzzle state map</a></li>
+                                @if (Event.ShouldShowSinglePlayerPuzzles)
+                                {
+                                    <li><a class="dropdown-item" asp-page="/Events/SinglePlayerPuzzleStateMap">Single player puzzle state map</a></li>
+                                }
                                 <li><a class="dropdown-item" asp-page="/Events/PlayerSubmissions">Shared submissions</a></li>
                             </ul>
                         </div>
@@ -123,7 +127,7 @@
             @if (Event?.AllowBlazor == true && Event?.EphemeralHackKillNotifications != true)
             {
                 <a class="nav-link position-relative" asp-page="/Events/Notifications">
-                    <span class="fab text-white">✉️</span>
+                    <span class="fab text-white">🔔</span>
                     <span id="unreadCounter" class="position-absolute hidden top-0 start-50 translate-middle badge rounded-pill bg-danger">1</span>
                 </a>
             }
@@ -187,7 +191,7 @@
             @if (Event?.AllowBlazor == true && Event?.EphemeralHackKillNotifications != true)
             {
                 <a class="nav-link position-relative" asp-page="/Events/Notifications">
-                    <span class="fab text-white">✉️</span>
+                    <span class="fab text-white">🔔</span>
                     <span id="unreadCounter" class="position-absolute hidden top-0 start-50 translate-middle badge rounded-pill bg-danger">1</span>
                 </a>
             }
@@ -358,7 +362,6 @@
     </nav>
 }
 <!--UNREGISTERED PLAYER NAV BAR END-->
-
 @if (Event?.AllowBlazor == true && Event?.EphemeralHackKillNotifications != true)
 {
     <script>
@@ -425,6 +428,7 @@
                 notificationList.innerHTML = "";
                 criticalEventToasts = JSON.parse(localStorage.getItem("userToasts-@(Model.Event.ID)-critical"));
                 if (criticalEventToasts) { for (const [key, value] of Object.entries(criticalEventToasts)) { popToast(notificationList, value, false, false); } }
+                else { criticalEventToasts = {}; }
                 newToastCount = localStorage.getItem("userToasts-@(Model.Event.ID)-new");
                 newToastCount = newToastCount ? parseInt(newToastCount) : 0;
                 updateToastCount();

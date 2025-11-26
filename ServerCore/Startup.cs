@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using Azure.Data.Tables;
+using Azure.Data.Tables.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -67,7 +70,9 @@ namespace ServerCore
                 }
             });
 
-            services.AddServerSideBlazor();
+            services.AddRazorComponents()
+                    .AddInteractiveServerComponents()
+                    .AddInteractiveWebAssemblyComponents();
 
             DeploymentConfiguration.ConfigureDatabase(Configuration, services, _hostEnv);
             FileManager.ConnectionString = Configuration.GetConnectionString("AzureStorageConnectionString");
@@ -164,9 +169,15 @@ namespace ServerCore
         {
             if (env.IsDevelopment() && String.IsNullOrEmpty(Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME")))
             {
+                app.UseWebAssemblyDebugging();
                 app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
                 PuzzleServerContext.UpdateDatabase(app);
+                TableServiceClient syncTableClient = new TableServiceClient(Configuration.GetConnectionString("AzureStorageConnectionString"));
+                syncTableClient.CreateTableIfNotExists("PuzzleSyncData");
+                TableServiceProperties tableServiceProperties = new TableServiceProperties();
+                tableServiceProperties.Cors.Add(new TableCorsRule("*", "GET,POST,PATCH,FETCH,PUT", "*", "*", Int32.MaxValue));
+                syncTableClient.SetProperties(tableServiceProperties);
             }
             else if (env.IsStaging() && Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") == "PuzzleServerTestDeploy")
             {
@@ -204,9 +215,15 @@ namespace ServerCore
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseAntiforgery();
+
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapBlazorHub();
+                endpoints.MapRazorComponents<App>()
+                    .AddInteractiveServerRenderMode()
+                    .AddInteractiveWebAssemblyRenderMode()
+                    .AddAdditionalAssemblies(typeof(ClientSyncComponent.Client._Imports).Assembly);
+
                 endpoints.MapHub<ServerMessageHub>("/serverMessage");
             });
 

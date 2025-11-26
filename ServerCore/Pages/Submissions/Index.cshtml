@@ -6,7 +6,7 @@
 
     if (Model.Event.EmbedPuzzles)
     {
-        ViewData["Title"] = Model.Puzzle.Name;
+        ViewData["Title"] = Model.Puzzle.PlaintextName;
     }
     else
     {
@@ -25,7 +25,7 @@
     int embedType = 0; // Nothing
     if (Model.Puzzle.CustomURL != null)
     {
-        puzzleFilePath = @PuzzleHelper.GetFormattedUrl(Model.Puzzle, Model.Event.ID);
+        puzzleFilePath = @PuzzleHelper.GetFormattedUrl(Model.Puzzle, Model.Event.ID, Model.LoggedInUser.ID, Model.Team?.Password, Model.ActivePlayerClass);
     }
     else if (Model.Puzzle.PuzzleFile != null)
     {
@@ -540,6 +540,11 @@ else
                 }
             </div>
             <div class="inlinewrapper">
+                @if (Model.Event.HasPlayerClasses)
+                {
+                    <div><b>@Model.Event.PlayerClassName: @Model.ActivePlayerClassDisplay - </b> <a asp-page="/Teams/Details" asp-route-teamId="@Model.Team.ID" target="_blank">@Model.Event.PlayerClassName Override</a></div>
+                }
+
                 @if (!Model.Event.HideHints)
                 {
                     if (Model.Puzzle.IsForSinglePlayer)
@@ -573,7 +578,18 @@ else
                 {
                     <div><b>Want to print?</b> <a href="@puzzleFilePath" target="_blank" download>Click this link</a> to download the file. Please allow popups!</div>
                 }
-
+                
+                @if (!Model.IsPuzzleForSinglePlayer && !Model.Event.EphemeralHackKillSync)
+                {
+                    <component type="typeof(ClientSyncComponent.Client.Pages.ClientSyncComponent)" render-mode="WebAssembly"
+                    param-PuzzleUserId="@Model.LoggedInUser.ID"
+                    param-TeamId="@Model.Team.ID"
+                    param-PuzzleId="@Model.Puzzle.ID"
+                    param-TableSASUrl="@Model.SyncTableSasUrl"
+                    param-PuzzleUnlockTimeUtc="(DateTimeOffset?)@Model.PuzzleState.UnlockedTime"
+                    param-EventEndTimeUtc="(DateTimeOffset)@Model.Event.AnswerSubmissionEnd"
+                    />
+                }
                 @if (!Model.IsPuzzleForSinglePlayer && Model.Event.AllowBlazor && !Model.Event.EphemeralHackKillPresence)
                 {
                     <div>
@@ -624,7 +640,7 @@ else
         {
             <div class="alert alert-danger" role="alert">
                 <h4>Answer Submission Locked</h4>
-                <span>You're in global lockout until time expires on <a href="./@Model.PuzzlesCausingGlobalLockout[0].ID" target="_blank">@Model.PuzzlesCausingGlobalLockout[0].Name</a>, or it is solved. @(Model.IsPuzzleForSinglePlayer ? "" : "Go help your teammates with that puzzle!")</span>
+                <span>You're in global lockout until time expires on <a asp-Page="/Submissions/Index" asp-route-puzzleid="@Model.PuzzlesCausingGlobalLockout[0].ID" target="_blank">@Model.PuzzlesCausingGlobalLockout[0].Name</a>, or it is solved. @(Model.IsPuzzleForSinglePlayer ? "" : "Go help your teammates with that puzzle!")</span>
             </div>
         }
         else if (Model.PuzzleState.UnlockedTime == null)
@@ -741,7 +757,7 @@ else
                 urlSuffix += "?";
             }
             urlSuffix += "embed=true";
-            <iframe id="puzzle-frame" class="unsized" title="@Model.Puzzle.Name" sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-downloads" src="@puzzleFilePath@urlSuffix"></iframe>
+            <iframe id="puzzle-frame" class="unsized" title="@Model.Puzzle.Name" sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-downloads allow-modals allow-forms" src="@puzzleFilePath@urlSuffix"></iframe>
             break;
         case 4: // Images
             <img id="img-frame" src="@puzzleFilePath" alt="An image containing a puzzle" />
@@ -808,12 +824,21 @@ else
                 // Add the Submit button click handler
                 // Submission conversion mirrors what takes place in DataModel\Response::FormatSubmission
                 // For local testing, set host to http://localhost:44319
-                // Note that AllowFreeformSharing uses string trickery due to C# returning a Boolean value instead of a boolean value
                 const submit = document.querySelector("#submitButton");
                 async function submitClickHandler (e) {
                     const rawText = document.querySelector("#submitBox").value;
                     const cleanedText = rawText.normalize("NFKD").replace(/[^a-zA-Z\d]/gi, "").toUpperCase();
-                    let submission = {SubmissionText: cleanedText, AllowFreeformSharing: @Model.Puzzle.IsFreeform.ToString().ToLower()};
+                    const submissionText = @Model.Puzzle.IsFreeform.ToString().ToLower() ? rawText : cleanedText;
+
+                    const freeformBoxes = document.getElementsByName("allowFreeformSharing");
+                    let allowFreeformSharing = false;
+                    if (freeformBoxes.length > 0) {
+                        // If the puzzle is freeform, check the box to allow sharing
+                        // Otherwise, default to false
+                        allowFreeformSharing = freeformBoxes[0].checked;
+                    }
+
+                    let submission = {SubmissionText: submissionText, AllowFreeformSharing: allowFreeformSharing};
                     const response = await fetch("/api/puzzleapi/submitanswer/@Model.Event.ID/@Model.Puzzle.ID", {
                         method: "POST", mode: "cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(submission), credentials: "include"});
                     const responseData = await response.json();
@@ -878,6 +903,10 @@ else
                         case 10: // Duplicate submission
                             updateVal = `<div class="alert alert-warning" role="alert">You've already submitted ` + cleanedText + `.</div>`;
                             break;
+                        case 11: // Global lockout
+                            updateVal = `<div class="alert alert-danger" role="alert"><h4>Answer Submission Locked</h4><span>You're in global lockout until time expires on a different puzzle or it is solved, see the puzzle list for which one. @(Model.IsPuzzleForSinglePlayer ? "" : "Go help your teammates with that puzzle!")</span></div>`;
+                            break;
+
                     }
                     messageArea.innerHTML = updateVal;
 
@@ -896,7 +925,7 @@ else
                         wrapper.appendChild(name);
                         const text = document.createElement("div");
                         text.classList.add("panelitem");
-                        text.innerText = cleanedText;
+                        text.innerText = submissionText;
                         wrapper.appendChild(text);
                         const resp = document.createElement("div");
                         resp.classList.add("panelitem");

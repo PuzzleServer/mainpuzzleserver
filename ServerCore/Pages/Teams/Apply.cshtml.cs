@@ -67,7 +67,14 @@ namespace ServerCore.Pages.Teams
                 {
                     if(!(await LoggedInUser.IsRegisteredForEvent(_context, Event)))
                     {
-                        return RedirectToPage("/Player/Create");
+                        if (EventHelper.EventRequiresActivePlayerRegistration(Event))
+                        {
+                            return RedirectToPage("/Player/Create");
+                        }
+                        else
+                        {
+                            await EventHelper.RegisterPlayerForEvent(_context, Event, LoggedInUser);
+                        }
                     }
                     return RedirectToPage("./Details", new { teamId = teamID });
                 }

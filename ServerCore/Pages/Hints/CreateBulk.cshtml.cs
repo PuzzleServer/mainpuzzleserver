@@ -47,7 +47,8 @@ namespace ServerCore.Pages.Hints
 
         public async Task<IActionResult> OnPostAsync(int puzzleId)
         {
-            if (!ModelState.IsValid)
+            Puzzle = await _context.Puzzles.Where(m => m.ID == puzzleId).FirstOrDefaultAsync();
+            if (Puzzle == null || !ModelState.IsValid)
             {
                 return Page();
             }

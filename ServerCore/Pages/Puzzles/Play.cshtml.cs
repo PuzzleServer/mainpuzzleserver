@@ -47,6 +47,8 @@ namespace ServerCore.Pages.Puzzles
 
         public bool HasLiveEvents { get; set; }
 
+        public string LoggedInPlayerClass { get; set; }
+
         public async Task OnGetAsync(
             SortOrder? teamPuzzleSort,
             SortOrder? singlePlayerPuzzleSort,
@@ -85,6 +87,7 @@ namespace ServerCore.Pages.Puzzles
             }
 
             Team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
+
             if (Team != null)
             {
                 await PuzzleStateHelper.CheckForTimedUnlocksAsync(_context, Event, Team);
@@ -93,6 +96,12 @@ namespace ServerCore.Pages.Puzzles
                 if (!AnyErrata)
                 {
                     AnyErrata = VisibleTeamPuzzleViews.Any(v => v.Errata != null);
+                }
+
+                if (Event.HasPlayerClasses)
+                {
+                    TeamMembers tm = _context.TeamMembers.Where(tm => tm.Team == Team && tm.Member == LoggedInUser).FirstOrDefault();
+                    LoggedInPlayerClass = PlayerClassHelper.GetActiveClassForPlayer(Event,tm)?.UniqueName ?? "";
                 }
             }
 
@@ -187,6 +196,15 @@ namespace ServerCore.Pages.Puzzles
             // all puzzles for this event that are real puzzles
             var puzzlesInEventQ = _context.Puzzles.Where(puzzle => puzzle.Event.ID == this.Event.ID && puzzle.IsPuzzle && !puzzle.IsForSinglePlayer);
 
+            if (team.IsRemoteTeam)
+            {
+                puzzlesInEventQ = puzzlesInEventQ.Where(puzzle => puzzle.Availability == Puzzle.PuzzleAvailability.AllPlayers || puzzle.Availability == Puzzle.PuzzleAvailability.RemoteOnly);
+            }
+            else
+            {
+                puzzlesInEventQ = puzzlesInEventQ.Where(puzzle => puzzle.Availability == Puzzle.PuzzleAvailability.AllPlayers || puzzle.Availability == Puzzle.PuzzleAvailability.LocalOnly);
+            }
+                
             // unless we're in a global lockout, then filter to those!
             var puzzlesCausingGlobalLockoutQ = PuzzleStateHelper.PuzzlesCausingGlobalLockout(_context, Event, team);
             if (await puzzlesCausingGlobalLockoutQ.AnyAsync())

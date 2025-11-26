@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.IdentityModel.Tokens;
 using ServerCore.DataModel;
 using ServerCore.ModelBases;
 
@@ -35,6 +36,16 @@ namespace ServerCore.Helpers
                         throw new Exception("You are already on a team. Leave that team before creating a new one");
                     }
 
+                    if (ev.MaxNumberOfRemoteTeams > 0 && team.IsRemoteTeam && await context.Teams.Where((t) => t.Event == ev && t.IsRemoteTeam).CountAsync() >= ev.MaxNumberOfRemoteTeams)
+                    {
+                        throw new Exception("Remote team registration is full. No further remote teams may be created at the present time.");
+                    }
+
+                    if (ev.MaxNumberOfLocalTeams > 0 && !team.IsRemoteTeam && await context.Teams.Where((t) => t.Event == ev && !t.IsRemoteTeam).CountAsync() >= ev.MaxNumberOfLocalTeams)
+                    {
+                        throw new Exception("Local team registration is full. No further local teams may be created at the present time.");
+                    }
+
                     if (await context.Teams.Where((t) => t.Event == ev).CountAsync() >= ev.MaxNumberOfTeams)
                     {
                         throw new Exception("Registration is full. No further teams may be created at the present time.");
@@ -42,11 +53,22 @@ namespace ServerCore.Helpers
 
                     PuzzleUser user = await context.PuzzleUsers.SingleAsync(m => m.ID == userId);
 
+                    if (!(await user.IsRegisteredForEvent(context, ev)) && !(EventHelper.EventRequiresActivePlayerRegistration(ev)))
+                    {
+                        await EventHelper.RegisterPlayerForEvent(context, ev, user);
+                    }
+
                     TeamMembers teamMember = new TeamMembers()
                     {
                         Team = team,
                         Member = user
                     };
+
+                    if (ev.HasPlayerClasses)
+                    {
+                        await PlayerClassHelper.AssignRandomPlayerClass(context, teamMember, ev, EventRole.play);
+                    }
+
                     context.TeamMembers.Add(teamMember);
                     await TeamHelper.OnTeamMemberChange(context, team);
                 }
@@ -84,8 +106,8 @@ namespace ServerCore.Helpers
                                       where teamMember.Team == team
                                       select teamMember.Member.Email).ToListAsync();
             var applicationEmails = await (from app in context.TeamApplications
-                                      where app.Team == team
-                                      select app.Player.Email).ToListAsync();
+                                           where app.Team == team
+                                           select app.Player.Email).ToListAsync();
 
             var puzzleStates = from puzzleState in context.PuzzleStatePerTeam
                                where puzzleState.TeamID == team.ID
@@ -109,16 +131,16 @@ namespace ServerCore.Helpers
 
             var liveEventSchedules = from liveEventSchedule in context.LiveEventsSchedule
                                      where liveEventSchedule.Team == team
-                                    select liveEventSchedule;
+                                     select liveEventSchedule;
             context.LiveEventsSchedule.RemoveRange(liveEventSchedules);
 
             IEnumerable<Message> messages = from message in context.Messages
-                                      where message.Team == team
-                                      select message;
+                                            where message.Team == team
+                                            select message;
             context.Messages.RemoveRange(messages);
 
             var rooms = context.Rooms.Where(r => r.TeamID == team.ID).ToList();
-            foreach(var r in rooms)
+            foreach (var r in rooms)
             {
                 r.TeamID = null;
                 r.Team = null;
@@ -186,7 +208,7 @@ namespace ServerCore.Helpers
                 return new Tuple<bool, string>(false, $"Could not find user with ID '{userId}'. Check to make sure the user hasn't been removed.");
             }
 
-            if (user.EmployeeAlias == null && currentTeamMembers.Where((m) => m.Member.EmployeeAlias == null).Count() >= Event.MaxExternalsPerTeam)
+            if (!team.IsRemoteTeam && user.EmployeeAlias == null && currentTeamMembers.Where((m) => m.Member.EmployeeAlias == null).Count() >= Event.MaxExternalsPerTeam)
             {
                 return new Tuple<bool, string>(false, $"The team '{team.Name}' is already at its maximum count of non-employee players, and '{user.Email}' has no registered alias.");
             }
@@ -197,6 +219,16 @@ namespace ServerCore.Helpers
                        select teamMember).AnyAsync())
             {
                 return new Tuple<bool, string>(false, $"'{user.Email}' is already on a team in this event.");
+            }
+
+            // If some flow got here without registering the player for the event, do it now
+            // This only applies to events that don't require active registration since events that do require it will prompt on the nav bar
+            if (!EventHelper.EventRequiresActivePlayerRegistration(Event))
+            {
+                if(await UserEventHelper.GetPlayerInEvent(context, Event, user) == null)
+                {
+                    await EventHelper.RegisterPlayerForEvent(context, Event, user);
+                }
             }
 
             TeamMembers Member = new TeamMembers();
@@ -210,20 +242,64 @@ namespace ServerCore.Helpers
                                   select app;
             context.TeamApplications.RemoveRange(allApplications);
 
+            // If event has PlayerClasses: Assign the user a random available PlayerClass
+            // This ensures that they have some class when the event starts
+            // Better flow for picking their own class TBD
+            PlayerClass playerClass = null;
+
+            if (Event.HasPlayerClasses)
+            {
+                // If an admin is adding the player to the team try to get a class that hasn't been assigned, if that isn't possible then pick a random duplicate class
+                if (EventRole == EventRole.admin)
+                {
+                    var available = await PlayerClassHelper.GetAvailablePlayerClasses(context, Event.ID, EventRole.play, team.ID);
+
+                    if (available.IsNullOrEmpty())
+                    {
+                        available = await PlayerClassHelper.GetAvailablePlayerClasses(context, Event.ID, EventRole.admin, team.ID);
+                    }
+
+                    playerClass = PlayerClassHelper.GetRandomPlayerClassFromAvailable(available);
+                }
+                else
+                {
+                    playerClass = await PlayerClassHelper.GetRandomPlayerClassFromAvailable(context, Event.ID, EventRole, teamId);
+                }
+
+                Member.Class = playerClass;
+            }
+
             context.TeamMembers.Add(Member);
             await TeamHelper.OnTeamMemberChange(context, team);
             await context.SaveChangesAsync();
 
+            string emailBody = $"Have a great time!";
+
+            if (Event.HasPlayerClasses)
+            {
+                if (playerClass != null)
+                {
+                    emailBody = $"This event has assigned a {Event.PlayerClassName} for each player. " +
+                        $"You have been assigned the {Event.PlayerClassName} of {playerClass.Name}. " +
+                        $"To change this {Event.PlayerClassName} go to Teams -> My Team on the website.\r\n{emailBody}";
+                }
+                else
+                {
+                    emailBody = $"This event has assigned a {Event.PlayerClassName} for each player. " +
+                        $"Please go to Teams -> My Team on the website to choose your {Event.PlayerClassName}!\r\n{emailBody}";
+                }
+            }
+
             MailHelper.Singleton.SendPlaintextWithoutBcc(new string[] { team.PrimaryContactEmail, user.Email },
                 $"{Event.Name}: {user.Name} has now joined {team.Name}!",
-                $"Have a great time!");
+                emailBody);
 
             var teamCount = await context.TeamMembers.Where(members => members.Team.ID == team.ID).CountAsync();
             if (teamCount >= Event.MaxTeamSize)
             {
                 var extraApplications = await (from app in context.TeamApplications
-                                        where app.Team == team
-                                        select app).ToListAsync();
+                                               where app.Team == team
+                                               select app).ToListAsync();
                 context.TeamApplications.RemoveRange(extraApplications);
 
                 var extraApplicationMails = from app in extraApplications
@@ -314,12 +390,14 @@ namespace ServerCore.Helpers
                             rune.Value != 0x2062 && // Disallow invisible times
                             rune.Value != 0x2063 && // Disallow invisible separator
                             rune.Value != 0x2064 && // Disallow invisible plus
-                            rune.Value != 0xFEFF) { // Disallow zero-width no-break space
+                            rune.Value != 0xFEFF)
+                        { // Disallow zero-width no-break space
                             newString.Append(rune.ToString());
                         }
                         break;
                     case UnicodeCategory.SpaceSeparator:
-                        if (rune.Value == 0x20) { // Allow regular spaces
+                        if (rune.Value == 0x20)
+                        { // Allow regular spaces
                             newString.Append(rune.ToString());
                         }
                         break;

@@ -5,23 +5,26 @@
         <div class="btn-group" role="group">
         @if (CanCreateTeam)
         {
-            <InputRadio Name="SignupPicker" Value="@SignupStrategy.Create.ToString()" class="btn-check" id="create" />
+            <InputRadio Name="SignupPicker" Value="@SignupStrategy.Create" class="btn-check" id="create" />
             <label class="btn btn-outline-primary" for="create">
                 Create a team
             </label>
         }
         @if (CanJoinTeam)
         {
-            <InputRadio Name="SignupPicker" Value="@SignupStrategy.Join.ToString()" class="btn-check" id="join" />
+            <InputRadio Name="SignupPicker" Value="@SignupStrategy.Join" class="btn-check" id="join" />
             <label class="btn btn-outline-primary" for="join">
                 Apply for an existing team
             </label>
 
             @* Limit auto teams to FTEs and interns if there's a minimum so it always builds teams that meet the minimums *@
             @if (EventRole == ModelBases.EventRole.play && 
-            ((Event != null && Event.MaxExternalsPerTeam >= Event.MaxTeamSize) || IsMicrosoft))
+            ((Event != null && Event.MaxExternalsPerTeam >= Event.MaxTeamSize) ||
+            IsMicrosoft ||
+            (Event != null && Event.AllowsRemoteTeams))
+            )
             {
-                <InputRadio Name="SignupPicker" Value="@SignupStrategy.Auto.ToString()" class="btn-check" id="auto" />
+                <InputRadio Name="SignupPicker" Value="@SignupStrategy.Auto" class="btn-check" id="auto" />
                 <label class="btn btn-outline-primary" for="auto">
                     Choose a team for me
                 </label>
@@ -47,7 +50,7 @@
         <JoinTeam Event="@Event" EventRole="@EventRole" LoggedInUserId="@LoggedInUserId" />
         break;
     case SignupStrategy.Auto:
-        <AutoTeam Event="@Event" EventRole="@EventRole" LoggedInUserId="@LoggedInUserId" />
+        <AutoTeam Event="@Event" EventRole="@EventRole" LoggedInUserId="@LoggedInUserId" IsMicrosoft="@IsMicrosoft" />
         break;
     case SignupStrategy.None:
         break;

@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Azure.Data.Tables;
+using Azure.Data.Tables.Sas;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -44,6 +46,12 @@ namespace ServerCore.Pages.Submissions
 
         public Team Team { get; set; }
 
+        public TeamMembers CurrentTeamMember { get; set; }
+
+        public string ActivePlayerClass { get; set; }
+
+        public string ActivePlayerClassDisplay { get; set; }
+
         public string AnswerToken { get; set; }
 
         public IList<Puzzle> PuzzlesCausingGlobalLockout { get; set; }
@@ -58,6 +66,8 @@ namespace ServerCore.Pages.Submissions
         public string FileStoragePrefix { get; set; }
 
         public string PossibleMaterialFile { get; set; }
+
+        public Uri SyncTableSasUrl { get; set; }
 
         public class SubmissionView
         {
@@ -226,7 +236,7 @@ namespace ServerCore.Pages.Submissions
                     var authors = await _context.PuzzleAuthors.Where((pa) => pa.Puzzle == submission.Puzzle).Select((pa) => pa.Author.Email).ToListAsync();
                     string affectedEntity = IsPuzzleForSinglePlayer ? $"User {LoggedInUser.Name ?? LoggedInUser.Email}" : $"Team {Team.Name}";
                     MailHelper.Singleton.SendPlaintextBcc(authors,
-                        $"{Event.Name}: {affectedEntity} is in email mode for {submission.Puzzle.Name}",
+                        $"{Event.Name}: {affectedEntity} is in email mode for {submission.Puzzle.PlaintextName}",
                         "");
                 }
                 else
@@ -277,7 +287,7 @@ namespace ServerCore.Pages.Submissions
             {
                 Submission = submission,
                 Response = submission.Response,
-                SubmitterName = LoggedInUser.Name,
+                SubmitterName = String.IsNullOrEmpty(submission.SubmitterDisplayName) ? submission.Submitter.Name : submission.SubmitterDisplayName,
                 IsFreeform = Puzzle.IsFreeform
             });
 
@@ -308,7 +318,7 @@ namespace ServerCore.Pages.Submissions
                 .Where(pa => pa.Puzzle.ID == Puzzle.ID)
                 .Select(pa => pa.Author).ToArrayAsync();
 
-            string claimMessage = $"{LoggedInUser.Name} has claimed {Puzzle.Name} for testing.";
+            string claimMessage = $"{LoggedInUser.Name} has claimed {Puzzle.PlaintextName} for testing.";
             foreach (var author in authors)
             {
                 await messageHub.SendNotification(author, "Puzzle Claimed", claimMessage);
@@ -321,6 +331,14 @@ namespace ServerCore.Pages.Submissions
         private async Task SetupContext(int puzzleId)
         {
             Team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
+
+            if (Event.HasPlayerClasses)
+            {
+                CurrentTeamMember = await UserEventHelper.GetTeamMemberForPlayer(_context, Event, LoggedInUser.ID);
+                PlayerClass pc = PlayerClassHelper.GetActiveClassForPlayer(Event, CurrentTeamMember);
+                ActivePlayerClass = pc?.UniqueName ?? "";
+                ActivePlayerClassDisplay = pc?.Name ?? "";
+            }
 
             Puzzle = await _context.Puzzles.Where(
                 (p) => p.ID == puzzleId).FirstOrDefaultAsync();
@@ -344,7 +362,7 @@ namespace ServerCore.Pages.Submissions
                                          {
                                              Submission = submission,
                                              Response = response,
-                                             SubmitterName = LoggedInUser.Name,
+                                             SubmitterName = String.IsNullOrEmpty(submission.SubmitterDisplayName) ? submission.Submitter.Name : submission.SubmitterDisplayName,
                                              FreeformReponse = submission.FreeformResponse,
                                              IsFreeform = Puzzle.IsFreeform
                                          }).ToListAsync();
@@ -353,6 +371,22 @@ namespace ServerCore.Pages.Submissions
             }
             else
             {
+                if (!Event.EphemeralHackKillSync)
+                {
+                    string partitionKey = $"{Puzzle.ID}_{Team.ID}";
+                    TableSasBuilder sasBuilder = new TableSasBuilder
+                    {
+                        ExpiresOn = DateTimeOffset.UtcNow.AddDays(7.0),
+                        PartitionKeyStart = partitionKey,
+                        PartitionKeyEnd = partitionKey,
+                        TableName = "PuzzleSyncData",
+                    };
+                    sasBuilder.SetPermissions(TableSasPermissions.All);
+                    TableServiceClient tableServiceClient = new TableServiceClient(FileManager.ConnectionString);
+                    TableClient tableClient = tableServiceClient.GetTableClient("PuzzleSyncData");
+                    SyncTableSasUrl = tableClient.GenerateSasUri(sasBuilder);
+                }
+
                 Team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
 
                 PuzzleState = await (PuzzleStateHelper
@@ -374,7 +408,7 @@ namespace ServerCore.Pages.Submissions
                                          {
                                              Submission = submission,
                                              Response = response,
-                                             SubmitterName = user.Name,
+                                             SubmitterName = String.IsNullOrEmpty(submission.SubmitterDisplayName) ? submission.Submitter.Name : submission.SubmitterDisplayName,
                                              FreeformReponse = submission.FreeformResponse,
                                              IsFreeform = Puzzle.IsFreeform
                                          }).ToListAsync();

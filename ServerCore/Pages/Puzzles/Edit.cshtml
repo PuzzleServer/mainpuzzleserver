@@ -89,6 +89,16 @@
                                 </div>
                             </div>
                             <div class="form-group">
+                                <label>
+                                    <select asp-for="Puzzle.Availability">
+                                        <option value="0" selected>All Players</option>
+                                        <option value="1">Remote Teams Only</option>
+                                        <option value="2">Local Teams Only</option>
+                                    </select>
+                                    Availability (Team Puzzles Only)
+                                </label>
+                            </div>
+                            <div class="form-group">
                                 <label asp-for="Puzzle.SolveValue" class="control-label"></label>
                                 <input asp-for="Puzzle.SolveValue" class="form-control" />
                                 <span asp-validation-for="Puzzle.SolveValue" class="text-danger"></span>
@@ -335,7 +345,7 @@
                                 @(author.Name)
                             </td>
                             <td>
-                                <a asp-page-handler="RemoveAuthorOrSupport" asp-route-id="@Model.Puzzle.ID" asp-route-author="@(author.ID)">Remove</a>
+                                <a asp-page-handler="RemoveAuthorOrSupport" asp-route-id="@Model.Puzzle.ID" asp-route-authorOrSupport="@(author.ID)">Remove</a>
                             </td>
                         </tr>
                     }
@@ -368,7 +378,7 @@
                                 @(support.Name)
                             </td>
                             <td>
-                                <a asp-page-handler="RemoveAuthorOrSupport" asp-route-id="@Model.Puzzle.ID" asp-route-support="@(support.ID)">Remove</a>
+                                <a asp-page-handler="RemoveAuthorOrSupport" asp-route-id="@Model.Puzzle.ID" asp-route-authorOrSupport="@(support.ID)">Remove</a>
                             </td>
                         </tr>
                     }

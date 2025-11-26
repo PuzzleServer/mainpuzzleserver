@@ -37,6 +37,22 @@ namespace ServerCore.Pages.Teams
             Ascend
         }
 
+        private HashSet<string> NonAliasStrings = new HashSet<string>
+        {
+            "na",
+            "NA",
+            "Na",
+            "none",
+            "None",
+            "123",
+            "secret",
+            "kk",
+            "npl",
+            "NPL",
+            "x",
+            "X" 
+        };
+
         public TeamCompositionSummaryModel(
             PuzzleServerContext serverContext,
             UserManager<IdentityUser> userManager)
@@ -62,6 +78,7 @@ namespace ServerCore.Pages.Teams
             public List<string> PossibleEmployeeAliases { get; set; }
             public AutoTeamType? AutoTeamType { get; set; }
             public string AutoTeamTypeString { get; set; }
+            public bool TeamIsRemote { get; set; }
         }
 
         public IEnumerable<TeamComposition> TeamCompositions { get; set; }
@@ -71,7 +88,8 @@ namespace ServerCore.Pages.Teams
         public int TotalNonMicrosoftCount { get; set; }
         public int TotalTotal { get; set; }
         public int TotalPossibleEmployeeAliasesCount { get; set; }
-        
+        public int TotalRemoteCount { get; set; }
+
         public int TotalAutoTeamCount { get; set; }
         public int TotalManualTeamCount { get; set; }
         public int TotalAutoPlayerCount { get; set; }
@@ -101,7 +119,8 @@ namespace ServerCore.Pages.Teams
                         TeamName = team.Name,
                         TeamPrimaryContactEmail = team.PrimaryContactEmail,
                         AutoTeamType = team.AutoTeamType,
-                        TeamMember = teamMember.Member
+                        TeamMember = teamMember.Member,
+                        IsRemoteTeam = team.IsRemoteTeam,
                     })
                 .ToList()
                 .GroupBy(intermediate => intermediate.TeamID)
@@ -115,6 +134,7 @@ namespace ServerCore.Pages.Teams
                 TotalInternCount += t.InternCount;
                 TotalEmployeeCount += t.EmployeeCount;
                 TotalPossibleEmployeeAliasesCount += t.PossibleEmployeeAliases.Count;
+                TotalRemoteCount += t.TeamIsRemote ? 1 : 0;
 
                 if (t.AutoTeamType != null)
                 {
@@ -209,6 +229,7 @@ namespace ServerCore.Pages.Teams
                 toReturn.TeamName = groupMember.TeamName;
                 toReturn.TeamPrimaryContactEmail = groupMember.TeamPrimaryContactEmail;
                 toReturn.AutoTeamType = groupMember.AutoTeamType;
+                toReturn.TeamIsRemote = groupMember.IsRemoteTeam;
                 toReturn.Total += 1;
 
                 string email = groupMember.TeamMember.Email;
@@ -224,7 +245,7 @@ namespace ServerCore.Pages.Teams
                         toReturn.EmployeeCount += 1;
                     }
                 }
-                else if (!string.IsNullOrEmpty(alias) && aliasRegex.IsMatch(alias))
+                else if (IsPossibleAlias(alias))
                 {
                     toReturn.PossibleEmployeeAliases.Add(alias);
                 }
@@ -237,6 +258,15 @@ namespace ServerCore.Pages.Teams
             return toReturn;
         }
 
+        private bool IsPossibleAlias(string alias)
+        {
+            if (string.IsNullOrEmpty(alias)) { return false; }
+            if (!aliasRegex.IsMatch(alias)) { return false; }
+            if(NonAliasStrings.Contains(alias)) { return false; }    
+            
+            return true;
+        }
+
         private class IntermediateTeamMember
         {
             public int TeamID { get; set; }
@@ -244,6 +274,7 @@ namespace ServerCore.Pages.Teams
             public string TeamPrimaryContactEmail { get; set; }
             public AutoTeamType? AutoTeamType { get; set; }
             public PuzzleUser TeamMember { get; set; }
+            public bool IsRemoteTeam { get; set; }
         }
     }
 }

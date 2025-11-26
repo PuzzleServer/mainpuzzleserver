@@ -23,7 +23,7 @@
 }
 else
 {
-    <h2>Incorrect Submissions for "@Model.Puzzle.Name"</h2>
+    <h2>Incorrect Submissions for "@Model.Puzzle.PlaintextName"</h2>
     <div>
         <a asp-page="./SubmissionsWithoutResponses" asp-route-puzzleId="">Clear Puzzle Filter</a>
     </div>
@@ -52,7 +52,7 @@ else
             {
                 <tr>
                     <td>
-                        <a asp-page="./SubmissionsWithoutResponses" asp-route-puzzleId="@item.PuzzleID">@item.PuzzleName</a>
+                        <a asp-page="./SubmissionsWithoutResponses" asp-route-puzzleId="@item.PuzzleID">@ServerCore.Helpers.RawHtmlHelper.Display(item.PuzzleName, Model.Event.ID, Html)</a>
                     </td>
                     <td>
                         @item.SubmissionText

@@ -168,6 +168,13 @@
                 <span asp-validation-for="EditableEvent.StandingsAvailableBegin" class="text-danger"></span>
             </div>
             <div class="description-column">Players can view event standings after this date, even if answer submission is still active.</div>
+            <div class="form-group">
+                <label asp-for="EditableEvent.EventPassword" class="control-label"></label>
+                <input asp-for="EditableEvent.EventPassword" class="form-control" />
+                <span asp-validation-for="EditableEvent.EventPassword" class="text-danger"></span>
+            </div>
+            <div class="description-column">A unique string that can be used to verify a request from an external service</div>
+
             <h4>Content</h4><div></div>
             <div class="form-group">
                 <label asp-for="EditableEvent.Announcement" class="control-label"></label>
@@ -269,6 +276,18 @@
             </div>
             <div class="description-column">The max number of teams that can be registered for this event.</div>
             <div class="form-group">
+                <label asp-for="EditableEvent.MaxNumberOfLocalTeams" class="control-label"></label>
+                <input asp-for="EditableEvent.MaxNumberOfLocalTeams" class="form-control" />
+                <span asp-validation-for="EditableEvent.MaxNumberOfLocalTeams" class="text-danger"></span>
+            </div>
+            <div class="description-column">The max number of local teams that can be registered for this event.</div>
+            <div class="form-group">
+                <label asp-for="EditableEvent.MaxNumberOfRemoteTeams" class="control-label"></label>
+                <input asp-for="EditableEvent.MaxNumberOfRemoteTeams" class="form-control" />
+                <span asp-validation-for="EditableEvent.MaxNumberOfRemoteTeams" class="text-danger"></span>
+            </div>
+            <div class="description-column">The max number of remote teams that can be registered for this event.</div>
+            <div class="form-group">
                 <label asp-for="EditableEvent.MaxTeamSize" class="control-label"></label>
                 <input asp-for="EditableEvent.MaxTeamSize" class="form-control" />
                 <span asp-validation-for="EditableEvent.MaxTeamSize" class="text-danger"></span>
@@ -286,15 +305,37 @@
             </div>
             <div class="description-column">Specifies if an event will have a presence on Microsoft's campus. Non-remote events will allow teams to select a room to use as their base of operations.</div>
             <div class="form-group">
-                <label asp-for="EditableEvent.AllowsRemote"></label>
-                <input asp-for="EditableEvent.AllowsRemote" />
+                <label asp-for="EditableEvent.AllowsRemotePlayers"></label>
+                <input asp-for="EditableEvent.AllowsRemotePlayers" />
             </div>
             <div class="description-column">Specifies if an event allows remote attendees.</div>
+            <div class="form-group">
+                <label asp-for="EditableEvent.AllowsRemoteTeams"></label>
+                <input asp-for="EditableEvent.AllowsRemoteTeams" />
+            </div>
+            <div class="description-column">Specifies if an event allows remote teams.</div>
+            <div class="form-group">
+                <label asp-for="EditableEvent.LockChangesToRemoteStatus"></label>
+                <input asp-for="EditableEvent.LockChangesToRemoteStatus" />
+            </div>
+            <div class="description-column">If this is true then teams can't change their status between local and remote (does not affect player remote settings). Admins can still make changes.</div>
             <div class="form-group">
                 <label asp-for="EditableEvent.IsInternEvent"></label>
                 <input asp-for="EditableEvent.IsInternEvent" />
             </div>
             <div class="description-column">Controls whether teams are able to edit their own team room. Intern events do not allow this because rooms are instead chosen by Puzzleday staff.</div>
+            <div class="form-group">
+                <label asp-for="EditableEvent.HasPlayerClasses"></label>
+                <input asp-for="EditableEvent.HasPlayerClasses" />
+            </div>
+            <div class="description-column">Specifies if an event uses the PlayerClass concept to assign classes to individual players. If the PlayerClassName is not also set then the display name will be Player Class.</div>
+            <div class="form-group">
+                <label asp-for="EditableEvent.PlayerClassName" class="control-label"></label>
+                <input asp-for="EditableEvent.PlayerClassName" class="form-control" />
+                <span asp-validation-for="EditableEvent.PlayerClassName" class="text-danger"></span>
+            </div>
+            <div class="description-column">The text shown instead of "Player Class" on the Team Details page. Only shown if HasPlayerClasses is true.</div>
+
             <h4>Swag</h4><div></div>
             <div class="form-group">
                 <label asp-for="EditableEvent.HasSwag"></label>

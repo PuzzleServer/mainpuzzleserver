@@ -101,6 +101,7 @@ namespace ServerCore.Pages.Events
                 Event.MaxTeamSize = 12;
                 Event.AllowBlazor = true;
                 Event.EmbedPuzzles = true;
+                Event.EventPassword = Guid.NewGuid().ToString();
                 _context.Events.Add(Event);
 
                 await _context.SaveChangesAsync();
@@ -520,6 +521,12 @@ namespace ServerCore.Pages.Events
                 if (teamLoneWolf != null)
                 {
                     _context.TeamMembers.Add(new TeamMembers() { Team = teamLoneWolf, Member = demoCreatorUser });
+
+                    if (!EventHelper.EventRequiresActivePlayerRegistration(Event))
+                    {
+                        await EventHelper.RegisterPlayerForEvent(_context, Event, demoCreatorUser);
+                    }
+
                 }
 
                 // line up all hints

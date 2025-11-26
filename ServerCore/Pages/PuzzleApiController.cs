@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
@@ -36,6 +37,7 @@ namespace ServerCore.Pages
         /// <param name="teamPassword">Potential team password</param>
         /// <returns>True if the password belongs to a team, false otherwise</returns>
         [HttpGet]
+        [EnableCors("PuzzleApi")]
         [Route("api/puzzleapi/validateteampassword")]
         public async Task<ActionResult<bool>> GetValidateTeamPasswordAsync(string teamPassword)
         {
@@ -94,7 +96,7 @@ namespace ServerCore.Pages
 
             MailInfo mailInfo = new MailInfo();
 
-            mailInfo.PuzzleName = puzzle.Name;
+            mailInfo.PuzzleName = puzzle.PlaintextName;
             mailInfo.PuzzleSupportAlias = puzzle.SupportEmailAlias ?? currentEvent.ContactEmail ?? "puzzhunt@microsoft.com";
             mailInfo.TeamName = team.Name;
 
@@ -110,6 +112,7 @@ namespace ServerCore.Pages
 
         [HttpPost]
         [Authorize(Policy = "PlayerCanSeePuzzle")]
+        [EnableCors("PuzzleApi")]
         [Route("api/puzzleapi/submitanswer/{eventId}/{puzzleId}")]
         public async Task<SubmissionResponse> PostSubmitAnswerAsync([FromBody] AnswerSubmission submission, [FromRoute] string eventId, [FromRoute] int puzzleId)
         {
@@ -121,12 +124,112 @@ namespace ServerCore.Pages
         }
 
         [HttpPost]
-        [Route ("api/puzzleapi/liveevent/triggernotifications")]
+        [EnableCors("PuzzleApi")]
+        [Route("api/puzzleapi/submitanswer/{eventId}/{puzzleId}/{userId}/{teamPassword}")]
+        public async Task<ActionResult<SubmissionResponse>> PostSubmitAnswerAsync([FromBody] AnswerSubmission submission, [FromRoute] string eventId, [FromRoute] int puzzleId, [FromRoute] int userId, [FromRoute] string teamPassword)
+        {
+            Event currentEvent = await EventHelper.GetEventFromEventId(context, eventId);
+
+            Team team = await (from t in context.Teams where t.Event == currentEvent && t.Password == teamPassword select t).FirstOrDefaultAsync();
+            PuzzleUser user = await context.PuzzleUsers.Where(user => user.ID == userId).FirstOrDefaultAsync();
+
+            if (team != null && user != null && await context.TeamMembers.Where(tm => tm.Team == team && tm.Member == user).AnyAsync())
+            {
+                return await SubmissionEvaluator.EvaluateSubmission(context, user, currentEvent, puzzleId, submission.SubmissionText, submission.AllowFreeformSharing);
+            }
+
+            return Unauthorized();
+        }
+
+        [HttpPost]
+        [EnableCors("PuzzleApi")]
+        [Route("api/puzzleapi/submitanswer/{eventId}/{puzzleId}/{userId}")]
+        public async Task<ActionResult<SubmissionResponse>> PostSubmitAnswerAdminAsync([FromBody] AdminAnswerSubmission submission, [FromRoute] string eventId, [FromRoute] int puzzleId, [FromRoute] int userId)
+        {
+            Event currentEvent = await EventHelper.GetEventFromEventId(context, eventId);
+
+            if (IsValidEventPassword(currentEvent, submission.EventPassword))
+            {
+                PuzzleUser user = await context.PuzzleUsers.Where(user => user.ID == userId).FirstOrDefaultAsync();
+
+                return await SubmissionEvaluator.EvaluateSubmissionAdmin(context, user, currentEvent, puzzleId, submission.SubmissionText, submission.AllowFreeformSharing, submission.Timestamp, submission.SubmitterDisplayName);
+            }
+
+            return Unauthorized();
+        }
+
+        [HttpPost]
+        [Route("api/puzzleapi/liveevent/triggernotifications")]
         public async Task TriggerLiveEventNotifications(string eventId, int timerWindow)
         {
             Event currentEvent = await EventHelper.GetEventFromEventId(context, eventId);
 
-           await LiveEventHelper.TriggerNotifications(context, currentEvent, timerWindow, hubContext);
+            await LiveEventHelper.TriggerNotifications(context, currentEvent, timerWindow, hubContext);
+        }
+
+        [HttpGet]
+        [EnableCors("PuzzleApi")]
+        [Route("api/puzzleapi/state/puzzleunlockstate/{eventId}")]
+        public async Task<UnlockDetail[]> GetPuzzlesUnlockedInLastXMins([FromRoute] string eventId, int minutes, string eventPassword)
+        {
+            Event currentEvent = await EventHelper.GetEventFromEventId(context, eventId);
+
+            if (IsValidEventPassword(currentEvent, eventPassword))
+            {
+                return await (from state in context.PuzzleStatePerTeam
+                              where state.Puzzle.Event == currentEvent &&
+                              state.UnlockedTime != null &&
+                              EF.Functions.DateDiffMinute(state.UnlockedTime, DateTime.UtcNow) < minutes
+                              select new UnlockDetail()
+                              {
+                                  PuzzleId = state.PuzzleID,
+                                  TeamId = state.TeamID,
+                                  UnlockTime = state.UnlockedTime.Value,
+                              }).ToArrayAsync();
+            }
+
+            return null;
+        }
+
+
+        [HttpGet]
+        [EnableCors("PuzzleApi")]
+        [Route("api/puzzleapi/state/eventteammembers/{eventId}")]
+        public async Task<TeamMemberInfo[]> GetEventTeamMembers([FromRoute] string eventId, string eventPassword)
+        {
+
+            Event currentEvent = await EventHelper.GetEventFromEventId(context, eventId);
+
+            if (!IsValidEventPassword(currentEvent, eventPassword))
+            {
+                return null;
+            }
+
+            return await (from team in context.Teams
+                          where team.Event == currentEvent
+                          join member in context.TeamMembers on team equals member.Team
+                          select new TeamMemberInfo()
+                          {
+                              TeamId = team.ID,
+                              TeamName = team.Name,
+                              TeamIsRemote = team.IsRemoteTeam,
+                              PuzzleUserId = member.Member.ID,
+                              PlayerName = member.Member.Name,
+                              PlayerClassUniqueName = (member.Class != null ? member.Class.UniqueName : string.Empty),
+                          }).ToArrayAsync();
+        }
+
+        /// <summary>
+        /// Allows an external service to authenticate as an admin for the event
+        /// </summary>
+        private bool IsValidEventPassword(Event currentEvent, string eventPassword)
+        {
+            if (string.IsNullOrWhiteSpace(eventPassword))
+            {
+                return false;
+            }
+
+            return currentEvent.EventPassword == eventPassword;
         }
     }
 
@@ -136,11 +239,37 @@ namespace ServerCore.Pages
         public bool AllowFreeformSharing { get; set; }
     }
 
+    public class AdminAnswerSubmission
+    {
+        public bool AllowFreeformSharing { get; set; }
+        public string EventPassword { get; set; }
+        public string SubmissionText { get; set; }
+        public string SubmitterDisplayName { get; set; }
+        public DateTime Timestamp { get; set; }
+    }
+
     public class MailInfo
     {
         public string PuzzleName { get; set; }
         public string PuzzleSupportAlias { get; set; }
         public string TeamName { get; set; }
         public string TeamContactEmail { get; set; }
+    }
+
+    public class UnlockDetail
+    {
+        public int TeamId { get; set; }
+        public int PuzzleId { get; set; }
+        public DateTime UnlockTime { get; set; }
+    }
+
+    public class TeamMemberInfo
+    {
+        public int TeamId { get; set; }
+        public string TeamName { get; set; }
+        public bool TeamIsRemote { get; set; }
+        public int PuzzleUserId { get; set; }
+        public string PlayerName { get; set; }
+        public string PlayerClassUniqueName { get; set; }
     }
 }

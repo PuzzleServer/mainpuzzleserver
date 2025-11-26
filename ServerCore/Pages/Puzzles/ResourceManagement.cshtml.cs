@@ -19,7 +19,7 @@ namespace ServerCore.Pages.Puzzles
     /// <summary>
     /// Page for managing the files associated with a puzzle
     /// </summary>
-    [Authorize(Policy = "IsEventAdminOrAuthorOfPuzzle")]
+    [Authorize(Policy = "IsEventAdminOrEventAuthor")]
     public class ResourceManagementModel : EventSpecificPageModel
     {
         public ResourceManagementModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)

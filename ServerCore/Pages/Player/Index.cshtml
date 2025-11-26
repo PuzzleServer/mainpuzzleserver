@@ -23,7 +23,7 @@
                 Team
             </th>
 
-            @if (Model.Event.AllowsRemote)
+            @if (Model.Event.AllowsRemotePlayers)
             {
                 <th>
                     Remote?
@@ -63,7 +63,7 @@
                     @Html.DisplayFor(modelItem => item.Team.Name)
                 </td>
 
-                @if (Model.Event.AllowsRemote)
+                @if (Model.Event.AllowsRemotePlayers)
                 {
                     <td>
                         @Html.DisplayFor(modelItem => item.Player.IsRemote)

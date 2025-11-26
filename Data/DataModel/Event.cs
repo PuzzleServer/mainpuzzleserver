@@ -37,14 +37,23 @@ namespace ServerCore.DataModel
         public string ContactEmail { get; set; }
 
         public int MaxNumberOfTeams { get; set; }
+        public int MaxNumberOfRemoteTeams { get; set; }
+        public int MaxNumberOfLocalTeams { get; set; }
+
         public int MaxTeamSize { get; set; }
         public int MaxExternalsPerTeam { get; set; }
         public bool IsInternEvent { get; set; }
 
         public bool HasIndividualLunch { get; set; }
         public bool HasTShirts { get; set; }
-        public bool AllowsRemote { get; set; }
+
+        [Column("AllowsRemote")]
+        public bool AllowsRemotePlayers { get; set; }
+        public bool AllowsRemoteTeams { get; set; }
         public bool IsRemote { get; set; }
+
+        // If this is true then teams cannot change whether they are remote or local themselves, it requires an admin
+        public bool LockChangesToRemoteStatus { get; set; }
 
         /// <summary>
         /// True if puzzles will be shown in an iframe on the answer submission page
@@ -69,6 +78,11 @@ namespace ServerCore.DataModel
         /// True if we should show puzzle help messages only to the authors of that puzzle (along with their support and admins).
         /// </summary>
         public bool ShouldShowHelpMessageOnlyToAuthor { get; set; }
+
+        /// <summary>
+        /// True if we should send help thread mails to game control.
+        /// </summary>
+        public bool ShouldSendHelpThreadMailToGameControl { get; set; }
 
         /// <summary>
         /// Returns whether or not team registration is active.
@@ -325,6 +339,37 @@ namespace ServerCore.DataModel
         public bool IsAlphaTestingEvent { get; set; }
 
         /// <summary>
+        /// True if the event uses the PlayerClass system to assign classes to individual players
+        /// PlayerClassName should also be set in this case, otherwise the display name will be "Player Class"
+        /// </summary>
+        public bool HasPlayerClasses { get; set; }
+
+        /// <summary>
+        /// Determines the display name for PlayerClasses (e.g. Class, Job, Color, Duty Assignment)
+        /// </summary>
+        public string PlayerClassName { get; set; }
+
+        /// <summary>
+        /// True if the players can change their own PlayerClass (admins can always make changes)
+        /// Currently locks PlayerClass changes when the event starts (add additional logic if needed for future events)
+        /// </summary>
+        [NotMapped]
+        public bool CanChangePlayerClass
+        {
+            get { return IsTeamMembershipChangeActive; }
+        }
+
+        /// <summary>
+        /// Used to confirm the validity of external API requests for event-wide actions
+        /// This is a GUID by default unless there is a good reason to use something else
+        /// </summary>
+        public string EventPassword { get; set; }
+
+        // Morgan TODO: Add descriptions for these properties
+        public bool PuzzleSyncEnabled { get; set; }
+        public int FastestSyncIntervalMs { get; set; }
+
+        /// <summary>
         /// Short-term hacks for modifying behavior without adding new properties all the time.
         /// Note: If a hack lasts more than a few months, it should probably be promoted to a real property.
         /// </summary>
@@ -353,5 +398,11 @@ namespace ServerCore.DataModel
         /// </summary>
         [NotMapped]
         public bool EphemeralHackKillLiveEventPage => EphemeralHacks?.Contains("kill-live-event-page") == true;
+
+        /// <summary>
+        /// True if puzzle syncing should be disabled
+        /// </summary>
+        [NotMapped]
+        public bool EphemeralHackKillSync => EphemeralHacks?.Contains("kill-sync") == true;
     }
 }

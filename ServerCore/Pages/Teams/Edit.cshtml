@@ -40,7 +40,7 @@
                 <input asp-for="Team.RoomID" class="form-control" />
                 <span asp-validation-for="Team.RoomID" class="text-danger"></span>
             </div>*@
-            @if (!Model.Event.IsRemote)
+            @if (!Model.Event.IsRemote && !Model.Team.IsRemoteTeam)
             {
                 @if (Model.Event.IsInternEvent && Model.EventRole == ModelBases.EventRole.play)
                 {
@@ -63,7 +63,31 @@
                 <input asp-for="Team.PrimaryContactEmail" class="form-control" />
                 <span asp-validation-for="Team.PrimaryContactEmail" class="text-danger"></span>
             </div>
-            @if (!Model.Event.IsRemote)
+            @if(Model.Event.AllowsRemoteTeams)
+            {
+                if(!Model.Event.LockChangesToRemoteStatus || Model.EventRole == ModelBases.EventRole.admin)
+                {
+                    <div class="form-group">
+                        <label asp-for="Team.IsRemoteTeam" class="control-label">Team is playing remotely</label>
+                        <div style="width:50px;vertical-align:top;">
+                            <input asp-for="Team.IsRemoteTeam" />
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div>Team Location (contact organizers to change): </div>
+                    if(Model.Team.IsRemoteTeam)
+                    {
+                        <div>Remote</div>
+                    }
+                    else
+                    {
+                        <div>Local</div>
+                    }
+                }
+            }
+            @if (!Model.Event.IsRemote && !Model.Team.IsRemoteTeam)
             {
                 <div class="form-group">
                     <label asp-for="Team.PrimaryPhoneNumber" class="control-label">Primary phone number</label>

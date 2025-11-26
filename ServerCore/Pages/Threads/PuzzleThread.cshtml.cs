@@ -60,7 +60,7 @@ namespace ServerCore.Pages.Threads
         /// </summary>
         public string ReturnThreadQueryParams { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int? puzzleId, int? teamId, int? playerId, string returnThreadQueryParams)
+        public async Task<IActionResult> OnGetAsync(int? puzzleId, int? teamId, int? playerId, string returnThreadQueryParams, string messageDraft = null)
         {
             // Validate parameters
             if (LoggedInUser == null)
@@ -129,7 +129,7 @@ namespace ServerCore.Pages.Threads
                     return NotFound();
                 }
 
-                subject = $"[{singlePlayerPuzzlePlayer.Name}]{Puzzle.Name}";
+                subject = $"[{singlePlayerPuzzlePlayer.Name}]{Puzzle.PlaintextName}";
                 threadId = MessageHelper.GetSinglePlayerPuzzleThreadId(Puzzle.ID, playerId.Value);
                 teamId = null;
                 PuzzleState = await SinglePlayerPuzzleStateHelper.GetOrAddStateIfNotThere(
@@ -153,7 +153,7 @@ namespace ServerCore.Pages.Threads
                     return NotFound();
                 }
 
-                subject = $"[{team.Name}]{Puzzle.Name}";
+                subject = $"[{team.Name}]{Puzzle.PlaintextName}";
                 threadId = MessageHelper.GetTeamPuzzleThreadId(Puzzle.ID, teamId.Value);
                 playerId = null;
                 PuzzleState = await PuzzleStateHelper
@@ -182,6 +182,7 @@ namespace ServerCore.Pages.Threads
                 Sender = LoggedInUser,
                 PlayerID = playerId,
                 Player = singlePlayerPuzzlePlayer,
+                Text = messageDraft
             };
 
             return Page();
@@ -256,8 +257,7 @@ namespace ServerCore.Pages.Threads
                 }
             }
 
-            // We don't really want to send an email non-module events because they are often already watching the site
-            if (isMessageAdded && !Event.IsInternEvent)
+            if (isMessageAdded)
             {
                 await this.SendEmailNotifications(m, puzzle);
             }
@@ -325,7 +325,7 @@ namespace ServerCore.Pages.Threads
                 throw new InvalidOperationException("You cannot claim this thread! It may have already been claimed.");
             }
 
-            return RedirectToPage("/Threads/PuzzleThread", new { puzzleId = puzzleId, teamId = teamId, playerId = playerId });
+            return RedirectToPage("/Threads/PuzzleThread", new { puzzleId = puzzleId, teamId = teamId, playerId = playerId, messageDraft = NewMessage.Text });
         }
 
         public async Task<IActionResult> OnPostUnclaimThreadAsync(int messageId, int puzzleId, int? teamId, int? playerId)
@@ -339,7 +339,7 @@ namespace ServerCore.Pages.Threads
                 await _context.SaveChangesAsync();
             }
 
-            return RedirectToPage("/Threads/PuzzleThread", new { puzzleId = puzzleId, teamId = teamId, playerId = playerId });
+            return RedirectToPage("/Threads/PuzzleThread", new { puzzleId = puzzleId, teamId = teamId, playerId = playerId, messageDraft = NewMessage.Text });
         }
 
         public bool IsAllowedToClaimMessage()
@@ -389,7 +389,7 @@ namespace ServerCore.Pages.Threads
                     }
                 }
             }
-            else
+            else if (!Event.IsInternEvent) // For game control, we don't really want to send an email non-module events because they are often already watching the site
             {
                 // Send notification to authors and any game control person on the thread if message from player.
 
