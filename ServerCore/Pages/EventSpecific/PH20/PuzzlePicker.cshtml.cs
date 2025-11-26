@@ -144,7 +144,7 @@ namespace ServerCore.Pages.EventSpecific.PH20
 
             if (puzzleToUnlock.CustomURL != null)
             {
-                puzzleUrl = PuzzleHelper.GetFormattedUrl(puzzleToUnlock, Event.ID);
+                puzzleUrl = PuzzleHelper.GetFormattedUrl(puzzleToUnlock, Event.ID, LoggedInUser.ID);
             }
             else
             {
