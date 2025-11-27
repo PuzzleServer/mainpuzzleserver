@@ -37,6 +37,7 @@ namespace ServerCore.Pages
         /// <param name="teamPassword">Potential team password</param>
         /// <returns>True if the password belongs to a team, false otherwise</returns>
         [HttpGet]
+        [EnableCors("PuzzleApi")]
         [Route("api/puzzleapi/validateteampassword")]
         public async Task<ActionResult<bool>> GetValidateTeamPasswordAsync(string teamPassword)
         {
@@ -111,6 +112,7 @@ namespace ServerCore.Pages
 
         [HttpPost]
         [Authorize(Policy = "PlayerCanSeePuzzle")]
+        [EnableCors("PuzzleApi")]
         [Route("api/puzzleapi/submitanswer/{eventId}/{puzzleId}")]
         public async Task<SubmissionResponse> PostSubmitAnswerAsync([FromBody] AnswerSubmission submission, [FromRoute] string eventId, [FromRoute] int puzzleId)
         {
@@ -122,6 +124,25 @@ namespace ServerCore.Pages
         }
 
         [HttpPost]
+        [EnableCors("PuzzleApi")]
+        [Route("api/puzzleapi/submitanswer/{eventId}/{puzzleId}/{userId}/{teamPassword}")]
+        public async Task<ActionResult<SubmissionResponse>> PostSubmitAnswerAsync([FromBody] AnswerSubmission submission, [FromRoute] string eventId, [FromRoute] int puzzleId, [FromRoute] int userId, [FromRoute] string teamPassword)
+        {
+            Event currentEvent = await EventHelper.GetEventFromEventId(context, eventId);
+
+            Team team = await (from t in context.Teams where t.Event == currentEvent && t.Password == teamPassword select t).FirstOrDefaultAsync();
+            PuzzleUser user = await context.PuzzleUsers.Where(user => user.ID == userId).FirstOrDefaultAsync();
+
+            if (team != null && user != null && await context.TeamMembers.Where(tm => tm.Team == team && tm.Member == user).AnyAsync())
+            {
+                return await SubmissionEvaluator.EvaluateSubmission(context, user, currentEvent, puzzleId, submission.SubmissionText, submission.AllowFreeformSharing);
+            }
+
+            return Unauthorized();
+        }
+
+        [HttpPost]
+        [EnableCors("PuzzleApi")]
         [Route("api/puzzleapi/submitanswer/{eventId}/{puzzleId}/{userId}")]
         public async Task<ActionResult<SubmissionResponse>> PostSubmitAnswerAdminAsync([FromBody] AdminAnswerSubmission submission, [FromRoute] string eventId, [FromRoute] int puzzleId, [FromRoute] int userId)
         {
@@ -147,6 +168,7 @@ namespace ServerCore.Pages
         }
 
         [HttpGet]
+        [EnableCors("PuzzleApi")]
         [Route("api/puzzleapi/state/puzzleunlockstate/{eventId}")]
         public async Task<UnlockDetail[]> GetPuzzlesUnlockedInLastXMins([FromRoute] string eventId, int minutes, string eventPassword)
         {
@@ -171,6 +193,7 @@ namespace ServerCore.Pages
 
 
         [HttpGet]
+        [EnableCors("PuzzleApi")]
         [Route("api/puzzleapi/state/eventteammembers/{eventId}")]
         public async Task<TeamMemberInfo[]> GetEventTeamMembers([FromRoute] string eventId, string eventPassword)
         {
