@@ -16,21 +16,21 @@
 }
 <script>
     function EditText(id) {
-    let textAreaId = "TextAreaEdit_" + id;
-    let textAreaEditBox = document.getElementById(textAreaId);
-    textAreaEditBox.classList.remove("hidden");
-    let originalTextId = "MessageText_" + id;
-    let originalText = document.getElementById(originalTextId);
-    originalText.classList.add("hidden");
+        let textAreaId = "TextAreaEdit_" + id;
+        let textAreaEditBox = document.getElementById(textAreaId);
+        textAreaEditBox.classList.remove("hidden");
+        let originalTextId = "MessageText_" + id;
+        let originalText = document.getElementById(originalTextId);
+        originalText.classList.add("hidden");
     }
 
     function CancelEdit(id) {
-    let textAreaId = "TextAreaEdit_" + id;
-    let textAreaEditBox = document.getElementById(textAreaId);
-    textAreaEditBox.classList.add("hidden");
-    let originalTextId = "MessageText_" + id;
-    let originalText = document.getElementById(originalTextId);
-    originalText.classList.remove("hidden");
+        let textAreaId = "TextAreaEdit_" + id;
+        let textAreaEditBox = document.getElementById(textAreaId);
+        textAreaEditBox.classList.add("hidden");
+        let originalTextId = "MessageText_" + id;
+        let originalText = document.getElementById(originalTextId);
+        originalText.classList.remove("hidden");
     }
 </script>
 <div>
