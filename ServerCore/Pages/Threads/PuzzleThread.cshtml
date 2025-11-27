@@ -52,7 +52,7 @@
             <a asp-page="/Puzzles/Edit" asp-route-puzzleId="@Model.Puzzle.ID">@goToPuzzleLabel</a>@(" |")
             if (teamPuzzleState != null)
             {
-                <a asp-page="/Submissions/Index" asp-route-puzzleId="@Model.Puzzle.ID" asp-route-eventRole="@($"impersonate-{@teamPuzzleState.TeamID}")">Impersonate</a>@(" |")
+                <a asp-page="/Submissions/Index" asp-route-puzzleId="@Model.Puzzle.ID" asp-route-eventRole="@($"impersonateteam-{@teamPuzzleState.TeamID}")">Impersonate</a>@(" |")
             }
         }
 

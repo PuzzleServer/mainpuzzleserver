@@ -92,7 +92,7 @@
                 <td>
                     @if (item.UnlockedTime != null)
                     {
-                        <a asp-page="/Submissions/Index" asp-route-puzzleId="@Model.Puzzle.ID" asp-route-eventRole="@($"impersonate-{@item.Team.ID}")">Impersonate</a>
+                        <a asp-page="/Submissions/Index" asp-route-puzzleId="@Model.Puzzle.ID" asp-route-eventRole="@($"impersonateteam-{@item.Team.ID}")">Impersonate</a>
                     }
                 </td>
                 <td>

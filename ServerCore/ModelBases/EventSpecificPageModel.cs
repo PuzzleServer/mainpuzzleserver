@@ -43,8 +43,8 @@ namespace ServerCore.ModelBases
             bool isAuthor = await IsEventAuthor();
             if (((EventRole == EventRole.admin) && !isAdmin) ||
                 ((EventRole == EventRole.author) && !isAuthor) ||
-                ((EventRole.Type == EventRoleType.impersonate) && !isAuthor && !isAdmin) ||
-                ((EventRole != EventRole.admin) && (EventRole != EventRole.author) && (EventRole != EventRole.play) && (EventRole.Type != EventRoleType.impersonate)))
+                ((EventRole.IsImpersonating) && !isAuthor && !isAdmin) ||
+                ((EventRole != EventRole.admin) && (EventRole != EventRole.author) && (EventRole != EventRole.play) && !EventRole.IsImpersonating))
             {
                 context.Result = Forbid();
                 return;
@@ -78,7 +78,7 @@ namespace ServerCore.ModelBases
 
             if (isRegisteredUser == null)
             {
-                isRegisteredUser = EventRole.Type == EventRoleType.impersonate ? true : await LoggedInUser.IsRegisteredForEvent(_context, Event);
+                isRegisteredUser = EventRole.Type == EventRoleType.impersonateteam ? true : await LoggedInUser.IsRegisteredForEvent(_context, Event);
             }
 
             return isRegisteredUser.Value;
@@ -91,7 +91,7 @@ namespace ServerCore.ModelBases
 
             if(playerIsOnTeam == null)
             {
-                playerIsOnTeam = EventRole.Type == EventRoleType.impersonate ? true : await LoggedInUser.IsPlayerOnTeam(_context, Event);
+                playerIsOnTeam = EventRole.Type == EventRoleType.impersonateteam ? true : await LoggedInUser.IsPlayerOnTeam(_context, Event);
             }
 
             return playerIsOnTeam.Value;
@@ -161,9 +161,9 @@ namespace ServerCore.ModelBases
         {
             if (this.team == null)
             {
-                if (EventRole.ImpersonatingTeamId.HasValue)
+                if (EventRole.Type == EventRoleType.impersonateteam)
                 {
-                    this.team = await _context.Teams.Where(t => t.ID == EventRole.ImpersonatingTeamId.Value).FirstOrDefaultAsync();
+                    this.team = await _context.Teams.Where(t => t.ID == EventRole.ImpersonationId).FirstOrDefaultAsync();
                 }
                 else
                 {
@@ -176,7 +176,7 @@ namespace ServerCore.ModelBases
 
         public async Task<int> GetTeamId()
         {
-            if (EventRole == ModelBases.EventRole.play || EventRole.ImpersonatingTeamId.HasValue)
+            if (EventRole == ModelBases.EventRole.play || EventRole.Type == EventRoleType.impersonateteam)
             {
                 Team team = await this.GetTeamAsync();
                 return team != null ? team.ID : -1;
@@ -189,7 +189,7 @@ namespace ServerCore.ModelBases
 
         public async Task<bool> GetShowTeamAnnouncement()
         {
-            if (EventRole == ModelBases.EventRole.play || EventRole.ImpersonatingTeamId.HasValue)
+            if (EventRole == ModelBases.EventRole.play || EventRole.Type == EventRoleType.impersonateteam)
             {
                 Team team = await this.GetTeamAsync();
                 return team != null ? team.ShowTeamAnnouncement : false;

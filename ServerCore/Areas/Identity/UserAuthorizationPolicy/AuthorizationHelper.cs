@@ -189,7 +189,7 @@ namespace ServerCore.Areas.Identity
         {
             EventRole role = GetEventRoleFromRoute();
 
-            if (role != EventRole.play && role.Type != EventRoleType.impersonate)
+            if (role != EventRole.play && !role.IsImpersonating)
             {
                 return;
             }
@@ -200,7 +200,7 @@ namespace ServerCore.Areas.Identity
 
             if (thisEvent != null)
             {
-                if (role.Type == EventRoleType.impersonate)
+                if (role.IsImpersonating)
                 {
                     if (team.EventID == thisEvent.ID && await puzzleUser.IsAdminForEvent(dbContext, thisEvent))
                     {
@@ -253,11 +253,11 @@ namespace ServerCore.Areas.Identity
                 {
                     EventRole role = GetEventRoleFromRoute();
                     Team team = null;
-                    if (role.Type == EventRoleType.impersonate)
+                    if (role.IsImpersonating)
                     {
                         if (await puzzleUser.IsAdminForEvent(dbContext, thisEvent) || await UserEventHelper.IsAuthorOfPuzzle(dbContext, puzzle, puzzleUser))
                         {
-                            team = await dbContext.Teams.Where(t => t.ID == role.ImpersonatingTeamId).FirstOrDefaultAsync();
+                            team = await dbContext.Teams.Where(t => t.ID == role.ImpersonationId).FirstOrDefaultAsync();
                         }
                     }
                     else
