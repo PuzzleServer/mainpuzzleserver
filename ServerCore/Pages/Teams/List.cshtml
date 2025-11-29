@@ -54,15 +54,7 @@
             You are not yet part of a team for this event. Create a new team or request to join one below. You can request to join one team at a time - check back to see if you've been accepted to a team or to change which team you've applied to.
         </div>
         <h4><b>
-            @* Signup redirects here when Blazor is disabled, so link to the old create page as needed. *@
-            @if (Model.Event.AllowBlazor)
-            {
-                <a asp-page="Signup">Create a new team</a>
-            }
-            else
-            {
-                <a asp-page="Create">Create a new team</a>
-            }
+            <a asp-page="Signup">Create a new team</a>
         </b></h4>
     }
 </p>
