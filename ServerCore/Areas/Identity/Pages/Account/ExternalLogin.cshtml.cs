@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ServerCore.DataModel;
@@ -62,12 +63,14 @@ namespace ServerCore.Areas.Identity.Pages.Account
             if (remoteError != null)
             {
                 ErrorMessage = $"Error from external provider: {remoteError}";
+                _logger.LogError(ErrorMessage);
                 return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
             }
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
                 ErrorMessage = "Error loading external login information.";
+                _logger.LogError($"{ErrorMessage}: ExternalLoginInfo is null");
                 return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
             }
 
@@ -81,6 +84,7 @@ namespace ServerCore.Areas.Identity.Pages.Account
                 if (existingUser != null)
                 {
                     await _userManager.AddLoginAsync(existingUser, info);
+                    _logger.LogInformation("User's providerKey has been changed by the provider, new providerKey added.");
                 }
             }
 
@@ -120,6 +124,7 @@ namespace ServerCore.Areas.Identity.Pages.Account
             if (info == null)
             {
                 ErrorMessage = "Error loading external login information during confirmation.";
+                _logger.LogError($"{ErrorMessage}: ExternalLoginInfo is null");
                 return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
             }
 

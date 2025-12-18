@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <UserSecretsId>04bdbf00-8cf2-4132-9652-595fd71fdc98</UserSecretsId>
+    <ApplicationInsightsResourceId>/subscriptions/569b1f1c-2487-4adc-ae04-343095c10a4e/resourceGroups/puzzlehunt_rg/providers/microsoft.insights/components/puzzlehunt</ApplicationInsightsResourceId>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>DEBUG;TRACE</DefineConstants>
@@ -30,10 +31,12 @@
     <None Remove="Content\puzzlehunt.png" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Azure.Identity" Version="1.13.2" />
     <PackageReference Include="Azure.Storage.Blobs" Version="12.16.0" />
     <PackageReference Include="Azure.Storage.Files.Shares" Version="12.14.0" />
     <PackageReference Include="Azure.Storage.Queues" Version="12.14.0" />
     <PackageReference Include="BuildBundlerMinifier" Version="3.2.449" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.23.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="8.0.12" />
     <PackageReference Include="Microsoft.AspNetCore.AzureKeyVault.HostingStartup" Version="2.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.12" />
