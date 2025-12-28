@@ -590,7 +590,7 @@ else
                     param-EventEndTimeUtc="(DateTimeOffset)@Model.Event.AnswerSubmissionEnd"
                     />
                 }
-                @if (!Model.IsPuzzleForSinglePlayer && Model.Event.AllowBlazor && !Model.Event.EphemeralHackKillPresence)
+                @if (!Model.IsPuzzleForSinglePlayer && !Model.Event.EphemeralHackKillPresence)
                 {
                     <div>
                         <component type="typeof(ServerCore.Pages.Components.PresenceComponent)" render-mode="Server" param-PuzzleUserId="@Model.LoggedInUser.ID" param-TeamId="@Model.Team.ID" param-PuzzleId="@Model.Puzzle.ID" />

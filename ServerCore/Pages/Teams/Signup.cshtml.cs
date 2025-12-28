@@ -16,11 +16,6 @@ namespace ServerCore.Pages.Teams
 
         public async Task<IActionResult> OnGetAsync()
         {
-            if (!Event.AllowBlazor)
-            {
-                return RedirectToPage("/Teams/List", new { eventId = Event.ID });
-            }
-
             if (LoggedInUser == null)
             {
                 return Challenge();

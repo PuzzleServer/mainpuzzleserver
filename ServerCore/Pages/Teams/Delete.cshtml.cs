@@ -45,7 +45,7 @@ namespace ServerCore.Pages.Teams
             }
             else
             {
-                return (Event.AllowBlazor) ? RedirectToPage("./Signup") : RedirectToPage("./List");
+                return RedirectToPage("./Signup");
             }
         }
     }

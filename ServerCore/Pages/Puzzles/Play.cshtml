@@ -26,7 +26,7 @@
     }
 </style>
 
-@if (Model.Event.AllowBlazor && canUsePresence && Model.Team != null)
+@if (canUsePresence && Model.Team != null)
 {
     <script>
         window.showPresence = (allPresence) => {
@@ -167,7 +167,7 @@ else
                         Answer
                     </th>
                 }
-                else if (Model.Event.AllowBlazor && canUsePresence)
+                else if (canUsePresence)
                 {
                     <th>
                         Who's here
