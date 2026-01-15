@@ -33,6 +33,9 @@ namespace ClientSyncComponent.Client.Pages
         public DateTimeOffset EventEndTimeUtc { get; set; }
 
         [Parameter]
+        public bool ReadOnly { get; set; }
+
+        [Parameter]
         public bool SyncEnabled { get; set; } = true;
 
         [Parameter]
@@ -165,7 +168,7 @@ namespace ClientSyncComponent.Client.Pages
         [JSInvokable]
         public async void OnPuzzleChangedAsync(JsPuzzleChange[] puzzleChanges)
         {
-            if (!SyncEnabled || Paused)
+            if (!SyncEnabled || Paused || ReadOnly)
             {
                 return;
             }

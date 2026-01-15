@@ -330,7 +330,7 @@ namespace ServerCore.Pages.Submissions
 
         private async Task SetupContext(int puzzleId)
         {
-            Team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
+            Team = await GetTeamAsync();
 
             if (Event.HasPlayerClasses)
             {
@@ -387,7 +387,7 @@ namespace ServerCore.Pages.Submissions
                     SyncTableSasUrl = tableClient.GenerateSasUri(sasBuilder);
                 }
 
-                Team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
+                Team = await GetTeamAsync();
 
                 PuzzleState = await (PuzzleStateHelper
                 .GetFullReadOnlyQuery(

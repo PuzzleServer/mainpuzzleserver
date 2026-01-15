@@ -67,12 +67,7 @@ namespace ServerCore.Areas.Identity
             RouteValueDictionary route = httpContextAccessor.HttpContext.Request.RouteValues;
             string eventRole = route["eventRole"] as string;
 
-            if (Enum.TryParse<EventRole>(eventRole, out EventRole role))
-            {
-                return role;
-            }
-
-            return EventRole.play;
+            return EventRole.Parse(eventRole);
         }
 
         public async Task IsPuzzleAdminCheck(AuthorizationHandlerContext authContext, IAuthorizationRequirement requirement)
@@ -194,7 +189,7 @@ namespace ServerCore.Areas.Identity
         {
             EventRole role = GetEventRoleFromRoute();
 
-            if (role != EventRole.play)
+            if (role != EventRole.play && !role.IsImpersonating)
             {
                 return;
             }
@@ -205,10 +200,20 @@ namespace ServerCore.Areas.Identity
 
             if (thisEvent != null)
             {
-                Team userTeam = await UserEventHelper.GetTeamForPlayer(dbContext, thisEvent, puzzleUser);
-                if (userTeam != null && userTeam.ID == team.ID)
+                if (role.IsImpersonating)
                 {
-                    authContext.Succeed(requirement);
+                    if (team.EventID == thisEvent.ID && await puzzleUser.IsAdminForEvent(dbContext, thisEvent))
+                    {
+                        authContext.Succeed(requirement);
+                    }
+                }
+                else
+                {
+                    Team userTeam = await UserEventHelper.GetTeamForPlayer(dbContext, thisEvent, puzzleUser);
+                    if (userTeam != null && userTeam.ID == team.ID)
+                    {
+                        authContext.Succeed(requirement);
+                    }
                 }
             }
         }
@@ -246,7 +251,19 @@ namespace ServerCore.Areas.Identity
                 }
                 else
                 {
-                    Team team = await UserEventHelper.GetTeamForPlayer(dbContext, thisEvent, puzzleUser);
+                    EventRole role = GetEventRoleFromRoute();
+                    Team team = null;
+                    if (role.IsImpersonating)
+                    {
+                        if (await puzzleUser.IsAdminForEvent(dbContext, thisEvent) || await UserEventHelper.IsAuthorOfPuzzle(dbContext, puzzle, puzzleUser))
+                        {
+                            team = await dbContext.Teams.Where(t => t.ID == role.ImpersonationId).FirstOrDefaultAsync();
+                        }
+                    }
+                    else
+                    {
+                        team = await UserEventHelper.GetTeamForPlayer(dbContext, thisEvent, puzzleUser);
+                    }
 
                     if (team != null)
                     {
