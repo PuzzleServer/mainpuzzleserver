@@ -202,9 +202,9 @@ namespace ServerCore.ModelBases
             return -1;
         }
 
-        public string LocalTime(DateTime? date)
+        public string LocalTime(DateTime? date, string format = null)
         {
-            return TimeHelper.LocalTime(date);
+            return TimeHelper.LocalTime(date, format);
         }
 
         public bool IsGameControlRole()

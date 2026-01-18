@@ -232,7 +232,7 @@
                         }
                         else
                         {
-                            <li class="nav-item"><a style="color:yellow" asp-page="/Swag/Register" title="Lunch">Pick Lunch by @(Event.TeamMiscDataChangeEnd.ToString("M/dd"))!</a></li>
+                            <li class="nav-item"><a style="color:yellow" asp-page="/Swag/Register" title="Lunch">Pick Lunch by @Html.Raw(eventPage.LocalTime(Event.TeamMiscDataChangeEnd, "M/dd"))!</a></li>
                         }
                     }
                     else if (Event.EventHasTeamSwag && isOnTeam)
@@ -243,7 +243,7 @@
                         }
                         else
                         {
-                            <li class="nav-item"><a style="color:yellow" asp-page="/Teams/Details" asp-route-teamId="@teamId" title="Lunch">Pick Lunch by @(Event.LunchReportDate.ToString("M/dd"))!</a></li>
+                            <li class="nav-item"><a style="color:yellow" asp-page="/Teams/Details" asp-route-teamId="@teamId" title="Lunch">Pick Lunch by @Html.Raw(eventPage.LocalTime(Event.LunchReportDate, "M/dd"))!</a></li>
                         }
                     }
                     <li class="nav-item">
