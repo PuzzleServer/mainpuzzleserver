@@ -1,0 +1,53 @@
+<!-- (c) 2025 Kenny Young -->
+<!-- This code is licensed under the MIT License. -->
+<!-- https://github.com/tabascq/PuzzleJS -->
+<html>
+    <head>
+        <title>Puzzle.js Designer</title>
+        <link rel="stylesheet" href="../puzzle.css"/>
+        <link rel="stylesheet" href="../puzzle-box.css"/>
+        <link rel="stylesheet" href="../puzzle-basic-colors.css"/>
+        <script type="text/javascript" src="../puzzle.js"></script>
+        <script type="text/javascript" src="../puzzle-box.js"></script>
+        <script type="text/javascript" src="puzzle-designer.js"></script>
+        <link rel="stylesheet" href="puzzle-designer.css"/>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                document.querySelectorAll(".puzzle-entry").forEach((p) => { p.puzzleEntry.prepareToReset(); });
+            });
+        </script>
+        <style>
+            body {
+                padding: 1rem;
+            }
+
+            h1, h2, p, li {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
+
+            code {
+                background-color: #ddf;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Puzzle.js Designer</h1>
+        <div class="puzzle-designer-site">
+            <div class="puzzle-entry" data-text="5x5"></div>
+        </div>
+        <h2>Getting Started</h2>
+        <p>There are four ways to get started:</p>
+        <ul>
+            <li>Work with the blank sample puzzle provided on this page by default.</li><br/>
+            <li>Click the &ldquo;Open in Designer&rdquo; button, which can be found on any example on the homepage or in the documentation.</li><br/>
+            <li>Select the blank sample puzzle, and then copy the source code for any existing puzzle.js puzzle and paste it into the text area in the &ldquo;Import/Export&rdquo; category. If the puzzle needs custom CSS to render properly, use the same technique to paste that CSS into the &ldquo;Simulated Page CSS&rdquo; category.</li><br/>
+            <li>In your existing puzzle page, press Shift + Ctrl + Alt + F12. Note that this only works if the <code>designer</code> and <code>reference</code> folders are deployed to your web site.</li>
+        </ul>
+        <h2>Editing and Exporting</h2>
+        <p><i>This designer is a work in progress!</i></p>
+        <p>Once you have chosen one of the four ways of getting started, edit the properties of your puzzle using the categories and properties on the right. The name of each property is a hyperlink to the documentation for that property.</p>
+        <p>Several properties have a record button, denoted by ⭕. To work with these properties, toggle record mode on to 🔴, draw or type directly within the puzzle, and then toggle record mode back off to ⭕. The property will update when recording stops.</p>
+        <p>In recording mode for <a href="../reference/reference-options.html#data-text" target="_blank"><code>data-text</code></a>, the <code>.</code> (editable blank cell), <code>#</code> (editable extract cell), and <code>@</code> (uneditable black cell) characters display literally, to facilitate editing. Also, <a href="../reference/reference-options.html#data-text-replacements" target="_blank"><code>data-text-replacements</code></a> is turned off for the same reason.</p>
+        <p>When done editing, go to the &ldquo;Import/Export&rdquo; category, copy the HTML out of the text area, and paste that into your own web page.</p>
+    </body>
+</html>

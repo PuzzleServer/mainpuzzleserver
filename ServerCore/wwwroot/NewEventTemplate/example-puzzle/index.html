@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- CHANGE_ME: title of your puzzle, followed by - event name -->
+    <title>Example Puzzle - Event Name</title>
+    <link rel="stylesheet" href="../../resources/puzzle-base-styles.css">
+    <link rel="stylesheet" href="../../resources/puzzle-print-styles.css" media="print">
+    <script type="text/javascript" src="../../resources/resize.js"></script>
+    <link rel="stylesheet" href="../../resources/canvas.css">
+    <script type="text/javascript" src="../../resources/canvas.js"></script>
+    <link rel="stylesheet" href="../../resources/puzzlejs/puzzle.css"/>
+    <link rel="stylesheet" href="../../resources/puzzlejs/puzzle-basic-colors.css"/>
+    <script type="text/javascript" src="../../resources/puzzlejs/puzzle.js"></script>
+</head>
+
+<!-- CHANGE_ME: change "example-puzzle-year" to your puzzle name in the same kebab-case as its folder, followed by the year -->
+<body data-puzzle-page-id="example-puzzle-year">
+<div class="page-div">
+    <div class="header-div">
+        <h1>
+            <!-- CHANGE_ME: title, same as page title above but without - Event Name -->
+            Example Puzzle
+        </h1>
+        <div class="byline-div">
+            <!-- CHANGE_ME: author, just your name, no By: or anything like that -->
+            Clippy
+        </div>
+        <!-- CHANGE_ME: if your puzzle has Data Confirmation, uncomment this line -->
+        <!-- <div class="has-dc" title="Data Confirmation checks are available for this puzzle."></div> -->
+    </div>
+    <div class="content-div">
+        <!-- CHANGE_ME: puzzle content goes here -->
+        <h2>Getting Started</h2>
+        <ul>
+            <li>If you haven't done the <a href="https://github.com/PuzzleServer/mainpuzzleserver/wiki/Webification-environment-setup" target="_blank">webification environment setup</a> yet, do that first!</li>
+            <li>You can watch <a href="https://microsoft.sharepoint.com/teams/pdplanning/_layouts/15/stream.aspx?id=%2Fteams%2Fpdplanning%2FShared%20Documents%2F2025%2FWebification%2Ddemo%2D2025%2Emp4">this video</a> for an overview of the process.</li>
+            <li>There are several spots in the source marked CHANGE_ME, look at all of those and take the appropriate actions.</li>
+            <li>You do not <i>have</i> to use PuzzleJS, but it sure helps! No JavaScript coding needed for most things.</li>
+            <li>PuzzleJS designer: Press <b>Shift + Ctrl + Alt + F12</b>. <a href="../../resources/puzzlejs/designer/puzzle-designer.html" target="_blank">How to use the designer</a></li>
+            <li><a href="https://tabascq.github.io/PuzzleJS/" target="_blank">Full PuzzleJS reference</a>, with dozens of demos and samples</li>
+            <li><a href="https://github.com/PuzzleServer/mainpuzzleserver/wiki/Webification" target="_blank">Full Webification guide</a></li>
+        </ul>
+        <h2>Single grid starter</h2>
+        <div class="puzzle-entry" data-text="9x9" data-show-commands="true"></div>
+        <h2>Multiple grids starter</h2>
+        <div class="puzzle-entry" data-show-commands="true">
+            <ul>
+                <li>Any layout within this puzzle-entry is fine!</li>
+                <li><div class="puzzle-grid" data-text="#...."></div></li>
+                <li><div class="puzzle-grid" data-text=".#..."></div></li>
+                <li><div class="puzzle-grid" data-text="..#.."></div></li>
+                <li><div class="puzzle-grid" data-text="...#."></div></li>
+                <li><div class="puzzle-grid" data-text="....#"></div></li>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -18,7 +19,7 @@ namespace ServerCore.Pages.Events
     {
         private readonly PuzzleServerContext _context;
         private readonly UserManager<IdentityUser> _userManager;
-        const string SharedResourceDirectoryName = "resources";
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
         [BindProperty]
         public Event Event { get; set; }
@@ -35,10 +36,11 @@ namespace ServerCore.Pages.Events
         [BindProperty]
         public bool LargeEvent { get; set; }
 
-        public CreateDemoModel(PuzzleServerContext context, UserManager<IdentityUser> userManager)
+        public CreateDemoModel(PuzzleServerContext context, UserManager<IdentityUser> manager, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
-            _userManager = userManager;
+            _userManager = manager;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         private Piece MakePiece(Puzzle puzzle, int progressLevel, int clueID, string answerPattern, int puzzlePos, string clue)
@@ -599,7 +601,8 @@ namespace ServerCore.Pages.Events
             // Fails silently if local Azure storage emulator isn't installed
             if (AddSkeletonContentFiles)
             {
-                NewFileCreationHelper.CreateNewEventFiles(Event.ID, SharedResourceDirectoryName);
+                await FileUploadHelper.UploadNewEventFilesAsync(this.HttpContext, _context, Event.ID, _webHostEnvironment);
+                await _context.SaveChangesAsync();
             }
 
             return RedirectToPage("./Index");
