@@ -86,7 +86,7 @@ namespace ServerCore.Pages.Puzzles
                 HasLiveEvents = (await LiveEventHelper.GetLiveEventsForEvent(_context, Event, false, false)).Any();
             }
 
-            Team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
+            Team = await base.GetTeamAsync();
 
             if (Team != null)
             {
