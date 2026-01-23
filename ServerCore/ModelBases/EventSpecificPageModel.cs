@@ -163,7 +163,7 @@ namespace ServerCore.ModelBases
             {
                 if (EventRole.Type == EventRoleType.impersonateteam)
                 {
-                    this.team = await _context.Teams.Where(t => t.ID == EventRole.ImpersonationId).FirstOrDefaultAsync();
+                    this.team = await _context.Teams.Where(t => t.ID == EventRole.ImpersonationId && t.EventID == Event.ID).FirstOrDefaultAsync();
                 }
                 else
                 {
