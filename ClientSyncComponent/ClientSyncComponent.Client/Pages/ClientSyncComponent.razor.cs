@@ -253,10 +253,9 @@ namespace ClientSyncComponent.Client.Pages
             {
                 newChanges.Add(entry);
             }
-            newChanges.Sort((a, b) => a.Timestamp?.CompareTo(b.Timestamp!.Value) ?? 0);
+            newChanges.Sort((a, b) => a.Timestamp!.Value.CompareTo(b.Timestamp!.Value));
 
             // If a puzzle was reset, remove the earlier data for that puzzle to avoid it flashing in and then disappearing
-
             bool removedEntries = false;
             do
             {
@@ -266,9 +265,9 @@ namespace ClientSyncComponent.Client.Pages
                     PuzzleItemProperty entry = newChanges[i];
                     if (entry.IsReset)
                     {
-                        // Remove all data entries for this sub-puzzle
+                        // Remove all data entries for this sub-puzzle from before the reset
                         int removedForReset = newChanges.RemoveAll(e => e.SubPuzzleId == entry.SubPuzzleId &&
-                        e.Timestamp < entry.Timestamp && !e.IsReset);
+                            e.Timestamp < entry.Timestamp);
                         if (removedForReset > 0)
                         {
                             removedEntries = true;
@@ -278,7 +277,7 @@ namespace ClientSyncComponent.Client.Pages
                 }
             } while (removedEntries);
 
-            List < JsPuzzleChange > jsChanges = new List<JsPuzzleChange>();
+            List <JsPuzzleChange> jsChanges = new List<JsPuzzleChange>();
             foreach (PuzzleItemProperty entry in newChanges)
             {
                 foundNewData = true;
@@ -303,10 +302,6 @@ namespace ClientSyncComponent.Client.Pages
                         value = entry.Value,
                         channel = entry.Channel
                     });
-
-                    //morganb debug
-                    await JSRuntime.InvokeVoidAsync("onPuzzleSynced", [jsChanges.ToArray()]);
-                    jsChanges.Clear();
                 }
 
                 LastSyncUtc = entry.Timestamp > LastSyncUtc ? entry.Timestamp.Value : LastSyncUtc;
@@ -315,8 +310,7 @@ namespace ClientSyncComponent.Client.Pages
 
             if (foundNewData)
             {
-                // morganb debug
-                //await JSRuntime.InvokeVoidAsync("onPuzzleSynced", [jsChanges.ToArray()]);
+                await JSRuntime.InvokeVoidAsync("onPuzzleSynced", [jsChanges.ToArray()]);
                 await InvokeAsync(StateHasChanged);
             }
         }
