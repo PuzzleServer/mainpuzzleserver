@@ -329,11 +329,6 @@ namespace ServerCore.DataModel
         public bool ShouldShowSinglePlayerPuzzles => !string.IsNullOrEmpty(SinglePlayerPuzzleTitle);
 
         /// <summary>
-        /// True if Blazor can run on pages for this event. Should normally be true, but can be disabled in an emergency
-        /// </summary>
-        public bool AllowBlazor { get; set; }
-
-        /// <summary>
         /// True if this is an alpha testing event (meaning authors can mark puzzles for testing)
         /// </summary>
         public bool IsAlphaTestingEvent { get; set; }
