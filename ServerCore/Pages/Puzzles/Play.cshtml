@@ -108,7 +108,7 @@
 
 <h2>Team puzzles</h2>
 
-@if(Model.HasLiveEvents)
+@if(Model.HasLiveEvents && Model.Team != null)
 {
     <a asp-page="/Teams/LiveEventSchedule" asp-route-teamId="@Model.Team.ID">Click Here for the Live Event Schedule</a> <br/> <br/>
 }
