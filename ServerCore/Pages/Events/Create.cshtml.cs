@@ -47,7 +47,6 @@ namespace ServerCore.Pages.Events
             Event.MaxNumberOfTeams = 120;
             Event.MaxExternalsPerTeam = 9;
             Event.MaxTeamSize = 12;
-            Event.AllowBlazor = true;
             Event.EmbedPuzzles = true;
             Event.EventPassword = Guid.NewGuid().ToString();
 
