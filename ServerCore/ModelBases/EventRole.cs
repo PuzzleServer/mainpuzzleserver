@@ -44,7 +44,7 @@ namespace ServerCore.ModelBases
 
         public static EventRole Parse(string s)
         {
-            if (string.IsNullOrEmpty(s)) return null;
+            if (string.IsNullOrEmpty(s)) return EventRole.play;
             s = s.ToLower();
 
             if (s.StartsWith("impersonateteam-"))
@@ -52,7 +52,7 @@ namespace ServerCore.ModelBases
                 bool parse = int.TryParse(s.Substring("impersonateteam-".Length), out int id);
                 if (!parse)
                 {
-                    return new EventRole() { Type = EventRoleType.play };
+                    return EventRole.play;
                 }
                 return new EventRole() { Type = EventRoleType.impersonateteam, ImpersonationId = id };
             }
