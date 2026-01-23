@@ -13,9 +13,9 @@ namespace ServerCore.Helpers
         /// </summary>
         /// <param name="date"></param>
         /// <returns></returns>
-        public static string LocalTime(DateTime? date)
+        public static string LocalTime(DateTime? date, string format = null)
         {
-            return date == null ? "&nbsp;" : $"<time dateTime=\"{date.Value.ToString("yyyy-MM-ddTHH:mm:ssZ")}\"></time>";
+            return date == null ? "&nbsp;" : $"<time dateTime=\"{date.Value.ToString("yyyy-MM-ddTHH:mm:ssZ")}\" {((format != null) ? $"data-dateFormat=\"{format}\"" : "")}></time>";
         }
     }
 }
