@@ -235,8 +235,7 @@ namespace ServerCore
             // if this puzzle got solved, look for others to unlock
             if (puzzle != null && value != null)
             {
-                // only send this notification when puzzles are embedded; otherwise, the notification is sent when there are no pages connected!
-                if (team != null && eventObj.EmbedPuzzles && puzzle.IsPuzzle)
+                if (team != null && puzzle.IsPuzzle)
                 {
                     await ServiceProvider.GetRequiredService<IHubContext<ServerMessageHub>>().SendNotification(team, "Puzzle solved!", $"{puzzle.PlaintextName} has been solved!", $"/{puzzle.Event.EventID}/play/Submissions/{puzzle.ID}");
                 }
@@ -538,21 +537,17 @@ namespace ServerCore
                     }
                 }
 
-                // only send these notifications when puzzles are embedded; otherwise, the notifications are sent when there are no pages connected!
-                if (eventObj.EmbedPuzzles)
+                if (puzzlesUnlockedToNotify.Count > 3)
                 {
-                    if (puzzlesUnlockedToNotify.Count > 3)
-                    {
-                        await ServiceProvider.GetRequiredService<IHubContext<ServerMessageHub>>().SendNotification(t, "New puzzles!", $"{puzzlesUnlockedToNotify.Count} puzzles have been unlocked!", $"/{eventObj.EventID}/play/Play");
-                    }
-                    else if (puzzlesUnlockedToNotify.Count > 0)
-                    {
-                        var puzzles = await context.Puzzles.Where(p => puzzlesUnlockedToNotify.Contains(p.ID)).ToListAsync();
+                    await ServiceProvider.GetRequiredService<IHubContext<ServerMessageHub>>().SendNotification(t, "New puzzles!", $"{puzzlesUnlockedToNotify.Count} puzzles have been unlocked!", $"/{eventObj.EventID}/play/Play");
+                }
+                else if (puzzlesUnlockedToNotify.Count > 0)
+                {
+                    var puzzles = await context.Puzzles.Where(p => puzzlesUnlockedToNotify.Contains(p.ID)).ToListAsync();
 
-                        foreach (var puzzle in puzzles)
-                        {
-                            await ServiceProvider.GetRequiredService<IHubContext<ServerMessageHub>>().SendNotification(t, "New puzzle!", $"{puzzle.PlaintextName} has been unlocked!", $"/{eventObj.EventID}/play/Submissions/{puzzle.ID}");
-                        }
+                    foreach (var puzzle in puzzles)
+                    {
+                        await ServiceProvider.GetRequiredService<IHubContext<ServerMessageHub>>().SendNotification(t, "New puzzle!", $"{puzzle.PlaintextName} has been unlocked!", $"/{eventObj.EventID}/play/Submissions/{puzzle.ID}");
                     }
                 }
             }
