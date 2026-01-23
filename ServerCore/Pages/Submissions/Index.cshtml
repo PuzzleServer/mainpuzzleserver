@@ -171,6 +171,10 @@
         opacity: 0.25;
     }
 
+    @@media (max-width: 750px) {
+        .submission-block { grid-template-columns: 1fr; }
+    }
+
     /* Host-side printing of an embedded puzzle only supports portrait orientation;
         puzzle-defined orientation when printing can only be done by clicking the link to print the puzzle file itself */
     @@media print {
@@ -521,7 +525,7 @@ else
             <br class="no-print" />
         }
 
-        <div class="evencolumn no-print">
+        <div class="submission-block evencolumn no-print">
             <div>
                 <div class="flexwrapper">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
