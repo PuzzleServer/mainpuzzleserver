@@ -157,7 +157,7 @@
     }
 
     .puzzle-content-wrapper.unclaimed {
-            background: #666666;
+        background: #666666;
     }
 
     .puzzle-content-wrapper.unclaimed > * {
@@ -268,29 +268,36 @@
         <br class="no-print" />
     }
 
-    <div class="submission-block evencolumn no-print">
-        <div>
-            <div class="flexwrapper">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <label for="submissionText" class="marginright margintop answer-label-customizable">Answer:</label>
-                <input name="submissionText" maxlength="1000" id="submitBox" class="form-control marginright" data-val="true" data-val-required="Your answer cannot be empty" />
-                <input type="submit" id="submitButton" value="Submit" class="btn btn-default marginright" title="Submitted answers will automatically be capitalized and stripped of non-alphanumeric characters" />
-                @Html.ValidationSummary(true)
-                <span class="text-danger"><span class="field-validation-valid" data-valmsg-for="submissionText" data-valmsg-replace="true"></span></span>
+        <div class="submission-block evencolumn no-print">
+            <div>
+                @if (Model.EventRole.Type == ModelBases.EventRoleType.impersonateteam)
+                {
+                    <h3>Read-only: Impersonating @Model.Team.Name</h3>
+                }
+                else
+                {
+                    <div class="flexwrapper">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <label for="submissionText" class="marginright margintop answer-label-customizable">Answer:</label>
+                        <input name="submissionText" maxlength="1000" id="submitBox" class="form-control marginright" data-val="true" data-val-required="Your answer cannot be empty" />
+                        <input type="submit" id="submitButton" value="Submit" class="btn btn-default marginright" title="Submitted answers will automatically be capitalized and stripped of non-alphanumeric characters" />
+                        @Html.ValidationSummary(true)
+                        <span class="text-danger"><span class="field-validation-valid" data-valmsg-for="submissionText" data-valmsg-replace="true"></span></span>
+                    </div>
+                    @if (Model.Puzzle.IsFreeform)
+                    {
+                        <label for="allowFreeformSharing" class="marginright margintop">
+                            <input class="checkboxfix" type="checkbox" name="allowFreeformSharing" asp-for="AllowFreeformSharing" title="Allow other players to see this after the event" />
+                            Allow other players to see this after the event
+                        </label>
+                    }
+                }
             </div>
-            @if (Model.Puzzle.IsFreeform)
-            {
-                <label for="allowFreeformSharing" class="marginright margintop">
-                    <input class="checkboxfix" type="checkbox" name="allowFreeformSharing" asp-for="AllowFreeformSharing" title="Allow other players to see this after the event" />
-                    Allow other players to see this after the event
-                </label>
-            }
-        </div>
-        <div class="inlinewrapper">
-            @if (Model.Event.HasPlayerClasses)
-            {
-                <div><b>@Model.Event.PlayerClassName: @Model.ActivePlayerClassDisplay - </b> <a asp-page="/Teams/Details" asp-route-teamId="@Model.Team.ID" target="_blank">@Model.Event.PlayerClassName Override</a></div>
-            }
+            <div class="inlinewrapper">
+                @if (Model.Event.HasPlayerClasses)
+                {
+                    <div><b>@Model.Event.PlayerClassName: @Model.ActivePlayerClassDisplay - </b> <a asp-page="/Teams/Details" asp-route-teamId="@Model.Team.ID" target="_blank">@Model.Event.PlayerClassName Override</a></div>
+                }
 
             @if (!Model.Event.HideHints)
             {
@@ -326,26 +333,27 @@
                 <div><b>Want to print?</b> <a href="@puzzleFilePath" target="_blank" download>Click this link</a> to download the file. Please allow popups!</div>
             }
                 
-            @if (!Model.IsPuzzleForSinglePlayer && !Model.Event.EphemeralHackKillSync)
-            {
-                <component type="typeof(ClientSyncComponent.Client.Pages.ClientSyncComponent)" render-mode="WebAssembly"
-                param-PuzzleUserId="@Model.LoggedInUser.ID"
-                param-TeamId="@Model.Team.ID"
-                param-PuzzleId="@Model.Puzzle.ID"
-                param-TableSASUrl="@Model.SyncTableSasUrl"
-                param-PuzzleUnlockTimeUtc="(DateTimeOffset?)@Model.PuzzleState.UnlockedTime"
-                param-EventEndTimeUtc="(DateTimeOffset)@Model.Event.AnswerSubmissionEnd"
-                />
-            }
-            @if (!Model.IsPuzzleForSinglePlayer && !Model.Event.EphemeralHackKillPresence)
-            {
-                <div>
-                    <component type="typeof(ServerCore.Pages.Components.PresenceComponent)" render-mode="Server" param-PuzzleUserId="@Model.LoggedInUser.ID" param-TeamId="@Model.Team.ID" param-PuzzleId="@Model.Puzzle.ID" />
-                </div>
-            }
+                @if (!Model.IsPuzzleForSinglePlayer && !Model.Event.EphemeralHackKillSync)
+                {
+                    <component type="typeof(ClientSyncComponent.Client.Pages.ClientSyncComponent)" render-mode="WebAssembly"
+                    param-PuzzleUserId="@Model.LoggedInUser.ID"
+                    param-TeamId="@Model.Team.ID"
+                    param-PuzzleId="@Model.Puzzle.ID"
+                    param-TableSASUrl="@Model.SyncTableSasUrl"
+                    param-PuzzleUnlockTimeUtc="(DateTimeOffset?)@Model.PuzzleState.UnlockedTime"
+                    param-EventEndTimeUtc="(DateTimeOffset)@Model.Event.AnswerSubmissionEnd"
+                    param-ReadOnly="@(Model.EventRole != ModelBases.EventRole.play)"
+                    />
+                }
+                @if (!Model.IsPuzzleForSinglePlayer && !Model.Event.EphemeralHackKillPresence)
+                {
+                    <div>
+                        <component type="typeof(ServerCore.Pages.Components.PresenceComponent)" render-mode="Server" param-PuzzleUserId="@Model.LoggedInUser.ID" param-TeamId="@Model.Team.ID" param-PuzzleId="@Model.Puzzle.ID" />
+                    </div>
+                }
+            </div>
         </div>
     </div>
-</div>
 
 <br class="no-print" />
 <div id="initialMessage" class="no-print">

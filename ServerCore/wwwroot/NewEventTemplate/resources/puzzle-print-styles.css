@@ -1,0 +1,72 @@
+@media print {
+  @page {
+    margin: 0in;
+  }
+
+  body {
+    font-size: 0.8rem;
+  }
+
+  .page-div {
+    margin: 0px;
+  }
+
+  .header-div {
+    position: absolute;
+    display: grid;
+    width: 100%;
+    grid-template-columns: 540px auto 248px;
+  }
+
+  .has-dc {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    background-size: cover;
+    position: absolute;
+    top: 10px;
+    right: 0.5in;
+    width: 25px;
+    height: 25px;
+  }
+
+  h1 {
+    font-size: 28px;
+    margin-left: 0.5in;
+    margin-top: 10px;
+    text-align: left;
+    text-transform: uppercase;
+    grid-column: 1;
+  }
+
+  .byline-div {
+    font-size: 14px;
+    margin: 0px;
+    margin-top: 18px;
+    margin-right: 0.8in;
+    text-align: right;
+    grid-column: 3;
+  }
+
+  .answer-div {
+    grid-column: 1;
+    text-align: left;
+    margin-left: 0.5in;
+  }
+
+  .content-div {
+    padding: 1in 0.5in 0in 0.5in;
+    border: none;
+  }
+
+  .online-only {
+    display: none;
+  }
+
+  .flavor-div>div>br, .flavor-div>div>a:last-child {
+    display: none;
+  }
+
+  .flavor-div>div:last-child::after {
+    content: "";
+  }
+}

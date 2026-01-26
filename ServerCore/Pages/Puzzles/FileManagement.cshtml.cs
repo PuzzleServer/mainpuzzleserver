@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
+using ServerCore.Helpers;
 using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Puzzles
@@ -298,52 +299,6 @@ namespace ServerCore.Pages.Puzzles
         }
 
         /// <summary>
-        /// Makes a clean link to the ContentFile based on ShortName, that is not specific to this event.
-        /// </summary>
-        /// <param name="file">The ContentFile</param>
-        /// <returns>a link that replaces the explicit eventId with {eventId}, best used for Puzzle.CustomURL and Puzzle.CustomSolutionURL.</returns>
-        public string EventAgnosticLinkFromShortName(ContentFile file)
-        {
-            // lack of translation of {eventId} is very intentional - this is translated at runtime and makes the field value portable
-            return this.HttpContext.Request.Scheme + "://" + this.HttpContext.Request.Host + "/{eventId}/Files/" + file.ShortName;
-        }
-
-        /// <summary>
-        /// Promotes files named "index.html" to the CustomURL or CustomSolutionURL properties of the puzzle.
-        /// </summary>
-        /// <param name="file">The file being uploaded</param>
-        private void UpdateCustomURLs(ContentFile file)
-        {
-            // Skip this if:
-            // - the file is not a material or solution file
-            // - the appropriate Custom[Solution]URL is non-blank
-            if (!(file.FileType == ContentFileType.PuzzleMaterial || file.FileType == ContentFileType.SolveToken) || 
-                (file.FileType == ContentFileType.PuzzleMaterial && !string.IsNullOrEmpty(Puzzle.CustomURL)) ||
-                (file.FileType == ContentFileType.SolveToken && !string.IsNullOrEmpty(Puzzle.CustomSolutionURL)))
-            {
-                return;
-            }
-
-            string fileNameLower = Path.GetFileName(file.ShortName).ToLower();
-            if (fileNameLower == "index.html")
-            {
-                string filePath = this.EventAgnosticLinkFromShortName(file);
-                if (file.FileType == ContentFileType.PuzzleMaterial)
-                {
-                    Puzzle.CustomURL = filePath;
-                }
-                else
-                {
-                    Puzzle.CustomSolutionURL = filePath;
-                }
-            }
-            else if (fileNameLower.EndsWith("_client.html") && file.FileType == ContentFileType.PuzzleMaterial)
-            {
-                Puzzle.CustomURL = this.HttpContext.Request.Scheme + "://" + this.HttpContext.Request.Host + "/{eventId}/{puzzleId}/api/Sync/client/?eventId={eventId}";
-            }
-        }
-
-        /// <summary>
         /// Helper for taking an uploaded form file, uploading it, and tracking it in the database
         /// </summary>
         private async Task UploadFileAsync(IFormFile uploadedFile, ContentFileType fileType)
@@ -351,59 +306,11 @@ namespace ServerCore.Pages.Puzzles
             if ((fileType == ContentFileType.PuzzleMaterial || fileType == ContentFileType.SolveToken) &&
                 Path.GetExtension(uploadedFile.FileName).Equals(".zip", StringComparison.OrdinalIgnoreCase) && ExpandZipFiles)
             {
-                await UploadZipAsync(uploadedFile, fileType);
-                return;
+                await FileUploadHelper.UploadZipAsync(this.HttpContext, _context, Puzzle, uploadedFile, fileType);
             }
-
-            ContentFile file = new ContentFile();
-            string fileName = uploadedFile.FileName;
-            file.ShortName = fileName;
-            file.Puzzle = Puzzle;
-            file.Event = Event;
-            file.FileType = fileType;
-
-            file.Url = await FileManager.UploadBlobAsync(fileName, Event.ID, uploadedFile.OpenReadStream());
-
-            this.UpdateCustomURLs(file);
-            _context.ContentFiles.Add(file);
-        }
-
-        /// <summary>
-        /// Extracts the contents of a zip file and uploads the contents into a single directory
-        /// </summary>
-        private async Task UploadZipAsync(IFormFile uploadedFile, ContentFileType fileType)
-        {
-            ZipArchive archive = new ZipArchive(uploadedFile.OpenReadStream(), ZipArchiveMode.Read);
-            Dictionary<string, Stream> contents = new Dictionary<string, Stream>();
-            foreach(ZipArchiveEntry entry in archive.Entries)
+            else
             {
-                if (entry.FullName.EndsWith("/"))
-                {
-                    continue;
-                }
-
-                if (entry.FullName.StartsWith("/") || entry.FullName.StartsWith("\\") || entry.FullName.Contains(".."))
-                {
-                    throw new ArgumentException();
-                }
-
-                string fileName = entry.FullName;
-                contents[fileName] = entry.Open();
-            }
-
-            Dictionary<string, Uri> fileUrls = await FileManager.UploadBlobsAsync(contents, Event.ID);
-            foreach(KeyValuePair<string, Uri> fileUrl in fileUrls)
-            {
-                ContentFile file = new ContentFile()
-                {
-                    ShortName = fileUrl.Key,
-                    Puzzle = Puzzle,
-                    Event = Event,
-                    FileType = fileType,
-                    Url = fileUrl.Value,
-                };
-                this.UpdateCustomURLs(file);
-                _context.ContentFiles.Add(file);
+                await FileUploadHelper.UploadFileAsync(this.HttpContext, _context, Puzzle, uploadedFile, fileType);
             }
         }
     }
