@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -14,15 +15,16 @@ namespace ServerCore.Pages.Events
     {
         private readonly PuzzleServerContext _context;
         private readonly UserManager<IdentityUser> _userManager;
-        const string SharedResourceDirectoryName = "resources";
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
         [BindProperty]
         public Event Event { get; set; }
 
-        public CreateModel(PuzzleServerContext context, UserManager<IdentityUser> manager)
+        public CreateModel(PuzzleServerContext context, UserManager<IdentityUser> manager, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
             _userManager = manager;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public IActionResult OnGet()
@@ -47,7 +49,6 @@ namespace ServerCore.Pages.Events
             Event.MaxNumberOfTeams = 120;
             Event.MaxExternalsPerTeam = 9;
             Event.MaxTeamSize = 12;
-            Event.AllowBlazor = true;
             Event.EmbedPuzzles = true;
             Event.EventPassword = Guid.NewGuid().ToString();
 
@@ -76,7 +77,9 @@ namespace ServerCore.Pages.Events
 
             // Create base files for event content and style
             // Fails silently if local Azure storage emulator isn't installed
-            NewFileCreationHelper.CreateNewEventFiles(Event.ID, SharedResourceDirectoryName);
+            await FileUploadHelper.UploadNewEventFilesAsync(this.HttpContext, _context, Event.ID, _webHostEnvironment);
+
+            await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");
         }

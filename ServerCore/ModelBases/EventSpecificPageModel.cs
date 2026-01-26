@@ -43,7 +43,8 @@ namespace ServerCore.ModelBases
             bool isAuthor = await IsEventAuthor();
             if (((EventRole == EventRole.admin) && !isAdmin) ||
                 ((EventRole == EventRole.author) && !isAuthor) ||
-                ((EventRole != EventRole.admin) && (EventRole != EventRole.author) && (EventRole != EventRole.play)))
+                ((EventRole.IsImpersonating) && !isAuthor && !isAdmin) ||
+                ((EventRole != EventRole.admin) && (EventRole != EventRole.author) && (EventRole != EventRole.play) && !EventRole.IsImpersonating))
             {
                 context.Result = Forbid();
                 return;
@@ -77,7 +78,7 @@ namespace ServerCore.ModelBases
 
             if (isRegisteredUser == null)
             {
-                isRegisteredUser = await LoggedInUser.IsRegisteredForEvent(_context, Event);
+                isRegisteredUser = EventRole.Type == EventRoleType.impersonateteam ? true : await LoggedInUser.IsRegisteredForEvent(_context, Event);
             }
 
             return isRegisteredUser.Value;
@@ -90,7 +91,7 @@ namespace ServerCore.ModelBases
 
             if(playerIsOnTeam == null)
             {
-                playerIsOnTeam = await LoggedInUser.IsPlayerOnTeam(_context, Event);
+                playerIsOnTeam = EventRole.Type == EventRoleType.impersonateteam ? true : await LoggedInUser.IsPlayerOnTeam(_context, Event);
             }
 
             return playerIsOnTeam.Value;
@@ -160,7 +161,14 @@ namespace ServerCore.ModelBases
         {
             if (this.team == null)
             {
-                this.team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
+                if (EventRole.Type == EventRoleType.impersonateteam)
+                {
+                    this.team = await _context.Teams.Where(t => t.ID == EventRole.ImpersonationId && t.EventID == Event.ID).FirstOrDefaultAsync();
+                }
+                else
+                {
+                    this.team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
+                }
             }
 
             return team;
@@ -168,7 +176,7 @@ namespace ServerCore.ModelBases
 
         public async Task<int> GetTeamId()
         {
-            if (EventRole == ModelBases.EventRole.play)
+            if (EventRole == ModelBases.EventRole.play || EventRole.Type == EventRoleType.impersonateteam)
             {
                 Team team = await this.GetTeamAsync();
                 return team != null ? team.ID : -1;
@@ -181,7 +189,7 @@ namespace ServerCore.ModelBases
 
         public async Task<bool> GetShowTeamAnnouncement()
         {
-            if (EventRole == ModelBases.EventRole.play)
+            if (EventRole == ModelBases.EventRole.play || EventRole.Type == EventRoleType.impersonateteam)
             {
                 Team team = await this.GetTeamAsync();
                 return team != null ? team.ShowTeamAnnouncement : false;
@@ -202,9 +210,9 @@ namespace ServerCore.ModelBases
             return -1;
         }
 
-        public string LocalTime(DateTime? date)
+        public string LocalTime(DateTime? date, string format = null)
         {
-            return TimeHelper.LocalTime(date);
+            return TimeHelper.LocalTime(date, format);
         }
 
         public bool IsGameControlRole()
@@ -241,16 +249,7 @@ namespace ServerCore.ModelBases
             public async Task BindModelAsync(ModelBindingContext bindingContext)
             {
                 string eventRoleAsString = bindingContext.ActionContext.RouteData.Values["eventRole"] as string;
-                if (eventRoleAsString == null)
-                {
-                    eventRoleAsString = ModelBases.EventRole.play.ToString();
-                }
-                eventRoleAsString = eventRoleAsString.ToLower();
-
-                if (Enum.IsDefined(typeof(EventRole), eventRoleAsString))
-                {
-                    bindingContext.Result = ModelBindingResult.Success(Enum.Parse(typeof(EventRole), eventRoleAsString));
-                }
+                bindingContext.Result = ModelBindingResult.Success(EventRole.Parse(eventRoleAsString));
             }
         }
     }

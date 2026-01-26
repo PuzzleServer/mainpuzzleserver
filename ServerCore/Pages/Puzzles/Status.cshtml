@@ -37,10 +37,7 @@
                 </th>
             }
             <th>
-                Printed
-            </th>
-            <th>
-                Notes
+                Impersonate
             </th>
             <th>
                 IsLockedOut
@@ -93,10 +90,10 @@
                     </td>
                 }
                 <td>
-                    @item.Printed
-                </td>
-                <td>
-                    @item.Notes
+                    @if (item.UnlockedTime != null)
+                    {
+                        <a asp-page="/Submissions/Index" asp-route-puzzleId="@Model.Puzzle.ID" asp-route-eventRole="@($"impersonateteam-{@item.Team.ID}")">Impersonate</a>
+                    }
                 </td>
                 <td>
                     @item.IsLockedOut

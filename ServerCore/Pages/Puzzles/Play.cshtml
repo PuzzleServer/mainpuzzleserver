@@ -26,7 +26,7 @@
     }
 </style>
 
-@if (Model.Event.AllowBlazor && canUsePresence && Model.Team != null)
+@if (canUsePresence && Model.Team != null)
 {
     <script>
         window.showPresence = (allPresence) => {
@@ -108,7 +108,7 @@
 
 <h2>Team puzzles</h2>
 
-@if(Model.HasLiveEvents)
+@if(Model.HasLiveEvents && Model.Team != null)
 {
     <a asp-page="/Teams/LiveEventSchedule" asp-route-teamId="@Model.Team.ID">Click Here for the Live Event Schedule</a> <br/> <br/>
 }
@@ -167,7 +167,7 @@ else
                         Answer
                     </th>
                 }
-                else if (Model.Event.AllowBlazor && canUsePresence)
+                else if (canUsePresence)
                 {
                     <th>
                         Who's here
@@ -250,7 +250,7 @@ else
                             }
                         </td>
                     }
-                    else if (Model.Event.AllowBlazor && canUsePresence)
+                    else if (canUsePresence)
                     {
                         <td id="presence-@item.ID">
                         </td>
