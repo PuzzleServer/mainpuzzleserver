@@ -330,7 +330,7 @@ namespace ServerCore.DataModel
 
         /// <summary>
         /// True if the event uses the PlayerClass system to assign classes to individual players
-        /// PlayerClassName should also be set in this case, otherwe the display name will be "Player Class"
+        /// PlayerClassName should also be set in this case, otherwise the display name will be "Player Class"
         /// </summary>
         public bool HasPlayerClasses { get; set; }
 
