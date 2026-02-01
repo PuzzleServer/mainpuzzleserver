@@ -56,11 +56,6 @@ namespace ServerCore.DataModel
         public bool LockChangesToRemoteStatus { get; set; }
 
         /// <summary>
-        /// True if puzzles will be shown in an iframe on the answer submission page
-        /// </summary>
-        public bool EmbedPuzzles { get; set; }
-
-        /// <summary>
         /// True if the event has individual swag
         /// </summary>
         [Column("EventHasSwag")]
@@ -335,7 +330,7 @@ namespace ServerCore.DataModel
 
         /// <summary>
         /// True if the event uses the PlayerClass system to assign classes to individual players
-        /// PlayerClassName should also be set in this case, otherwise the display name will be "Player Class"
+        /// PlayerClassName should also be set in this case, otherwe the display name will be "Player Class"
         /// </summary>
         public bool HasPlayerClasses { get; set; }
 
