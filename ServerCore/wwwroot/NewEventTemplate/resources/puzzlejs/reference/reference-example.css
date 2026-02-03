@@ -1,0 +1,87 @@
+/* (c) 2025 Kenny Young
+ * This code is licensed under the MIT License.
+ * https://github.com/tabascq/PuzzleJS
+ */
+ .example {
+    background-color: #ddf;
+    padding: 1em;
+    padding-left: 3em;
+    margin: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    gap: 1rem;
+    page-break-inside: avoid;
+}
+
+.example.vertical {
+    flex-direction: column-reverse;
+    align-items: center;
+}
+
+.example pre {
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+.example-title-and-code {
+    align-self: start;
+}
+
+.example-title {
+    display: flex;
+    align-items: center;
+}
+
+.designer-button {
+    margin-left: 10px;
+}
+
+.example .example-title::before {
+    content: "Interactive Example";
+    font-family: serif;
+    font-weight: bold;
+    font-style: italic;
+    display: block;
+    margin-left: -2em;
+}
+
+.example.with-validation.logic .example-title::before {
+    content: "Interactive Example with Logic-based Validation";
+}
+
+.example.with-validation.hash .example-title::before {
+    content: "Interactive Example with Hash-based Validation";
+}
+
+.example.non-interactive .example-title::before {
+    content: "Example";
+}
+
+.example.example.non-interactive .designer-button {
+    display: none;
+}
+
+.example .puzzle-entry {
+    background-color: white;
+    flex-shrink: 0;
+}
+
+.example .puzzle-entry[data-show-commands=true] {
+    padding: 20px 30px;
+}
+
+.example.with-validation .puzzle-entry[data-show-commands=true] {
+    min-width: 250px;
+}
+
+@media print {
+    .example { flex-direction: column; }
+}
+
+@media screen and (max-width: 1000px) {
+    .example {
+        flex-direction: column-reverse;
+        align-items: center;
+    }
+}

@@ -30,10 +30,7 @@
                 </a>
             </th>
             <th>
-                Printed
-            </th>
-            <th>
-                Notes
+                Impersonate
             </th>
             <th>
                 IsEmailOnlyMode
@@ -70,10 +67,10 @@
                     }
                 </td>
                 <td>
-                    @item.Printed
-                </td>
-                <td>
-                    @item.Notes
+                    @if (item.UnlockedTime != null)
+                    {
+                        <a asp-page="/Submissions/Index" asp-route-puzzleId="@item.Puzzle.ID" asp-route-eventRole="@($"impersonateteam-{Model.Team.ID}")">Impersonate</a>
+                    }
                 </td>
                 <td>
                     @if (item.IsEmailOnlyMode == true)

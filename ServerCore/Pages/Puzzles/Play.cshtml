@@ -49,7 +49,7 @@
     </div>
 }
 
-@if (Model.Event.IsAlphaTestingEvent && Model.Event.EmbedPuzzles && Model.UnclaimedAlphaPuzzleViews.Any())
+@if (Model.Event.IsAlphaTestingEvent && Model.UnclaimedAlphaPuzzleViews.Any())
 {
     <h2>Puzzles that need alpha testing!</h2>
     <table class="table">
@@ -108,7 +108,7 @@
 
 <h2>Team puzzles</h2>
 
-@if(Model.HasLiveEvents)
+@if(Model.HasLiveEvents && Model.Team != null)
 {
     <a asp-page="/Teams/LiveEventSchedule" asp-route-teamId="@Model.Team.ID">Click Here for the Live Event Schedule</a> <br/> <br/>
 }
@@ -212,25 +212,7 @@ else
                             <span class="solved-symbol-customizable" title="This puzzle has been solved">&#10004; </span>
                         }
 
-                        @if (!Model.Event.EmbedPuzzles)
-                        {
-                            @if (item.CustomUrl != null)
-                            {
-                                <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.CustomUrl, item.ID, Model.Event.ID, Model.LoggedInUser.ID, Model.Team.Password, Model.LoggedInPlayerClass)" target="_blank">@RawHtmlHelper.Display(item.Name, Model.Event.ID, Html)</a>
-                            }
-                            else if (item.Content != null)
-                            {
-                                <a asp-action="Index" asp-controller="Files" asp-route-eventId="@Model.Event.ID" asp-route-filename="@item.Content.ShortName" target="_blank">@RawHtmlHelper.Display(item.Name, Model.Event.ID, Html)</a>
-                            }
-                            else
-                            {
-                                @RawHtmlHelper.Display(item.Name, Model.Event.ID, Html)
-                            }
-                        }
-                        else
-                        {
-                            @RawHtmlHelper.Display(item.Name, Model.Event.ID, Html)
-                        }
+                        @RawHtmlHelper.Display(item.Name, Model.Event.ID, Html)
 
                         @if (item.PieceMetaUsage != DataModel.PieceMetaUsage.None)
                         {
@@ -258,14 +240,7 @@ else
                     <td class="puzzle-list-submit-customizable">
                         @if (canSubmit)
                         {
-                            @if (Model.Event.EmbedPuzzles)
-                            {
-                                <a asp-page="/Submissions/Index" asp-route-puzzleId="@item.ID">View Puzzle</a>
-                            }
-                            else
-                            {
-                                <a asp-page="/Submissions/Index" asp-route-puzzleId="@item.ID">Submit Answer</a>
-                            }
+                            <a asp-page="/Submissions/Index" asp-route-puzzleId="@item.ID">View Puzzle</a>
                         }
                         else
                         {
@@ -375,25 +350,7 @@ else
                                 <span class="solved-symbol-customizable" title="This puzzle has been solved">&#10004; </span>
                             }
 
-                            @if (!Model.Event.EmbedPuzzles)
-                            {
-                                @if (item.CustomUrl != null)
-                                {
-                                    <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.CustomUrl, item.ID, Model.Event.ID, Model.LoggedInUser.ID, teamPassword: null, playerClass: null)" target="_blank">@RawHtmlHelper.Display(item.Name, Model.Event.ID, Html)</a>
-                                }
-                                else if (item.Content != null)
-                                {
-                                    <a asp-action="Index" asp-controller="Files" asp-route-eventId="@Model.Event.ID" asp-route-filename="@item.Content.ShortName" target="_blank">@RawHtmlHelper.Display(item.Name, Model.Event.ID, Html)</a>
-                                }
-                                else
-                                {
-                                    @RawHtmlHelper.Display(item.Name, Model.Event.ID, Html)
-                                }
-                            }
-                            else
-                            {
-                                @RawHtmlHelper.Display(item.Name, Model.Event.ID, Html)
-                            }
+                            @RawHtmlHelper.Display(item.Name, Model.Event.ID, Html)
 
                             @if (item.PieceMetaUsage != DataModel.PieceMetaUsage.None)
                             {
@@ -423,14 +380,7 @@ else
                                 }
                                 else if (canSubmit)
                                 {
-                                    @if (Model.Event.EmbedPuzzles)
-                                    {
-                                        <text>View</text>
-                                    }
-                                    else
-                                    {
-                                        <text>Submit Answer</text>
-                                    }
+                                    <text>View</text>
                                 }
                                 else
                                 {

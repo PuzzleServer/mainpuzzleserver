@@ -330,7 +330,7 @@ namespace ServerCore.Pages.Submissions
 
         private async Task SetupContext(int puzzleId)
         {
-            Team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
+            Team = await GetTeamAsync();
 
             if (Event.HasPlayerClasses)
             {
@@ -381,13 +381,13 @@ namespace ServerCore.Pages.Submissions
                         PartitionKeyEnd = partitionKey,
                         TableName = "PuzzleSyncData",
                     };
-                    sasBuilder.SetPermissions(TableSasPermissions.All);
+                    sasBuilder.SetPermissions(EventRole == EventRole.play ? TableSasPermissions.All : TableSasPermissions.Read);
                     TableServiceClient tableServiceClient = new TableServiceClient(FileManager.ConnectionString);
                     TableClient tableClient = tableServiceClient.GetTableClient("PuzzleSyncData");
                     SyncTableSasUrl = tableClient.GenerateSasUri(sasBuilder);
                 }
 
-                Team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
+                Team = await GetTeamAsync();
 
                 PuzzleState = await (PuzzleStateHelper
                 .GetFullReadOnlyQuery(
