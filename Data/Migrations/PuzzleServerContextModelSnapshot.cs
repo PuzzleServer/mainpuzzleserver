@@ -326,11 +326,6 @@ namespace Data.Migrations
                     b.Property<string>("DefaultLunch")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("EmbedPuzzles")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
                     b.Property<string>("EphemeralHacks")
                         .HasColumnType("nvarchar(max)");
 

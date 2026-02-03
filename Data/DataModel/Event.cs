@@ -56,11 +56,6 @@ namespace ServerCore.DataModel
         public bool LockChangesToRemoteStatus { get; set; }
 
         /// <summary>
-        /// True if puzzles will be shown in an iframe on the answer submission page
-        /// </summary>
-        public bool EmbedPuzzles { get; set; }
-
-        /// <summary>
         /// True if the event has individual swag
         /// </summary>
         [Column("EventHasSwag")]
