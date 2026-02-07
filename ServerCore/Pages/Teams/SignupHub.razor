@@ -44,13 +44,13 @@
 @switch(Strategy)
 {
     case SignupStrategy.Create:
-        <CreateTeam Event="@Event" EventRole="@EventRole" LoggedInUserId="@LoggedInUserId" />
+        <CreateTeam Event="@Event" EventRoleString="@EventRole.ToString()" LoggedInUserId="@LoggedInUserId" />
         break;
     case SignupStrategy.Join:
-        <JoinTeam Event="@Event" EventRole="@EventRole" LoggedInUserId="@LoggedInUserId" />
+        <JoinTeam Event="@Event" EventRoleString="@EventRole.ToString()" LoggedInUserId="@LoggedInUserId" />
         break;
     case SignupStrategy.Auto:
-        <AutoTeam Event="@Event" EventRole="@EventRole" LoggedInUserId="@LoggedInUserId" IsMicrosoft="@IsMicrosoft" />
+        <AutoTeam Event="@Event" EventRoleString="@EventRole.ToString()" LoggedInUserId="@LoggedInUserId" IsMicrosoft="@IsMicrosoft" />
         break;
     case SignupStrategy.None:
         break;

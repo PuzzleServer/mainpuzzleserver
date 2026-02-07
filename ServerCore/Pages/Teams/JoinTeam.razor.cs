@@ -17,7 +17,7 @@ namespace ServerCore.Pages.Teams
         public int LoggedInUserId { get; set; }
 
         [Parameter]
-        public EventRole EventRole { get; set; }
+        public string EventRoleString { get; set; }
 
         [Inject]
         public PuzzleServerContext _context { get; set; }
@@ -28,8 +28,12 @@ namespace ServerCore.Pages.Teams
 
         int AppliedTeamId { get; set; }
 
+        public EventRole EventRole;
+
         protected override async Task OnParametersSetAsync()
         {
+            EventRole = EventRole.Parse(EventRoleString);
+
             // Join the teams table with the players table to get a dictionary mapping team IDs to player counts.
             PlayerCountByTeamID = await
                 _context.Teams.Where(team => team.Event == Event)

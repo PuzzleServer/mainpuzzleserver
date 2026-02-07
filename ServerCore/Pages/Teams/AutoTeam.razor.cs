@@ -19,7 +19,7 @@ namespace ServerCore.Pages.Teams
         public int LoggedInUserId { get; set; }
 
         [Parameter]
-        public EventRole EventRole { get; set; }
+        public string EventRoleString { get; set; }
 
         [Parameter]
         public bool IsMicrosoft { get; set; }
@@ -39,6 +39,14 @@ namespace ServerCore.Pages.Teams
         public AutoTeamType? PlayerLocation { get; set; } = null;
 
         bool CantCreateTeam { get; set; }
+
+        public EventRole EventRole { get; set; }
+
+        protected override async Task OnParametersSetAsync()
+        {
+            EventRole = EventRole.Parse(EventRoleString);
+            await base.OnParametersSetAsync();
+        }
 
         public async Task OnSubmit()
         {
