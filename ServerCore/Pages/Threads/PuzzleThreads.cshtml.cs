@@ -27,7 +27,7 @@ namespace ServerCore.Pages.Threads
         /// <summary>
         /// Gets or sets the list of thread views.
         /// </summary>
-        public List<Message> LatestMessagesFromEachThread { get; set; }
+        public List<LatestMessage> LatestMessagesFromEachThread { get; set; }
 
         /// <summary>
         /// A dictionary with key Puzzle ID and value of concatenated list of authors
@@ -70,6 +70,12 @@ namespace ServerCore.Pages.Threads
             if (refreshInterval.HasValue)
             {
                 Refresh = refreshInterval;
+            }
+
+            // Never let non-GC be able to filter to unclaimed only
+            if (!this.IsGameControlRole())
+            {
+                showUnclaimedOnly = false;
             }
 
             this.InputParameters = new InputGetParameters(
@@ -162,17 +168,31 @@ namespace ServerCore.Pages.Threads
                 throw new NotSupportedException($"EventRole [{EventRole}] is not supported in PuzzleThreads");
             }
 
-            // Filter down to only latest messages
-            IEnumerable<Message> latestMessagesByThread = await messages
+            // Filter down to latest message.
+            // Note that if multiple messages are sent by the same group (team vs GC), we will take the first message of that new group.
+            // This is so that we don't think a message is new just because the team pinged it again.
+            // Example:
+            //    [1:00 PM] Team1_Player1: Help me
+            //    [1:01 PM] GC: What do you want?
+            //    [1:02 PM] Team1_Player1: What is 1+1 <------ THIS MESSAGE WILL BE CHOSEN
+            //    [3:00 PM] Team1_Player2: Hello? Is there an answser?
+            IEnumerable<LatestMessage> latestMessagesByThread = (await messages
                 .GroupBy(message => message.ThreadId)
-                .Select(group => group.OrderByDescending(message => message.CreatedDateTimeInUtc).First())
-                .ToListAsync();
+                .Select(group => group.OrderByDescending(message => message.CreatedDateTimeInUtc).Take(10)) // Don't want to grab every message
+                .ToListAsync())
+                .Select(orderedGroup => Tuple.Create(
+                    orderedGroup.FirstOrDefault(),
+                    orderedGroup.TakeWhile(message => message.IsFromGameControl).LastOrDefault(),
+                    orderedGroup.TakeWhile(message => !message.IsFromGameControl).LastOrDefault()))
+                .Select(tuple => new LatestMessage(
+                    tuple.Item2 != null ? tuple.Item2.CreatedDateTimeInUtc : tuple.Item3.CreatedDateTimeInUtc,
+                    tuple.Item1));
 
             if (showUnclaimedOnly.HasValue && showUnclaimedOnly.Value)
             {
                 this.Title += " (unclaimed only)";
                 latestMessagesByThread = latestMessagesByThread
-                    .Where(IsLatestMessageUnclaimed);
+                    .Where(latestMessage => IsLatestMessageUnclaimed(latestMessage.Message));
             }
 
             ILookup<int, string> puzzleAuthors = (await (from author in _context.PuzzleAuthors
@@ -181,18 +201,18 @@ namespace ServerCore.Pages.Threads
 
             AuthorsForPuzzleID = new Dictionary<int, string>();
 
-            foreach (var message in latestMessagesByThread)
+            foreach (LatestMessage message in latestMessagesByThread)
             {
-                if (message.PuzzleID.HasValue)
+                if (message.Message.PuzzleID.HasValue)
                 {
-                    IEnumerable<string> authorsForPuzzle = puzzleAuthors[message.PuzzleID.Value];
+                    IEnumerable<string> authorsForPuzzle = puzzleAuthors[message.Message.PuzzleID.Value];
                     string authorList = authorsForPuzzle != null ? string.Join(", ", authorsForPuzzle) : "";
-                    AuthorsForPuzzleID[message.PuzzleID.Value] = authorList;
+                    AuthorsForPuzzleID[message.Message.PuzzleID.Value] = authorList;
                 }
             }
 
             LatestMessagesFromEachThread = latestMessagesByThread
-                .OrderBy(message => message.ModifiedDateTimeInUtc)
+                .OrderBy(message => message.MessageGroupCreateTime)
                 .ToList();
 
             return Page();
@@ -201,6 +221,19 @@ namespace ServerCore.Pages.Threads
         public bool IsLatestMessageUnclaimed(Message message)
         {
             return !message.IsFromGameControl && !message.ClaimerID.HasValue;
+        }
+
+        public class LatestMessage
+        {
+            public LatestMessage(DateTime messageGroupCreateTime, Message message)
+            {
+                this.MessageGroupCreateTime = messageGroupCreateTime;
+                this.Message = message;
+            }
+
+            public DateTime MessageGroupCreateTime { get; }
+
+            public Message Message { get; }
         }
 
         /// <summary>
@@ -236,7 +269,7 @@ namespace ServerCore.Pages.Threads
                 return this.TeamId.HasValue
                     || this.PlayerId.HasValue
                     || this.PuzzleId.HasValue
-                    || (this.ShowUnclaimedOnly.HasValue && this.ShowUnclaimedOnly.Value)
+                    || (this.ShowUnclaimedOnly.HasValue && this.ShowUnclaimedOnly.Value == true)
                     || (this.FilterToSupportingPuzzlesOnly.HasValue && this.FilterToSupportingPuzzlesOnly.Value);
             }
         }
