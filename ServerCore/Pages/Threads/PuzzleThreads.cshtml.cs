@@ -168,14 +168,15 @@ namespace ServerCore.Pages.Threads
                 throw new NotSupportedException($"EventRole [{EventRole}] is not supported in PuzzleThreads");
             }
 
-            // Filter down to latest message.
-            // Note that if multiple messages are sent by the same group (team vs GC), we will take the first message of that new group.
+            // Filter down to latest message and their associated group timestamp.
+            // The group timestamp is the timestamp of the first message sent by the same group (team vs GC).
             // This is so that we don't think a message is new just because the team pinged it again.
             // Example:
             //    [1:00 PM] Team1_Player1: Help me
             //    [1:01 PM] GC: What do you want?
-            //    [1:02 PM] Team1_Player1: What is 1+1 <------ THIS MESSAGE WILL BE CHOSEN
-            //    [3:00 PM] Team1_Player2: Hello? Is there an answser?
+            //    [1:02 PM] Team1_Player1: What is 1+1 <------ This timestamp will be chosen
+            //    [3:00 PM] Team1_Player2: Hello? Is there an answser? <-- Latest message
+            // Note that we will only take the last 10 messages of each thread, so if the same group sends more than 10 messages, we will only see the timestamp for the 10th older message.
             IEnumerable<LatestMessage> latestMessagesByThread = (await messages
                 .GroupBy(message => message.ThreadId)
                 .Select(group => group.OrderByDescending(message => message.CreatedDateTimeInUtc).Take(10)) // Don't want to grab every message
