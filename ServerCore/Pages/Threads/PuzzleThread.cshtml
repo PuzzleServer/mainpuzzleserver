@@ -58,7 +58,7 @@
 
         @if (Model.ReturnThreadQueryParams == null)
         {
-            <a asp-page="/Threads/PuzzleThreads">See all threads</a>
+            <a asp-page="/Threads/PuzzleThreads" asp-route-showUnclaimedOnly="true">Back to threads</a>
         }
         else
         {

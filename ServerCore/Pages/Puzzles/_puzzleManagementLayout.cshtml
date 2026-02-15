@@ -22,7 +22,7 @@
         <a asp-page="/Hints/Index" asp-route-puzzleId="@puzzleId">Hints</a>@(" |")
         <a asp-page="/Hints/AuthorIndex" asp-route-puzzleId="@puzzleId">Hints Taken</a>@(" |")
     }
-    <a asp-page="/Threads/PuzzleThreads" asp-route-puzzleId="@puzzleId">Threads</a> |
+    <a asp-page="/Threads/PuzzleThreads" asp-route-puzzleId="@puzzleId" asp-route-showUnclaimedOnly="true">Threads</a> |
     @if (isAdmin)
     {
         <a asp-page="/Events/Mailer" asp-route-group="NonSolvers" asp-route-puzzleId="@puzzleId">Mail non-solvers</a>@(" |")

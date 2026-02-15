@@ -24,31 +24,31 @@
         @(" | ")
         @if (Model.InputParameters.HasFilterApplied())
         {
-            <a asp-page="/Threads/PuzzleThreads" asp-route-refreshInterval="@Model.InputParameters.RefreshInterval">All threads</a>
+            <a class="button-toggle" asp-page="/Threads/PuzzleThreads" asp-route-refreshInterval="@Model.InputParameters.RefreshInterval" asp-route-showUnclaimedOnly="false">All threads</a>
         }
         else
         {
-            <span>All threads</span>
+            <span class="button-toggle-pressed-nonclickable">All threads</span>
         }
 
         @(" | ")
         @if (Model.InputParameters.ShowUnclaimedOnly.HasValue && Model.InputParameters.ShowUnclaimedOnly.Value)
         {
-            <span>Unclaimed only</span>
+            <a class="button-toggle-pressed" asp-page="/Threads/PuzzleThreads" asp-route-showUnclaimedOnly="false" asp-route-puzzleId="@Model.InputParameters.PuzzleId" asp-route-playerId="@Model.InputParameters.PlayerId" asp-route-teamId="@Model.InputParameters.TeamId" asp-route-refreshInterval="@Model.InputParameters.RefreshInterval" asp-route-filterToSupportingPuzzlesOnly="@Model.InputParameters.FilterToSupportingPuzzlesOnly">Unclaimed only</a>
         }
         else
         {
-            <a asp-page="/Threads/PuzzleThreads" asp-route-showUnclaimedOnly="true" asp-route-puzzleId="@Model.InputParameters.PuzzleId" asp-route-playerId="@Model.InputParameters.PlayerId" asp-route-teamId="@Model.InputParameters.TeamId" asp-route-refreshInterval="@Model.InputParameters.RefreshInterval" asp-route-filterToSupportingPuzzlesOnly="@Model.InputParameters.FilterToSupportingPuzzlesOnly">Unclaimed only</a>
+            <a class="button-toggle" asp-page="/Threads/PuzzleThreads" asp-route-showUnclaimedOnly="true" asp-route-puzzleId="@Model.InputParameters.PuzzleId" asp-route-playerId="@Model.InputParameters.PlayerId" asp-route-teamId="@Model.InputParameters.TeamId" asp-route-refreshInterval="@Model.InputParameters.RefreshInterval" asp-route-filterToSupportingPuzzlesOnly="@Model.InputParameters.FilterToSupportingPuzzlesOnly">Unclaimed only</a>
         }
 
         @(" | ")
         @if (Model.InputParameters.FilterToSupportingPuzzlesOnly.HasValue && Model.InputParameters.FilterToSupportingPuzzlesOnly.Value)
         {
-            <span>Your puzzles only</span>
+            <a class="button-toggle-pressed" asp-page="/Threads/PuzzleThreads" asp-route-showUnclaimedOnly="@Model.InputParameters.ShowUnclaimedOnly" asp-route-puzzleId="@Model.InputParameters.PuzzleId" asp-route-playerId="@Model.InputParameters.PlayerId" asp-route-teamId="@Model.InputParameters.TeamId" asp-route-refreshInterval="@Model.InputParameters.RefreshInterval" asp-route-filterToSupportingPuzzlesOnly="false">Your puzzles only</a>
         }
         else
         {
-            <a asp-page="/Threads/PuzzleThreads" asp-route-showUnclaimedOnly="@Model.InputParameters.ShowUnclaimedOnly" asp-route-puzzleId="@Model.InputParameters.PuzzleId" asp-route-playerId="@Model.InputParameters.PlayerId" asp-route-teamId="@Model.InputParameters.TeamId" asp-route-refreshInterval="@Model.InputParameters.RefreshInterval" asp-route-filterToSupportingPuzzlesOnly="true">Your puzzles only</a>
+            <a class="button-toggle" asp-page="/Threads/PuzzleThreads" asp-route-showUnclaimedOnly="@Model.InputParameters.ShowUnclaimedOnly" asp-route-puzzleId="@Model.InputParameters.PuzzleId" asp-route-playerId="@Model.InputParameters.PlayerId" asp-route-teamId="@Model.InputParameters.TeamId" asp-route-refreshInterval="@Model.InputParameters.RefreshInterval" asp-route-filterToSupportingPuzzlesOnly="true">Your puzzles only</a>
         }
     }
 </div>
@@ -115,7 +115,7 @@
                 Author(s)
             </th>
             <th>
-                Timestamp
+                Last read
             </th>
             <th>
                 Last message
@@ -129,7 +129,7 @@
                 @if (Model.IsGameControlRole())
                 {
                     <td>
-                        @if (Model.IsLatestMessageUnclaimed(item))
+                        @if (Model.IsLatestMessageUnclaimed(item.Message))
                         {
                             <p>&#x26A0; Has unanswered question!</p>
                         }
@@ -139,19 +139,19 @@
                     @{
                         string returnQueryParams = ViewContext.HttpContext.Request.QueryString.Value;
                     }
-                    <a asp-page="/Threads/PuzzleThread" asp-route-puzzleId="@item.PuzzleID" asp-route-teamId="@item.TeamID" asp-route-playerId="@item.PlayerID" asp-route-returnThreadQueryParams=@returnQueryParams>@item.Subject</a>
+                    <a asp-page="/Threads/PuzzleThread" asp-route-puzzleId="@item.Message.PuzzleID" asp-route-teamId="@item.Message.TeamID" asp-route-playerId="@item.Message.PlayerID" asp-route-returnThreadQueryParams=@returnQueryParams>@item.Message.Subject</a>
                 </td>
                 <td>
-                    @if (@item.PuzzleID.HasValue)
+                    @if (@item.Message.PuzzleID.HasValue)
                     {
-                        @Model.AuthorsForPuzzleID[item.PuzzleID.Value]
+                        @Model.AuthorsForPuzzleID[item.Message.PuzzleID.Value]
                     }
                 </td>
                 <td>
-                    @Html.Raw(Model.LocalTime(@item.CreatedDateTimeInUtc))
+                    @Html.Raw(Model.LocalTime(@item.MessageGroupCreateTime))
                 </td>
                 <td>
-                    @(item.Text.Length > 93 ? $"{item.Text.Substring(0, 90)}..." : item.Text)
+                    @(item.Message.Text.Length > 93 ? $"{item.Message.Text.Substring(0, 90)}..." : item.Message.Text)
                 </td>
             </tr>
         }
