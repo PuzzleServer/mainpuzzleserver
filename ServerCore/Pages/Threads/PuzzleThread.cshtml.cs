@@ -389,7 +389,7 @@ namespace ServerCore.Pages.Threads
                     }
                 }
             }
-            else if (!Event.IsInternEvent) // For game control, we don't really want to send an email non-module events because they are often already watching the site
+            else if (Event.ShouldSendHelpThreadMailToGameControl)
             {
                 // Send notification to authors and any game control person on the thread if message from player.
 
