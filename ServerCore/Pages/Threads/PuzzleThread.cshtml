@@ -69,7 +69,12 @@
         }
     </span>
 
-<h3>@Model.NewMessage.Subject</h3>
+    @if (Model.NewMessage.IsFromGameControl && Model.PuzzleState.SolvedTime.HasValue)
+    {
+        <p style="color:green; font-weight:600">Puzzle has alredy been solved at @Html.Raw(@Model.LocalTime(Model.PuzzleState.SolvedTime))</p>
+    }
+
+    <h3>@Model.NewMessage.Subject</h3>
 </div>
 
 <hr />

@@ -230,6 +230,11 @@
             </div>
             <div class="description-column">When enabled, allows help threads to be seen only by the admins, puzzle authors, and their supporters. When disabled, anyone in game control can see them.</div>
             <div class="form-group">
+                <label asp-for="EditableEvent.ShouldSendHelpThreadMailToGameControl"></label>
+                <input asp-for="EditableEvent.ShouldSendHelpThreadMailToGameControl" />
+            </div>
+            <div class="description-column">When enabled, game control will get an email whenever help thread updates instead of just a site notification. When disabled, game control will only get notifications for help thread updates.</div>
+            <div class="form-group">
                 <label asp-for="EditableEvent.AllowFeedback"></label>
                 <input asp-for="EditableEvent.AllowFeedback" />
             </div>
