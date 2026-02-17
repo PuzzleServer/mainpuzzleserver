@@ -92,7 +92,7 @@ namespace ServerCore.Pages.Teams
         public Event Event { get; set; }
 
         [Parameter]
-        public EventRole EventRole { get; set; }
+        public string EventRoleString { get; set; }
 
         [Parameter]
         public int LoggedInUserId { get; set; }
@@ -108,10 +108,12 @@ namespace ServerCore.Pages.Teams
         public bool EventFull { get; set; }
         public bool LocalTeamsFull { get; set; }
         public bool RemoteTeamsFull { get; set; }
+        public EventRole EventRole { get; set; }
 
         protected override async Task OnParametersSetAsync()
         {
             TeamModel.EventId = Event.ID;
+            EventRole = EventRole.Parse(EventRoleString);
 
             if (EventRole == EventRole.play && await _context.Teams.Where((t) => t.EventID == Event.ID).CountAsync() >= Event.MaxNumberOfTeams)
             {
