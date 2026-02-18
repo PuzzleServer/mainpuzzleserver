@@ -58,6 +58,10 @@ else
         puzzleFrame.contentWindow.postMessage({type: "puzzlesynced", changes: changes}, "*");
     }
 
+    async function onPuzzleResetSynced (reset) {
+        puzzleFrame.contentWindow.postMessage({type: "puzzleresetsynced", reset: reset}, "*");
+    }
+
     async function onSetCoopMode(mode) {
         puzzleFrame.contentWindow.postMessage({ type: "setCoopMode", mode: mode }, "*");
     }
@@ -78,6 +82,9 @@ else
         }
         else if (ev.data.type === "puzzlechanged") {
             await hostComponent.invokeMethodAsync("OnPuzzleChangedAsync", ev.data.changes);
+        }
+        else if (ev.data.type === "puzzlereset") {
+            await hostComponent.invokeMethodAsync("OnPuzzleResetAsync", ev.data.changes);
         }
     });
 
