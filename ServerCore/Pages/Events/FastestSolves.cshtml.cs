@@ -39,8 +39,13 @@ namespace ServerCore.Pages.Events
         {
         }
 
-        public async Task OnGetAsync(TeamPuzzleSortOrder? teamPuzzleSort, SinglePlayerPuzzleSortOrder? singlePlayerPuzzleSort, PuzzleStateFilter? stateFilter)
+        public async Task<IActionResult> OnGetAsync(TeamPuzzleSortOrder? teamPuzzleSort, SinglePlayerPuzzleSortOrder? singlePlayerPuzzleSort, PuzzleStateFilter? stateFilter)
         {
+            if (Event.HideFastestSolves)
+            {
+                return Forbid();
+            }
+
             this.TeamSectionNotShowMessage = string.Empty;
             this.SinglePlayerPuzzleSectionNotShowMessage = string.Empty;
             this.TeamPuzzleSort = teamPuzzleSort;
@@ -51,6 +56,8 @@ namespace ServerCore.Pages.Events
             HashSet<int> authorPuzzleIds = this.GetAuthorPuzzleIds();
             await this.updateTeamPuzzleStats(authorPuzzleIds);
             await this.updateSinglePlayerPuzzleStats(authorPuzzleIds);
+
+            return Page();
         }
 
         private async Task updateTeamPuzzleStats(HashSet<int> authorPuzzleIds)
