@@ -64,15 +64,15 @@
             </div>
             <div class="description-column">The text shown after the copyright symbol at the bottom of every page on the site.</div>
             <div class="form-group">
-                <label asp-for="Event.ShowFastestSolves"></label>
-                <input asp-for="Event.ShowFastestSolves" />
+                <label asp-for="Event.HideFastestSolves"></label>
+                <input asp-for="Event.HideFastestSolves" />
             </div>
-            <div class="description-column">Shows a second standings page for the top 3 fastest solves per puzzle.</div>
+            <div class="description-column">Shows the number of times each puzzle is solved. If HideStandings is false, also shows the top 3 fastest solves per puzzle.</div>
             <div class="form-group">
-                <label asp-for="Event.StandingsOverride"></label>
-                <input asp-for="Event.StandingsOverride" />
+                <label asp-for="Event.HideStandings"></label>
+                <input asp-for="Event.HideStandings" />
             </div>
-            <div class="description-column">Allows admins to hide standings at any time, even if it's currently after the StandingsAvailableBegin date. Currently unimplemented.</div>
+            <div class="description-column">Shows a standings page.</div>
             <div class="form-group">
                 <label asp-for="Event.IsAlphaTestingEvent"></label>
                 <input asp-for="Event.IsAlphaTestingEvent" />
@@ -145,12 +145,6 @@
                 <span asp-validation-for="Event.AnswersAvailableBegin" class="text-danger"></span>
             </div>
             <div class="description-column">If solution files are available, they are made available to players after this date.</div>
-            <div class="form-group">
-                <label asp-for="Event.StandingsAvailableBegin" class="control-label"></label>
-                <input asp-for="Event.StandingsAvailableBegin" class="form-control" />
-                <span asp-validation-for="Event.StandingsAvailableBegin" class="text-danger"></span>
-            </div>
-            <div class="description-column">Players can view event standings after this date, even if answer submission is still active.</div>
             <div class="form-group">
                 <label asp-for="Event.EventPassword" class="control-label"></label>
                 <input asp-for="Event.EventPassword" class="form-control" />

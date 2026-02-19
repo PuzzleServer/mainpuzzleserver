@@ -67,7 +67,6 @@ namespace ServerCore.Pages.Events
 
             DateTime now = DateTime.UtcNow;
             Event.TeamRegistrationBegin = now;
-            Event.StandingsAvailableBegin = now;
             Event.EventBegin = now;
             Event.AnswerSubmissionEnd = now.AddDays(1);
             return Page();
@@ -92,7 +91,6 @@ namespace ServerCore.Pages.Events
                 Event.TeamMiscDataChangeEnd = Event.AnswerSubmissionEnd;
                 Event.TeamDeleteEnd = Event.AnswerSubmissionEnd;
                 Event.AnswersAvailableBegin = Event.AnswerSubmissionEnd;
-                Event.StandingsAvailableBegin = DateTime.UtcNow;
                 Event.LunchReportDate = Event.AnswerSubmissionEnd;
                 Event.LockoutIncorrectGuessLimit = 5;
                 Event.LockoutIncorrectGuessPeriod = 15;

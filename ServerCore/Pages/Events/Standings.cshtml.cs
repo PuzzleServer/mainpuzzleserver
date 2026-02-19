@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
@@ -37,8 +38,13 @@ namespace ServerCore.Pages.Events
         {
         }
 
-        public async Task OnGetAsync(SortOrder? sort, TeamLocation? locationFilter)
+        public async Task<IActionResult> OnGetAsync(SortOrder? sort, TeamLocation? locationFilter)
         {
+            if (Event.HideStandings)
+            {
+                return Forbid();
+            }
+
             Sort = sort;
 
             if (locationFilter == null)
@@ -171,6 +177,8 @@ namespace ServerCore.Pages.Events
             }
 
             this.Teams = teamsFinal;
+
+            return Page();
         }
 
         /// <summary>
