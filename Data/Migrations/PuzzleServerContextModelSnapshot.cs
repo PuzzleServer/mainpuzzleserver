@@ -357,7 +357,13 @@ namespace Data.Migrations
                     b.Property<bool>("HasTShirts")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("HideFastestSolves")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("HideHints")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("HideStandings")
                         .HasColumnType("bit");
 
                     b.Property<string>("HomeContent")
@@ -436,17 +442,8 @@ namespace Data.Migrations
                     b.Property<bool>("ShouldShowHelpMessageOnlyToAuthor")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("ShowFastestSolves")
-                        .HasColumnType("bit");
-
                     b.Property<string>("SinglePlayerPuzzleTitle")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("StandingsAvailableBegin")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("StandingsOverride")
-                        .HasColumnType("bit");
 
                     b.Property<string>("TeamAnnouncement")
                         .HasColumnType("nvarchar(max)");

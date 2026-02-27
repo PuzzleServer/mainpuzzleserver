@@ -12,7 +12,7 @@
     Boolean unsolvedFilter = Model.StateFilter == FastestSolvesModel.PuzzleStateFilter.Unsolved;
 }
 
-<h2>Fastest solves</h2>
+<h2>@(Model.Event.HideStandings ? "Most-solved Puzzles" : "Fastest solves")</h2>
 @if (!string.IsNullOrEmpty(Model.TeamSectionNotShowMessage))
 {
     <div><p>@Model.TeamSectionNotShowMessage</p></div>
@@ -46,15 +46,18 @@ else
                         Teams Solved
                     </a>
                 </th>
-                <th>
-                    First
-                </th>
-                <th>
-                    Second
-                </th>
-                <th>
-                    Third
-                </th>
+                @if (!Model.Event.HideStandings)
+                {
+                    <th>
+                        First
+                    </th>
+                    <th>
+                        Second
+                    </th>
+                    <th>
+                        Third
+                    </th>
+                }
                 @if (Model.CurrentTeam != null)
                 {
                     <th>
@@ -76,25 +79,28 @@ else
                     <td>
                         @(puzzle.SolveCount)
                     </td>
-                    @* TODO: Highlight the cell if this is your team's ID  Same for second and third place. *@
-                    <td>
-                        @if (puzzle.Fastest.Length >= 1)
-                        {
-                            <text>@puzzle.Fastest[0].Name (@convertTimeToString(puzzle.Fastest[0].Time.Value))</text>
-                        }
-                    </td>
-                    <td>
-                        @if (puzzle.Fastest.Length >= 2)
-                        {
-                            <text>@puzzle.Fastest[1].Name (@convertTimeToString(puzzle.Fastest[1].Time.Value))</text>
-                        }
-                    </td>
-                    <td>
-                        @if (puzzle.Fastest.Length >= 3)
-                        {
-                            <text>@puzzle.Fastest[2].Name (@convertTimeToString(puzzle.Fastest[2].Time.Value))</text>
-                        }
-                    </td>
+                    @if (!Model.Event.HideStandings)
+                    {
+                        @* TODO: Highlight the cell if this is your team's ID  Same for second and third place. *@
+                        <td>
+                            @if (puzzle.Fastest.Length >= 1)
+                            {
+                                <text>@puzzle.Fastest[0].Name (@convertTimeToString(puzzle.Fastest[0].Time.Value))</text>
+                            }
+                        </td>
+                        <td>
+                            @if (puzzle.Fastest.Length >= 2)
+                            {
+                                <text>@puzzle.Fastest[1].Name (@convertTimeToString(puzzle.Fastest[1].Time.Value))</text>
+                            }
+                        </td>
+                        <td>
+                            @if (puzzle.Fastest.Length >= 3)
+                            {
+                                <text>@puzzle.Fastest[2].Name (@convertTimeToString(puzzle.Fastest[2].Time.Value))</text>
+                            }
+                        </td>
+                    }
                     @if (Model.CurrentTeam != null)
                     {
                         <th>

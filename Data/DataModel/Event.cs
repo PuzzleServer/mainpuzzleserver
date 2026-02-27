@@ -184,29 +184,14 @@ namespace ServerCore.DataModel
         }
 
         /// <summary>
-        /// Automatically makes the standings page available at the DateTime below
+        /// Determines whether or not the standings page is visible to players.
         /// </summary>
-        public DateTime StandingsAvailableBegin { get; set; }
-
-        /// <summary>
-        /// Returns whether or not the standings page should be available now.
-        /// </summary>
-        /// <returns>True if the current date is after the StandingsAvailableBegin time</returns>
-        [NotMapped]
-        public bool AreStandingsAvailableNow
-        {
-            get { return DateTime.UtcNow.CompareTo(StandingsAvailableBegin) > 0; }
-        }
-
-        /// <summary>
-        /// Allows event owners to hide standings during the event if they prefer - overrides the timed setting
-        /// </summary>
-        public bool StandingsOverride { get; set; }
+        public bool HideStandings { get; set; }
 
         /// <summary>
         /// Determines whether or not the fastest solves page is visible to players
         /// </summary>
-        public bool ShowFastestSolves { get; set; }
+        public bool HideFastestSolves { get; set; }
 
         /// <summary>
         /// Whether or not the suthors are accepting feedback for the event - commonly true for betas and false for live events
