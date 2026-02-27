@@ -99,9 +99,9 @@
         <a asp-page="/Teams/Answers" asp-route-teamId="@Model.Team.ID">View all correct team answers</a><text> | </text>
         </div>
     }
-    @if (!Model.Event.HideFastestSolves) 
+    @if (!Model.Event.HideSolveCounts)
     {
-        <a asp-page="/Events/FastestSolves" asp-route-teamPuzzleSort="CountDescending" asp-route-stateFilter="Unsolved">Click here</a><text> if you're feeling stuck and want to see which puzzles other teams have solved.</text>
+        <a asp-page="/Events/SolveCounts" asp-route-teamPuzzleSort="CountDescending" asp-route-stateFilter="Unsolved">Click here</a><text> if you're feeling stuck and want to see which puzzles other teams have solved.</text>
     }
 </div>
 <br />
