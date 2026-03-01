@@ -13,7 +13,7 @@ using ServerCore.ModelBases;
 namespace ServerCore.Pages.Events
 {
     [Authorize(Policy = "IsRegisteredForEvent")]
-    public class FastestSolvesModel : EventSpecificPageModel
+    public class SolveCountsModel : EventSpecificPageModel
     {
         public string TeamSectionNotShowMessage { get; private set; }
 
@@ -35,13 +35,13 @@ namespace ServerCore.Pages.Events
 
         private const SinglePlayerPuzzleSortOrder SinglePlayerPuzzleDefaultSort = SinglePlayerPuzzleSortOrder.CountDescending;
 
-        public FastestSolvesModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
+        public SolveCountsModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
         }
 
         public async Task<IActionResult> OnGetAsync(TeamPuzzleSortOrder? teamPuzzleSort, SinglePlayerPuzzleSortOrder? singlePlayerPuzzleSort, PuzzleStateFilter? stateFilter)
         {
-            if (Event.HideFastestSolves)
+            if (Event.HideSolveCounts)
             {
                 return Forbid();
             }

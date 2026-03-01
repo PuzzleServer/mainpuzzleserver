@@ -68,9 +68,9 @@
                                 {
                                     <li><a class="dropdown-item" asp-page="/Events/Standings">Standings</a></li>
                                 }
-                                @if (!Event.HideFastestSolves)
+                                @if (!Event.HideSolveCounts)
                                 {
-                                    <li><a class="dropdown-item" asp-page="/Events/FastestSolves">@(Event.HideStandings ? "Most-solved Puzzles" : "Fastest solves")</a></li>
+                                    <li><a class="dropdown-item" asp-page="/Events/SolveCounts">@(Event.HideStandings ? "Most-solved Puzzles" : "Fastest solves")</a></li>
                                 }
                                 <li><a class="dropdown-item" asp-page="/Events/Map">Puzzle state map</a></li>
                                 @if (Event.ShouldShowSinglePlayerPuzzles)
@@ -153,9 +153,9 @@
                                 {
                                     <li><a class="dropdown-item" asp-page="/Events/Standings">Standings</a></li>
                                 }
-                                @if (!Event.HideFastestSolves)
+                                @if (!Event.HideSolveCounts)
                                 {
-                                    <li><a class="dropdown-item" asp-page="/Events/FastestSolves">@(Event.HideStandings ? "Most-solved Puzzles" : "Fastest solves")</a></li>
+                                    <li><a class="dropdown-item" asp-page="/Events/SolveCounts">@(Event.HideStandings ? "Most-solved Puzzles" : "Fastest solves")</a></li>
                                 }
                                 <li><a class="dropdown-item" asp-page="/Events/Map">Puzzle state map</a></li>
                                 <li><a class="dropdown-item" asp-page="/Events/PlayerSubmissions">Shared submissions</a></li>
@@ -286,9 +286,9 @@
                                 {
                                     <li><a class="dropdown-item" asp-page="/Events/Standings">Standings</a></li>
                                 }
-                                @if (!Event.HideFastestSolves)
+                                @if (!Event.HideSolveCounts)
                                 {
-                                    <li><a class="dropdown-item" asp-page="/Events/FastestSolves">@(Event.HideStandings ? "Most-solved Puzzles" : "Fastest solves")</a></li>
+                                    <li><a class="dropdown-item" asp-page="/Events/SolveCounts">@(Event.HideStandings ? "Most-solved Puzzles" : "Fastest solves")</a></li>
                                 }
                                 @if (DateTime.UtcNow >= Event.AnswersAvailableBegin)
                                 {
@@ -356,7 +356,7 @@
                     <li class="nav-item"><a asp-page="/Teams/AllTeams">View all teams</a></li>
                     @if (Event.ShouldShowSinglePlayerPuzzles)
                     {
-                        <li class="nav-item"><a asp-page="/Events/FastestSolves">Solve counts</a></li>
+                        <li class="nav-item"><a asp-page="/Events/SolveCounts">Solve counts</a></li>
                     }
                     <li class="nav-item">
                         <div class="dropdown">

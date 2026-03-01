@@ -189,9 +189,9 @@ namespace ServerCore.DataModel
         public bool HideStandings { get; set; }
 
         /// <summary>
-        /// Determines whether or not the fastest solves page is visible to players
+        /// Determines whether or not the solve counts page is visible to players
         /// </summary>
-        public bool HideFastestSolves { get; set; }
+        public bool HideSolveCounts { get; set; }
 
         /// <summary>
         /// Whether or not the suthors are accepting feedback for the event - commonly true for betas and false for live events

@@ -357,10 +357,10 @@ namespace Data.Migrations
                     b.Property<bool>("HasTShirts")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("HideFastestSolves")
+                    b.Property<bool>("HideHints")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("HideHints")
+                    b.Property<bool>("HideSolveCounts")
                         .HasColumnType("bit");
 
                     b.Property<bool>("HideStandings")
