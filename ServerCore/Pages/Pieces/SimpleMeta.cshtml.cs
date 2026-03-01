@@ -32,7 +32,7 @@ namespace ServerCore.Pages.Pieces
                 return NotFound("Puzzle does not exist.");
             }
 
-            Team team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
+            Team team = await GetTeamAsync();
             int totalWeight = 0;
 
             if (string.IsNullOrEmpty(Puzzle.PieceMetaTagFilter))

@@ -45,7 +45,7 @@ namespace ServerCore.Pages.EventSpecific.PH20
                 return NotFound();
             }
 
-            Team team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
+            Team team = await GetTeamAsync();
             var puzzleStateQuery = PuzzleStateHelper.GetFullReadOnlyQuery(_context, Event, null, team);
             PuzzleStatePerTeam state = await (from pspt in puzzleStateQuery
                                         where pspt.PuzzleID == puzzle.ID
@@ -89,7 +89,7 @@ namespace ServerCore.Pages.EventSpecific.PH20
                 return NotFound();
             }
 
-            Team team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
+            Team team = await GetTeamAsync();
 
             using (var transaction = _context.Database.BeginTransaction())
             {

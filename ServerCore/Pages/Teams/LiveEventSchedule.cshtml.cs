@@ -21,7 +21,7 @@ namespace ServerCore.Pages.Teams
 
         public async Task OnGetAsync()
         {
-            ThisTeam = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
+            ThisTeam = await GetTeamAsync();
             TeamSchedule = await LiveEventHelper.GetTeamSchedule(_context, Event, ThisTeam);
             UnscheduledLiveEvents = await LiveEventHelper.GetLiveEventsForEvent(_context, Event, false, true);
         }

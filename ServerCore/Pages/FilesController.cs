@@ -111,6 +111,7 @@ namespace ServerCore.Pages
             }
             else
             {
+                // Note: OK to bypass impersonation since impersonators must be authors or admins and that is checked above
                 Team team = await UserEventHelper.GetTeamForPlayer(context, currentEvent, user);
                 if (team == null)
                 {
