@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Azure;
 using Azure.Data.Tables;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.WebUtilities;
@@ -198,29 +199,38 @@ namespace ClientSyncComponent.Client.Pages
             // Create a reset entry for each sub-puzzle
             foreach (string subPuzzleId in resets.puzzleIds)
             {
-                // todo morganb: transactions are limited to 100 entities, so chunk this
                 // Delete all prior entries for this sub-puzzle transactionally
                 string partitionKey = PuzzleItemProperty.CreatePartitionKey(PuzzleId, TeamId);
-                var entriesToDelete = TableClient.QueryAsync<PuzzleItemProperty>(entry => entry.PartitionKey == partitionKey && entry.SubPuzzleId == Base64UrlTextEncoder.Encode(Encoding.UTF8.GetBytes(subPuzzleId)));
 
-                List<TableTransactionAction> transactionActions = new List<TableTransactionAction>();
+                // Azure tables limit transactions to 100 actions, iterate pages
+                var pagesToDelete = TableClient.QueryAsync<PuzzleItemProperty>(entry => entry.PartitionKey == partitionKey && entry.SubPuzzleId == Base64UrlTextEncoder.Encode(Encoding.UTF8.GetBytes(subPuzzleId)))
+                    .AsPages(null, 100);
 
-                await foreach (PuzzleItemProperty entry in entriesToDelete)
+                await foreach (Page<PuzzleItemProperty> page in pagesToDelete)
                 {
-                    transactionActions.Add(new TableTransactionAction(TableTransactionActionType.Delete, entry));
-                    Console.WriteLine($"Adding delete for {entry.LocationKey}");
-                }
+                    List<TableTransactionAction> transactionActions = new List<TableTransactionAction>();
 
-                // Transactions throw if you submit empty ones
-                if (transactionActions.Count > 0)
-                {
-                    Console.WriteLine($"Submitting transaction with {transactionActions.Count} deletes for reset of {subPuzzleId}");
-                    await TableClient.SubmitTransactionAsync(transactionActions);
+                    foreach (PuzzleItemProperty entry in page.Values)
+                    {
+                        if (entry.IsReset)
+                        {
+                            continue;
+                        }
+
+                        transactionActions.Add(new TableTransactionAction(TableTransactionActionType.Delete, entry));
+                        Console.WriteLine($"Adding delete for {entry.LocationKey}");
+                    }
+
+                    // Transactions throw if you submit empty ones
+                    if (transactionActions.Count > 0)
+                    {
+                        Console.WriteLine($"Submitting transaction with {transactionActions.Count} deletes for reset of {subPuzzleId}");
+                        await TableClient.SubmitTransactionAsync(transactionActions);
+                    }
                 }
 
                 Console.WriteLine($"Adding reset entry for {subPuzzleId}");
                 PuzzleItemProperty resetEntry = PuzzleItemProperty.CreateReset(PuzzleId, TeamId, Base64UrlTextEncoder.Encode(Encoding.UTF8.GetBytes(subPuzzleId)), PuzzleUserId, channel: resets.channel);
-                //transactionActions.Add(new TableTransactionAction(TableTransactionActionType.UpsertReplace, resetEntry));
                 await TableClient.UpsertEntityAsync(resetEntry);
             }
         }
@@ -276,28 +286,6 @@ namespace ClientSyncComponent.Client.Pages
                 newChanges.Add(entry);
             }
             newChanges.Sort((a, b) => a.Timestamp!.Value.CompareTo(b.Timestamp!.Value));
-
-            // If a puzzle was reset, remove the earlier data for that puzzle to avoid it flashing in and then disappearing
-            bool removedEntries = false;
-            do
-            {
-                removedEntries = false;
-                for (int i = 0; i < newChanges.Count; i++)
-                {
-                    PuzzleItemProperty entry = newChanges[i];
-                    if (entry.IsReset)
-                    {
-                        // Remove all data entries for this sub-puzzle from before the reset
-                        int removedForReset = newChanges.RemoveAll(e => e.SubPuzzleId == entry.SubPuzzleId &&
-                            e.Timestamp < entry.Timestamp);
-                        if (removedForReset > 0)
-                        {
-                            removedEntries = true;
-                            break;
-                        }
-                    }
-                }
-            } while (removedEntries);
 
             List <JsPuzzleChange> jsChanges = new List<JsPuzzleChange>();
             foreach (PuzzleItemProperty entry in newChanges)
