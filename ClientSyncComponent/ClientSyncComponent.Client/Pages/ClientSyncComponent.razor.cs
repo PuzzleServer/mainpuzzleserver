@@ -198,8 +198,30 @@ namespace ClientSyncComponent.Client.Pages
             // Create a reset entry for each sub-puzzle
             foreach (string subPuzzleId in resets.puzzleIds)
             {
+                // todo morganb: transactions are limited to 100 entities, so chunk this
+                // Delete all prior entries for this sub-puzzle transactionally
+                string partitionKey = PuzzleItemProperty.CreatePartitionKey(PuzzleId, TeamId);
+                var entriesToDelete = TableClient.QueryAsync<PuzzleItemProperty>(entry => entry.PartitionKey == partitionKey && entry.SubPuzzleId == Base64UrlTextEncoder.Encode(Encoding.UTF8.GetBytes(subPuzzleId)));
+
+                List<TableTransactionAction> transactionActions = new List<TableTransactionAction>();
+
+                await foreach (PuzzleItemProperty entry in entriesToDelete)
+                {
+                    transactionActions.Add(new TableTransactionAction(TableTransactionActionType.Delete, entry));
+                    Console.WriteLine($"Adding delete for {entry.LocationKey}");
+                }
+
+                // Transactions throw if you submit empty ones
+                if (transactionActions.Count > 0)
+                {
+                    Console.WriteLine($"Submitting transaction with {transactionActions.Count} deletes for reset of {subPuzzleId}");
+                    await TableClient.SubmitTransactionAsync(transactionActions);
+                }
+
+                Console.WriteLine($"Adding reset entry for {subPuzzleId}");
                 PuzzleItemProperty resetEntry = PuzzleItemProperty.CreateReset(PuzzleId, TeamId, Base64UrlTextEncoder.Encode(Encoding.UTF8.GetBytes(subPuzzleId)), PuzzleUserId, channel: resets.channel);
-                await TableClient.UpsertEntityAsync(resetEntry, TableUpdateMode.Replace);
+                //transactionActions.Add(new TableTransactionAction(TableTransactionActionType.UpsertReplace, resetEntry));
+                await TableClient.UpsertEntityAsync(resetEntry);
             }
         }
 
