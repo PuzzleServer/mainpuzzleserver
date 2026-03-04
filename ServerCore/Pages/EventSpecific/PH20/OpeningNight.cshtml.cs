@@ -49,7 +49,7 @@ namespace ServerCore.Pages.EventSpecific.PH20
                 return NotFound();
             }
 
-            Team team = await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser);
+            Team team = await GetTeamAsync();
 
             var puzzleQuery = PuzzleStateHelper.GetFullReadOnlyQuery(_context, Event, null, team, null);
             var solvedBackstagePuzzles = await (from PuzzleStatePerTeam pspt in puzzleQuery

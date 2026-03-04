@@ -30,14 +30,14 @@ namespace ServerCore.Pages.Pieces
 
         public async Task<IActionResult> OnGetAsync(string eventId, int puzzleId)
         {
-            Event currentEvent = await EventHelper.GetEventFromEventId(_context, eventId);
+            Event currentEvent = this.Event;
             if (currentEvent == null) { return Unauthorized(); }
             EventId = currentEvent.ID;
 
             PuzzleUser user = LoggedInUser;
             if (user == null) { return Unauthorized(); }
 
-            Team team = await UserEventHelper.GetTeamForPlayer(_context, currentEvent, user);
+            Team team = await GetTeamAsync();
             if (team == null) { return Unauthorized(); }
 
             Puzzle kitchenSyncPuzzle = await _context.Puzzles.FirstOrDefaultAsync(m => m.Name == "Kitchen Sync" && m.Event.ID == EventId);

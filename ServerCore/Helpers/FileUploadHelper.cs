@@ -184,7 +184,7 @@ namespace ServerCore.Helpers
             }
             else if (fileNameLower.EndsWith("_client.html") && file.FileType == ContentFileType.PuzzleMaterial)
             {
-                puzzle.CustomURL = httpContext.Request.Scheme + "://" + httpContext.Request.Host + "/{eventId}/{puzzleId}/api/Sync/client/?eventId={eventId}";
+                puzzle.CustomURL = httpContext.Request.Scheme + "://" + httpContext.Request.Host + "/{eventId}/{puzzleId}/api/Sync/client/?eventId={eventId}&teamPassword={teamPass}";
             }
         }
     }

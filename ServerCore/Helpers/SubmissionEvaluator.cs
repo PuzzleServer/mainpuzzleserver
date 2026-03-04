@@ -65,6 +65,7 @@ namespace ServerCore.Helpers
 
             Team team = null;
             if (!puzzle.IsForSinglePlayer) {
+                // Note: OK to bypass impersonation since impersonators can't submit
                 team = await UserEventHelper.GetTeamForPlayer(context, thisEvent, loggedInUser);
             }
 
@@ -366,6 +367,7 @@ namespace ServerCore.Helpers
             Team team = null;
             if (!puzzle.IsForSinglePlayer)
             {
+                // Note: OK to bypass impersonation since impersonators can't submit
                 team = await UserEventHelper.GetTeamForPlayer(context, thisEvent, submittingUser);
 
                 bool isDuplicate = await (from sub in context.Submissions

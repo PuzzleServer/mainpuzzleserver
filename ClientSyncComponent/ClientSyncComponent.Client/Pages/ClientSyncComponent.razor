@@ -4,14 +4,20 @@
     {
         <span>
             Last change made: @DisplayLastSyncUtc.LocalDateTime
-            <input type="button" @onclick="OnPauseSyncAsync" value="Switch to Solo Mode" />
+            @if (!ReadOnly)
+            {
+                <input type="button" @onclick="OnPauseSyncAsync" value="Switch to Solo Mode" />
+            }
         </span>
     }
     else
     {
         <span>
             Sync paused
-            <input type="button" @onclick="OnResumeSyncAsync" value="Switch to Co-Op Mode" />
+            @if (!ReadOnly)
+            {
+                <input type="button" @onclick="OnResumeSyncAsync" value="Switch to Co-Op Mode" />
+            }
         </span>
     }
 }
