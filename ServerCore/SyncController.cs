@@ -544,7 +544,7 @@ namespace ServerCore.Pages
         // GET api/Sync/client
         [HttpGet]
         [Route("{eventId}/{puzzleId}/api/Sync/client/")]
-        public async Task<IActionResult> Index(string eventId, int puzzleId)
+        public async Task<IActionResult> Index(string eventId, int puzzleId, string? teamPassword)
         {
             Event currentEvent = await EventHelper.GetEventFromEventId(context, eventId);
             if (currentEvent == null)
@@ -558,7 +558,7 @@ namespace ServerCore.Pages
                 return Content("ERROR:  You aren't logged in");
             }
 
-            Team team = await UserEventHelper.GetTeamForPlayer(context, currentEvent, user);
+            Team team = string.IsNullOrWhiteSpace(teamPassword) ? await UserEventHelper.GetTeamForPlayer(context, currentEvent, user) :await context.Teams.Where(t => t.Password == teamPassword).FirstOrDefaultAsync();
             if (team == null)
             {
                 return Content("ERROR:  You're not on a team");

@@ -31,7 +31,6 @@ namespace ServerCore.Pages
         {
             Event currentEvent = await EventHelper.GetEventFromEventId(context, eventId);
             PuzzleUser user = await PuzzleUser.GetPuzzleUserForCurrentUser(context, User, userManager);
-            Team team = await UserEventHelper.GetTeamForPlayer(context, currentEvent, user);
             Puzzle thisPuzzle = await context.Puzzles.FirstOrDefaultAsync(m => m.ID == puzzleId);
 
             // Find the material file with the latest-alphabetically ShortName that contains the substring "customPage".
