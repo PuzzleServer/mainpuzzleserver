@@ -49,12 +49,8 @@ window.addEventListener("message", function (ev) {
         // todo: use channel
         // todo: consider batching by puzzleId
         for (let resetId of ev.data.reset.puzzleIds) {
-            console.log("Resetting puzzle with ID:", resetId);
             for (puzzle of document.querySelectorAll(".puzzle-entry")) {
-                console.log("Checking puzzle:", puzzle.puzzleEntry);
-                if (puzzle.puzzleEntry.puzzleId == resetId) {
-                    console.log("Resetting puzzle", puzzle.puzzleEntry);
-                    
+                if (puzzle.puzzleEntry.puzzleId == resetId) {        
                     // clear puzzle entirely, stop saving state as well
                     puzzle.puzzleEntry.prepareToReset();
                     puzzle.puzzleEntry.rebuildContents();
