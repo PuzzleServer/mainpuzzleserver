@@ -174,10 +174,15 @@ namespace ServerCore
                 app.UseDeveloperExceptionPage();
                 PuzzleServerContext.UpdateDatabase(app);
                 TableServiceClient syncTableClient = new TableServiceClient(Configuration.GetConnectionString("AzureStorageConnectionString"));
-                syncTableClient.CreateTableIfNotExists("PuzzleSyncData");
-                TableServiceProperties tableServiceProperties = new TableServiceProperties();
-                tableServiceProperties.Cors.Add(new TableCorsRule("*", "GET,POST,PATCH,FETCH,PUT", "*", "*", Int32.MaxValue));
-                syncTableClient.SetProperties(tableServiceProperties);
+                Azure.Response<TableItem> response = syncTableClient.CreateTableIfNotExists("PuzzleSyncData");
+
+                // If the table already exists, it returns 409, if it's new, set up CORS
+                if (response.GetRawResponse().Status != 409)
+                {
+                    TableServiceProperties tableServiceProperties = new TableServiceProperties();
+                    tableServiceProperties.Cors.Add(new TableCorsRule("*", "GET,POST,PATCH,FETCH,PUT", "*", "*", Int32.MaxValue));
+                    syncTableClient.SetProperties(tableServiceProperties);
+                }
             }
             else if (env.IsStaging() && Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") == "PuzzleServerTestDeploy")
             {

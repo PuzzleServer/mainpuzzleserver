@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Azure;
 using Azure.Data.Tables;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.WebUtilities;
@@ -48,17 +49,22 @@ namespace ClientSyncComponent.Client.Pages
 
         TableClient TableClient { get; set; }
 
-        List<string> ReceivedValues { get; set; } = new List<string>();
-
         Timer Timer { get; set; }
 
         bool Paused { get; set; } = false;
 
         public bool SyncablePuzzleLoaded { get; set; } = false;
 
+        bool IsDevStorage { get; set; } = false;
+
         protected override Task OnParametersSetAsync()
         {
             TableClient = new TableClient(TableSASUrl);
+            if (TableClient.AccountName == "devstoreaccount1")
+            {
+                IsDevStorage = true;
+            }
+
             DisplayLastSyncUtc = PuzzleUnlockTimeUtc ?? TablesMinTime;
 
             if (!SyncEnabled)
@@ -161,7 +167,7 @@ namespace ClientSyncComponent.Client.Pages
             {
                 await OnPauseSyncAsync();
             }
-            
+
             await InvokeAsync(StateHasChanged);
         }
 
@@ -179,13 +185,64 @@ namespace ClientSyncComponent.Client.Pages
                                     puzzleId: PuzzleId,
                                     teamId: TeamId,
                                     playerId: PuzzleUserId,
-                                    subPuzzleId: Base64UrlTextEncoder.Encode(Encoding.UTF8.GetBytes(change.puzzleId)),
+                                    subPuzzleId: EncodeSubPuzzleId(change.puzzleId),
                                     locationKey: change.locationKey,
                                     propertyKey: change.propertyKey,
                                     value: change.value,
                                     channel: change.channel);
 
-                await TableClient.UpsertEntityAsync(puzzleEntry);
+                await TableClient.UpsertEntityAsync(puzzleEntry, TableUpdateMode.Replace);
+            }
+        }
+
+        [JSInvokable]
+        public async Task OnPuzzleResetAsync(JsPuzzleReset resets)
+        {
+            if (!SyncEnabled || Paused || ReadOnly)
+            {
+                return;
+            }
+
+            // Can't run a transaction on dev storage, so pop an alert instead
+            if (IsDevStorage)
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "Can't reset puzzles with dev storage, set AzureStorageConnectionString to a real storage account.");
+                return;
+            }
+
+            // Create a reset entry for each sub-puzzle
+            foreach (string subPuzzleId in resets.puzzleIds)
+            {
+                // Delete all prior entries for this sub-puzzle transactionally
+                string partitionKey = PuzzleItemProperty.CreatePartitionKey(PuzzleId, TeamId);
+
+                // Azure tables limit transactions to 100 actions, iterate pages
+                var pagesToDelete = TableClient.QueryAsync<PuzzleItemProperty>(entry => entry.PartitionKey == partitionKey && entry.SubPuzzleId == EncodeSubPuzzleId(subPuzzleId))
+                    .AsPages(null, 100);
+
+                await foreach (Page<PuzzleItemProperty> page in pagesToDelete)
+                {
+                    List<TableTransactionAction> transactionActions = new List<TableTransactionAction>();
+
+                    foreach (PuzzleItemProperty entry in page.Values)
+                    {
+                        if (entry.IsReset)
+                        {
+                            continue;
+                        }
+
+                        transactionActions.Add(new TableTransactionAction(TableTransactionActionType.Delete, entry));
+                    }
+
+                    // Transactions throw if you submit empty ones
+                    if (transactionActions.Count > 0)
+                    {
+                        await TableClient.SubmitTransactionAsync(transactionActions);
+                    }
+                }
+
+                PuzzleItemProperty resetEntry = PuzzleItemProperty.CreateReset(PuzzleId, TeamId, Base64UrlTextEncoder.Encode(Encoding.UTF8.GetBytes(subPuzzleId)), PuzzleUserId, channel: resets.channel);
+                await TableClient.UpsertEntityAsync(resetEntry);
             }
         }
 
@@ -232,22 +289,42 @@ namespace ClientSyncComponent.Client.Pages
         {
             bool foundNewData = false;
 
-            var newChanges = TableClient.QueryAsync<PuzzleItemProperty>(entry => entry.PartitionKey == PuzzleItemProperty.CreatePartitionKey(PuzzleId, TeamId) && entry.Timestamp > LastSyncUtc);
-            
+            var unsortedChanges = TableClient.QueryAsync<PuzzleItemProperty>(entry => entry.PartitionKey == PuzzleItemProperty.CreatePartitionKey(PuzzleId, TeamId) && entry.Timestamp > LastSyncUtc);
+
+            List<PuzzleItemProperty> newChanges = new List<PuzzleItemProperty>();
+            await foreach (PuzzleItemProperty entry in unsortedChanges)
+            {
+                newChanges.Add(entry);
+            }
+            newChanges.Sort((a, b) => a.Timestamp!.Value.CompareTo(b.Timestamp!.Value));
+
             List<JsPuzzleChange> jsChanges = new List<JsPuzzleChange>();
-            await foreach (PuzzleItemProperty entry in newChanges)
+            foreach (PuzzleItemProperty entry in newChanges)
             {
                 foundNewData = true;
-                ReceivedValues.Add(entry.Value);
-                jsChanges.Add(new JsPuzzleChange()
+                if (entry.IsReset)
                 {
-                    locationKey = entry.LocationKey,
-                    playerId = PuzzleUserId.ToString(),
-                    propertyKey = entry.PropertyKey,
-                    puzzleId = Encoding.UTF8.GetString(Base64UrlTextEncoder.Decode(entry.SubPuzzleId)),
-                    teamId = TeamId.ToString(),
-                    value = entry.Value
-                });
+                    // If this is a reset, we need to send a reset message to the JS side
+                    await JSRuntime.InvokeVoidAsync("onPuzzleResetSynced", new JsPuzzleReset()
+                    {
+                        puzzleIds = new[] { DecodeSubPuzzleId(entry.SubPuzzleId) },
+                        channel = entry.Channel
+                    });
+                }
+                else
+                {
+                    jsChanges.Add(new JsPuzzleChange()
+                    {
+                        locationKey = entry.LocationKey,
+                        playerId = PuzzleUserId.ToString(),
+                        propertyKey = entry.PropertyKey,
+                        puzzleId = DecodeSubPuzzleId(entry.SubPuzzleId),
+                        teamId = TeamId.ToString(),
+                        value = entry.Value,
+                        channel = entry.Channel
+                    });
+                }
+
                 LastSyncUtc = entry.Timestamp > LastSyncUtc ? entry.Timestamp.Value : LastSyncUtc;
                 DisplayLastSyncUtc = entry.Timestamp > DisplayLastSyncUtc ? entry.Timestamp.Value : DisplayLastSyncUtc;
             }
@@ -257,6 +334,22 @@ namespace ClientSyncComponent.Client.Pages
                 await JSRuntime.InvokeVoidAsync("onPuzzleSynced", [jsChanges.ToArray()]);
                 await InvokeAsync(StateHasChanged);
             }
+        }
+
+        /// <summary>
+        /// Changes a sub-puzzle ID into a format that is safe to store in Azure Tables
+        /// </summary>
+        private string EncodeSubPuzzleId(string subPuzzleId)
+        {
+            return Base64UrlTextEncoder.Encode(Encoding.UTF8.GetBytes(subPuzzleId));
+        }
+
+        /// <summary>
+        /// Decodes a Azure Tables sub-puzzle ID for use in puzzle.js
+        /// </summary>
+        private string DecodeSubPuzzleId(string encodedSubPuzzleId)
+        {
+            return Encoding.UTF8.GetString(Base64UrlTextEncoder.Decode(encodedSubPuzzleId));
         }
     }
 }
