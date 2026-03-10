@@ -55,9 +55,16 @@ namespace ClientSyncComponent.Client.Pages
 
         public bool SyncablePuzzleLoaded { get; set; } = false;
 
+        bool IsDevStorage { get; set; } = false;
+
         protected override Task OnParametersSetAsync()
         {
             TableClient = new TableClient(TableSASUrl);
+            if (TableClient.AccountName == "devstoreaccount1")
+            {
+                IsDevStorage = true;
+            }
+
             DisplayLastSyncUtc = PuzzleUnlockTimeUtc ?? TablesMinTime;
 
             if (!SyncEnabled)
@@ -160,7 +167,7 @@ namespace ClientSyncComponent.Client.Pages
             {
                 await OnPauseSyncAsync();
             }
-            
+
             await InvokeAsync(StateHasChanged);
         }
 
@@ -193,6 +200,13 @@ namespace ClientSyncComponent.Client.Pages
         {
             if (!SyncEnabled || Paused)
             {
+                return;
+            }
+
+            // Can't run a transaction on dev storage, so pop an alert instead
+            if (IsDevStorage)
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "Can't reset puzzles with dev storage, set AzureStorageConnectionString to a real storage account.");
                 return;
             }
 
@@ -276,7 +290,7 @@ namespace ClientSyncComponent.Client.Pages
             bool foundNewData = false;
 
             var unsortedChanges = TableClient.QueryAsync<PuzzleItemProperty>(entry => entry.PartitionKey == PuzzleItemProperty.CreatePartitionKey(PuzzleId, TeamId) && entry.Timestamp > LastSyncUtc);
-            
+
             List<PuzzleItemProperty> newChanges = new List<PuzzleItemProperty>();
             await foreach (PuzzleItemProperty entry in unsortedChanges)
             {
@@ -284,7 +298,7 @@ namespace ClientSyncComponent.Client.Pages
             }
             newChanges.Sort((a, b) => a.Timestamp!.Value.CompareTo(b.Timestamp!.Value));
 
-            List <JsPuzzleChange> jsChanges = new List<JsPuzzleChange>();
+            List<JsPuzzleChange> jsChanges = new List<JsPuzzleChange>();
             foreach (PuzzleItemProperty entry in newChanges)
             {
                 foundNewData = true;
@@ -337,4 +351,5 @@ namespace ClientSyncComponent.Client.Pages
         {
             return Encoding.UTF8.GetString(Base64UrlTextEncoder.Decode(encodedSubPuzzleId));
         }
+    }
 }
