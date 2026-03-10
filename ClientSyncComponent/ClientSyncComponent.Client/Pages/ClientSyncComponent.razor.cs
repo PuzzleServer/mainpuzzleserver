@@ -198,7 +198,7 @@ namespace ClientSyncComponent.Client.Pages
         [JSInvokable]
         public async Task OnPuzzleResetAsync(JsPuzzleReset resets)
         {
-            if (!SyncEnabled || Paused)
+            if (!SyncEnabled || Paused || ReadOnly)
             {
                 return;
             }
