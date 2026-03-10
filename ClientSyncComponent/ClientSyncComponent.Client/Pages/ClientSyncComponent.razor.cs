@@ -178,7 +178,7 @@ namespace ClientSyncComponent.Client.Pages
                                     puzzleId: PuzzleId,
                                     teamId: TeamId,
                                     playerId: PuzzleUserId,
-                                    subPuzzleId: Base64UrlTextEncoder.Encode(Encoding.UTF8.GetBytes(change.puzzleId)),
+                                    subPuzzleId: EncodeSubPuzzleId(change.puzzleId),
                                     locationKey: change.locationKey,
                                     propertyKey: change.propertyKey,
                                     value: change.value,
@@ -203,7 +203,7 @@ namespace ClientSyncComponent.Client.Pages
                 string partitionKey = PuzzleItemProperty.CreatePartitionKey(PuzzleId, TeamId);
 
                 // Azure tables limit transactions to 100 actions, iterate pages
-                var pagesToDelete = TableClient.QueryAsync<PuzzleItemProperty>(entry => entry.PartitionKey == partitionKey && entry.SubPuzzleId == Base64UrlTextEncoder.Encode(Encoding.UTF8.GetBytes(subPuzzleId)))
+                var pagesToDelete = TableClient.QueryAsync<PuzzleItemProperty>(entry => entry.PartitionKey == partitionKey && entry.SubPuzzleId == EncodeSubPuzzleId(subPuzzleId))
                     .AsPages(null, 100);
 
                 await foreach (Page<PuzzleItemProperty> page in pagesToDelete)
@@ -218,18 +218,15 @@ namespace ClientSyncComponent.Client.Pages
                         }
 
                         transactionActions.Add(new TableTransactionAction(TableTransactionActionType.Delete, entry));
-                        Console.WriteLine($"Adding delete for {entry.LocationKey}");
                     }
 
                     // Transactions throw if you submit empty ones
                     if (transactionActions.Count > 0)
                     {
-                        Console.WriteLine($"Submitting transaction with {transactionActions.Count} deletes for reset of {subPuzzleId}");
                         await TableClient.SubmitTransactionAsync(transactionActions);
                     }
                 }
 
-                Console.WriteLine($"Adding reset entry for {subPuzzleId}");
                 PuzzleItemProperty resetEntry = PuzzleItemProperty.CreateReset(PuzzleId, TeamId, Base64UrlTextEncoder.Encode(Encoding.UTF8.GetBytes(subPuzzleId)), PuzzleUserId, channel: resets.channel);
                 await TableClient.UpsertEntityAsync(resetEntry);
             }
@@ -296,7 +293,7 @@ namespace ClientSyncComponent.Client.Pages
                     // If this is a reset, we need to send a reset message to the JS side
                     await JSRuntime.InvokeVoidAsync("onPuzzleResetSynced", new JsPuzzleReset()
                     {
-                        puzzleIds = new[] { Encoding.UTF8.GetString(Base64UrlTextEncoder.Decode(entry.SubPuzzleId)) },
+                        puzzleIds = new[] { DecodeSubPuzzleId(entry.SubPuzzleId) },
                         channel = entry.Channel
                     });
                 }
@@ -307,7 +304,7 @@ namespace ClientSyncComponent.Client.Pages
                         locationKey = entry.LocationKey,
                         playerId = PuzzleUserId.ToString(),
                         propertyKey = entry.PropertyKey,
-                        puzzleId = Encoding.UTF8.GetString(Base64UrlTextEncoder.Decode(entry.SubPuzzleId)),
+                        puzzleId = DecodeSubPuzzleId(entry.SubPuzzleId),
                         teamId = TeamId.ToString(),
                         value = entry.Value,
                         channel = entry.Channel
@@ -324,5 +321,20 @@ namespace ClientSyncComponent.Client.Pages
                 await InvokeAsync(StateHasChanged);
             }
         }
-    }
+
+        /// <summary>
+        /// Changes a sub-puzzle ID into a format that is safe to store in Azure Tables
+        /// </summary>
+        private string EncodeSubPuzzleId(string subPuzzleId)
+        {
+            return Base64UrlTextEncoder.Encode(Encoding.UTF8.GetBytes(subPuzzleId));
+        }
+
+        /// <summary>
+        /// Decodes a Azure Tables sub-puzzle ID for use in puzzle.js
+        /// </summary>
+        private string DecodeSubPuzzleId(string encodedSubPuzzleId)
+        {
+            return Encoding.UTF8.GetString(Base64UrlTextEncoder.Decode(encodedSubPuzzleId));
+        }
 }
