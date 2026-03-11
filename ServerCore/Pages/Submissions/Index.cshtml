@@ -153,7 +153,10 @@
         margin-left: 20px;
     }
     #puzzleAuthorPrintable {
-        margin-top: 4px;
+        margin-top: 8px;
+    }
+    .answer-label-customizable {
+        font-weight:bold;
     }
 
     .puzzle-content-wrapper.unclaimed {
@@ -164,7 +167,17 @@
         opacity: 0.25;
     }
 
+    .title-block .flexwrapper {
+        justify-content: end;
+    }
+
+    .puzzle-title-wrapper {
+        margin-right: auto;
+    }
+
     @@media (max-width: 750px) {
+        .title-block { grid-template-columns: 1fr; }
+        .title-block .flexwrapper { flex-wrap: wrap; }
         .submission-block { grid-template-columns: 1fr; }
     }
 
@@ -245,9 +258,9 @@
 }
 
 <div class="top-header-customizable" id="top-header">
-    <div class="twocolumn">
+    <div class="title-block twocolumn">
         <div class="flexwrapper">
-            <div><h2 class="puzzle-title-customizable" id="puzzleNamePrintable"><b>@RawHtmlHelper.Display(Model.Puzzle.Name, Model.Event.ID, Html)</b></h2></div>
+            <div class="puzzle-title-wrapper"><h2 class="puzzle-title-customizable" id="puzzleNamePrintable"><b>@RawHtmlHelper.Display(Model.Puzzle.Name, Model.Event.ID, Html)</b></h2></div>
             @if (!string.IsNullOrEmpty(Model.Puzzle.Group))
             {
                 <div><h3 class="puzzle-group-customizable" id="puzzleGroupPrintable">@RawHtmlHelper.Display(Model.Puzzle.Group, Model.Event.ID, Html)</h3></div>
@@ -644,7 +657,7 @@
                         updateVal = `<div class="alert alert-danger" role="alert">This puzzle can't be found in the system, so your answer has not been recorded.</div>`;
                         break;
                     case 6: // Puzzle Locked
-                        updateVal = `<div class="alert alert-danger" role="alert"><h4>Answer Submission Locked</h4><span>This puzzle is currently locked! Please <a asp-Page="/Threads/PuzzleThread" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-teamId="@Model.Team?.ID" asp-route-playerId="@Model.LoggedInUser.ID">use this link to message us if you think this is a mistake</a>.</span></div>`;
+                        updateVal = `<div class="alert alert-danger" role="alert"><h4>Answer Submission Locked</h4><span>This puzzle is currently locked! Please <a href="/@(Model.Event.UrlString)/@(Model.EventRole)/Threads/PuzzleThread/@(Model.Puzzle.ID)?teamId=@(Model.Team?.ID)&playerId=@(Model.LoggedInUser.ID)">use this link to message us if you think this is a mistake</a>.</span></div>`;
                         break;
                     case 7: // Empty
                         updateVal = `<div class="alert alert-danger" role="alert">No valid characters were found in this submission. Please try something else.</div>`;
