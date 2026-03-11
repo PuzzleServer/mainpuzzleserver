@@ -51,7 +51,7 @@ namespace ServerCore.Pages.Events
             this.TeamPuzzleSort = teamPuzzleSort;
             this.SinglePlayerPuzzleSort = singlePlayerPuzzleSort;
             this.StateFilter = stateFilter;
-            this.CurrentTeam = (await UserEventHelper.GetTeamForPlayer(_context, Event, LoggedInUser));
+            this.CurrentTeam = await GetTeamAsync();
 
             HashSet<int> authorPuzzleIds = this.GetAuthorPuzzleIds();
             await this.updateTeamPuzzleStats(authorPuzzleIds);
