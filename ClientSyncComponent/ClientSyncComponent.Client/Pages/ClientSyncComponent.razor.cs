@@ -316,7 +316,8 @@ namespace ClientSyncComponent.Client.Pages
                     jsChanges.Add(new JsPuzzleChange()
                     {
                         locationKey = entry.LocationKey,
-                        playerId = PuzzleUserId.ToString(),
+                        playerId = entry.PlayerId.ToString(),
+                        playerIsSelf = (entry.PlayerId == PuzzleUserId),
                         propertyKey = entry.PropertyKey,
                         puzzleId = DecodeSubPuzzleId(entry.SubPuzzleId),
                         teamId = TeamId.ToString(),
