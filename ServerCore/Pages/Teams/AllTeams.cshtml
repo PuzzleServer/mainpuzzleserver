@@ -9,7 +9,7 @@
 }
 
 <h2>All teams</h2>
-@if(Model.PlayerNotOnTeam)
+@if(Model.PlayerNotOnTeam && Model.Event.IsTeamRegistrationActive)
 {
     <p>
         You are not yet part of a team. To join a team, go to the register page.
