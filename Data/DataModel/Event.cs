@@ -292,6 +292,11 @@ namespace ServerCore.DataModel
         public string LunchOptions { get; set; }
 
         /// <summary>
+        /// Number of options per lunch (e.g. toppings per pizza)
+        /// </summary>
+        public int? LunchOptionsPerLunch { get; set; }
+
+        /// <summary>
         /// Paragraph of text shown on the Team Details page to describe lunch
         /// </summary>
         public string LunchDescription { get; set; }

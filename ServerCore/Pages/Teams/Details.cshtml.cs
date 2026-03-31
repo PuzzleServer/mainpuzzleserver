@@ -50,6 +50,7 @@ namespace ServerCore.Pages.Teams
         public string TeamRoom { get; set; }
         public IList<TeamLunch> Lunches { get; set; }
         public string NewLunch { get; set; }
+        public string NewLunch2 { get; set; }
         public static string[] LunchOptions { get; set; }
 
         private async Task<(bool passed, IActionResult redirect)> AuthChecks(int teamId)
@@ -313,7 +314,7 @@ namespace ServerCore.Pages.Teams
             return RedirectToPage("./Details", new { teamId = teamId });
         }
 
-        public async Task<IActionResult> OnPostAddLunchAsync(int teamId, string newLunch)
+        public async Task<IActionResult> OnPostAddLunchAsync(int teamId, string newLunch, string? newLunch2)
         {
             var authResult = await AuthChecks(teamId);
             if (!authResult.passed)
@@ -321,9 +322,19 @@ namespace ServerCore.Pages.Teams
                 return authResult.redirect;
             }
 
-            if (!String.IsNullOrWhiteSpace(newLunch))
+            if (!String.IsNullOrWhiteSpace(newLunch) || !String.IsNullOrWhiteSpace(newLunch2))
             {
-                TeamLunch teamLunch = new() { Lunch = newLunch, TeamId = teamId };
+                string compositeLunch = null;
+                if (!String.IsNullOrWhiteSpace(newLunch))
+                {
+                    compositeLunch = newLunch;
+                }
+                if (!String.IsNullOrWhiteSpace(newLunch2))
+                {
+                    compositeLunch = compositeLunch == null ? newLunch2 : compositeLunch + "+" + newLunch2;
+                }
+
+                TeamLunch teamLunch = new() { Lunch = compositeLunch, TeamId = teamId };
                 _context.TeamLunch.Add(teamLunch);
                 await _context.SaveChangesAsync();
             }
