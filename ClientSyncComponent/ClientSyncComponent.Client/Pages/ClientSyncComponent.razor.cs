@@ -317,7 +317,7 @@ namespace ClientSyncComponent.Client.Pages
                     {
                         locationKey = entry.LocationKey,
                         playerId = entry.PlayerId.ToString(),
-                        playerIsSelf = (entry.PlayerId == PuzzleUserId) ? "yes" : "",
+                        playerIsSelf = (entry.PlayerId == PuzzleUserId),
                         propertyKey = entry.PropertyKey,
                         puzzleId = DecodeSubPuzzleId(entry.SubPuzzleId),
                         teamId = TeamId.ToString(),
