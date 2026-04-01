@@ -162,7 +162,7 @@ namespace ServerCore.Areas.Identity
             PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
             Event thisEvent = await GetEventFromRoute();
 
-            if (thisEvent != null && await puzzleUser.IsRegisteredForEvent(dbContext, thisEvent))
+            if (thisEvent != null && puzzleUser != null && await puzzleUser.IsRegisteredForEvent(dbContext, thisEvent))
             {
                 authContext.Succeed(requirement);
             }

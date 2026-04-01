@@ -100,7 +100,7 @@
                             <ul class="dropdown-menu admin-menu">
                                 <li><a class="dropdown-item" asp-page="/EventSpecific/Rules">Rules</a></li>
                                 <li><a class="dropdown-item" asp-page="/EventSpecific/FAQ">FAQ</a></li>
-                                <li><a class="dropdown-item" asp-page="/EventSpecific/Tools">Solving Tools and Techniques</a></li>
+                                <li><a class="dropdown-item" asp-page="/EventSpecific/Tools">Solving tools and techniques</a></li>
                                 <li><a class="dropdown-item" asp-page="/EventSpecific/Encodings">Encodings</a></li>
                                 <li><a class="dropdown-item" asp-page="/EventSpecific/Samples">Sample puzzles</a></li>
                             </ul>
@@ -170,7 +170,7 @@
                             <ul class="dropdown-menu author-menu">
                                 <li><a class="dropdown-item" asp-page="/EventSpecific/Rules">Rules</a></li>
                                 <li><a class="dropdown-item" asp-page="/EventSpecific/FAQ">FAQ</a></li>
-                                <li><a class="dropdown-item" asp-page="/EventSpecific/Tools">Solving Tools and Techniques</a></li>
+                                <li><a class="dropdown-item" asp-page="/EventSpecific/Tools">Solving tools and techniques</a></li>
                                 <li><a class="dropdown-item" asp-page="/EventSpecific/Encodings">Encodings</a></li>
                                 <li><a class="dropdown-item" asp-page="/EventSpecific/Samples">Sample puzzles</a></li>
                             </ul>
@@ -229,7 +229,7 @@
                         }
                         @if (Event.IsTeamMembershipChangeActive)
                         {
-                            <li class="nav-item"><a style="color:yellow" asp-page="@(teamSignupUrl)"> Join or Create a Team!</a></li>
+                            <li class="nav-item"><a style="color:yellow" asp-page="@(teamSignupUrl)"> Join or create a team!</a></li>
                         }
                     }
                     else
@@ -266,7 +266,7 @@
                             <ul class="dropdown-menu player-menu">
                                 @if (!isOnTeam)
                                 {
-                                    <li><a class="dropdown-item" asp-page="@(teamSignupUrl)"> Join or Create a Team!</a></li>
+                                    <li><a class="dropdown-item" asp-page="@(teamSignupUrl)"> Join or create a team!</a></li>
                                 }
                                 else
                                 {
@@ -305,7 +305,7 @@
                             <ul class="dropdown-menu player-menu">
                                 <li><a class="dropdown-item" asp-page="/EventSpecific/Rules">Rules</a></li>
                                 <li><a class="dropdown-item" asp-page="/EventSpecific/FAQ">FAQ</a></li>
-                                <li><a class="dropdown-item" asp-page="/EventSpecific/Tools">Solving Tools and Techniques</a></li>
+                                <li><a class="dropdown-item" asp-page="/EventSpecific/Tools">Solving tools and techniques</a></li>
                                 <li><a class="dropdown-item" asp-page="/EventSpecific/Encodings">Encodings</a></li>
                                 <li><a class="dropdown-item" asp-page="/EventSpecific/Samples">Sample puzzles</a></li>
                             </ul>
@@ -356,7 +356,7 @@
                     <li class="nav-item"><a asp-page="/Teams/AllTeams">View all teams</a></li>
                     @if (Event.ShouldShowSinglePlayerPuzzles)
                     {
-                        <li class="nav-item"><a asp-page="/Events/SolveCounts">Solve counts</a></li>
+                        <li class="nav-item"><a asp-page="/Events/SolveCounts">@(Event.HideStandings ? "Most-solved Puzzles" : "Fastest solves")</a></li>
                     }
                     <li class="nav-item">
                         <div class="dropdown">
@@ -366,7 +366,7 @@
                             <ul class="dropdown-menu player-menu">
                                 <li><a class="dropdown-item" asp-page="/EventSpecific/Rules">Rules</a></li>
                                 <li><a class="dropdown-item" asp-page="/EventSpecific/FAQ">FAQ</a></li>
-                                <li><a class="dropdown-item" asp-page="/EventSpecific/Tools">Solving Tools and Techniques</a></li>
+                                <li><a class="dropdown-item" asp-page="/EventSpecific/Tools">Solving tools and techniques</a></li>
                                 <li><a class="dropdown-item" asp-page="/EventSpecific/Encodings">Encodings</a></li>
                                 <li><a class="dropdown-item" asp-page="/EventSpecific/Samples">Sample puzzles</a></li>
                             </ul>
