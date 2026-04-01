@@ -257,6 +257,12 @@
                 <span asp-validation-for="EditableEvent.MaxSubmissionCount" class="text-danger"></span>
             </div>
             <div class="description-column">The maximum number of incorrect submissions allowed for a puzzle before an indefinite lockout is placed and the team enters email-only mode.</div>
+            <div class="form-group">
+                <label asp-for="EditableEvent.PuzzleListCustomHeaderUrl" class="control-label"></label>
+                <input asp-for="EditableEvent.PuzzleListCustomHeaderUrl" class="form-control" />
+                <span asp-validation-for="EditableEvent.PuzzleListCustomHeaderUrl" class="text-danger"></span>
+            </div>
+            <div class="description-column">A link to a header HTML file that can appear in an iframe above the player's list of puzzles.</div>
             <h4>Team Options</h4><div></div>
             <div class="form-group">
                 <label asp-for="EditableEvent.MaxNumberOfTeams" class="control-label"></label>

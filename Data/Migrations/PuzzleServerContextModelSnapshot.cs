@@ -430,6 +430,9 @@ namespace Data.Migrations
                     b.Property<int?>("PlayersPerLunch")
                         .HasColumnType("int");
 
+                    b.Property<string>("PuzzleListCustomHeaderUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("PuzzleSyncEnabled")
                         .HasColumnType("bit");
 

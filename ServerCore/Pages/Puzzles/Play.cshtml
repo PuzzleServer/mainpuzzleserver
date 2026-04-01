@@ -24,7 +24,46 @@
     text-decoration: none;
     cursor: pointer;
     }
+
+    #puzzle-header-frame {
+        width: 100%;
+    }
 </style>
+
+@if (canSubmit && !string.IsNullOrWhiteSpace(Model.Event.PuzzleListCustomHeaderUrl))
+{
+    <script>
+        // Resize iframe whenever it loads content
+        // Note that when the puzzle receives the message, it should remove any extraneous wrapping before reporting its size
+        document.addEventListener("DOMContentLoaded", (e) => {
+            const iframe = document.querySelector("#puzzle-header-frame");
+            if ((iframe !== null) && (iframe !== undefined)) {
+                iframe.addEventListener("load", (e) => {
+                    e.target.contentWindow.postMessage("size", "*");
+                });
+            }
+        });
+
+        // Resize the frame if the window width changes to maintain no double scrollbars
+        window.addEventListener("resize", (e) => {
+            const iframe = document.querySelector("#puzzle-header-frame");
+            if ((iframe !== null) && (iframe !== undefined)) {
+                iframe.contentWindow.postMessage("size", "*");
+            }
+        });
+
+        // When the iframe response comes, use it to set the iframe's size
+        // The extra 30px added to the size undoes the widths of the scrollbars themselves
+        // Keep the width at 100% by default so internal content can resize if needed
+        window.addEventListener("message", (e) => {
+            if ((e.data.width > 0) && (e.data.height > 0)) {
+                const iframe = document.querySelector("#puzzle-header-frame");
+                iframe.classList.remove("unsized");
+                iframe.height = e.data.height + 30;
+            }
+        });
+    </script>
+}
 
 @if (canUsePresence && Model.Team != null)
 {
@@ -47,6 +86,11 @@
         <h4>The event is over.</h4>
         <span>You may check answers, but they will not count toward your ranking.</span>
     </div>
+}
+
+@if (canSubmit && !string.IsNullOrWhiteSpace(Model.Event.PuzzleListCustomHeaderUrl))
+{
+    <iframe id="puzzle-header-frame" class="unsized" title="Puzzle List Header" sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-downloads allow-modals allow-forms" src="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(Model.Event.PuzzleListCustomHeaderUrl, -1, Model.Event.ID, Model.LoggedInUser.ID, Model.Team.Password, null)@(Model.Event.PuzzleListCustomHeaderUrl.Contains('?') ? "&" : "?")embed=true"></iframe>
 }
 
 @if (Model.Event.IsAlphaTestingEvent && Model.UnclaimedAlphaPuzzleViews.Any())
