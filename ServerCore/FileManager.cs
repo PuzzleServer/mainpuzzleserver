@@ -73,7 +73,7 @@ namespace ServerCore
         {
             List<DirectoryFileResult> results = new List<DirectoryFileResult>();
             BlobContainerClient eventContainer = await GetOrCreateEventContainerAsync(eventId);
-            var blobs = eventContainer.GetBlobsByHierarchyAsync(prefix: directoryName);
+            var blobs = eventContainer.GetBlobsByHierarchyAsync(new GetBlobsByHierarchyOptions() { Prefix = directoryName });
             await foreach(var blob in blobs)
             {
                 BlobUriBuilder uriBuilder = new BlobUriBuilder(eventContainer.Uri);
