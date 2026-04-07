@@ -234,6 +234,12 @@ namespace ServerCore.DataModel
         public int DefaultCostForHelpThread { get; set; }
 
         /// <summary>
+        /// Gets or sets the URL for a custom header in the puzzle list.
+        /// </summary>
+        [DataType(DataType.Url)]
+        public string PuzzleListCustomHeaderUrl { get; set; }
+
+        /// <summary>
         /// Announcement to be added to every page
         /// </summary>
         public string Announcement { get; set; }
