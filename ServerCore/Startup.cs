@@ -170,7 +170,6 @@ namespace ServerCore
             if (env.IsDevelopment() && String.IsNullOrEmpty(Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME")))
             {
                 app.UseWebAssemblyDebugging();
-                app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
                 PuzzleServerContext.UpdateDatabase(app);
                 TableServiceClient syncTableClient = new TableServiceClient(Configuration.GetConnectionString("AzureStorageConnectionString"));
