@@ -25,7 +25,8 @@ namespace ServerCore.Areas.Identity
 
                 DeploymentConfiguration.ConfigureDatabase(context.Configuration, services, env);
 
-                services.AddDefaultIdentity<IdentityUser>()
+                services.AddDefaultIdentity<IdentityUser>(options =>
+                    options.Stores.MaxLengthForKeys = 450) // Set a fixed max length to prevent spurious DB migrations
                     .AddEntityFrameworkStores<PuzzleServerContext>();
             });
         }
