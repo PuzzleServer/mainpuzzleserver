@@ -329,7 +329,7 @@ namespace ServerCore.Pages.Teams
                 {
                     compositeLunch = newLunch;
                 }
-                if (!String.IsNullOrWhiteSpace(newLunch2))
+                if (!String.IsNullOrWhiteSpace(newLunch2) && newLunch2 != "none")
                 {
                     compositeLunch = compositeLunch == null ? newLunch2 : compositeLunch + "+" + newLunch2;
                 }
