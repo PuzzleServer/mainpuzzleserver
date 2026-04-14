@@ -49,8 +49,7 @@ namespace ServerCore.Pages.Teams
 
         public string TeamRoom { get; set; }
         public IList<TeamLunch> Lunches { get; set; }
-        public string NewLunch { get; set; }
-        public string NewLunch2 { get; set; }
+        public string[] NewLunch { get; set; }
         public static string[] LunchOptions { get; set; }
 
         private async Task<(bool passed, IActionResult redirect)> AuthChecks(int teamId)
@@ -145,6 +144,8 @@ namespace ServerCore.Pages.Teams
 
                 double possibleInPersonMembers = Event.MaxTeamSize - remoteMembers;
                 SoftMaxLunches = (int)Math.Ceiling(possibleInPersonMembers / (double)PlayersPerLunch);
+
+                NewLunch = new string[Event.LunchOptionsPerLunch ?? 1];
             }
             LunchOptions = (!string.IsNullOrWhiteSpace(Event.LunchOptions)) ? Event.LunchOptions.Split(";") : Array.Empty<string>();
             for (int i = 0; i < LunchOptions.Length; i++) 
@@ -314,7 +315,7 @@ namespace ServerCore.Pages.Teams
             return RedirectToPage("./Details", new { teamId = teamId });
         }
 
-        public async Task<IActionResult> OnPostAddLunchAsync(int teamId, string newLunch, string? newLunch2)
+        public async Task<IActionResult> OnPostAddLunchAsync(int teamId)
         {
             var authResult = await AuthChecks(teamId);
             if (!authResult.passed)
@@ -322,18 +323,17 @@ namespace ServerCore.Pages.Teams
                 return authResult.redirect;
             }
 
-            if (!String.IsNullOrWhiteSpace(newLunch) || !String.IsNullOrWhiteSpace(newLunch2))
-            {
-                string compositeLunch = null;
-                if (!String.IsNullOrWhiteSpace(newLunch))
-                {
-                    compositeLunch = newLunch;
-                }
-                if (!String.IsNullOrWhiteSpace(newLunch2) && newLunch2 != "none")
-                {
-                    compositeLunch = compositeLunch == null ? newLunch2 : compositeLunch + "+" + newLunch2;
-                }
+            string compositeLunch = null;
 
+            for (int i = 0; i < Event.LunchOptionsPerLunch; i++)
+            {
+                string option = Request.Form[$"NewLunch[{i}]"];
+                if (String.IsNullOrWhiteSpace(option)) continue;
+                if (i > 0 && option == "none") continue;
+                compositeLunch = compositeLunch == null ? option : compositeLunch + "+" + option;
+            }
+            if (compositeLunch != null)
+            {
                 TeamLunch teamLunch = new() { Lunch = compositeLunch, TeamId = teamId };
                 _context.TeamLunch.Add(teamLunch);
                 await _context.SaveChangesAsync();

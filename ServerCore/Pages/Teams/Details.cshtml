@@ -293,26 +293,18 @@
                     {
                         <h3>Add an item</h3>
                         <form method="post">
-                            <select class="lunch-select" asp-for="NewLunch">
-                                <option value="">Select an option</option>
-                                <option value="none">Decline Lunch Item</option>
-                                @foreach (var lunchOption in DetailsModel.LunchOptions)
-                                {
-                                    <option value="@lunchOption">@lunchOption</option>
-                                }
-                            </select>
-                            @if (Model.Event.LunchOptionsPerLunch > 1)
+                            @for (int i = 0; i < Model.Event.LunchOptionsPerLunch; i++)
                             {
-                                <select class="lunch-select" asp-for="NewLunch2">
-                                    <option value="">Select a second option</option>
-                                    <option value="none">None</option>
+                                <select class="lunch-select" asp-for="@Model.NewLunch[i]">
+                                    <option value="">Select an option</option>
+                                    <option value="none">@(i==0 ? "Decline Lunch Item" : "None")</option>
                                     @foreach (var lunchOption in DetailsModel.LunchOptions)
                                     {
                                         <option value="@lunchOption">@lunchOption</option>
                                     }
                                 </select>
                             }
-                            <button type="submit" asp-page-handler="AddLunch" asp-route-teamId="@Model.Team.ID" asp-route-newLunch="@Model.NewLunch" asp-route-newLunch2="@Model.NewLunch2">Add</button>
+                            <button type="submit" asp-page-handler="AddLunch" asp-route-teamId="@Model.Team.ID">Add</button>
                         </form>
                         <br />
                     }
