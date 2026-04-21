@@ -280,7 +280,7 @@
                         <p>@Model.Event.LunchDescription</p>
                     }
                     <p>
-                        Your team can currently have @Model.EditableLunches item(s). If your team wants to opt out of one of the items, select &quot;Decline Lunch Item&quot;. If you cannot have any of the options offered due to dietary restrictions, please email <a href="mailto:puzzhunt@microsoft.com">puzzhunt@microsoft.com</a> with details and we'll find an alternative.
+                        Your team can currently have @Model.EditableLunches lunch item(s). If your team wants to opt out of one of the items, select &quot;Decline lunch item&quot;. If you cannot have any of the options offered due to dietary restrictions, please email <a href="mailto:puzzhunt@microsoft.com">puzzhunt@microsoft.com</a> with details and we'll find an alternative.
                         @if (Model.EditableLunches < Model.SoftMaxLunches && Model.Event.CanChangeLunch)
                         {
                             <span>
@@ -297,7 +297,7 @@
                             {
                                 <select class="lunch-select" asp-for="@Model.NewLunch[i]">
                                     <option value="">Select an option</option>
-                                    <option value="none">@(i==0 ? "Decline Lunch Item" : "None")</option>
+                                    <option value="none">@(i==0 ? "Decline lunch item" : "None")</option>
                                     @foreach (var lunchOption in DetailsModel.LunchOptions)
                                     {
                                         <option value="@lunchOption">@lunchOption</option>
