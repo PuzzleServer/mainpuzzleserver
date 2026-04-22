@@ -403,6 +403,9 @@ namespace Data.Migrations
                     b.Property<string>("LunchOptions")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("LunchOptionsPerLunch")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("LunchReportDate")
                         .HasColumnType("datetime2");
 

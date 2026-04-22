@@ -57,7 +57,50 @@
         display: table;
         clear: both;
     }
+
+    .hidden { display: none; }
 </style>
+<script>
+    let isUpdatingOptions = false;
+
+    function updateOptions() {
+        if (isUpdatingOptions) return;
+
+        isUpdatingOptions = true;
+        let noneSeen = false;
+
+        document.querySelectorAll(".lunch-select option").forEach(option => {
+            option.classList.remove("hidden");
+        });
+
+        document.querySelectorAll(".lunch-select").forEach(select => {
+            if (noneSeen) { select.disabled = true; select.value = ""; return; }
+
+            select.disabled = false;
+            if (select.value == "none") {
+                noneSeen = true;
+            } else {
+                document.querySelectorAll(".lunch-select").forEach(otherSelect => {
+                    if (otherSelect != select) {
+                        otherSelect.querySelectorAll("option").forEach(option => {
+                            if (option.value == select.value) {
+                                option.classList.add("hidden");
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
+        isUpdatingOptions = false;
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".lunch-select").forEach(select => {
+            select.addEventListener("change", function () { updateOptions(); });
+        });
+    });
+</script>
 
 <h2>@(Model.Team.Name) Team</h2>
 
@@ -237,7 +280,7 @@
                         <p>@Model.Event.LunchDescription</p>
                     }
                     <p>
-                        Your team can currently have @Model.EditableLunches item(s). If your team wants to opt out of one of the items, select &quot;Skip Item&quot;. If you cannot have any of the options offered due to dietary restrictions, please email <a href="mailto:puzzhunt@microsoft.com">puzzhunt@microsoft.com</a> with details and we'll find an alternative.
+                        Your team can currently have @Model.EditableLunches lunch item(s). If your team wants to opt out of one of the items, select &quot;Decline lunch item&quot;. If you cannot have any of the options offered due to dietary restrictions, please email <a href="mailto:puzzhunt@microsoft.com">puzzhunt@microsoft.com</a> with details and we'll find an alternative.
                         @if (Model.EditableLunches < Model.SoftMaxLunches && Model.Event.CanChangeLunch)
                         {
                             <span>
@@ -250,15 +293,18 @@
                     {
                         <h3>Add an item</h3>
                         <form method="post">
-                            <select asp-for="NewLunch">
-                                <option value="">Select an option</option>
-                                <option value="Skip Item">Skip Item</option>
-                                @foreach (var lunchOption in DetailsModel.LunchOptions)
-                                {
-                                    <option value="@lunchOption">@lunchOption</option>
-                                }
-                            </select>
-                            <button type="submit" asp-page-handler="AddLunch" asp-route-teamId="@Model.Team.ID" asp-route-newLunch="@Model.NewLunch">Add</button>
+                            @for (int i = 0; i < Model.Event.LunchOptionsPerLunch; i++)
+                            {
+                                <select class="lunch-select" asp-for="@Model.NewLunch[i]">
+                                    <option value="">Select an option</option>
+                                    <option value="none">@(i==0 ? "Decline lunch item" : "None")</option>
+                                    @foreach (var lunchOption in DetailsModel.LunchOptions)
+                                    {
+                                        <option value="@lunchOption">@lunchOption</option>
+                                    }
+                                </select>
+                            }
+                            <button type="submit" asp-page-handler="AddLunch" asp-route-teamId="@Model.Team.ID">Add</button>
                         </form>
                         <br />
                     }
