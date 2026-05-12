@@ -23,6 +23,7 @@ namespace ServerCore.DataModel
         /// </summary>
         [ForeignKey("AspNetUsers.Id")]
         [Required]
+        [MaxLength(450)]
         public string IdentityUserId { get; set; }
 
         [PersonalData]

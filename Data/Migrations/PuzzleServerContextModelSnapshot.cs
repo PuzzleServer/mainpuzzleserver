@@ -285,6 +285,11 @@ namespace Data.Migrations
 
                     b.HasIndex("PuzzleID");
 
+                    b.HasIndex("EventID", "FileType")
+                        .IsUnique();
+
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("EventID", "FileType"), new[] { "ShortName", "UrlString", "PuzzleID" });
+
                     b.HasIndex("EventID", "ShortName")
                         .IsUnique();
 
@@ -507,9 +512,10 @@ namespace Data.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("AdminID");
-
                     b.HasIndex("EventID");
+
+                    b.HasIndex("AdminID", "EventID")
+                        .IsUnique();
 
                     b.ToTable("EventAdmins");
                 });
@@ -530,9 +536,10 @@ namespace Data.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("AuthorID");
-
                     b.HasIndex("EventID");
+
+                    b.HasIndex("AuthorID", "EventID")
+                        .IsUnique();
 
                     b.ToTable("EventAuthors");
                 });
@@ -828,9 +835,11 @@ namespace Data.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("ProgressLevel");
-
                     b.HasIndex("PuzzleID");
+
+                    b.HasIndex("ProgressLevel", "PuzzleID");
+
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("ProgressLevel", "PuzzleID"), new[] { "ID", "Contents" });
 
                     b.ToTable("Pieces");
                 });
@@ -904,7 +913,7 @@ namespace Data.Migrations
 
                     b.HasIndex("EventId");
 
-                    b.HasIndex("PlayerId");
+                    b.HasIndex("PlayerId", "EventId");
 
                     b.ToTable("Swag");
                 });
@@ -1059,6 +1068,10 @@ namespace Data.Migrations
 
                     b.HasIndex("EventID");
 
+                    b.HasIndex("MinutesOfEventLockout", "Availability", "ID");
+
+                    b.HasIndex("MinutesToAutomaticallySolve", "Availability", "ID");
+
                     b.ToTable("Puzzles");
                 });
 
@@ -1148,7 +1161,8 @@ namespace Data.Migrations
 
                     b.Property<string>("IdentityUserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsGlobalAdmin")
                         .HasColumnType("bit");
@@ -1173,6 +1187,8 @@ namespace Data.Migrations
                         .HasColumnType("bit");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("IdentityUserId");
 
                     b.ToTable("PuzzleUsers");
                 });
@@ -1592,6 +1608,8 @@ namespace Data.Migrations
                     b.HasKey("ID");
 
                     b.HasIndex("ClassID");
+
+                    b.HasIndex("ID");
 
                     b.HasIndex("Team.ID");
 
