@@ -68,7 +68,7 @@ namespace ServerCore.DataModel
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ContentFile>().HasIndex(contentFile => new { contentFile.EventID, contentFile.ShortName }).IsUnique();
-            modelBuilder.Entity<ContentFile>().HasIndex(contentFile => new { contentFile.EventID, contentFile.FileType}).IncludeProperties(contentFile => new { contentFile.ShortName, contentFile.UrlString, contentFile.PuzzleID}).IsUnique();
+            modelBuilder.Entity<ContentFile>().HasIndex(contentFile => new { contentFile.EventID, contentFile.FileType}).IncludeProperties(contentFile => new { contentFile.ShortName, contentFile.UrlString, contentFile.PuzzleID});
             modelBuilder.Entity<PuzzleStatePerTeam>().HasKey(state => new { state.PuzzleID, state.TeamID });
             modelBuilder.Entity<HintStatePerTeam>().HasKey(state => new { state.TeamID, state.HintID });
             modelBuilder.Entity<SinglePlayerPuzzleHintStatePerPlayer>().HasKey(state => new { state.PlayerID, state.HintID });
@@ -90,7 +90,7 @@ namespace ServerCore.DataModel
             modelBuilder.Entity<Room>().HasIndex(room => new { room.EventID, room.Building, room.Number }).IsUnique();
             modelBuilder.Entity<PlayerInEvent>().HasIndex(pie => new { pie.PlayerId, pie.EventId});
             modelBuilder.Entity<PuzzleUser>().HasIndex(pu => new { pu.IdentityUserId});
-            modelBuilder.Entity<TeamMembers>().HasIndex(tm => new { tm.ID }); //EF can't parse this for nested types, so this is a placeholder to manually edit the generated model to INDEX Team.ID, User.ID, INCLUDE Class.ID, ID, TemporaryClassID
+            modelBuilder.Entity<TeamMembers>().HasIndex(tm => new { tm.TeamID, tm.MemberID }).IncludeProperties(tm => new { tm.ID, tm.ClassID, tm.TemporaryClassID});
             modelBuilder.Entity<Message>().HasIndex(message => message.ThreadId);
             modelBuilder.Entity<Message>().HasIndex(message => message.EventID);
             modelBuilder.Entity<Message>().HasIndex(message => message.PuzzleID);
