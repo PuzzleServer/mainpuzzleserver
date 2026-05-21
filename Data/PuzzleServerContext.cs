@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ServerCore.DataModel
@@ -67,12 +68,17 @@ namespace ServerCore.DataModel
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ContentFile>().HasIndex(contentFile => new { contentFile.EventID, contentFile.ShortName }).IsUnique();
+            modelBuilder.Entity<ContentFile>().HasIndex(contentFile => new { contentFile.EventID, contentFile.FileType}).IncludeProperties(contentFile => new { contentFile.ShortName, contentFile.UrlString, contentFile.PuzzleID});
             modelBuilder.Entity<PuzzleStatePerTeam>().HasKey(state => new { state.PuzzleID, state.TeamID });
             modelBuilder.Entity<HintStatePerTeam>().HasKey(state => new { state.TeamID, state.HintID });
             modelBuilder.Entity<SinglePlayerPuzzleHintStatePerPlayer>().HasKey(state => new { state.PlayerID, state.HintID });
             modelBuilder.Entity<Event>().HasIndex(eventObj => new { eventObj.UrlString }).IsUnique();
+            modelBuilder.Entity<EventAdmins>().HasIndex(admin => new { admin.AdminID, admin.EventID}).IsUnique();
+            modelBuilder.Entity<EventAuthors>().HasIndex(author => new { author.AuthorID, author.EventID }).IsUnique();
             modelBuilder.Entity<Annotation>().HasKey(state => new { state.PuzzleID, state.TeamID, state.Key });
-            modelBuilder.Entity<Piece>().HasIndex(piece => new { piece.ProgressLevel });
+            modelBuilder.Entity<Piece>().HasIndex(piece => new { piece.ProgressLevel, piece.PuzzleID }).IncludeProperties(piece => new { piece.ID, piece.Contents });
+            modelBuilder.Entity<Puzzle>().HasIndex(puzzle=> new { puzzle.MinutesOfEventLockout, puzzle.Availability, puzzle.ID});
+            modelBuilder.Entity<Puzzle>().HasIndex(puzzle => new { puzzle.MinutesToAutomaticallySolve, puzzle.Availability, puzzle.ID });
             modelBuilder.Entity<Submission>().HasIndex(submission => new { submission.TeamID, submission.PuzzleID, submission.SubmissionText }).IsUnique();
             modelBuilder.Entity<SinglePlayerPuzzleSubmission>().HasIndex(submission => new { submission.SubmitterID, submission.PuzzleID, submission.SubmissionText }).IsUnique();
             modelBuilder.Entity<PuzzleStatePerTeam>().HasIndex(pspt => new { pspt.TeamID });
@@ -82,6 +88,9 @@ namespace ServerCore.DataModel
             modelBuilder.Entity<SinglePlayerPuzzleStatePerPlayer>().HasIndex(pspt => new { pspt.PlayerID, pspt.SolvedTime });
             modelBuilder.Entity<SinglePlayerPuzzleUnlockState>().HasKey(state => new { state.PuzzleID });
             modelBuilder.Entity<Room>().HasIndex(room => new { room.EventID, room.Building, room.Number }).IsUnique();
+            modelBuilder.Entity<PlayerInEvent>().HasIndex(pie => new { pie.PlayerId, pie.EventId});
+            modelBuilder.Entity<PuzzleUser>().HasIndex(pu => new { pu.IdentityUserId});
+            modelBuilder.Entity<TeamMembers>().HasIndex(tm => new { tm.TeamID, tm.MemberID }).IncludeProperties(tm => new { tm.ID, tm.ClassID, tm.TemporaryClassID});
             modelBuilder.Entity<Message>().HasIndex(message => message.ThreadId);
             modelBuilder.Entity<Message>().HasIndex(message => message.EventID);
             modelBuilder.Entity<Message>().HasIndex(message => message.PuzzleID);
