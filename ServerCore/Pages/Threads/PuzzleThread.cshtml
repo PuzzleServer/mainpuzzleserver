@@ -14,25 +14,6 @@
     ViewData["RoutingTeamId"] = Model.NewMessage.TeamID.ToString();
     ViewData["RoutingPlayerId"] = Model.NewMessage.PlayerID.ToString();
 }
-<script>
-    function EditText(id) {
-        let textAreaId = "TextAreaEdit_" + id;
-        let textAreaEditBox = document.getElementById(textAreaId);
-        textAreaEditBox.classList.remove("hidden");
-        let originalTextId = "MessageText_" + id;
-        let originalText = document.getElementById(originalTextId);
-        originalText.classList.add("hidden");
-    }
-
-    function CancelEdit(id) {
-        let textAreaId = "TextAreaEdit_" + id;
-        let textAreaEditBox = document.getElementById(textAreaId);
-        textAreaEditBox.classList.add("hidden");
-        let originalTextId = "MessageText_" + id;
-        let originalText = document.getElementById(originalTextId);
-        originalText.classList.remove("hidden");
-    }
-</script>
 <div>
     <span>
         @if (Model.EventRole == ServerCore.ModelBases.EventRole.play)
@@ -79,133 +60,45 @@
 
 <hr />
 
-@if (Model.Event.AreAnswersAvailableNow)
-{
-    <div>No help is needed because answers are now available!</div>
-}
-else
-{
-    <div class="row">
-        <div class="col-md-4" style="width:100%">
-            <form method="post">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="form-group message-subtitle">
-                    @if (Model.PuzzleState.IsEmailOnlyMode)
-                    {
-                        <p>Use this message to fully explain your thought process so we know you're not randomly spamming attempts!</p>
-                    }
-                    else
-                    {
-                        <p>The more details you add here, the more helpful the responses you'll get will be!</p>
-                    }
-                    <textarea asp-for="NewMessage.Text" class="form-control message-subtitle" rows="4" style="width:75%" placeholder="Type message here" autocomplete="off"></textarea>
-                    <span asp-validation-for="NewMessage.Text" class="text-danger"></span>
-                    <input type="hidden" asp-for="NewMessage.ThreadId" value="@Model.NewMessage.ThreadId" />
-                    <input type="hidden" asp-for="NewMessage.EventID" value="@Model.NewMessage.EventID" />
-                    <input type="hidden" asp-for="NewMessage.Subject" value="@Model.NewMessage.Subject" />
-                    <input type="hidden" asp-for="NewMessage.PuzzleID" value="@Model.NewMessage.PuzzleID" />
-                    <input type="hidden" asp-for="NewMessage.TeamID" value="@Model.NewMessage.TeamID" />
-                    <input type="hidden" asp-for="NewMessage.IsFromGameControl" value="@Model.NewMessage.IsFromGameControl" />
-                    <input type="hidden" asp-for="NewMessage.SenderID" value="@Model.NewMessage.SenderID" />
-                    <input type="hidden" asp-for="NewMessage.PlayerID" value="@Model.NewMessage.PlayerID" />
-                </div>
-                <div class="form-group message-subtitle">
-                    <input type="submit" value="Send" class="btn btn-default" />
-                </div>
-                @{
-                    Message lastMessage = Model.Messages.LastOrDefault();
-                    ThreadMessageDTO lastMessageDto = lastMessage == null ? null : new ThreadMessageDTO
-                    {
-                        ID = lastMessage.ID,
-                        ThreadId = lastMessage.ThreadId,
-                        Text = lastMessage.Text,
-                        CreatedDateTimeInUtc = lastMessage.CreatedDateTimeInUtc,
-                        SenderName = lastMessage.Sender?.Name,
-                        IsFromGameControl = lastMessage.IsFromGameControl,
-                        PuzzleID = lastMessage.PuzzleID,
-                        TeamID = lastMessage.TeamID,
-                        PlayerID = lastMessage.PlayerID,
-                        ClaimerID = lastMessage.ClaimerID,
-                        ClaimerName = lastMessage.Claimer?.Name
-                    };
-                }
-                @(await Html.RenderComponentAsync<ServerCore.Pages.Threads.PuzzleThreadClaimComponent>(RenderMode.Server, new { ThreadId = Model.NewMessage.ThreadId, CanClaim = Model.IsAllowedToClaimMessage(), InitialLatestMessage = lastMessageDto }))
-            </form>
-        </div>
-    </div>
-}
-
-@(await Html.RenderComponentAsync<ServerCore.Pages.Threads.PuzzleThreadComponent>(RenderMode.Server, new { ThreadId = Model.NewMessage.ThreadId, IsPlayRole = Model.EventRole == ServerCore.ModelBases.EventRole.play }))
-
-@for (int i = Model.Messages.Count - 1; i >= 0; i--)
-{
-    var message = Model.Messages[i];
-    string classString = "message-container";
-    if (message.IsFromGameControl)
-    {
-        classString += " message-game-control";
-    }
-
-    bool isAllowedToEditMessage = Model.IsAllowedToEditMessage(message);
-    bool isAllowedToDeleteMessage = Model.IsAllowedToDeleteMessage(message);
-    string actionColor = message.IsFromGameControl ? "#0310d6" : "blue";
-
-    <div class="@classString">
-        @{
-            string senderName = message.Sender.Name;
-            @if (message.IsFromGameControl)
-            {
-                senderName = Model.EventRole == ServerCore.ModelBases.EventRole.play
-                ? "Game control"
-                : $"Game control ({message.Sender.Name})";
-            }
-        }
-        <span class="message-subtitle">[@Html.Raw(Model.LocalTime(@message.CreatedDateTimeInUtc))] @senderName</span><br/>
-        @if (isAllowedToEditMessage)
+@{
+    var initialMessages = Model.Messages
+        .Select(message => new ThreadMessageDTO
         {
-            <div id="TextAreaEdit_@message.ID" class="hidden">
-                <form asp-page-handler="EditMessage" method="post">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    <div class="form-group message-main-content">
-                        <textarea class="form-control message-subtitle" style="width:100%" id="@Html.IdFor(model => model.EditMessage.Text)" name="@Html.NameFor(model => model.EditMessage.Text)" rows="4" autocomplete="off">@message.Text</textarea>
-                        <span asp-validation-for="EditMessage.Text" class="text-danger"></span>
-                        <input type="hidden" asp-for="EditMessage.ID" value="@message.ID" />
-                        <input type="hidden" asp-for="EditMessage.PuzzleID" value="@message.PuzzleID" />
-                        <input type="hidden" asp-for="EditMessage.TeamID" value="@message.TeamID" />
-                        <input type="hidden" asp-for="EditMessage.PlayerID" value="@message.PlayerID" />
-                    </div>
-                    <div class="form-group">
-                        <input type="submit" value="Update" class="btn btn-default" /> | <a role="button" class="message-subtitle" style="text-decoration:underline;color:@actionColor" onclick="CancelEdit(@message.ID)">Cancel</a>
-                    </div>
-                </form>
-            </div>
-        }
-        <div id="MessageText_@message.ID">
-            @if (message.Text == PuzzleThreadModel.DeletedMessage)
-            {
-                <p class="message-main-content" style="white-space: pre-wrap;"><i>@message.Text</i></p>
-            }
-            else
-            {
-                <p class="message-main-content" style="white-space: pre-wrap;">@message.Text</p>
-            }
-            <span>
-                @if (isAllowedToEditMessage)
-                {
-                    <a role="button" class="message-subtitle" style="text-decoration:underline;color:@actionColor" onclick="EditText(@message.ID)">Edit</a>
-                }
-                @if (isAllowedToEditMessage && isAllowedToDeleteMessage)
-                {
-                    <span>&nbsp;|&nbsp;</span>
-                }
-                @if (isAllowedToDeleteMessage)
-                {
-                    <a class="message-subtitle" style="color:@actionColor" asp-page-handler="DeleteMessage" asp-route-messageId="@message.ID" asp-route-puzzleId="@message.PuzzleID" asp-route-teamId="@message.TeamID" asp-route-playerId="@message.PlayerID" onclick="return confirm('Are you sure you want to delete this message?')">Delete</a>
-                }
-            </span>
-        </div>
-    </div>
+            ID = message.ID,
+            ThreadId = message.ThreadId,
+            Text = message.Text,
+            CreatedDateTimeInUtc = message.CreatedDateTimeInUtc,
+            SenderName = message.Sender?.Name,
+            SenderID = message.SenderID,
+            IsFromGameControl = message.IsFromGameControl,
+            PuzzleID = message.PuzzleID,
+            TeamID = message.TeamID,
+            PlayerID = message.PlayerID,
+            ClaimerID = message.ClaimerID,
+            ClaimerName = message.Claimer?.Name
+        })
+        .ToArray();
 }
+
+@(await Html.RenderComponentAsync<ServerCore.Pages.Threads.PuzzleThreadComponent>(RenderMode.Server, new
+{
+    ThreadId = Model.NewMessage.ThreadId,
+    InitialMessages = initialMessages,
+    IsPlayRole = Model.EventRole == ServerCore.ModelBases.EventRole.play,
+    CurrentUserId = Model.LoggedInUser.ID,
+    CanModifyMessages = !Model.Event.AreAnswersAvailableNow,
+    CanSendMessage = !Model.Event.AreAnswersAvailableNow,
+    IsEmailOnlyMode = Model.PuzzleState.IsEmailOnlyMode,
+    NewMessageText = Model.NewMessage.Text,
+    EventID = Model.NewMessage.EventID,
+    Subject = Model.NewMessage.Subject,
+    PuzzleID = Model.NewMessage.PuzzleID,
+    TeamID = Model.NewMessage.TeamID,
+    PlayerID = Model.NewMessage.PlayerID,
+    IsFromGameControl = Model.NewMessage.IsFromGameControl,
+    CanClaim = Model.IsAllowedToClaimMessage(),
+    DeletedMessageText = PuzzleThreadModel.DeletedMessage
+}))
 
 @section Scripts {
     @{

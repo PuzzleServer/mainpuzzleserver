@@ -130,6 +130,8 @@ public class ThreadMessageDTO
 
     public string SenderName { get; set; }
 
+    public int SenderID { get; set; }
+
     public bool IsFromGameControl { get; set; }
 
     public int? PuzzleID { get; set; }

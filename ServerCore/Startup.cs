@@ -130,6 +130,7 @@ namespace ServerCore
 
             services.AddScoped<BackgroundFileUploader>();
             services.AddScoped<AuthorizationHelper>();
+            services.AddScoped<ServerCore.Pages.Threads.PuzzleThreadService>();
 
             var signalRBuilder = services.AddSignalR();
 

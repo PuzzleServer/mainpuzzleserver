@@ -5,14 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
-using NuGet.Packaging;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
 using ServerCore.ModelBases;
-using ServerCore.ServerMessages;
 
 namespace ServerCore.Pages.Threads
 {
@@ -21,11 +17,11 @@ namespace ServerCore.Pages.Threads
     {
         public const string DeletedMessage = "This message has been deleted";
 
-        private IHubContext<ServerMessageHub> messageHub;
+        private readonly PuzzleThreadService puzzleThreadService;
 
-        public PuzzleThreadModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager, IHubContext<ServerMessageHub> messageHub) : base(serverContext, userManager)
+        public PuzzleThreadModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager, PuzzleThreadService puzzleThreadService) : base(serverContext, userManager)
         {
-            this.messageHub = messageHub;
+            this.puzzleThreadService = puzzleThreadService;
         }
 
         /// <summary>
@@ -33,12 +29,6 @@ namespace ServerCore.Pages.Threads
         /// </summary>
         [BindProperty]
         public Message NewMessage { get; set; }
-
-        /// <summary>
-        /// The edited message.
-        /// </summary>
-        [BindProperty]
-        public Message EditMessage { get; set; }
 
         /// <summary>
         /// Gets or sets the puzzle.
@@ -190,280 +180,24 @@ namespace ServerCore.Pages.Threads
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (Event.AreAnswersAvailableNow)
-            {
-                ModelState.AddModelError("NewMessage.Text", "Answers are already available.");
-            }
+            await puzzleThreadService.SendMessageAsync(
+                NewMessage.ThreadId,
+                NewMessage.EventID,
+                NewMessage.Subject,
+                NewMessage.PuzzleID.Value,
+                NewMessage.TeamID,
+                NewMessage.PlayerID,
+                NewMessage.IsFromGameControl,
+                LoggedInUser.ID,
+                NewMessage.Text);
 
-            ValidationResult validationResult = IsMessageTextValid(NewMessage.Text);
-            if (!validationResult.IsValid)
-            {
-                ModelState.AddModelError("NewMessage.Text", validationResult.FailureReason);
-            }
-
-            ModelState.Remove("EventId");
-            if (!ModelState.IsValid)
-            {
-                return await this.OnGetAsync(NewMessage.PuzzleID, NewMessage.TeamID, NewMessage.PlayerID, this.ReturnThreadQueryParams);
-            }
-
-            var puzzle = await _context.Puzzles.Where(m => m.ID == NewMessage.PuzzleID).FirstOrDefaultAsync();
-            if (puzzle == null)
-            {
-                return RedirectToPage("/Index");
-            }
-
-            // Validate to make sure user actually allowed to post
-            if (!this.IsGameControlRole())
-            {
-                if ((puzzle.IsForSinglePlayer && NewMessage.PlayerID != LoggedInUser.ID)
-                    || (!puzzle.IsForSinglePlayer && NewMessage.TeamID != (await this.GetTeamId())))
-                {
-                    throw new InvalidOperationException("You are not allowed to post to this thread.");
-                }
-            }
-
-            Message m = new Message();
-            DateTime now = DateTime.UtcNow;
-            m.ThreadId = NewMessage.ThreadId;
-            m.IsFromGameControl = NewMessage.IsFromGameControl;
-            m.Subject = NewMessage.Subject;
-            m.EventID = NewMessage.EventID;
-            m.CreatedDateTimeInUtc = now;
-            m.ModifiedDateTimeInUtc = now;
-            m.Text = NewMessage.Text;
-            m.SenderID = NewMessage.SenderID;
-            m.PuzzleID = NewMessage.PuzzleID;
-            m.TeamID = NewMessage.TeamID;
-            m.ClaimerID = NewMessage.ClaimerID;
-            m.PlayerID = NewMessage.PlayerID;
-
-            bool isMessageAdded = false;
-            using (IDbContextTransaction transaction = _context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable))
-            {
-                // Make sure to not add the message if already added previously (sometimes the user double clicks)
-                Message newestMessage = await _context.Messages
-                    .Where(message => message.ThreadId == NewMessage.ThreadId)
-                    .OrderBy(message => message.CreatedDateTimeInUtc)
-                    .LastOrDefaultAsync();
-
-                if (newestMessage == null
-                    || newestMessage.Text != NewMessage.Text)
-                {
-                    _context.Messages.Add(m);
-                    await _context.SaveChangesAsync();
-                    transaction.Commit();
-                    isMessageAdded = true;
-                }
-            }
-
-            if (isMessageAdded)
-            {
-                var dto = new ThreadMessageDTO()
-                {
-                    ID = m.ID,
-                    ThreadId = m.ThreadId,
-                    Text = m.Text,
-                    CreatedDateTimeInUtc = m.CreatedDateTimeInUtc,
-                    SenderName = (LoggedInUser != null) ? LoggedInUser.Name : null,
-                    IsFromGameControl = m.IsFromGameControl,
-                    PuzzleID = m.PuzzleID,
-                    TeamID = m.TeamID,
-                    PlayerID = m.PlayerID,
-                    ClaimerID = m.ClaimerID,
-                    ClaimerName = m.Claimer?.Name
-                };
-                await messageHub.SendThreadMessage(dto);
-
-                await this.SendEmailNotifications(m, puzzle);
-            }
-
-            return RedirectToPage("/Threads/PuzzleThread", new { puzzleId = m.PuzzleID, teamId = m.TeamID, playerId = m.PlayerID });
-        }
-
-        public async Task<IActionResult> OnPostEditMessageAsync()
-        {
-            if (Event.AreAnswersAvailableNow)
-            {
-                ModelState.AddModelError("EditMessage.Text", $"Edit failed because no updates can be made after answers are available");
-            }
-
-            ValidationResult validationResult = IsMessageTextValid(EditMessage.Text);
-            if (!validationResult.IsValid)
-            {
-                ModelState.AddModelError("EditMessage.Text", $"Edit failed because {validationResult.FailureReason}");
-            }
-
-            ModelState.Remove("EventId");
-            if (!ModelState.IsValid)
-            {
-                return await this.OnGetAsync(EditMessage.PuzzleID, EditMessage.TeamID, EditMessage.PlayerID, this.ReturnThreadQueryParams);
-            }
-
-            var message = await _context.Messages.Where(m => m.ID == EditMessage.ID).FirstOrDefaultAsync();
-            if (message != null && IsAllowedToEditMessage(message))
-            {
-                message.Text = EditMessage.Text;
-                message.ModifiedDateTimeInUtc = DateTime.UtcNow;
-                await _context.SaveChangesAsync();
-            }
-
-            return RedirectToPage("/Threads/PuzzleThread", new { puzzleId = EditMessage.PuzzleID, teamId = EditMessage.TeamID, playerId = EditMessage.PlayerID });
-        }
-
-        public async Task<IActionResult> OnGetDeleteMessageAsync(int messageId, int puzzleId, int? teamId, int? playerId)
-        {
-            var message = await _context.Messages.Where(m => m.ID == messageId).FirstOrDefaultAsync();
-            if (message != null && IsAllowedToDeleteMessage(message))
-            {
-                message.Text = PuzzleThreadModel.DeletedMessage;
-                message.ModifiedDateTimeInUtc = DateTime.UtcNow;
-                await _context.SaveChangesAsync();
-            }
-
-            return RedirectToPage("/Threads/PuzzleThread", new { puzzleId = puzzleId, teamId = teamId, playerId = playerId });
-        }
-
-        public async Task<IActionResult> OnPostClaimThreadAsync(int messageId, int puzzleId, int? teamId, int? playerId)
-        {
-            var message = await _context.Messages.Where(m => m.ID == messageId).FirstOrDefaultAsync();
-            if (message != null 
-                && IsAllowedToClaimMessage()
-                && !message.ClaimerID.HasValue)
-            {
-                message.ClaimerID = LoggedInUser.ID;
-                message.Claimer = LoggedInUser;
-                _context.Messages.Update(message);
-                await _context.SaveChangesAsync();
-            }
-            else
-            {
-                throw new InvalidOperationException("You cannot claim this thread! It may have already been claimed.");
-            }
-
-            return RedirectToPage("/Threads/PuzzleThread", new { puzzleId = puzzleId, teamId = teamId, playerId = playerId, messageDraft = NewMessage.Text });
-        }
-
-        public async Task<IActionResult> OnPostUnclaimThreadAsync(int messageId, int puzzleId, int? teamId, int? playerId)
-        {
-            var message = await _context.Messages.Where(m => m.ID == messageId).FirstOrDefaultAsync();
-            if (message != null && IsAllowedToClaimMessage())
-            {
-                message.ClaimerID = null;
-                message.Claimer = null;
-                _context.Messages.Update(message);
-                await _context.SaveChangesAsync();
-            }
-
-            return RedirectToPage("/Threads/PuzzleThread", new { puzzleId = puzzleId, teamId = teamId, playerId = playerId, messageDraft = NewMessage.Text });
+            return RedirectToPage("/Threads/PuzzleThread", new { puzzleId = NewMessage.PuzzleID, teamId = NewMessage.TeamID, playerId = NewMessage.PlayerID });
         }
 
         public bool IsAllowedToClaimMessage()
         {
             return EventRole == EventRole.admin
                 || EventRole == EventRole.author;
-        }
-
-        public bool IsAllowedToEditMessage(Message message)
-        {
-            return !Event.AreAnswersAvailableNow && message.SenderID == LoggedInUser.ID && message.Text != PuzzleThreadModel.DeletedMessage;
-        }
-
-        public bool IsAllowedToDeleteMessage(Message message)
-        {
-            return !Event.AreAnswersAvailableNow && message.SenderID == LoggedInUser.ID && message.Text != PuzzleThreadModel.DeletedMessage;
-        }
-
-        private async Task SendEmailNotifications(Message newMessage, Puzzle puzzle)
-        {
-            // Send a notification email to further alert both authors and players.
-            string emailTitle = $"{newMessage.Subject} thread update!";
-            string emailContent = newMessage.Text;
-            string toastTitle = $"Help message from {(newMessage.IsFromGameControl ? "Game Control" : newMessage.Sender.Name)}";
-            string toastContent = $"{newMessage.Subject}";
-            string threadUrlSuffix = $"Threads/PuzzleThread/{newMessage.PuzzleID}?teamId={newMessage.TeamID}&playerId={newMessage.PlayerID}";
-
-            var recipients = new HashSet<PuzzleUser>();
-
-            if (newMessage.IsFromGameControl)
-            {
-                // Send notification to team if message from game control.
-                Message messageFromPlayer = _context.Messages.Where(message => message.ThreadId == newMessage.ThreadId && !message.IsFromGameControl).FirstOrDefault();
-                if (messageFromPlayer != null)
-                {
-                    if (puzzle.IsForSinglePlayer)
-                    {
-                        recipients.Add(messageFromPlayer.Sender);
-                        await messageHub.SendNotification(messageFromPlayer.Sender, toastTitle, toastContent, $"/{newMessage.Event.EventID}/play/{threadUrlSuffix}");
-                    }
-                    else if (messageFromPlayer.TeamID != null)
-                    {
-                        recipients.AddRange(await _context.TeamMembers
-                            .Where(teamMember => teamMember.Team.ID == messageFromPlayer.TeamID)
-                            .Select(teamMember => teamMember.Member).ToArrayAsync());
-                        await messageHub.SendNotification(messageFromPlayer.Team, toastTitle, toastContent, $"/{newMessage.Event.EventID}/play/{threadUrlSuffix}");
-                    }
-                }
-            }
-            else if (Event.ShouldSendHelpThreadMailToGameControl)
-            {
-                // Send notification to authors and any game control person on the thread if message from player.
-
-                HashSet<PuzzleUser> staff = new HashSet<PuzzleUser>();
-                staff.AddRange(await _context.PuzzleAuthors
-                    .Where(pa => pa.Puzzle.ID == puzzle.ID)
-                    .Select(pa => pa.Author).ToArrayAsync());
-
-                staff.AddRange(await _context.Messages
-                    .Where(message => message.ThreadId == newMessage.ThreadId && message.IsFromGameControl)
-                    .Select(message => message.Sender).ToArrayAsync());
-
-                HashSet<PuzzleUser> admins = new HashSet<PuzzleUser>();
-                admins.AddRange(await _context.EventAdmins
-                    .Where(ea => ea.EventID == Event.ID)
-                    .Select(ea => ea.Admin).ToArrayAsync());
-
-                recipients.AddRange(staff);
-                
-                foreach (var staffer in staff)
-                {
-                    await messageHub.SendNotification(staffer, toastTitle, toastContent, $"/{newMessage.Event.EventID}/{(admins.Contains(staffer) ? "admin" : "author")}/{threadUrlSuffix}");
-                }
-            }
-
-            if (recipients.Any())
-            {
-                MailHelper.Singleton.SendPlaintextWithoutBcc(recipients.Select(r => r.Email), emailTitle, emailContent);
-            }
-        }
-
-        private ValidationResult IsMessageTextValid(string messageText)
-        {
-            if (string.IsNullOrWhiteSpace(messageText))
-            {
-                return ValidationResult.CreateFailure("Your message cannot be empty.");
-            }
-            else
-            {
-                return ValidationResult.CreateSuccess();
-            }
-        }
-
-        private class ValidationResult
-        {
-            public bool IsValid { get; set; }
-
-            public string FailureReason { get; set; }
-
-            public static ValidationResult CreateSuccess()
-            {
-                return new ValidationResult { IsValid = true };
-            }
-
-            public static ValidationResult CreateFailure(string failureReason)
-            {
-                return new ValidationResult { IsValid = false, FailureReason = failureReason };
-            }
         }
     }
 }
