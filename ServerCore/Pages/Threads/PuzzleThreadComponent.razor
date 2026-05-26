@@ -1,0 +1,23 @@
+@using Microsoft.AspNetCore.Components
+@using ServerCore.Helpers
+
+@if (messages.Count > 0)
+{
+    <div>
+    @foreach (var message in messages)
+    {
+        var classString = "message-container";
+        if (message.IsFromGameControl)
+        {
+            classString += " message-game-control";
+        }
+
+        <div class="@classString">
+            <span class="message-subtitle">[@((MarkupString)TimeHelper.LocalTime(message.CreatedDateTimeInUtc))] @GetSenderName(message)</span><br />
+            <div>
+                <p class="message-main-content" style="white-space: pre-wrap;">@message.Text</p>
+            </div>
+        </div>
+    }
+    </div>
+}

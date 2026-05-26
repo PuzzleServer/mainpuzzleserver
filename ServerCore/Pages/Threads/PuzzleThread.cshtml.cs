@@ -259,6 +259,22 @@ namespace ServerCore.Pages.Threads
 
             if (isMessageAdded)
             {
+                var dto = new ThreadMessageDTO()
+                {
+                    ID = m.ID,
+                    ThreadId = m.ThreadId,
+                    Text = m.Text,
+                    CreatedDateTimeInUtc = m.CreatedDateTimeInUtc,
+                    SenderName = (LoggedInUser != null) ? LoggedInUser.Name : null,
+                    IsFromGameControl = m.IsFromGameControl,
+                    PuzzleID = m.PuzzleID,
+                    TeamID = m.TeamID,
+                    PlayerID = m.PlayerID,
+                    ClaimerID = m.ClaimerID,
+                    ClaimerName = m.Claimer?.Name
+                };
+                await messageHub.SendThreadMessage(dto);
+
                 await this.SendEmailNotifications(m, puzzle);
             }
 

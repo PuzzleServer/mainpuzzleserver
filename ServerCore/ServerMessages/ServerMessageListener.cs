@@ -52,6 +52,8 @@ namespace ServerCore.ServerMessages
             subscriptionsToDispose.Add(HubConnection.On(nameof(AllPresenceState), onAllPresenceState));
             var onNotificationMessage = OnNotificationMessageAsync;
             subscriptionsToDispose.Add(HubConnection.On(nameof(Notification), onNotificationMessage));
+            var onThreadMessage = OnThreadMessageAsync;
+            subscriptionsToDispose.Add(HubConnection.On(nameof(ThreadMessageDTO), onThreadMessage));
 
             // We can't wait for this in a constructor, so defer waiting to EnsureInitializedAsync
             initTracker = TryInitAsync(hub);
@@ -122,6 +124,11 @@ namespace ServerCore.ServerMessages
         /// </summary>
         public event Func<Notification, Task> OnNotification;
 
+        /// <summary>
+        /// Fires when any thread message comes in
+        /// </summary>
+        public event Func<ThreadMessageDTO, Task> OnThreadMessage;
+
         private async Task OnPresenceMessageAsync(PresenceMessage message)
         {
             var onPresence = OnPresence;
@@ -148,6 +155,15 @@ namespace ServerCore.ServerMessages
             if (onNotification != null)
             {
                 await onNotification.Invoke(notification);
+            }
+        }
+
+        private async Task OnThreadMessageAsync(ThreadMessageDTO message)
+        {
+            var onThread = OnThreadMessage;
+            if (onThread != null)
+            {
+                await onThread.Invoke(message);
             }
         }
 
