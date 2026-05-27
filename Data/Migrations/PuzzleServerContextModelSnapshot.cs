@@ -285,6 +285,10 @@ namespace Data.Migrations
 
                     b.HasIndex("PuzzleID");
 
+                    b.HasIndex("EventID", "FileType");
+
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("EventID", "FileType"), new[] { "ShortName", "UrlString", "PuzzleID" });
+
                     b.HasIndex("EventID", "ShortName")
                         .IsUnique();
 
@@ -507,9 +511,10 @@ namespace Data.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("AdminID");
-
                     b.HasIndex("EventID");
+
+                    b.HasIndex("AdminID", "EventID")
+                        .IsUnique();
 
                     b.ToTable("EventAdmins");
                 });
@@ -530,9 +535,10 @@ namespace Data.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("AuthorID");
-
                     b.HasIndex("EventID");
+
+                    b.HasIndex("AuthorID", "EventID")
+                        .IsUnique();
 
                     b.ToTable("EventAuthors");
                 });
@@ -828,9 +834,11 @@ namespace Data.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("ProgressLevel");
-
                     b.HasIndex("PuzzleID");
+
+                    b.HasIndex("ProgressLevel", "PuzzleID");
+
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("ProgressLevel", "PuzzleID"), new[] { "ID", "Contents" });
 
                     b.ToTable("Pieces");
                 });
@@ -904,7 +912,7 @@ namespace Data.Migrations
 
                     b.HasIndex("EventId");
 
-                    b.HasIndex("PlayerId");
+                    b.HasIndex("PlayerId", "EventId");
 
                     b.ToTable("Swag");
                 });
@@ -1059,6 +1067,10 @@ namespace Data.Migrations
 
                     b.HasIndex("EventID");
 
+                    b.HasIndex("MinutesOfEventLockout", "Availability", "ID");
+
+                    b.HasIndex("MinutesToAutomaticallySolve", "Availability", "ID");
+
                     b.ToTable("Puzzles");
                 });
 
@@ -1148,7 +1160,8 @@ namespace Data.Migrations
 
                     b.Property<string>("IdentityUserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsGlobalAdmin")
                         .HasColumnType("bit");
@@ -1173,6 +1186,8 @@ namespace Data.Migrations
                         .HasColumnType("bit");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("IdentityUserId");
 
                     b.ToTable("PuzzleUsers");
                 });
@@ -1580,24 +1595,28 @@ namespace Data.Migrations
                     b.Property<int?>("ClassID")
                         .HasColumnType("int");
 
-                    b.Property<int>("Team.ID")
-                        .HasColumnType("int");
+                    b.Property<int>("MemberID")
+                        .HasColumnType("int")
+                        .HasColumnName("User.ID");
+
+                    b.Property<int>("TeamID")
+                        .HasColumnType("int")
+                        .HasColumnName("Team.ID");
 
                     b.Property<int?>("TemporaryClassID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("User.ID")
                         .HasColumnType("int");
 
                     b.HasKey("ID");
 
                     b.HasIndex("ClassID");
 
-                    b.HasIndex("Team.ID");
+                    b.HasIndex("MemberID");
 
                     b.HasIndex("TemporaryClassID");
 
-                    b.HasIndex("User.ID");
+                    b.HasIndex("TeamID", "MemberID");
+
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("TeamID", "MemberID"), new[] { "ID", "ClassID", "TemporaryClassID" });
 
                     b.ToTable("TeamMembers");
                 });
@@ -2169,21 +2188,21 @@ namespace Data.Migrations
                         .WithMany()
                         .HasForeignKey("ClassID");
 
+                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Member")
+                        .WithMany()
+                        .HasForeignKey("MemberID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("ServerCore.DataModel.Team", "Team")
                         .WithMany()
-                        .HasForeignKey("Team.ID")
+                        .HasForeignKey("TeamID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("ServerCore.DataModel.PlayerClass", "TemporaryClass")
                         .WithMany()
                         .HasForeignKey("TemporaryClassID");
-
-                    b.HasOne("ServerCore.DataModel.PuzzleUser", "Member")
-                        .WithMany()
-                        .HasForeignKey("User.ID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.Navigation("Class");
 
