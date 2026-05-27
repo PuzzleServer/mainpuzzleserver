@@ -1,29 +1,28 @@
-﻿@if (SyncablePuzzleLoaded)
+﻿
+<InputRadioGroup Name="TeamSoloToggle" @bind-Value="Paused">
+    <span>
+        @if (!ReadOnly)
+        {
+            <InputRadio @onclick="OnResumeSyncAsync" Value="false" id="resume" class="btn-check" />
+            <label class="btn btn-secondary" role="button" for="resume">&#x1F465; Team Solving</label>
+        }
+    </span>
+    <span>
+        @if (!ReadOnly)
+        {
+            <InputRadio @onclick="OnPauseSyncAsync" Value="true" id="pause" class="btn-check" />
+            <label class="btn btn-secondary" role="button" for="pause">&#x1F464; Solo Solving</label>
+        }
+    </span>
+</InputRadioGroup>
+
+@if (SyncablePuzzleLoaded)
 {
-    if (!Paused)
-    {
-        <span>
-            Last change made: @DisplayLastSyncUtc.LocalDateTime
-            @if (!ReadOnly)
-            {
-                <input type="button" @onclick="OnPauseSyncAsync" value="Switch to Solo Mode" />
-            }
-        </span>
-    }
-    else
-    {
-        <span>
-            Sync paused
-            @if (!ReadOnly)
-            {
-                <input type="button" @onclick="OnResumeSyncAsync" value="Switch to Co-Op Mode" />
-            }
-        </span>
-    }
+    <div>Last change made: @DisplayLastSyncUtc.LocalDateTime</div>
 }
 else
 {
-    <span>Syncing not enabled</span>
+    <div>Team mode is disabled for this puzzle</div>
 }
 
 <script>

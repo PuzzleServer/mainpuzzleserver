@@ -19,11 +19,11 @@
         {
             int remainingUsers = PresentUsers.Count - MaxUsers.Value + 1;
             string remainingUsersString = $"{remainingUsers}+";
-            @(string.Join(" | ", PresentUsers.Take(MaxUsers.Value - 1).Select(u => u.Name)) + " | " + remainingUsersString);
+            @(string.Join(", ", PresentUsers.Take(MaxUsers.Value - 1).Select(u => u.Name)) + ", " + remainingUsersString);
         }
         else
         {
-            @string.Join(" | ", PresentUsers.Select(u => u.Name))
+            @string.Join(", ", PresentUsers.Select(u => u.Name))
         }
     </span>
 </div>
