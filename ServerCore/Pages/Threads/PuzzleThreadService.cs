@@ -85,13 +85,12 @@ namespace ServerCore.Pages.Threads
                 {
                     context.Messages.Add(message);
                     await context.SaveChangesAsync();
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                     isMessageAdded = true;
                 }
                 else
                 {
                     message = newestMessage;
-                    transaction.Commit();
                 }
             }
 

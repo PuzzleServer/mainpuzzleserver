@@ -17,11 +17,8 @@ namespace ServerCore.Pages.Threads
     {
         public const string DeletedMessage = "This message has been deleted";
 
-        private readonly PuzzleThreadService puzzleThreadService;
-
-        public PuzzleThreadModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager, PuzzleThreadService puzzleThreadService) : base(serverContext, userManager)
+        public PuzzleThreadModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager) : base(serverContext, userManager)
         {
-            this.puzzleThreadService = puzzleThreadService;
         }
 
         /// <summary>
@@ -176,22 +173,6 @@ namespace ServerCore.Pages.Threads
             };
 
             return Page();
-        }
-
-        public async Task<IActionResult> OnPostAsync()
-        {
-            await puzzleThreadService.SendMessageAsync(
-                NewMessage.ThreadId,
-                NewMessage.EventID,
-                NewMessage.Subject,
-                NewMessage.PuzzleID.Value,
-                NewMessage.TeamID,
-                NewMessage.PlayerID,
-                NewMessage.IsFromGameControl,
-                LoggedInUser.ID,
-                NewMessage.Text);
-
-            return RedirectToPage("/Threads/PuzzleThread", new { puzzleId = NewMessage.PuzzleID, teamId = NewMessage.TeamID, playerId = NewMessage.PlayerID });
         }
 
         public bool IsAllowedToClaimMessage()
