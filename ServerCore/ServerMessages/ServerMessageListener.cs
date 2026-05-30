@@ -131,11 +131,7 @@ namespace ServerCore.ServerMessages
 
         private async Task OnPresenceMessageAsync(PresenceMessage message)
         {
-            var onPresence = OnPresence;
-            if (onPresence != null)
-            {
-                await onPresence.Invoke(message);
-            }
+            await InvokeAsync(OnPresence, message);
         }
 
         private async Task OnGetPresenceState(GetPresenceState requestMessage)
@@ -151,19 +147,39 @@ namespace ServerCore.ServerMessages
 
         private async Task OnNotificationMessageAsync(Notification notification)
         {
-            var onNotification = OnNotification;
-            if (onNotification != null)
-            {
-                await onNotification.Invoke(notification);
-            }
+            await InvokeAsync(OnNotification, notification);
         }
 
         private async Task OnThreadMessageAsync(ThreadMessageDTO message)
         {
-            var onThread = OnThreadMessage;
-            if (onThread != null)
+            await InvokeAsync(OnThreadMessage, message);
+        }
+
+        private static async Task InvokeAsync<TMessage>(Func<TMessage, Task> handlers, TMessage message)
+        {
+            if (handlers == null)
             {
-                await onThread.Invoke(message);
+                return;
+            }
+
+            List<Task> tasks = new List<Task>();
+            foreach (Func<TMessage, Task> handler in handlers.GetInvocationList())
+            {
+                tasks.Add(InvokeHandlerAsync(handler, message));
+            }
+
+            await Task.WhenAll(tasks);
+        }
+
+        private static async Task InvokeHandlerAsync<TMessage>(Func<TMessage, Task> handler, TMessage message)
+        {
+            try
+            {
+                await handler(message);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine($"Server message handler failed: {e}");
             }
         }
 

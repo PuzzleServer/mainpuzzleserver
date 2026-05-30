@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using ServerCore.ServerMessages;
+using ServerCore.Exceptions;
 
 namespace ServerCore.Pages.Threads
 {
@@ -73,6 +74,10 @@ namespace ServerCore.Pages.Threads
 
         public string errorMessage;
 
+        ElementReference componentRootElement;
+
+        bool shouldRenderLocalTimes;
+
         ThreadMessageDTO LatestMessage => messages.FirstOrDefault();
 
         protected override async Task OnInitializedAsync()
@@ -100,9 +105,10 @@ namespace ServerCore.Pages.Threads
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            if (messages.Count > 0)
+            if (messages.Count > 0 && (firstRender || shouldRenderLocalTimes))
             {
-                await JSRuntime.InvokeVoidAsync("renderLocalTimes");
+                shouldRenderLocalTimes = false;
+                await JSRuntime.InvokeVoidAsync("renderLocalTimes", componentRootElement);
             }
         }
 
@@ -249,7 +255,7 @@ namespace ServerCore.Pages.Threads
                 errorMessage = null;
                 await mutation();
             }
-            catch (Exception ex)
+            catch (UserOperationException ex)
             {
                 errorMessage = ex.Message;
             }
@@ -270,6 +276,8 @@ namespace ServerCore.Pages.Threads
             messages = messages
                 .OrderByDescending(existingMessage => existingMessage.CreatedDateTimeInUtc)
                 .ToList();
+
+            shouldRenderLocalTimes = true;
         }
 
         public void Dispose()

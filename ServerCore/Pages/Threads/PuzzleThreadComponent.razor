@@ -1,98 +1,100 @@
 @using Microsoft.AspNetCore.Components
 @using ServerCore.Helpers
 
-@if (CanSendMessage)
-{
-    <div class="row">
-        <div class="col-md-4" style="width:100%">
-            <div class="form-group message-subtitle">
-                @if (IsEmailOnlyMode)
-                {
-                    <p>Use this message to fully explain your thought process so we know you're not randomly spamming attempts!</p>
-                }
-                else
-                {
-                    <p>The more details you add here, the more helpful the responses you'll get will be!</p>
-                }
-                <textarea @bind="NewMessageText" class="form-control message-subtitle" rows="4" style="width:75%" placeholder="Type message here" autocomplete="off"></textarea>
-            </div>
-            <div class="form-group message-subtitle">
-                <input type="button" value="Send" class="btn btn-default" @onclick="SendMessageAsync" />
-            </div>
-        </div>
-    </div>
-}
-else
-{
-    <div>No help is needed because answers are now available!</div>
-}
-
-@if (ShouldShowClaimAction())
-{
-    <br />
-    <button type="button" @onclick="ClaimLatestMessageAsync">Mark as read</button>
-}
-else if (ShouldShowUnclaimAction())
-{
-    <br />
-    <p>Question has already been marked as read by @LatestMessage.ClaimerName</p>
-    <button type="button" @onclick="UnclaimLatestMessageAsync">Undo mark as read</button>
-}
-
-@if (!string.IsNullOrEmpty(errorMessage))
-{
-    <p class="text-danger">@errorMessage</p>
-}
-
-@if (messages.Count > 0)
-{
-    <div>
-    @foreach (var message in messages)
+<div @ref="componentRootElement">
+    @if (CanSendMessage)
     {
-        var classString = "message-container";
-        if (message.IsFromGameControl)
-        {
-            classString += " message-game-control";
-        }
-
-        <div class="@classString">
-            <span class="message-subtitle">[@((MarkupString)TimeHelper.LocalTime(message.CreatedDateTimeInUtc))] @GetSenderName(message)</span><br />
-            @if (IsAllowedToEditMessage(message) && IsEditing(message))
-            {
-                <div id="TextAreaEdit_@message.ID">
-                    <div class="form-group message-main-content">
-                        <textarea class="form-control message-subtitle" style="width:100%" @bind="editTexts[message.ID]" rows="4" autocomplete="off"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <input type="button" value="Update" class="btn btn-default" @onclick="() => EditMessageAsync(message)" /> | <a role="button" class="message-subtitle" style="text-decoration:underline;color:@GetActionColor(message)" @onclick="() => CancelEdit(message)">Cancel</a>
-                    </div>
+        <div class="row">
+            <div class="col-md-4" style="width:100%">
+                <div class="form-group message-subtitle">
+                    @if (IsEmailOnlyMode)
+                    {
+                        <p>Use this message to fully explain your thought process so we know you're not randomly spamming attempts!</p>
+                    }
+                    else
+                    {
+                        <p>The more details you add here, the more helpful the responses you'll get will be!</p>
+                    }
+                    <textarea @bind="NewMessageText" class="form-control message-subtitle" rows="4" style="width:75%" placeholder="Type message here" autocomplete="off"></textarea>
                 </div>
-            }
-            <div id="MessageText_@message.ID" class="@(IsEditing(message) ? "hidden" : null)">
-                @if (message.Text == DeletedMessageText)
-                {
-                    <p class="message-main-content" style="white-space: pre-wrap;"><i>@message.Text</i></p>
-                }
-                else
-                {
-                    <p class="message-main-content" style="white-space: pre-wrap;">@message.Text</p>
-                }
-                <span>
-                    @if (IsAllowedToEditMessage(message))
-                    {
-                        <a role="button" class="message-subtitle" style="text-decoration:underline;color:@GetActionColor(message)" @onclick="() => StartEdit(message)">Edit</a>
-                    }
-                    @if (IsAllowedToEditMessage(message) && IsAllowedToDeleteMessage(message))
-                    {
-                        <span>&nbsp;|&nbsp;</span>
-                    }
-                    @if (IsAllowedToDeleteMessage(message))
-                    {
-                        <a role="button" class="message-subtitle" style="color:@GetActionColor(message)" @onclick="() => DeleteMessageAsync(message)">Delete</a>
-                    }
-                </span>
+                <div class="form-group message-subtitle">
+                    <input type="button" value="Send" class="btn btn-default" @onclick="SendMessageAsync" />
+                </div>
             </div>
         </div>
     }
-    </div>
-}
+    else
+    {
+        <div>No help is needed because answers are now available!</div>
+    }
+
+    @if (ShouldShowClaimAction())
+    {
+        <br />
+        <button type="button" @onclick="ClaimLatestMessageAsync">Mark as read</button>
+    }
+    else if (ShouldShowUnclaimAction())
+    {
+        <br />
+        <p>Question has already been marked as read by @LatestMessage.ClaimerName</p>
+        <button type="button" @onclick="UnclaimLatestMessageAsync">Undo mark as read</button>
+    }
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <p class="text-danger">@errorMessage</p>
+    }
+
+    @if (messages.Count > 0)
+    {
+        <div>
+        @foreach (var message in messages)
+        {
+            var classString = "message-container";
+            if (message.IsFromGameControl)
+            {
+                classString += " message-game-control";
+            }
+
+            <div class="@classString">
+                <span class="message-subtitle">[@((MarkupString)TimeHelper.LocalTime(message.CreatedDateTimeInUtc))] @GetSenderName(message)</span><br />
+                @if (IsAllowedToEditMessage(message) && IsEditing(message))
+                {
+                    <div id="TextAreaEdit_@message.ID">
+                        <div class="form-group message-main-content">
+                            <textarea class="form-control message-subtitle" style="width:100%" @bind="editTexts[message.ID]" rows="4" autocomplete="off"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <input type="button" value="Update" class="btn btn-default" @onclick="() => EditMessageAsync(message)" /> | <a role="button" class="message-subtitle" style="text-decoration:underline;color:@GetActionColor(message)" @onclick="() => CancelEdit(message)">Cancel</a>
+                        </div>
+                    </div>
+                }
+                <div id="MessageText_@message.ID" class="@(IsEditing(message) ? "hidden" : null)">
+                    @if (message.Text == DeletedMessageText)
+                    {
+                        <p class="message-main-content" style="white-space: pre-wrap;"><i>@message.Text</i></p>
+                    }
+                    else
+                    {
+                        <p class="message-main-content" style="white-space: pre-wrap;">@message.Text</p>
+                    }
+                    <span>
+                        @if (IsAllowedToEditMessage(message))
+                        {
+                            <a role="button" class="message-subtitle" style="text-decoration:underline;color:@GetActionColor(message)" @onclick="() => StartEdit(message)">Edit</a>
+                        }
+                        @if (IsAllowedToEditMessage(message) && IsAllowedToDeleteMessage(message))
+                        {
+                            <span>&nbsp;|&nbsp;</span>
+                        }
+                        @if (IsAllowedToDeleteMessage(message))
+                        {
+                            <a role="button" class="message-subtitle" style="color:@GetActionColor(message)" @onclick="() => DeleteMessageAsync(message)">Delete</a>
+                        }
+                    </span>
+                </div>
+            </div>
+        }
+        </div>
+    }
+</div>

@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using NuGet.Packaging;
 using ServerCore.DataModel;
+using ServerCore.Exceptions;
 using ServerCore.ServerMessages;
 
 namespace ServerCore.Pages.Threads
@@ -32,13 +33,13 @@ namespace ServerCore.Pages.Threads
 
             if (eventObj.AreAnswersAvailableNow)
             {
-                throw new InvalidOperationException("Answers are already available.");
+                throw new UserOperationException("Answers are already available.");
             }
 
             ValidationResult validationResult = IsMessageTextValid(text);
             if (!validationResult.IsValid)
             {
-                throw new InvalidOperationException(validationResult.FailureReason);
+                throw new UserOperationException(validationResult.FailureReason);
             }
 
             Puzzle puzzle = await context.Puzzles.Where(p => p.ID == puzzleId).FirstOrDefaultAsync();
@@ -111,13 +112,13 @@ namespace ServerCore.Pages.Threads
             Message message = await GetMessageAsync(messageId);
             if (message == null || !await IsAllowedToModifyMessageAsync(message, currentUserId))
             {
-                throw new InvalidOperationException("You are not allowed to edit this message.");
+                throw new UserOperationException("You are not allowed to edit this message.");
             }
 
             ValidationResult validationResult = IsMessageTextValid(text);
             if (!validationResult.IsValid)
             {
-                throw new InvalidOperationException($"Edit failed because {validationResult.FailureReason}");
+                throw new UserOperationException($"Edit failed because {validationResult.FailureReason}");
             }
 
             message.Text = text;
@@ -132,7 +133,7 @@ namespace ServerCore.Pages.Threads
             Message message = await GetMessageAsync(messageId);
             if (message == null || !await IsAllowedToModifyMessageAsync(message, currentUserId))
             {
-                throw new InvalidOperationException("You are not allowed to delete this message.");
+                throw new UserOperationException("You are not allowed to delete this message.");
             }
 
             message.Text = PuzzleThreadModel.DeletedMessage;
@@ -147,11 +148,10 @@ namespace ServerCore.Pages.Threads
             Message message = await GetMessageAsync(messageId);
             if (message == null || !await IsAllowedToClaimMessageAsync(message, currentUserId) || message.ClaimerID.HasValue)
             {
-                throw new InvalidOperationException("You cannot claim this thread! It may have already been claimed.");
+                throw new UserOperationException("You cannot claim this thread! It may have already been claimed.");
             }
 
             message.ClaimerID = currentUserId;
-            context.Messages.Update(message);
             await context.SaveChangesAsync();
 
             return await BroadcastMessageAsync(message.ID);
@@ -162,11 +162,10 @@ namespace ServerCore.Pages.Threads
             Message message = await GetMessageAsync(messageId);
             if (message == null || !await IsAllowedToClaimMessageAsync(message, currentUserId))
             {
-                throw new InvalidOperationException("You are not allowed to unclaim this thread.");
+                throw new UserOperationException("You are not allowed to unclaim this thread.");
             }
 
             message.ClaimerID = null;
-            context.Messages.Update(message);
             await context.SaveChangesAsync();
 
             return await BroadcastMessageAsync(message.ID);
@@ -205,14 +204,14 @@ namespace ServerCore.Pages.Threads
                     return;
                 }
 
-                throw new InvalidOperationException("You are not allowed to post to this thread.");
+                throw new UserOperationException("You are not allowed to post to this thread.");
             }
 
             if (puzzle.IsForSinglePlayer)
             {
                 if (playerId != senderId)
                 {
-                    throw new InvalidOperationException("You are not allowed to post to this thread.");
+                    throw new UserOperationException("You are not allowed to post to this thread.");
                 }
             }
             else
@@ -222,7 +221,7 @@ namespace ServerCore.Pages.Threads
                     .AnyAsync();
                 if (!isOnTeam)
                 {
-                    throw new InvalidOperationException("You are not allowed to post to this thread.");
+                    throw new UserOperationException("You are not allowed to post to this thread.");
                 }
             }
         }
