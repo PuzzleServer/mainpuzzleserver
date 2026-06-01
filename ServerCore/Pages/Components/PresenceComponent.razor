@@ -9,8 +9,28 @@
 @inject IMemoryCache MemoryCache
 @inject PresenceStore PresenceStore
 
-<div>
+<style>
+    .presence-info {
+        font-size: 12px;
+        color: #555;
+        padding-top: 8px;
+    }
+
+    .presence-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #4caf50;
+        box-shadow: 0 0 0 2px rgba(76,175,80,0.3);
+        vertical-align: middle;
+        margin-right: 4px;
+    }
+</style>
+
+<div class="presence-info">
     <span>
+        <span class="presence-dot"></span>
         @if(!ShowPresenceOnly)
         {
             <b>Who&apos;s Here: </b>

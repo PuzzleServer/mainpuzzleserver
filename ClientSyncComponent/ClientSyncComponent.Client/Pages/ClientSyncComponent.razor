@@ -1,29 +1,107 @@
-﻿
-<InputRadioGroup Name="TeamSoloToggle" @bind-Value="Paused">
-    <span>
-        @if (!ReadOnly)
-        {
-            <InputRadio @onclick="OnResumeSyncAsync" Value="false" id="resume" class="btn-check" />
-            <label class="btn btn-secondary" role="button" for="resume">&#x1F465; Team Solving</label>
-        }
-    </span>
-    <span>
-        @if (!ReadOnly)
-        {
-            <InputRadio @onclick="OnPauseSyncAsync" Value="true" id="pause" class="btn-check" />
-            <label class="btn btn-secondary" role="button" for="pause">&#x1F464; Solo Solving</label>
-        }
-    </span>
-</InputRadioGroup>
+﻿<style>
 
+    .pill-toggle-stack {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 4px;
+    }
+
+    .pill-toggle {
+        display: inline-flex;
+        background: #e9ecef;
+        border-radius: 24px;
+        padding: 3px;
+    }
+
+    .pill-toggle input {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        border: none;
+        background: transparent;
+        padding: 8px 20px;
+        border-radius: 22px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #666;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: inherit;
+    }
+
+    .pill-toggle input:hover:not(.active) {
+        color: #333;
+        background: rgba(255,255,255,0.4);
+    }
+
+    .pill-toggle input.active {
+        background: #fff;
+        color: #1a1a1a;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+        font-weight: 600;
+    }
+
+    .pill-toggle .pill-icon {
+        font-size: 16px;
+        line-height: 1;
+    }
+
+    .pill-toggle .pill-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #293d2c;
+        color: #fff;
+        font-size: 10px;
+        font-weight: 700;
+        min-width: 18px;
+        height: 18px;
+        border-radius: 9px;
+        padding: 0 5px;
+    }
+
+    .sync-ts {
+        font-size: 11px;
+        color: #999;
+    }
+
+    .ts-label {
+        color: #aaa;
+    }
+</style>
+
+<div class="pill-toggle-stack">
+    <div class="pill-toggle">
+    <InputRadioGroup Name="TeamSoloToggle" @bind-Value="Paused">
+        <span>
+            @if (!ReadOnly)
+            {
+                <InputRadio @onclick="OnResumeSyncAsync" Value="false" id="resume" class="btn-check" />
+                <label class="btn btn-secondary" role="button" for="resume"><span class="pill-icon">&#x1F465;</span> Team Solving</label>
+            }
+        </span>
+        <span>
+            @if (!ReadOnly)
+            {
+                <InputRadio @onclick="OnPauseSyncAsync" Value="true" id="pause" class="btn-check" />
+                <label class="btn btn-secondary" role="button" for="pause"><span class="pill-icon">&#x1F464;</span> Solo Solving</label>
+            }
+        </span>
+    </InputRadioGroup>
+    </div>
+</div>
+
+<div class="sync-ts">
 @if (SyncablePuzzleLoaded)
 {
-    <div>Last change made: @DisplayLastSyncUtc.LocalDateTime</div>
+    <div>Last change made: <span class="sync-ts">@DisplayLastSyncUtc.LocalDateTime</span></div>
 }
 else
 {
     <div>Team mode is disabled for this puzzle</div>
 }
+</div>
 
 <script>
     let hostComponent = null;
