@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
 using ServerCore.ModelBases;
+using Microsoft.IdentityModel.Tokens;
 
 namespace ServerCore.Pages.Teams
 {
@@ -325,13 +326,20 @@ namespace ServerCore.Pages.Teams
 
             string compositeLunch = null;
 
+            if (!Event.CanChangeLunch || (!Lunches.IsNullOrEmpty() && Lunches.Count >= EditableLunches))
+            {
+                return Forbid("Lunches cannot be changed at this time.");
+            }
+
             for (int i = 0; i < Event.LunchOptionsPerLunch; i++)
             {
                 string option = Request.Form[$"NewLunch[{i}]"];
                 if (String.IsNullOrWhiteSpace(option)) continue;
                 if (i > 0 && option == "none") continue;
+                if (!LunchOptions.Contains(option)) return NotFound("Lunch selection was not found, please select an option from the list.");
                 compositeLunch = compositeLunch == null ? option : compositeLunch + "+" + option;
             }
+
             if (compositeLunch != null)
             {
                 TeamLunch teamLunch = new() { Lunch = compositeLunch, TeamId = teamId };
