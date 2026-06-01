@@ -14,7 +14,11 @@
         padding: 3px;
     }
 
-    .pill-toggle input {
+    .pill-toggle .btn-check {
+        display: none;
+    }
+
+    .pill-toggle label.pill-btn {
         display: inline-flex;
         align-items: center;
         gap: 7px;
@@ -28,14 +32,15 @@
         cursor: pointer;
         transition: all 0.2s ease;
         font-family: inherit;
+        margin: 0;
     }
 
-    .pill-toggle input:hover:not(.active) {
+    .pill-toggle label.pill-btn:hover {
         color: #333;
         background: rgba(255,255,255,0.4);
     }
 
-    .pill-toggle input.active {
+    .pill-toggle .btn-check:checked + label.pill-btn {
         background: #fff;
         color: #1a1a1a;
         box-shadow: 0 1px 4px rgba(0,0,0,0.15);
@@ -47,19 +52,6 @@
         line-height: 1;
     }
 
-    .pill-toggle .pill-badge {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        background: #293d2c;
-        color: #fff;
-        font-size: 10px;
-        font-weight: 700;
-        min-width: 18px;
-        height: 18px;
-        border-radius: 9px;
-        padding: 0 5px;
-    }
 
     .sync-ts {
         font-size: 11px;
@@ -74,22 +66,14 @@
 
 <div class="pill-toggle-stack">
     <div class="pill-toggle">
-        <InputRadioGroup Name="TeamSoloToggle" @bind-Value="Paused">
-            <span>
-                @if (!ReadOnly)
-                {
-                    <InputRadio @onclick="OnResumeSyncAsync" Value="false" id="resume" class="btn-check" />
-                    <label class="btn btn-secondary" role="button" for="resume"><span class="pill-icon">&#x1F465;</span> Team Solving</label>
-                }
-            </span>
-            <span>
-                @if (!ReadOnly)
-                {
-                    <InputRadio @onclick="OnPauseSyncAsync" Value="true" id="pause" class="btn-check" />
-                    <label class="btn btn-secondary" role="button" for="pause"><span class="pill-icon">&#x1F464;</span> Solo Solving</label>
-                }
-            </span>
-        </InputRadioGroup>
+        @if (!ReadOnly)
+        {
+            <input type="radio" name="TeamSoloToggle" id="resume" class="btn-check" checked="@(!Paused)" @onchange="OnResumeSyncAsync" />
+            <label class="pill-btn" for="resume"><span class="pill-icon">&#x1F465;</span> Team Solving</label>
+
+            <input type="radio" name="TeamSoloToggle" id="pause" class="btn-check" checked="@Paused" @onchange="OnPauseSyncAsync" />
+            <label class="pill-btn" for="pause"><span class="pill-icon">&#x1F464;</span> Solo Solving</label>
+        }
     </div>
 
     <div class="sync-ts">
