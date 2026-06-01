@@ -175,6 +175,46 @@
         margin-right: auto;
     }
 
+    .quick-actions {
+        display: flex;
+        gap: 6px;
+        padding: 0 28px;
+        margin-bottom: 14px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    .quick-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 12px;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        background: #fafafa;
+        color: #555;
+        font-size: 12px;
+        font-weight: 500;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        white-space: nowrap;
+    }
+
+    .quick-action:hover {
+        background: #f0f0f0;
+        border-color: #bbb;
+        color: #222;
+        text-decoration: none;
+    }
+
+    .quick-action-icon {
+        font-size: 14px;
+        line-height: 1;
+        flex-shrink: 0;
+    }
+
+
     @@media (max-width: 750px) {
         .title-block { grid-template-columns: 1fr; }
         .title-block .flexwrapper { flex-wrap: wrap; }
@@ -306,10 +346,10 @@
                     }
                 }
             </div>
-            <div class="inlinewrapper">
+            <div class="inlinewrapper quick-actions">
                 @if (Model.Event.HasPlayerClasses)
                 {
-                    <div><b>@Model.Event.PlayerClassName: @Model.ActivePlayerClassDisplay - </b> <a asp-page="/Teams/Details" asp-route-teamId="@Model.Team.ID" target="_blank">@Model.Event.PlayerClassName Override</a></div>
+                    <div><b>@Model.Event.PlayerClassName: @Model.ActivePlayerClassDisplay - </b> <a asp-page="/Teams/Details" asp-route-teamId="@Model.Team.ID" target="_blank" class="btn quck-action">@Model.Event.PlayerClassName Override</a></div>
                 }
 
                 <div class="d-flex justify-content-end">
@@ -317,34 +357,34 @@
                     {
                         if (Model.Puzzle.IsForSinglePlayer)
                         {
-                            <div><a asp-page="/Puzzles/SinglePlayerPuzzleHints" asp-route-puzzleid="Model.Puzzle.ID" target="_blank" class="btn btn-secondary" role="button">&#x1F4AC; Get Help</a></div>
+                        <div><a asp-page="/Puzzles/SinglePlayerPuzzleHints" asp-route-puzzleid="Model.Puzzle.ID" target="_blank" class="btn quick-action" role="button"><span class="quick-action-icon">&#x1F4AC;</span> Get Help</a></div>
                         }
                         else
                         {
-                            <div><a asp-page="/Teams/Hints" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-teamId="@Model.Team.ID" target="_blank" class="btn btn-secondary" role="button">&#x1F4AC; Get Help</a></div>
+                            <div><a asp-page="/Teams/Hints" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-teamId="@Model.Team.ID" target="_blank" class="btn quick-action" role="button"><span class="quick-action-icon">&#x1F4AC;</span> Get Help</a></div>
                         }
                     }
                     else if (!Model.PuzzleState.IsEmailOnlyMode)
                     {
-                        <div><a asp-Page="/Threads/PuzzleThread" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-teamId="@Model.Team?.ID" asp-route-playerId="@Model.LoggedInUser.ID" class="btn btn-secondary" role="button">&#x1F4AC; Get Help</a></div>
+                        <div><a asp-Page="/Threads/PuzzleThread" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-teamId="@Model.Team?.ID" asp-route-playerId="@Model.LoggedInUser.ID" class="btn quick-action" role="button"><span class="quick-action-icon">&#x1F4AC;</span> Get Help</a></div>
                     }
 
                     @if (Model.Event.AllowFeedback)
                     {
-                        <div><a asp-Page="/Puzzles/SubmitFeedback" asp-route-puzzleid="@Model.Puzzle.ID" target="_blank" class="btn btn-secondary" role="button">&#x1F4DD; Give Feedback</a></div>
+                    <div><a asp-Page="/Puzzles/SubmitFeedback" asp-route-puzzleid="@Model.Puzzle.ID" target="_blank" class="btn quick-action" role="button"><span class="quick-action-icon">&#x1F4DD;</span> Give Feedback</a></div>
                     }
 
                     @if (embedType == 3) // HTML files
                     {
-                        <div><span class="print-link btn btn-secondary" role="button">&#x1F5B6;&#xFE0F; Print Puzzle</span></div>
+                        <div><span class="print-link btn quick-action" role="button"><span class="quick-action-icon">&#x1F5B6;&#xFE0F;</span> Print Puzzle</span></div>
                     }
                     else if (embedType == 4) // images
                     {
-                        <div><a href="@puzzleFilePath" target="_blank" class="btn btn-secondary" role="button">&#x1F5B6; Print Puzzle</a></div>
+                    <div><a href="@puzzleFilePath" target="_blank" class="btn quick-action" role="button"><span class="quick-action-icon">&#x1F5B6;</span> Print Puzzle</a></div>
                     }
                     else if (embedType == 1) // PDFs
                     {
-                        <div><a href="@puzzleFilePath" target="_blank" download class="btn btn-secondary" role="button">&#x1F5B6; Print Puzzle</a></div>
+                    <div><a href="@puzzleFilePath" target="_blank" download class="btn quick-action" role="button"><span class="quick-action-icon">&#x1F5B6;</span> Print Puzzle</a></div>
                     }
                 </div>
                 
