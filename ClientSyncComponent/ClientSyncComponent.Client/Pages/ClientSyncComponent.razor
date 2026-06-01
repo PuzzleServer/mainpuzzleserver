@@ -64,6 +64,7 @@
     .sync-ts {
         font-size: 11px;
         color: #999;
+        text-align: right;
     }
 
     .ts-label {
@@ -73,34 +74,34 @@
 
 <div class="pill-toggle-stack">
     <div class="pill-toggle">
-    <InputRadioGroup Name="TeamSoloToggle" @bind-Value="Paused">
-        <span>
-            @if (!ReadOnly)
-            {
-                <InputRadio @onclick="OnResumeSyncAsync" Value="false" id="resume" class="btn-check" />
-                <label class="btn btn-secondary" role="button" for="resume"><span class="pill-icon">&#x1F465;</span> Team Solving</label>
-            }
-        </span>
-        <span>
-            @if (!ReadOnly)
-            {
-                <InputRadio @onclick="OnPauseSyncAsync" Value="true" id="pause" class="btn-check" />
-                <label class="btn btn-secondary" role="button" for="pause"><span class="pill-icon">&#x1F464;</span> Solo Solving</label>
-            }
-        </span>
-    </InputRadioGroup>
+        <InputRadioGroup Name="TeamSoloToggle" @bind-Value="Paused">
+            <span>
+                @if (!ReadOnly)
+                {
+                    <InputRadio @onclick="OnResumeSyncAsync" Value="false" id="resume" class="btn-check" />
+                    <label class="btn btn-secondary" role="button" for="resume"><span class="pill-icon">&#x1F465;</span> Team Solving</label>
+                }
+            </span>
+            <span>
+                @if (!ReadOnly)
+                {
+                    <InputRadio @onclick="OnPauseSyncAsync" Value="true" id="pause" class="btn-check" />
+                    <label class="btn btn-secondary" role="button" for="pause"><span class="pill-icon">&#x1F464;</span> Solo Solving</label>
+                }
+            </span>
+        </InputRadioGroup>
     </div>
-</div>
 
-<div class="sync-ts">
-@if (SyncablePuzzleLoaded)
-{
-    <div>Last change made: <span class="sync-ts">@DisplayLastSyncUtc.LocalDateTime</span></div>
-}
-else
-{
-    <div>Team mode is disabled for this puzzle</div>
-}
+    <div class="sync-ts">
+        @if (SyncablePuzzleLoaded)
+        {
+            <div>Last change made: <span class="sync-ts">@DisplayLastSyncUtc.LocalDateTime</span></div>
+        }
+        else
+        {
+            <div>Team mode is disabled for this puzzle</div>
+        }
+    </div>
 </div>
 
 <script>
