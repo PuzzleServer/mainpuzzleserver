@@ -52,6 +52,8 @@ namespace ServerCore.ServerMessages
             subscriptionsToDispose.Add(HubConnection.On(nameof(AllPresenceState), onAllPresenceState));
             var onNotificationMessage = OnNotificationMessageAsync;
             subscriptionsToDispose.Add(HubConnection.On(nameof(Notification), onNotificationMessage));
+            var onThreadMessage = OnThreadMessageAsync;
+            subscriptionsToDispose.Add(HubConnection.On(nameof(ThreadMessageDTO), onThreadMessage));
 
             // We can't wait for this in a constructor, so defer waiting to EnsureInitializedAsync
             initTracker = TryInitAsync(hub);
@@ -122,13 +124,14 @@ namespace ServerCore.ServerMessages
         /// </summary>
         public event Func<Notification, Task> OnNotification;
 
+        /// <summary>
+        /// Fires when any thread message comes in
+        /// </summary>
+        public event Func<ThreadMessageDTO, Task> OnThreadMessage;
+
         private async Task OnPresenceMessageAsync(PresenceMessage message)
         {
-            var onPresence = OnPresence;
-            if (onPresence != null)
-            {
-                await onPresence.Invoke(message);
-            }
+            await InvokeAsync(OnPresence, message);
         }
 
         private async Task OnGetPresenceState(GetPresenceState requestMessage)
@@ -144,10 +147,39 @@ namespace ServerCore.ServerMessages
 
         private async Task OnNotificationMessageAsync(Notification notification)
         {
-            var onNotification = OnNotification;
-            if (onNotification != null)
+            await InvokeAsync(OnNotification, notification);
+        }
+
+        private async Task OnThreadMessageAsync(ThreadMessageDTO message)
+        {
+            await InvokeAsync(OnThreadMessage, message);
+        }
+
+        private static async Task InvokeAsync<TMessage>(Func<TMessage, Task> handlers, TMessage message)
+        {
+            if (handlers == null)
             {
-                await onNotification.Invoke(notification);
+                return;
+            }
+
+            List<Task> tasks = new List<Task>();
+            foreach (Func<TMessage, Task> handler in handlers.GetInvocationList())
+            {
+                tasks.Add(InvokeHandlerAsync(handler, message));
+            }
+
+            await Task.WhenAll(tasks);
+        }
+
+        private static async Task InvokeHandlerAsync<TMessage>(Func<TMessage, Task> handler, TMessage message)
+        {
+            try
+            {
+                await handler(message);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine($"Server message handler failed: {e}");
             }
         }
 

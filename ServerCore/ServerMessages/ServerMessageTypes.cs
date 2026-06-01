@@ -113,3 +113,34 @@ public class Notification
     /// </summary>
     public bool IsCritical { get; set; }
 }
+
+/// <summary>
+/// Minimal payload for broadcasting thread messages between servers and to Blazor components.
+/// Kept DTO-only (Data Transfer Object) to avoid EF navigation cycles.
+/// </summary>
+public class ThreadMessageDTO
+{
+    public int ID { get; set; }
+
+    public string ThreadId { get; set; }
+
+    public string Text { get; set; }
+
+    public DateTime CreatedDateTimeInUtc { get; set; }
+
+    public string SenderName { get; set; }
+
+    public int SenderID { get; set; }
+
+    public bool IsFromGameControl { get; set; }
+
+    public int? PuzzleID { get; set; }
+
+    public int? TeamID { get; set; }
+
+    public int? PlayerID { get; set; }
+
+    public int? ClaimerID { get; set; }
+
+    public string ClaimerName { get; set; }
+}

@@ -73,5 +73,12 @@ namespace ServerCore.ServerMessages
         {
             await hub.Clients.Groups(ServersGroup).SendAsync(nameof(Notification), new Notification() { Time = DateTime.UtcNow, UserID = user.ID, Title = title, Content = content, LinkUrl = linkUrl, IsCritical = isCritical });
         }
+            
+        // Broadcast a thread message payload so listening server-side components can forward to their connected Blazor components.
+        // Use the actual DTO name as the message name so nameof(...) matches a defined type.
+        public static async Task SendThreadMessage(this IHubContext<ServerMessageHub> hub, ThreadMessageDTO message)
+        {
+            await hub.Clients.Groups(ServersGroup).SendAsync(nameof(ThreadMessageDTO), message);
+        }
     }
 }
