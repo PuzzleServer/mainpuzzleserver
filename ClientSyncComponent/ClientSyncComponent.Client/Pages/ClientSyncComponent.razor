@@ -64,28 +64,29 @@
     }
 </style>
 
-<div class="pill-toggle-stack">
-    <div class="pill-toggle">
-        @if (!ReadOnly)
-        {
-            <input type="radio" name="TeamSoloToggle" id="resume" class="btn-check" checked="@(!Paused)" @onchange="OnResumeSyncAsync" />
-            <label class="pill-btn" for="resume"><span class="pill-icon">&#x1F465;</span> Team Solving</label>
+    <div class="pill-toggle-stack">
+@if (SyncablePuzzleLoaded)
+{
+        <div class="pill-toggle">
+            @if (!ReadOnly)
+            {
+                <input type="radio" name="TeamSoloToggle" id="resume" class="btn-check" checked="@(!Paused)" @onchange="OnResumeSyncAsync" />
+                <label class="pill-btn" for="resume"><span class="pill-icon">&#x1F465;</span> Team Solving</label>
 
-            <input type="radio" name="TeamSoloToggle" id="pause" class="btn-check" checked="@Paused" @onchange="OnPauseSyncAsync" />
-            <label class="pill-btn" for="pause"><span class="pill-icon">&#x1F464;</span> Solo Solving</label>
-        }
-    </div>
+                <input type="radio" name="TeamSoloToggle" id="pause" class="btn-check" checked="@Paused" @onchange="OnPauseSyncAsync" />
+                <label class="pill-btn" for="pause"><span class="pill-icon">&#x1F464;</span> Solo Solving</label>
+            }
+        </div>
 
-    <div class="sync-ts">
-        @if (SyncablePuzzleLoaded)
-        {
-            <div>Last change made: <span class="sync-ts">@DisplayLastSyncUtc.LocalDateTime</span></div>
-        }
-        else
-        {
-            <div>Team mode is disabled for this puzzle</div>
-        }
-    </div>
+        <div class="sync-ts">
+                <div>Last change made: <span class="sync-ts">@DisplayLastSyncUtc.LocalDateTime</span></div>                
+        </div>
+}
+else
+{
+    <div class="sync-ts">Team mode is disabled for this puzzle</div>
+}
+
 </div>
 
 <script>
