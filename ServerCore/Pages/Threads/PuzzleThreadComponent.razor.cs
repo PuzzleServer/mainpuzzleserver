@@ -78,6 +78,8 @@ namespace ServerCore.Pages.Threads
 
         bool shouldRenderLocalTimes;
 
+        bool isMutationRunning;
+
         ThreadMessageDTO LatestMessage => messages.FirstOrDefault();
 
         protected override async Task OnInitializedAsync()
@@ -250,14 +252,25 @@ namespace ServerCore.Pages.Threads
 
         async Task RunMutationAsync(Func<Task> mutation)
         {
+            if (isMutationRunning)
+            {
+                errorMessage = "Please wait for the current action to finish.";
+                return;
+            }
+
             try
             {
+                isMutationRunning = true;
                 errorMessage = null;
                 await mutation();
             }
             catch (UserOperationException ex)
             {
                 errorMessage = ex.Message;
+            }
+            finally
+            {
+                isMutationRunning = false;
             }
         }
 
@@ -286,3 +299,4 @@ namespace ServerCore.Pages.Threads
         }
     }
 }
+

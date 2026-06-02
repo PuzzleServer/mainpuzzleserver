@@ -14,17 +14,19 @@ namespace ServerCore.Pages.Threads
 {
     public class PuzzleThreadService
     {
-        private readonly PuzzleServerContext context;
+        private readonly IDbContextFactory<PuzzleServerContext> contextFactory;
         private readonly IHubContext<ServerMessageHub> messageHub;
 
-        public PuzzleThreadService(PuzzleServerContext context, IHubContext<ServerMessageHub> messageHub)
+        public PuzzleThreadService(IDbContextFactory<PuzzleServerContext> contextFactory, IHubContext<ServerMessageHub> messageHub)
         {
-            this.context = context;
+            this.contextFactory = contextFactory;
             this.messageHub = messageHub;
         }
 
         public async Task<ThreadMessageDTO> SendMessageAsync(string threadId, int eventId, string subject, int puzzleId, int? teamId, int? playerId, bool isFromGameControl, int senderId, string text)
         {
+            await using PuzzleServerContext context = await contextFactory.CreateDbContextAsync();
+
             Event eventObj = await context.Events.Where(e => e.ID == eventId).FirstOrDefaultAsync();
             if (eventObj == null)
             {
@@ -48,7 +50,7 @@ namespace ServerCore.Pages.Threads
                 throw new InvalidOperationException("Puzzle not found.");
             }
 
-            await ValidatePostPermissionAsync(eventObj, puzzle, isFromGameControl, senderId, teamId, playerId);
+            await ValidatePostPermissionAsync(context, eventObj, puzzle, isFromGameControl, senderId, teamId, playerId);
 
             PuzzleUser sender = await context.PuzzleUsers.Where(user => user.ID == senderId).FirstOrDefaultAsync();
             if (sender == null)
@@ -74,7 +76,7 @@ namespace ServerCore.Pages.Threads
             message.PlayerID = playerId;
 
             bool isMessageAdded = false;
-            using (IDbContextTransaction transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable))
+            await using (IDbContextTransaction transaction = await context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable))
             {
                 Message newestMessage = await context.Messages
                     .Where(existingMessage => existingMessage.ThreadId == threadId)
@@ -94,13 +96,13 @@ namespace ServerCore.Pages.Threads
                 }
             }
 
-            ThreadMessageDTO dto = await BroadcastMessageAsync(message.ID);
+            ThreadMessageDTO dto = await BroadcastMessageAsync(context, message.ID);
 
             if (isMessageAdded)
             {
-                Message savedMessage = await GetMessageAsync(message.ID);
+                Message savedMessage = await GetMessageAsync(context, message.ID);
                 savedMessage.Event = eventObj;
-                await SendEmailNotifications(savedMessage, puzzle, eventObj);
+                await SendEmailNotifications(context, savedMessage, puzzle, eventObj);
             }
 
             return dto;
@@ -108,8 +110,10 @@ namespace ServerCore.Pages.Threads
 
         public async Task<ThreadMessageDTO> EditMessageAsync(int messageId, int currentUserId, string text)
         {
-            Message message = await GetMessageAsync(messageId);
-            if (message == null || !await IsAllowedToModifyMessageAsync(message, currentUserId))
+            await using PuzzleServerContext context = await contextFactory.CreateDbContextAsync();
+
+            Message message = await GetMessageAsync(context, messageId);
+            if (message == null || !await IsAllowedToModifyMessageAsync(context, message, currentUserId))
             {
                 throw new UserOperationException("You are not allowed to edit this message.");
             }
@@ -124,13 +128,15 @@ namespace ServerCore.Pages.Threads
             message.ModifiedDateTimeInUtc = DateTime.UtcNow;
             await context.SaveChangesAsync();
 
-            return await BroadcastMessageAsync(message.ID);
+            return await BroadcastMessageAsync(context, message.ID);
         }
 
         public async Task<ThreadMessageDTO> DeleteMessageAsync(int messageId, int currentUserId)
         {
-            Message message = await GetMessageAsync(messageId);
-            if (message == null || !await IsAllowedToModifyMessageAsync(message, currentUserId))
+            await using PuzzleServerContext context = await contextFactory.CreateDbContextAsync();
+
+            Message message = await GetMessageAsync(context, messageId);
+            if (message == null || !await IsAllowedToModifyMessageAsync(context, message, currentUserId))
             {
                 throw new UserOperationException("You are not allowed to delete this message.");
             }
@@ -139,13 +145,15 @@ namespace ServerCore.Pages.Threads
             message.ModifiedDateTimeInUtc = DateTime.UtcNow;
             await context.SaveChangesAsync();
 
-            return await BroadcastMessageAsync(message.ID);
+            return await BroadcastMessageAsync(context, message.ID);
         }
 
         public async Task<ThreadMessageDTO> ClaimThreadAsync(int messageId, int currentUserId)
         {
-            Message message = await GetMessageAsync(messageId);
-            if (message == null || !await IsAllowedToClaimMessageAsync(message, currentUserId) || message.ClaimerID.HasValue)
+            await using PuzzleServerContext context = await contextFactory.CreateDbContextAsync();
+
+            Message message = await GetMessageAsync(context, messageId);
+            if (message == null || !await IsAllowedToClaimMessageAsync(context, message, currentUserId) || message.ClaimerID.HasValue)
             {
                 throw new UserOperationException("You cannot claim this thread! It may have already been claimed.");
             }
@@ -153,13 +161,15 @@ namespace ServerCore.Pages.Threads
             message.ClaimerID = currentUserId;
             await context.SaveChangesAsync();
 
-            return await BroadcastMessageAsync(message.ID);
+            return await BroadcastMessageAsync(context, message.ID);
         }
 
         public async Task<ThreadMessageDTO> UnclaimThreadAsync(int messageId, int currentUserId)
         {
-            Message message = await GetMessageAsync(messageId);
-            if (message == null || !await IsAllowedToClaimMessageAsync(message, currentUserId))
+            await using PuzzleServerContext context = await contextFactory.CreateDbContextAsync();
+
+            Message message = await GetMessageAsync(context, messageId);
+            if (message == null || !await IsAllowedToClaimMessageAsync(context, message, currentUserId))
             {
                 throw new UserOperationException("You are not allowed to unclaim this thread.");
             }
@@ -167,10 +177,10 @@ namespace ServerCore.Pages.Threads
             message.ClaimerID = null;
             await context.SaveChangesAsync();
 
-            return await BroadcastMessageAsync(message.ID);
+            return await BroadcastMessageAsync(context, message.ID);
         }
 
-        private async Task<bool> IsAllowedToModifyMessageAsync(Message message, int currentUserId)
+        private static async Task<bool> IsAllowedToModifyMessageAsync(PuzzleServerContext context, Message message, int currentUserId)
         {
             Event eventObj = await context.Events.Where(e => e.ID == message.EventID).FirstOrDefaultAsync();
             return eventObj != null
@@ -179,7 +189,7 @@ namespace ServerCore.Pages.Threads
                 && message.Text != PuzzleThreadModel.DeletedMessage;
         }
 
-        private async Task<bool> IsAllowedToClaimMessageAsync(Message message, int currentUserId)
+        private static async Task<bool> IsAllowedToClaimMessageAsync(PuzzleServerContext context, Message message, int currentUserId)
         {
             Event eventObj = await context.Events.Where(e => e.ID == message.EventID).FirstOrDefaultAsync();
             PuzzleUser user = await context.PuzzleUsers.Where(u => u.ID == currentUserId).FirstOrDefaultAsync();
@@ -188,7 +198,7 @@ namespace ServerCore.Pages.Threads
                 && (await user.IsAdminForEvent(context, eventObj) || await user.IsAuthorForEvent(context, eventObj));
         }
 
-        private async Task ValidatePostPermissionAsync(Event eventObj, Puzzle puzzle, bool isFromGameControl, int senderId, int? teamId, int? playerId)
+        private static async Task ValidatePostPermissionAsync(PuzzleServerContext context, Event eventObj, Puzzle puzzle, bool isFromGameControl, int senderId, int? teamId, int? playerId)
         {
             PuzzleUser sender = await context.PuzzleUsers.Where(user => user.ID == senderId).FirstOrDefaultAsync();
             if (sender == null)
@@ -225,7 +235,7 @@ namespace ServerCore.Pages.Threads
             }
         }
 
-        private async Task<Message> GetMessageAsync(int messageId)
+        private static async Task<Message> GetMessageAsync(PuzzleServerContext context, int messageId)
         {
             return await context.Messages
                 .Include(m => m.Sender)
@@ -234,9 +244,9 @@ namespace ServerCore.Pages.Threads
                 .FirstOrDefaultAsync();
         }
 
-        private async Task<ThreadMessageDTO> BroadcastMessageAsync(int messageId)
+        private async Task<ThreadMessageDTO> BroadcastMessageAsync(PuzzleServerContext context, int messageId)
         {
-            Message message = await GetMessageAsync(messageId);
+            Message message = await GetMessageAsync(context, messageId);
             ThreadMessageDTO dto = ToDto(message);
             await messageHub.SendThreadMessage(dto);
             return dto;
@@ -261,7 +271,7 @@ namespace ServerCore.Pages.Threads
             };
         }
 
-        private async Task SendEmailNotifications(Message newMessage, Puzzle puzzle, Event eventObj)
+        private async Task SendEmailNotifications(PuzzleServerContext context, Message newMessage, Puzzle puzzle, Event eventObj)
         {
             string emailTitle = $"{newMessage.Subject} thread update!";
             string emailContent = newMessage.Text;
