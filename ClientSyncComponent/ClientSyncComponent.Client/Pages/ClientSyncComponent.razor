@@ -59,14 +59,19 @@
         text-align: right;
     }
 
+    .sync-ts-disabled {
+        display: block;
+        text-align: right;
+    }
+
     .ts-label {
         color: #aaa;
     }
 </style>
 
-    <div class="pill-toggle-stack">
-@if (SyncablePuzzleLoaded)
+    @if (SyncablePuzzleLoaded)
 {
+    <div class="pill-toggle-stack">
         <div class="pill-toggle">
             @if (!ReadOnly)
             {
@@ -79,15 +84,14 @@
         </div>
 
         <div class="sync-ts">
-                <div>Last change made: <span class="sync-ts">@DisplayLastSyncUtc.LocalDateTime</span></div>                
+            <div>Last change made: <span class="sync-ts">@DisplayLastSyncUtc.LocalDateTime</span></div>
         </div>
+    </div>
 }
 else
 {
-    <div class="sync-ts">Team mode is disabled for this puzzle</div>
+    <div class="sync-ts sync-ts-disabled">Team mode is disabled for this puzzle</div>
 }
-
-</div>
 
 <script>
     let hostComponent = null;
