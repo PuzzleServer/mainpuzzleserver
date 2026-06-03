@@ -273,6 +273,9 @@ namespace ServerCore.Pages.Threads
 
             if (newMessage.IsFromGameControl)
             {
+                // remove the actual response for players, because some players are replying to these mails and nobody is reading those replies.
+                emailContent = $"You got a response to your thread \"{newMessage.Subject}\", about the puzzle named ${puzzle.PlaintextName}. Visit the thread to read the reply. Do not reply to this message.";
+
                 Message messageFromPlayer = await context.Messages
                     .Include(message => message.Sender)
                     .Include(message => message.Team)
