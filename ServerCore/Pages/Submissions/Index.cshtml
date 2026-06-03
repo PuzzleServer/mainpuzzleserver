@@ -221,6 +221,10 @@
         flex-basis: 100%;
     }
 
+    #initialMessage > div:first-child {
+        margin-top: 1em;
+    }
+
     @@media (max-width: 750px) {
         .title-block { grid-template-columns: 1fr; }
         .title-block .flexwrapper { flex-wrap: wrap; }
@@ -416,7 +420,6 @@
         </div>
     </div>
 
-<br class="no-print" />
 <div id="initialMessage" class="no-print">
     @if (!string.IsNullOrEmpty(Model.AnswerToken))
     {
@@ -502,8 +505,8 @@
     }
 </div>
 <div class="centerwrapper no-print">
-    <div class="inlineblockwrapper">
-        <div id="submissionHistory" style="display: @((Model.SubmissionViews.Count == 0) ? "none" : "block")" class="hideablepanel">
+    <div class="inlineblockwrapper" id="submissionHistory" style="display: @((Model.SubmissionViews.Count == 0) ? "none" : "inline-block")">
+        <div class="hideablepanel">
             Click here to <span id="panelHeaderAction">@((Model.PuzzleState.SolvedTime == null) ? "view" : "close")</span> previous submissions:
             <div class="panelcontents" style="display: @((Model.PuzzleState.SolvedTime == null) ? "none" : "block")">
                 <div class="gridwrapper">
@@ -755,7 +758,7 @@
                     wrapper.appendChild(resp);
                     const answerPanel = document.querySelector("#submissionHistory div.panelcontents");
                     answerPanel.firstElementChild.after(wrapper);
-                    document.getElementById("submissionHistory").style.display = "block";
+                    document.getElementById("submissionHistory").style.display = "inline-block";
                 }
                 document.querySelector("#submitBox").value = "";
             }
