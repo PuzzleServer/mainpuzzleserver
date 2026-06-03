@@ -109,7 +109,7 @@ namespace ServerCore.Pages.Events
                 (EventRole != EventRole.author || authorPuzzleIds.Contains(pspt.PuzzleID)));
 
             // Sort by time and get the top 3
-            var fastestResults = _context.PuzzleStatePerTeam
+            var fastestResults = Event.HideStandings ? null : _context.PuzzleStatePerTeam
                 .Select(pspt => pspt.PuzzleID).Distinct()
                 .SelectMany(puzzleId => psptToQuery
                     .Where(pspt => pspt.PuzzleID == puzzleId)
@@ -140,7 +140,7 @@ namespace ServerCore.Pages.Events
                 }
 
                 FastRecord[] fastest;
-                if (fastestResults.Contains(data.PuzzleID))
+                if (fastestResults != null && fastestResults.Contains(data.PuzzleID))
                 {
                     fastest = fastestResults[data.PuzzleID].Select(f => new FastRecord() { ID = f.TeamID, Name = teamNameLookup[f.TeamID], Time = f.SolvedTime - f.UnlockedTime }).ToArray();
                 }
