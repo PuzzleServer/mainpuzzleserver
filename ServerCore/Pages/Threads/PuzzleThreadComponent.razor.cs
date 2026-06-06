@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
@@ -79,6 +80,8 @@ namespace ServerCore.Pages.Threads
         bool shouldRenderLocalTimes;
 
         bool isMutationRunning;
+
+        readonly SemaphoreSlim mutationLock = new SemaphoreSlim(1, 1);
 
         ThreadMessageDTO LatestMessage => messages.FirstOrDefault();
 
@@ -188,6 +191,8 @@ namespace ServerCore.Pages.Threads
 
         async Task SendMessageAsync()
         {
+            string messageText = NewMessageText;
+
             await RunMutationAsync(async () =>
             {
                 ThreadMessageDTO sentMessage = await PuzzleThreadService.SendMessageAsync(
@@ -199,7 +204,7 @@ namespace ServerCore.Pages.Threads
                     PlayerID,
                     IsFromGameControl,
                     CurrentUserId,
-                    NewMessageText);
+                    messageText);
 
                 UpsertMessage(sentMessage);
                 NewMessageText = null;
@@ -252,11 +257,7 @@ namespace ServerCore.Pages.Threads
 
         async Task RunMutationAsync(Func<Task> mutation)
         {
-            if (isMutationRunning)
-            {
-                errorMessage = "Please wait for the current action to finish.";
-                return;
-            }
+            await mutationLock.WaitAsync();
 
             try
             {
@@ -271,6 +272,7 @@ namespace ServerCore.Pages.Threads
             finally
             {
                 isMutationRunning = false;
+                mutationLock.Release();
             }
         }
 
@@ -296,6 +298,7 @@ namespace ServerCore.Pages.Threads
         public void Dispose()
         {
             MessageListener.OnThreadMessage -= OnThreadMessageReceived;
+            mutationLock.Dispose();
         }
     }
 }
