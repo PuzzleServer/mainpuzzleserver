@@ -50,7 +50,8 @@
                 <a asp-page="./Players" asp-route-eventId="@item.EventID" asp-route-eventRole="admin">Players</a> |
                 <a asp-page="./Standings" asp-route-eventId="@item.EventID" asp-route-eventRole="admin">Standings</a> |
                 <a asp-page="./SolveCounts" asp-route-eventId="@item.EventID" asp-route-eventRole="admin">Counts</a> |
-                <a asp-page="./Map" asp-route-eventId="@item.EventID" asp-route-eventRole="admin">Map</a>
+                <a asp-page="./Map" asp-route-eventId="@item.EventID" asp-route-eventRole="admin">Map</a> |
+                <a asp-page="/EventSpecific/Index" asp-route-eventId="@item.EventID" asp-route-eventRole="archive">Archive</a>
             </td>
         </tr>
 }

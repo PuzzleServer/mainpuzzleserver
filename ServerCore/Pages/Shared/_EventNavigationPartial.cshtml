@@ -53,6 +53,10 @@
                             <ul class="dropdown-menu admin-menu">
                                 <li><a class="dropdown-item" asp-page="/EventSpecific/Index">Home</a></li>
                                 <li><a class="dropdown-item" asp-page="/Events/Details">Details</a></li>
+                                @if (Event?.CanArchive == true)
+                                {
+                                    <li><a class="dropdown-item" asp-page="/EventSpecific/Index" asp-route-eventRole="@ModelBases.EventRole.archive">View as archive</a></li>
+                                }
                             </ul>
                         </div>
                     </li>
@@ -184,8 +188,90 @@
     </nav>
 }
 <!--AUTHOR NAV BAR END-->
+<!--ARCHIVE NAV BAR-->
+@if (Event != null && EventRole != null && EventRole == ModelBases.EventRole.archive)
+{
+    <nav class="navbar navbar-dark navbar-custom static-top navbar-expand-xl player-menu no-print" data-bs-theme="dark">
+        <div class="container-fluid">
+            <div class="nav-header dropdown">
+                <a class="navbar-brand" data-bs-toggle="dropdown" role="button" href="#">
+                    @Event.Name
+                </a>
+                <!--<partial name="/Pages/Shared/_RoleSwitcherPartial.cshtml" /> -->
+
+                <button type="button" class="navbar-toggler player-menu" data-bs-toggle="collapse" data-bs-target="#topBarCollapsable" title="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+
+            <div class="collapse navbar-collapse" id="topBarCollapsable">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <div class="dropdown">
+                            <a class="dropdown-toggle" data-bs-toggle="dropdown" role="button" href="#">
+                                Event
+                            </a>
+                            <ul class="dropdown-menu player-menu">
+                                <li><a class="dropdown-item" asp-page="/EventSpecific/Index">Event homepage</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item"><a asp-page="/Puzzles/Play">Puzzles</a></li>
+                    <li class="nav-item">
+                        <div class="dropdown">
+                            <a class="dropdown-toggle" data-bs-toggle="dropdown" role="button" href="#">
+                                Teams
+                            </a>
+                            <ul class="dropdown-menu player-menu">
+                                <li><a class="dropdown-item" asp-page="/Teams/AllTeams">All teams</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <div class="dropdown">
+                            <a class="dropdown-toggle" data-bs-toggle="dropdown" role="button" href="#">
+                                Leaderboards
+                            </a>
+                            <ul class="dropdown-menu player-menu">
+                                @if (!Event.HideStandings)
+                                {
+                                    <li><a class="dropdown-item" asp-page="/Events/Standings">Standings</a></li>
+                                }
+                                @if (!Event.HideSolveCounts)
+                                {
+                                    <li><a class="dropdown-item" asp-page="/Events/SolveCounts">@(Event.HideStandings ? "Most-solved Puzzles" : "Fastest solves")</a></li>
+                                }
+                                @if (DateTime.UtcNow >= Event.AnswersAvailableBegin)
+                                {
+                                    <li><a class="dropdown-item" asp-page="/Events/PlayerSubmissions">Player submissions</a></li>
+                                }
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <div class="dropdown">
+                            <a class="dropdown-toggle" data-bs-toggle="dropdown" role="button" href="#">
+                                Resources
+                            </a>
+                            <ul class="dropdown-menu player-menu">
+                                <li><a class="dropdown-item" asp-page="/EventSpecific/Rules">Rules</a></li>
+                                <li><a class="dropdown-item" asp-page="/EventSpecific/FAQ">FAQ</a></li>
+                                <li><a class="dropdown-item" asp-page="/EventSpecific/Tools">Solving tools and techniques</a></li>
+                                <li><a class="dropdown-item" asp-page="/EventSpecific/Encodings">Encodings</a></li>
+                                <li><a class="dropdown-item" asp-page="/EventSpecific/Samples">Sample puzzles</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+
+                <!--<partial name="/Pages/Shared/_LoginPartial.cshtml" />-->
+            </div>
+        </div>
+    </nav>
+}
+<!--ARCHIVE NAV BAR END-->
 <!--REGISTERED PLAYER NAV BAR-->
-@if (Event != null && (EventRole == null || (EventRole != ModelBases.EventRole.admin && EventRole != ModelBases.EventRole.author)) && IsRegistered)
+@if (Event != null && (EventRole == null || (EventRole != ModelBases.EventRole.admin && EventRole != ModelBases.EventRole.author && EventRole != ModelBases.EventRole.archive)) && IsRegistered)
 {
     <nav class="navbar navbar-dark navbar-custom static-top navbar-expand-xl player-menu no-print" data-bs-theme="dark">
         <div class="container-fluid">
@@ -320,7 +406,7 @@
 }
 <!--REGISTERED PLAYER NAV BAR END-->
 <!--UNREGISTERED PLAYER NAV BAR-->
-@if (Event != null && (EventRole == null || (EventRole != ModelBases.EventRole.admin && EventRole != ModelBases.EventRole.author)) && !IsRegistered)
+@if (Event != null && (EventRole == null || (EventRole != ModelBases.EventRole.admin && EventRole != ModelBases.EventRole.author && EventRole != ModelBases.EventRole.archive)) && !IsRegistered)
 {
     <nav class="navbar navbar-dark navbar-custom static-top navbar-expand-xl player-menu no-print" data-bs-theme="dark">
         <div class="container-fluid">
@@ -380,7 +466,7 @@
     </nav>
 }
 <!--UNREGISTERED PLAYER NAV BAR END-->
-@if (Event?.EphemeralHackKillNotifications != true)
+@if (EventRole != ModelBases.EventRole.archive && Event?.EphemeralHackKillNotifications != true)
 {
     <script>
         var allEventToasts = {};

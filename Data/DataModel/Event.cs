@@ -184,6 +184,12 @@ namespace ServerCore.DataModel
         }
 
         /// <summary>
+        /// Returns whether the event can be archived.
+        /// </summary>
+        [NotMapped]
+        public bool CanArchive => this.AreAnswersAvailableNow;
+
+        /// <summary>
         /// Determines whether or not the standings page is visible to players.
         /// </summary>
         public bool HideStandings { get; set; }

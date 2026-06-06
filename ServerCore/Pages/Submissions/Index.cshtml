@@ -363,7 +363,7 @@
                 }
 
                 <div class="d-flex justify-content-end">
-                    @if (!Model.Event.HideHints)
+                    @if (Model.EventRole != ModelBases.EventRole.archive && !Model.Event.HideHints)
                     {
                         if (Model.Puzzle.IsForSinglePlayer)
                         {
@@ -371,15 +371,15 @@
                         }
                         else
                         {
-                            <div><a asp-page="/Teams/Hints" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-teamId="@Model.Team.ID" target="_blank" class="btn quick-action" role="button"><span class="quick-action-icon">&#x1F4AC;</span> Get Help</a></div>
+                            <div><a asp-page="/Teams/Hints" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-teamId="@Model.Team?.ID" target="_blank" class="btn quick-action" role="button"><span class="quick-action-icon">&#x1F4AC;</span> Get Help</a></div>
                         }
                     }
-                    else if (!Model.PuzzleState.IsEmailOnlyMode)
+                    else if (Model.EventRole != ModelBases.EventRole.archive && !Model.PuzzleState.IsEmailOnlyMode)
                     {
                         <div><a asp-Page="/Threads/PuzzleThread" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-teamId="@Model.Team?.ID" asp-route-playerId="@Model.LoggedInUser.ID" class="btn quick-action" role="button"><span class="quick-action-icon">&#x1F4AC;</span> Get Help</a></div>
                     }
 
-                    @if (Model.Event.AllowFeedback)
+                    @if (Model.EventRole != ModelBases.EventRole.archive && Model.Event.AllowFeedback)
                     {
                     <div><a asp-Page="/Puzzles/SubmitFeedback" asp-route-puzzleid="@Model.Puzzle.ID" target="_blank" class="btn quick-action" role="button"><span class="quick-action-icon">&#x1F4DD;</span> Give Feedback</a></div>
                     }
@@ -398,24 +398,27 @@
                     }
                 </div>
                 
-                <div class="sync-presence-stack">
-                    @if (!Model.IsPuzzleForSinglePlayer && !Model.Event.EphemeralHackKillSync)
-                    {
-                        <component type="typeof(ClientSyncComponent.Client.Pages.ClientSyncComponent)" render-mode="WebAssembly"
-                        param-PuzzleUserId="@Model.LoggedInUser.ID"
-                        param-TeamId="@Model.Team.ID"
-                        param-PuzzleId="@Model.Puzzle.ID"
-                        param-TableSASUrl="@Model.SyncTableSasUrl"
-                        param-PuzzleUnlockTimeUtc="(DateTimeOffset?)@Model.PuzzleState.UnlockedTime"
-                        param-EventEndTimeUtc="(DateTimeOffset)@Model.Event.AnswerSubmissionEnd"
-                        param-ReadOnly="@(Model.EventRole != ModelBases.EventRole.play)"
-                        />
-                    }
-                    @if (!Model.IsPuzzleForSinglePlayer && !Model.Event.EphemeralHackKillPresence)
-                    {
-                        <component type="typeof(ServerCore.Pages.Components.PresenceComponent)" render-mode="Server" param-PuzzleUserId="@Model.LoggedInUser.ID" param-TeamId="@Model.Team.ID" param-PuzzleId="@Model.Puzzle.ID" />
-                    }
-                </div>
+                @if(Model.EventRole != ModelBases.EventRole.archive)
+                {
+                    <div class="sync-presence-stack">
+                        @if (!Model.IsPuzzleForSinglePlayer && !Model.Event.EphemeralHackKillSync)
+                        {
+                            <component type="typeof(ClientSyncComponent.Client.Pages.ClientSyncComponent)" render-mode="WebAssembly"
+                                       param-PuzzleUserId="@Model.LoggedInUser.ID"
+                                       param-TeamId="@Model.Team.ID"
+                                       param-PuzzleId="@Model.Puzzle.ID"
+                                       param-TableSASUrl="@Model.SyncTableSasUrl"
+                                       param-PuzzleUnlockTimeUtc="(DateTimeOffset?)@Model.PuzzleState.UnlockedTime"
+                                       param-EventEndTimeUtc="(DateTimeOffset)@Model.Event.AnswerSubmissionEnd"
+                                       param-ReadOnly="@(Model.EventRole != ModelBases.EventRole.play)"
+                                       />
+                        }
+                        @if (!Model.IsPuzzleForSinglePlayer && !Model.Event.EphemeralHackKillPresence)
+                        {
+                            <component type="typeof(ServerCore.Pages.Components.PresenceComponent)" render-mode="Server" param-PuzzleUserId="@Model.LoggedInUser.ID" param-TeamId="@Model.Team.ID" param-PuzzleId="@Model.Puzzle.ID" />
+                        }
+                    </div>
+                }
             </div>
         </div>
     </div>
@@ -469,6 +472,13 @@
             <div class="alert alert-warning" role="alert">
                 <h4>Unclaimed Alpha Puzzle</h4>
                 <span>This puzzle needs alpha testers! <a asp-page-handler="ClaimPuzzle">Claim it now!</a></span>
+            </div>
+        }
+        else if (Model.EventRole == ModelBases.EventRole.archive)
+        {
+            <div class="alert alert-danger" role="alert">
+                <h4>Answer Submission Unavailable</h4>
+                <span>This event is an archived version. You can quickly check an answer by looking it up in the "previous submissions" dropdown below. Future updates to the archive will perform checks for you automatically.</span>
             </div>
         }
         else
@@ -762,7 +772,10 @@
                 }
                 document.querySelector("#submitBox").value = "";
             }
-            submit.addEventListener("click", submitClickHandler);
+            @if (Model.EventRole != ModelBases.EventRole.archive)
+            {
+                <text>submit.addEventListener("click", submitClickHandler);</text>
+            }
 
             // Make hitting enter in the answer box trigger a submission
             const submitBox = document.querySelector("#submitBox");
