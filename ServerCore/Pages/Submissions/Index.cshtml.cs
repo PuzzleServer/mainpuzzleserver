@@ -347,6 +347,8 @@ namespace ServerCore.Pages.Submissions
             List<SubmissionView> submissionViews = new List<SubmissionView>();
             if (EventRole == EventRole.archive)
             {
+                // PuzzleStatePerTeam works here for single-player puzzles as well, since the only properties used come from the base class.
+                // PuzzleStateBaseClass has no public constructor.
                 PuzzleState = new PuzzleStatePerTeam();
 
                 SubmissionViews = await (from response in _context.Responses
