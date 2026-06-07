@@ -66,6 +66,7 @@ namespace ServerCore.ModelBases
         public static EventRole admin = new EventRole() { Type = EventRoleType.admin };
         public static EventRole author = new EventRole() { Type = EventRoleType.author };
         public static EventRole play = new EventRole() { Type = EventRoleType.play };
+        public static EventRole archive = new EventRole() { Type = EventRoleType.archive };
     }
 
     public enum EventRoleType
@@ -73,6 +74,7 @@ namespace ServerCore.ModelBases
         admin = 1,
         author,
         play,
+        archive,
         impersonateteam
     }
 }

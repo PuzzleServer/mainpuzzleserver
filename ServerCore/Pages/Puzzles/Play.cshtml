@@ -79,7 +79,7 @@
     <component type="typeof(ServerCore.Pages.Components.TeamPresenceToJSComponent)" render-mode="Server" param-TeamId="@Model.Team.ID" param-MaxUsers=2 />
 }
 
-@if (DateTime.UtcNow > @Model.Event.AnswerSubmissionEnd)
+@if (Model.EventRole != ModelBases.EventRole.archive && DateTime.UtcNow > @Model.Event.AnswerSubmissionEnd)
 {
     <div class="alert alert-warning" role="alert">
         <h4>The event is over.</h4>
@@ -131,7 +131,7 @@
     asp-route-stateFilter=@(unsolvedFilter ? PlayModel.PuzzleStateFilter.All : PlayModel.PuzzleStateFilter.Unsolved)>
         Show @(unsolvedFilter ? "All" : "only unsolved") puzzles
     </a> | 
-    @if (Model.Event.HideHints || Model.Event.DefaultCostForHelpThread >= 0)
+    @if (Model.EventRole != ModelBases.EventRole.archive && (Model.Event.HideHints || Model.Event.DefaultCostForHelpThread >= 0))
     {
         <a asp-page="/Threads/PuzzleThreads">View help threads</a><text> | </text>
     }
@@ -156,7 +156,7 @@
     <a asp-page="/Teams/LiveEventSchedule" asp-route-teamId="@Model.Team.ID">Click Here for the Live Event Schedule</a> <br/> <br/>
 }
 
-@if (Model.Team == null)
+@if (Model.Team == null && Model.EventRole != ModelBases.EventRole.archive)
 {
     if (EventHelper.EventRequiresActivePlayerRegistration(Model.Event))
     {
@@ -189,7 +189,7 @@ else
             <tr>
                 <th>
                     <a asp-page="./Play"
-                        asp-route-teamId="@Model.Team.ID"
+                        asp-route-teamId="@Model.Team?.ID"
                         asp-route-singlePlayerPuzzleSort="@Model.SinglePlayerPuzzleSort" 
                         asp-route-teamPuzzleSort="@(Model.SortForColumnLink(Model.TeamPuzzleSort, PlayModel.SortOrder.GroupAscending, PlayModel.SortOrder.GroupDescending))" 
                         asp-route-stateFilter="@Model.StateFilter">
@@ -297,7 +297,7 @@ else
                     @if (!Model.Event.HideHints)
                     {
                         <td class="puzzle-list-hints-customizable">
-                            <a asp-page="/Teams/Hints" asp-route-puzzleid="@item.ID" asp-route-teamId="@Model.Team.ID">Hints</a>
+                            <a asp-page="/Teams/Hints" asp-route-puzzleid="@item.ID" asp-route-teamId="@Model.Team?.ID">Hints</a>
                         </td>
                     }
                     @if (Model.AllowFeedback)

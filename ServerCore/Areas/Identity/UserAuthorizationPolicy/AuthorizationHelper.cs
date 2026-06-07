@@ -154,13 +154,23 @@ namespace ServerCore.Areas.Identity
         public async Task IsPlayerRegisteredForEvent(AuthorizationHandlerContext authContext, IAuthorizationRequirement requirement)
         {
             EventRole role = GetEventRoleFromRoute();
+            Event thisEvent = await GetEventFromRoute();
+
+            if (role == EventRole.archive)
+            {
+                if (thisEvent.CanArchive)
+                {
+                    authContext.Succeed(requirement);
+                }
+                return;
+            }
+
             if (role != EventRole.play)
             {
                 return;
             }
 
             PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
-            Event thisEvent = await GetEventFromRoute();
 
             if (thisEvent != null && puzzleUser != null && await puzzleUser.IsRegisteredForEvent(dbContext, thisEvent))
             {
@@ -220,11 +230,22 @@ namespace ServerCore.Areas.Identity
 
         public async Task PlayerCanSeePuzzleCheck(AuthorizationHandlerContext authContext, IAuthorizationRequirement requirement)
         {
+            EventRole role = GetEventRoleFromRoute();
+            Event thisEvent = await GetEventFromRoute();
+
+            if (role == EventRole.archive)
+            {
+                if (thisEvent.CanArchive)
+                {
+                    authContext.Succeed(requirement);
+                }
+                return;
+            }
+
             PuzzleUser puzzleUser = await PuzzleUser.GetPuzzleUserForCurrentUser(dbContext, authContext.User, userManager);
             if (puzzleUser == null) { return; }
 
             Puzzle puzzle = await GetPuzzleFromRoute();
-            Event thisEvent = await GetEventFromRoute();
 
             if (thisEvent != null && puzzle != null)
             {
@@ -251,7 +272,6 @@ namespace ServerCore.Areas.Identity
                 }
                 else
                 {
-                    EventRole role = GetEventRoleFromRoute();
                     Team team = null;
                     if (role.IsImpersonating)
                     {

@@ -88,9 +88,12 @@ namespace ServerCore.Pages.Puzzles
 
             Team = await base.GetTeamAsync();
 
-            if (Team != null)
+            if (EventRole == EventRole.archive || Team != null)
             {
-                await PuzzleStateHelper.CheckForTimedUnlocksAsync(_context, Event, Team);
+                if (Team != null)
+                {
+                    await PuzzleStateHelper.CheckForTimedUnlocksAsync(_context, Event, Team);
+                }
                 VisibleTeamPuzzleViews = (await this.GetVisibleTeamPlayerPuzzleViews(teamPuzzleSort, Team)).ToList();
                 this.PopulatePuzzleViewsWithFiles(VisibleTeamPuzzleViews, puzzleFiles, answerFiles);
                 if (!AnyErrata)
@@ -98,7 +101,7 @@ namespace ServerCore.Pages.Puzzles
                     AnyErrata = VisibleTeamPuzzleViews.Any(v => v.Errata != null);
                 }
 
-                if (Event.HasPlayerClasses)
+                if (Team != null && Event.HasPlayerClasses)
                 {
                     TeamMembers tm = _context.TeamMembers.Where(tm => tm.Team == Team && tm.Member == LoggedInUser).FirstOrDefault();
                     LoggedInPlayerClass = PlayerClassHelper.GetActiveClassForPlayer(Event,tm)?.UniqueName ?? "";
@@ -196,36 +199,46 @@ namespace ServerCore.Pages.Puzzles
             // all puzzles for this event that are real puzzles
             var puzzlesInEventQ = _context.Puzzles.Where(puzzle => puzzle.Event.ID == this.Event.ID && puzzle.IsPuzzle && !puzzle.IsForSinglePlayer);
 
-            if (team.IsRemoteTeam)
+            IQueryable<PuzzleView> visiblePuzzlesQ;
+
+            if (EventRole == EventRole.archive)
             {
-                puzzlesInEventQ = puzzlesInEventQ.Where(puzzle => puzzle.Availability == Puzzle.PuzzleAvailability.AllPlayers || puzzle.Availability == Puzzle.PuzzleAvailability.RemoteOnly);
+                visiblePuzzlesQ = from Puzzle puzzle in puzzlesInEventQ
+                                  select new PuzzleView { ID = puzzle.ID, Group = puzzle.Group, OrderInGroup = puzzle.OrderInGroup, Name = puzzle.Name, CustomUrl = puzzle.CustomURL, CustomSolutionUrl = puzzle.CustomSolutionURL, Errata = puzzle.Errata, SolvedTime = null, PieceMetaUsage = puzzle.PieceMetaUsage };
             }
             else
             {
-                puzzlesInEventQ = puzzlesInEventQ.Where(puzzle => puzzle.Availability == Puzzle.PuzzleAvailability.AllPlayers || puzzle.Availability == Puzzle.PuzzleAvailability.LocalOnly);
-            }
-                
-            // unless we're in a global lockout, then filter to those!
-            var puzzlesCausingGlobalLockoutQ = PuzzleStateHelper.PuzzlesCausingGlobalLockout(_context, Event, team);
-            if (await puzzlesCausingGlobalLockoutQ.AnyAsync())
-            {
-                puzzlesInEventQ = puzzlesCausingGlobalLockoutQ;
-            }
+                if (team.IsRemoteTeam)
+                {
+                    puzzlesInEventQ = puzzlesInEventQ.Where(puzzle => puzzle.Availability == Puzzle.PuzzleAvailability.AllPlayers || puzzle.Availability == Puzzle.PuzzleAvailability.RemoteOnly);
+                }
+                else
+                {
+                    puzzlesInEventQ = puzzlesInEventQ.Where(puzzle => puzzle.Availability == Puzzle.PuzzleAvailability.AllPlayers || puzzle.Availability == Puzzle.PuzzleAvailability.LocalOnly);
+                }
 
-            // all puzzle states for this team that are unlocked (note: IsUnlocked bool is going to harm perf, just null check the time here)
-            // Note that it's OK if some puzzles do not yet have a state record; those puzzles are clearly still locked and hence invisible.
-            // All puzzles will show if all answers have been released)
-            var stateForTeamQ = _context.PuzzleStatePerTeam.Where(state => state.TeamID == this.Team.ID && (ShowAnswers || state.UnlockedTime != null));
+                // unless we're in a global lockout, then filter to those!
+                var puzzlesCausingGlobalLockoutQ = PuzzleStateHelper.PuzzlesCausingGlobalLockout(_context, Event, team);
+                if (await puzzlesCausingGlobalLockoutQ.AnyAsync())
+                {
+                    puzzlesInEventQ = puzzlesCausingGlobalLockoutQ;
+                }
 
-            // join 'em (note: just getting all properties for max flexibility, can pick and choose columns for perf later)
-            // Note: EF gotcha is that you have to join into anonymous types in order to not lose valuable stuff
-            var visiblePuzzlesQ = from Puzzle puzzle in puzzlesInEventQ
-                                  join PuzzleStatePerTeam pspt in stateForTeamQ on puzzle.ID equals pspt.PuzzleID
-                                  select new PuzzleView { ID = puzzle.ID, Group = puzzle.Group, OrderInGroup = puzzle.OrderInGroup, Name = puzzle.Name, CustomUrl = puzzle.CustomURL, CustomSolutionUrl = puzzle.CustomSolutionURL, Errata = puzzle.Errata, SolvedTime = pspt.SolvedTime, PieceMetaUsage = puzzle.PieceMetaUsage };
+                // all puzzle states for this team that are unlocked (note: IsUnlocked bool is going to harm perf, just null check the time here)
+                // Note that it's OK if some puzzles do not yet have a state record; those puzzles are clearly still locked and hence invisible.
+                // All puzzles will show if all answers have been released)
+                var stateForTeamQ = _context.PuzzleStatePerTeam.Where(state => state.TeamID == this.Team.ID && (ShowAnswers || state.UnlockedTime != null));
 
-            if (this.StateFilter == PuzzleStateFilter.Unsolved)
-            {
-                visiblePuzzlesQ = visiblePuzzlesQ.Where(puzzles => puzzles.SolvedTime == null);
+                // join 'em (note: just getting all properties for max flexibility, can pick and choose columns for perf later)
+                // Note: EF gotcha is that you have to join into anonymous types in order to not lose valuable stuff
+                visiblePuzzlesQ = from Puzzle puzzle in puzzlesInEventQ
+                                      join PuzzleStatePerTeam pspt in stateForTeamQ on puzzle.ID equals pspt.PuzzleID
+                                      select new PuzzleView { ID = puzzle.ID, Group = puzzle.Group, OrderInGroup = puzzle.OrderInGroup, Name = puzzle.Name, CustomUrl = puzzle.CustomURL, CustomSolutionUrl = puzzle.CustomSolutionURL, Errata = puzzle.Errata, SolvedTime = pspt.SolvedTime, PieceMetaUsage = puzzle.PieceMetaUsage };
+
+                if (this.StateFilter == PuzzleStateFilter.Unsolved)
+                {
+                    visiblePuzzlesQ = visiblePuzzlesQ.Where(puzzles => puzzles.SolvedTime == null);
+                }
             }
 
             return this.GetSortedView(visiblePuzzlesQ, sortOrder);
@@ -249,20 +262,29 @@ namespace ServerCore.Pages.Puzzles
                     PieceMetaUsage = unlockState.Puzzle.PieceMetaUsage
                 });
 
-            // Populate solve time based on statePerPlayer
-            var singlePlayerPuzzleStatePerPlayer = _context.SinglePlayerPuzzleStatePerPlayer
-                .Where(state => state.PlayerID == LoggedInUser.ID && state.Puzzle.EventID == Event.ID);
-            foreach (SinglePlayerPuzzleStatePerPlayer statePerPlayer in singlePlayerPuzzleStatePerPlayer)
-            {
-                singlePlayerPuzzleViewDict[statePerPlayer.PuzzleID].SolvedTime = statePerPlayer.SolvedTime;
-                singlePlayerPuzzleViewDict[statePerPlayer.PuzzleID].UnlockedTime = statePerPlayer.UnlockedTime;
-            }
+            IEnumerable<PuzzleView> visibleSinglePlayerPuzzlesQ;
 
-            IEnumerable<PuzzleView> visibleSinglePlayerPuzzlesQ = singlePlayerPuzzleViewDict.Values.AsEnumerable().Where(puzzleView => ShowAnswers || puzzleView.UnlockedTime != null);
-            visibleSinglePlayerPuzzlesQ = this.GetSortedView(visibleSinglePlayerPuzzlesQ, sortOrder);
-            if (StateFilter == PuzzleStateFilter.Unsolved)
+            if (EventRole == EventRole.archive)
             {
-                visibleSinglePlayerPuzzlesQ = visibleSinglePlayerPuzzlesQ.Where(puzzles => puzzles.SolvedTime == null);
+                visibleSinglePlayerPuzzlesQ = singlePlayerPuzzleViewDict.Values.AsEnumerable();
+            }
+            else
+            {
+                // Populate solve time based on statePerPlayer
+                var singlePlayerPuzzleStatePerPlayer = _context.SinglePlayerPuzzleStatePerPlayer
+                    .Where(state => state.PlayerID == LoggedInUser.ID && state.Puzzle.EventID == Event.ID);
+                foreach (SinglePlayerPuzzleStatePerPlayer statePerPlayer in singlePlayerPuzzleStatePerPlayer)
+                {
+                    singlePlayerPuzzleViewDict[statePerPlayer.PuzzleID].SolvedTime = statePerPlayer.SolvedTime;
+                    singlePlayerPuzzleViewDict[statePerPlayer.PuzzleID].UnlockedTime = statePerPlayer.UnlockedTime;
+                }
+
+                visibleSinglePlayerPuzzlesQ = singlePlayerPuzzleViewDict.Values.AsEnumerable().Where(puzzleView => ShowAnswers || puzzleView.UnlockedTime != null);
+                visibleSinglePlayerPuzzlesQ = this.GetSortedView(visibleSinglePlayerPuzzlesQ, sortOrder);
+                if (StateFilter == PuzzleStateFilter.Unsolved)
+                {
+                    visibleSinglePlayerPuzzlesQ = visibleSinglePlayerPuzzlesQ.Where(puzzles => puzzles.SolvedTime == null);
+                }
             }
 
             return visibleSinglePlayerPuzzlesQ;

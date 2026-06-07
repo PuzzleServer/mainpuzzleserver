@@ -345,7 +345,27 @@ namespace ServerCore.Pages.Submissions
 
             IsPuzzleForSinglePlayer = Puzzle.IsForSinglePlayer;
             List<SubmissionView> submissionViews = new List<SubmissionView>();
-            if (Puzzle.IsForSinglePlayer)
+            if (EventRole == EventRole.archive)
+            {
+                // PuzzleStatePerTeam works here for single-player puzzles as well, since the only properties used come from the base class.
+                // PuzzleStateBaseClass has no public constructor.
+                PuzzleState = new PuzzleStatePerTeam();
+
+                SubmissionViews = await (from response in _context.Responses
+                                         where response.Puzzle == Puzzle
+                                         orderby response.IsSolution descending, response.SubmittedText descending
+                                         select new SubmissionView()
+                                         {
+                                             Submission = new Submission {  SubmissionText = response.SubmittedText },
+                                             Response = response,
+                                             SubmitterName = "Archive",
+                                             FreeformReponse = null,
+                                             IsFreeform = Puzzle.IsFreeform
+                                         }).ToListAsync();
+
+                PuzzlesCausingGlobalLockout = new List<Puzzle>();
+            }
+            else if (Puzzle.IsForSinglePlayer)
             {
                 PuzzleState = await SinglePlayerPuzzleStateHelper.GetOrAddStateIfNotThere(_context,
                     Event,
@@ -443,7 +463,8 @@ namespace ServerCore.Pages.Submissions
 
                 if (submissionView.Response != null
                     && submissionView.Response.IsSolution 
-                    && !Puzzle.IsFreeform)
+                    && !Puzzle.IsFreeform
+                    && EventRole != EventRole.archive)
                 {
                     AnswerToken = submissionView.Submission.SubmissionText;
                 }

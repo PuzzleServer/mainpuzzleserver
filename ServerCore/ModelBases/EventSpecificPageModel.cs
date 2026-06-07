@@ -43,8 +43,9 @@ namespace ServerCore.ModelBases
             bool isAuthor = await IsEventAuthor();
             if (((EventRole == EventRole.admin) && !isAdmin) ||
                 ((EventRole == EventRole.author) && !isAuthor) ||
+                ((EventRole == EventRole.archive) && !Event.CanArchive) ||
                 ((EventRole.IsImpersonating) && !isAuthor && !isAdmin) ||
-                ((EventRole != EventRole.admin) && (EventRole != EventRole.author) && (EventRole != EventRole.play) && !EventRole.IsImpersonating))
+                ((EventRole != EventRole.admin) && (EventRole != EventRole.author) && (EventRole != EventRole.play) && (EventRole != EventRole.archive) && !EventRole.IsImpersonating))
             {
                 context.Result = Forbid();
                 return;
