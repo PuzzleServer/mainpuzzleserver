@@ -15,10 +15,10 @@
                     {
                         <p>The more details you add here, the more helpful the responses you'll get will be!</p>
                     }
-                    <textarea @bind="NewMessageText" class="form-control message-subtitle" rows="4" style="width:75%" placeholder="Type message here" autocomplete="off"></textarea>
+                    <textarea @bind="NewMessageText" class="form-control message-subtitle" rows="4" style="width:75%" placeholder="Type message here" autocomplete="off" disabled="@isMutationRunning"></textarea>
                 </div>
                 <div class="form-group message-subtitle">
-                    <input type="button" value="Send" class="btn btn-default" @onclick="SendMessageAsync" />
+                    <input type="button" value="Send" class="btn btn-default" @onclick="SendMessageAsync" disabled="@isMutationRunning" />
                 </div>
             </div>
         </div>
@@ -31,13 +31,13 @@
     @if (ShouldShowClaimAction())
     {
         <br />
-        <button type="button" @onclick="ClaimLatestMessageAsync">Mark as read</button>
+        <button type="button" @onclick="ClaimLatestMessageAsync" disabled="@isMutationRunning">Mark as read</button>
     }
     else if (ShouldShowUnclaimAction())
     {
         <br />
         <p>Question has already been marked as read by @LatestMessage.ClaimerName</p>
-        <button type="button" @onclick="UnclaimLatestMessageAsync">Undo mark as read</button>
+        <button type="button" @onclick="UnclaimLatestMessageAsync" disabled="@isMutationRunning">Undo mark as read</button>
     }
 
     @if (!string.IsNullOrEmpty(errorMessage))
@@ -62,10 +62,10 @@
                 {
                     <div id="TextAreaEdit_@message.ID">
                         <div class="form-group message-main-content">
-                            <textarea class="form-control message-subtitle" style="width:100%" @bind="editTexts[message.ID]" rows="4" autocomplete="off"></textarea>
+                            <textarea class="form-control message-subtitle" style="width:100%" @bind="editTexts[message.ID]" rows="4" autocomplete="off" disabled="@isMutationRunning"></textarea>
                         </div>
                         <div class="form-group">
-                            <input type="button" value="Update" class="btn btn-default" @onclick="() => EditMessageAsync(message)" /> | <a role="button" class="message-subtitle" style="text-decoration:underline;color:@GetActionColor(message)" @onclick="() => CancelEdit(message)">Cancel</a>
+                            <input type="button" value="Update" class="btn btn-default" @onclick="() => EditMessageAsync(message)" disabled="@isMutationRunning" /> | <a role="button" class="message-subtitle" style="text-decoration:underline;color:@GetActionColor(message)" @onclick="() => CancelEdit(message)">Cancel</a>
                         </div>
                     </div>
                 }
@@ -81,7 +81,14 @@
                     <span>
                         @if (IsAllowedToEditMessage(message))
                         {
-                            <a role="button" class="message-subtitle" style="text-decoration:underline;color:@GetActionColor(message)" @onclick="() => StartEdit(message)">Edit</a>
+                            @if (isMutationRunning)
+                            {
+                                <span class="message-subtitle" style="color:gray">Edit</span>
+                            }
+                            else
+                            {
+                                <a role="button" class="message-subtitle" style="text-decoration:underline;color:@GetActionColor(message)" @onclick="() => StartEdit(message)">Edit</a>
+                            }
                         }
                         @if (IsAllowedToEditMessage(message) && IsAllowedToDeleteMessage(message))
                         {
@@ -89,7 +96,14 @@
                         }
                         @if (IsAllowedToDeleteMessage(message))
                         {
-                            <a role="button" class="message-subtitle" style="color:@GetActionColor(message)" @onclick="() => DeleteMessageAsync(message)">Delete</a>
+                            @if (isMutationRunning)
+                            {
+                                <span class="message-subtitle" style="color:gray">Delete</span>
+                            }
+                            else
+                            {
+                                <a role="button" class="message-subtitle" style="color:@GetActionColor(message)" @onclick="() => DeleteMessageAsync(message)">Delete</a>
+                            }
                         }
                     </span>
                 </div>
