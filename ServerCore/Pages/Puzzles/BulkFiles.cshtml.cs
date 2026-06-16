@@ -153,6 +153,8 @@ namespace ServerCore.Pages.Puzzles
             //
             foreach (var pair in dirs)
             {
+                if (pair.Value == null || pair.Value.Files.Count == 0) continue;
+
                 Dictionary<string, Uri> fileUrls = await FileManager.UploadBlobsAsync(pair.Value.Files, Event.ID, pair.Value.RawDirectory);
                 bool addedAny = false;
 
