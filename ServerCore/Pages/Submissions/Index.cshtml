@@ -81,9 +81,11 @@
         display: grid;
         grid-template-columns: 0.75fr 0.25fr;
     }
-    .evencolumn {
+    .submission-block {
         display: grid;
-        grid-template-columns: 0.5fr 0.5fr;
+        grid-template-columns: 1fr auto;
+        column-gap: 20px;
+        row-gap: 10px;
     }
     .marginright {
         margin-right: 6px;
@@ -152,8 +154,14 @@
     #dataConfirmationPrintable {
         margin-left: 20px;
     }
+    #puzzleTitlePrintable {
+        margin-bottom: 0px;
+    }
+    #puzzleGroupPrintable {
+        margin-bottom: 0px;
+    }
     #puzzleAuthorPrintable {
-        margin-top: 8px;
+        margin-top: 0px;
     }
     .answer-label-customizable {
         font-weight:bold;
@@ -245,7 +253,7 @@
         .twocolumn {
             grid-template-columns: 5.5in 2.5in;
         }
-        #puzzleNamePrintable {
+        #puzzleTitlePrintable {
             text-transform: uppercase;
             margin-top: -5px;
         }
@@ -308,31 +316,31 @@
 }
 
 <div class="top-header-customizable" id="top-header">
-    <div class="title-block twocolumn">
-        <div class="flexwrapper">
-            <div class="puzzle-title-wrapper"><h2 class="puzzle-title-customizable" id="puzzleNamePrintable"><b>@RawHtmlHelper.Display(Model.Puzzle.Name, Model.Event.ID, Html)</b></h2></div>
-            @if (!string.IsNullOrEmpty(Model.Puzzle.Group))
-            {
-                <div><h3 class="puzzle-group-customizable" id="puzzleGroupPrintable">@RawHtmlHelper.Display(Model.Puzzle.Group, Model.Event.ID, Html)</h3></div>
-            }
-            @if (Model.Puzzle.HasDataConfirmation)
-            {
-                <img class="dc-icon-customizable" id="dataConfirmationPrintable" src="~/images/comic-dc.png" width="30" height="30" style="margin-bottom:3px" title="Reminder: This puzzle supports data confirmation" />
-            }
-        </div>
-        <div class="inlinewrapper">
-            <h4 class="puzzle-author-customizable" id="puzzleAuthorPrintable">@RawHtmlHelper.Display(Model.PuzzleAuthor, Model.Event.ID, Html)</h4>
-        </div>
-    </div>
-
-    @if (!string.IsNullOrEmpty(Model.Puzzle.Errata))
-    {
-        <div class="no-print"><span style="color: red; font-weight:600;">&#x26A0; Errata: </span>@Model.Puzzle.Errata</div>
-        <br class="no-print" />
-    }
-
-        <div class="submission-block evencolumn no-print">
+        <div class="submission-block no-print">
             <div>
+            <div class="title-block">
+                <div class="flexwrapper">
+                    <div class="puzzle-title-wrapper"><h2 class="puzzle-title-customizable" id="puzzleTitlePrintable"><b>@RawHtmlHelper.Display(Model.Puzzle.Name, Model.Event.ID, Html)</b></h2></div>
+                    @if (!string.IsNullOrEmpty(Model.Puzzle.Group))
+                    {
+                        <div><h3 class="puzzle-group-customizable" id="puzzleGroupPrintable">@RawHtmlHelper.Display(Model.Puzzle.Group, Model.Event.ID, Html)</h3></div>
+                    }
+                    @if (Model.Puzzle.HasDataConfirmation)
+                    {
+                        <img class="dc-icon-customizable" id="dataConfirmationPrintable" src="~/images/comic-dc.png" width="30" height="30" style="margin-bottom:3px" title="Reminder: This puzzle supports data confirmation" />
+                    }
+                </div>
+                <div class="puzzle-author">
+                    <h4 class="puzzle-author-customizable" id="puzzleAuthorPrintable">@RawHtmlHelper.Display(Model.PuzzleAuthor, Model.Event.ID, Html)</h4>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.Puzzle.Errata))
+            {
+                <div class="no-print"><span style="color: red; font-weight:600;">&#x26A0; Errata: </span>@Model.Puzzle.Errata</div>
+                <br class="no-print" />
+            }
+
                 @if (Model.EventRole.Type == ModelBases.EventRoleType.impersonateteam)
                 {
                     <h3>Read-only: Impersonating @Model.Team.Name</h3>
