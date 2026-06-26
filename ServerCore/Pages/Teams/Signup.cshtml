@@ -11,7 +11,7 @@
 <div>
     <component type="typeof(ServerCore.Pages.Teams.SignupHub)" render-mode="Server"
         param-EventId="@Model.Event.ID"
-        param-EventRole="@Model.EventRole"
+        param-EventRoleString="@Model.EventRole.ToString()"
         param-LoggedInUserId="@Model.LoggedInUser.ID" 
         param-IsMicrosoft="@Model.IsMicrosoft" />
 </div>

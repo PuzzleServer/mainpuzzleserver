@@ -21,7 +21,7 @@ namespace ServerCore.Pages.Teams
         public int EventId { get; set; }
 
         [Parameter]
-        public EventRole EventRole { get; set; }
+        public string EventRoleString { get; set; }
 
         [Parameter]
         public int LoggedInUserId { get; set; }
@@ -38,8 +38,12 @@ namespace ServerCore.Pages.Teams
 
         public SignupStrategy Strategy { get; set; } = SignupStrategy.None;
 
+        public EventRole EventRole;
+
         protected override async Task OnParametersSetAsync()
         {
+            EventRole = EventRole.Parse(EventRoleString);
+
             Event = await _context.Events.Where(ev => ev.ID == EventId).SingleAsync();
             int teamCount = await _context.Teams.Where(team => team.Event == Event).CountAsync();
 
