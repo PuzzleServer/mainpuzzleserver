@@ -423,7 +423,7 @@
                         }
                         @if (!Model.IsPuzzleForSinglePlayer && !Model.Event.EphemeralHackKillPresence)
                         {
-                            <component type="typeof(ServerCore.Pages.Components.PresenceComponent)" render-mode="Server" param-PuzzleUserId="@Model.LoggedInUser.ID" param-TeamId="@Model.Team.ID" param-PuzzleId="@Model.Puzzle.ID" />
+                        <component type="typeof(ServerCore.Pages.Components.PresenceComponent)" render-mode="Server" param-PuzzleUserId="@Model.LoggedInUser.ID" param-TeamId="@Model.Team.ID" param-PuzzleId="@Model.Puzzle.ID" param-IsReadOnly="@(Model.EventRole != ModelBases.EventRole.play)"  />
                         }
                     </div>
                 }
