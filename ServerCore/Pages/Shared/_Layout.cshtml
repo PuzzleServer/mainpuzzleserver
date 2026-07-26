@@ -117,6 +117,8 @@
 
     @RenderSection("Scripts", required: false)
 
+    <a asp-fragment="main-content" class="visually-hidden-focusable position-absolute start-0 top-0 p-3 z-3 bg-primary text-light">Skip to content</a>
+
     <!--CURRENT NAV BAR-->
     @if (ev == null)
     {
@@ -144,7 +146,7 @@
         <partial name="/Pages/Shared/_EventNavigationPartial.cshtml" />
     }
 
-    <div class="container body-content body-content-customizable">
+    <div class="container body-content body-content-customizable" id="main-content" tabindex="-1">
         @if (!string.IsNullOrEmpty(ev?.Announcement))
             {
             <p class="announcement announcement-customizable no-print">@ev?.Announcement</p>
