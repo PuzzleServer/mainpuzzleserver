@@ -349,11 +349,11 @@
                 {
                     <div class="flexwrapper">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                        <label for="submissionText" class="marginright margintop answer-label-customizable">Answer:</label>
-                        <input name="submissionText" maxlength="1000" id="submitBox" class="form-control marginright" data-val="true" data-val-required="Your answer cannot be empty" />
+                        <label for="submission" class="marginright margintop answer-label-customizable">Answer:</label>
+                        <input name="submission" maxlength="1000" id="submission" class="form-control marginright" data-val="true" data-val-required="Your answer cannot be empty" />
                         <input type="submit" id="submitButton" value="Submit" class="btn btn-default marginright" title="Submitted answers will automatically be capitalized and stripped of non-alphanumeric characters" />
                         @Html.ValidationSummary(true)
-                        <span class="text-danger"><span class="field-validation-valid" data-valmsg-for="submissionText" data-valmsg-replace="true"></span></span>
+                        <span class="text-danger"><span class="field-validation-valid" data-valmsg-for="submission" data-valmsg-replace="true"></span></span>
                     </div>
                     @if (Model.Puzzle.IsFreeform)
                     {
@@ -405,7 +405,7 @@
                     <div><a href="@puzzleFilePath" target="_blank" download class="btn quick-action" role="button"><span class="quick-action-icon">&#x1F5B6;</span> Print Puzzle</a></div>
                     }
                 </div>
-                
+
                 @if(Model.EventRole != ModelBases.EventRole.archive)
                 {
                     <div class="sync-presence-stack">
@@ -663,7 +663,7 @@
             // For local testing, set host to http://localhost:44319
             const submit = document.querySelector("#submitButton");
             async function submitClickHandler (e) {
-                const rawText = document.querySelector("#submitBox").value;
+                const rawText = document.querySelector("#submission").value;
                 const cleanedText = rawText.normalize("NFKD").replace(/[^a-zA-Z\d]/gi, "").toUpperCase();
                 const submissionText = @Model.Puzzle.IsFreeform.ToString().ToLower() ? rawText : cleanedText;
 
@@ -679,7 +679,7 @@
                 const response = await fetch("/api/puzzleapi/submitanswer/@Model.Event.ID/@Model.Puzzle.ID", {
                     method: "POST", mode: "cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(submission), credentials: "include"});
                 const responseData = await response.json();
-                    
+
                 // When the response data is back, add it to the page
                 // Also clear the previous response from the page
                 // Response Code enum is in Helpers/SubmissionEvaluator
@@ -688,14 +688,14 @@
                 let updateVal = "";
                 let responseString = (responseData.completeResponse ?? "") + (responseData.freeformResponse ?? "");
                 const rawPos = responseString.indexOf("Html.Raw(");
-                if (rawPos >= 0) { 
+                if (rawPos >= 0) {
                     responseString = responseString.substring(0, rawPos) + responseString.substring(rawPos + 9, responseString.length - 1);
                 }
                 let headerString = "";
                 switch (responseData.responseCode) {
                     case 0: // Correct
                         headerString = "Correct!"
-                        if (responseString.length > 0) { 
+                        if (responseString.length > 0) {
                             headerString = responseString;
                         }
                         updateVal = `<div class="alert alert-success" role="alert"><h4>` + headerString + `</h4><span>Answer: ` + cleanedText + `</span></div>`;
@@ -778,7 +778,7 @@
                     answerPanel.firstElementChild.after(wrapper);
                     document.getElementById("submissionHistory").style.display = "inline-block";
                 }
-                document.querySelector("#submitBox").value = "";
+                document.querySelector("#submission").value = "";
             }
             @if (Model.EventRole != ModelBases.EventRole.archive)
             {
@@ -786,8 +786,8 @@
             }
 
             // Make hitting enter in the answer box trigger a submission
-            const submitBox = document.querySelector("#submitBox");
-            submitBox.addEventListener("keydown", (e) => {
+            const submissionInput = document.querySelector("#submission");
+            submissionInput.addEventListener("keydown", (e) => {
                 if (e.key === "Enter") {
                     e.preventDefault();
                     document.querySelector("#submitButton").click();
@@ -797,7 +797,7 @@
 
         // Resize iframe whenever it loads content
         // Note that when the puzzle receives the message, it should remove any extraneous wrapping before reporting its size
-        document.addEventListener("DOMContentLoaded", (e) => { 
+        document.addEventListener("DOMContentLoaded", (e) => {
             const iframe = document.querySelector("#puzzle-frame");
             if ((iframe !== null) && (iframe !== undefined)) {
                 iframe.addEventListener("load", (e) => {
@@ -805,7 +805,7 @@
                 });
             }
 
-            // Create a custom print link so it can find the current location of the iframe 
+            // Create a custom print link so it can find the current location of the iframe
             // instead of the initial one in case it changed due to a navigation inside it
             const printLink = document.querySelector(".print-link");
             if ((printLink !== null) && (printLink !== undefined)) {
