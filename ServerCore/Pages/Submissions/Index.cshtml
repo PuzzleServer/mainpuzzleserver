@@ -349,11 +349,11 @@
                 {
                     <div class="flexwrapper">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                        <label for="submission" class="marginright margintop answer-label-customizable">Answer:</label>
-                        <input name="submission" maxlength="1000" id="submission" class="form-control marginright" data-val="true" data-val-required="Your answer cannot be empty" />
+                        <label for="rawSubmission" class="marginright margintop answer-label-customizable">Answer:</label>
+                        <input name="rawSubmission" maxlength="1000" id="rawSubmission" class="form-control marginright" data-val="true" data-val-required="Your answer cannot be empty" />
                         <input type="submit" id="submitButton" value="Submit" class="btn btn-default marginright" title="Submitted answers will automatically be capitalized and stripped of non-alphanumeric characters" />
                         @Html.ValidationSummary(true)
-                        <span class="text-danger"><span class="field-validation-valid" data-valmsg-for="submission" data-valmsg-replace="true"></span></span>
+                        <span class="text-danger"><span class="field-validation-valid" data-valmsg-for="rawSubmission" data-valmsg-replace="true"></span></span>
                     </div>
                     @if (Model.Puzzle.IsFreeform)
                     {
@@ -663,7 +663,7 @@
             // For local testing, set host to http://localhost:44319
             const submit = document.querySelector("#submitButton");
             async function submitClickHandler (e) {
-                const rawText = document.querySelector("#submission").value;
+                const rawText = document.querySelector("#rawSubmission").value;
                 const cleanedText = rawText.normalize("NFKD").replace(/[^a-zA-Z\d]/gi, "").toUpperCase();
                 const submissionText = @Model.Puzzle.IsFreeform.ToString().ToLower() ? rawText : cleanedText;
 
@@ -778,7 +778,7 @@
                     answerPanel.firstElementChild.after(wrapper);
                     document.getElementById("submissionHistory").style.display = "inline-block";
                 }
-                document.querySelector("#submission").value = "";
+                document.querySelector("#rawSubmission").value = "";
             }
             @if (Model.EventRole != ModelBases.EventRole.archive)
             {
@@ -786,8 +786,8 @@
             }
 
             // Make hitting enter in the answer box trigger a submission
-            const submissionInput = document.querySelector("#submission");
-            submissionInput.addEventListener("keydown", (e) => {
+            const rawSubmission = document.querySelector("#rawSubmission");
+            rawSubmission.addEventListener("keydown", (e) => {
                 if (e.key === "Enter") {
                     e.preventDefault();
                     document.querySelector("#submitButton").click();
