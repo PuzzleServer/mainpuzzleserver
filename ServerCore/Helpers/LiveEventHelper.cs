@@ -203,15 +203,18 @@ namespace ServerCore.Helpers
 
                 foreach (var teamId in sortedTeamIds)
                 {
-                    Team t = context.Teams.Where(t => t.ID == teamId).FirstOrDefault();
-                    sortedTeamList.Add(t);
+                    Team t = context.Teams.Where(t => t.ID == teamId && !t.IsRemoteTeam).FirstOrDefault();
+                    if (t != null)
+                    {
+                        sortedTeamList.Add(t);
+                    }
                 }
 
                 return sortedTeamList;
             }
             else
             {
-                var teamList = await context.Teams.Where(t => t.Event == e).ToListAsync();
+                var teamList = await context.Teams.Where(t => t.Event == e && !t.IsRemoteTeam).ToListAsync();
                 var sortedTeamList = teamList.OrderBy(_ => seed.Next());
                 return sortedTeamList.ToList();
             }
