@@ -143,7 +143,7 @@
 }
 
 <div>
-    <hr />
+    <hr aria-hidden="true" />
 
     <div class="row">
         <div class="column">
@@ -280,11 +280,11 @@
                         <p>@Model.Event.LunchDescription</p>
                     }
                     <p>
-                        Your team can currently have @Model.EditableLunches lunch item(s). If your team wants to opt out of one of the items, select &quot;Decline lunch item&quot;. If you cannot have any of the options offered due to dietary restrictions, please email <a href="mailto:puzzhunt@microsoft.com">puzzhunt@microsoft.com</a> with details and we'll find an alternative.
+                        Your team currently has @Model.EditableLunches lunch @(Model.EditableLunches == 1 ? "item" : "items"). To opt out, select &quot;Decline lunch item&quot;. If none of the options work due to dietary restrictions, email <a href="mailto:puzzhunt@microsoft.com">puzzhunt@microsoft.com</a> and we'll find an alternative.
                         @if (Model.EditableLunches < Model.SoftMaxLunches && Model.Event.CanChangeLunch)
                         {
                             <span>
-                                Recruit @(Model.Event.PlayersPerLunch - ((Model.EligibleForLunch - 1) % Model.Event.PlayersPerLunch)) more in-person player(s) to get another item, up to @Model.GlobalMaxLunches items total!
+                                Recruit @Model.PlayersNeededForNextLunch more in-person @(Model.PlayersNeededForNextLunch == 1 ? "player" : "players") to earn another item—up to @Model.GlobalMaxLunches total!
                             </span>
                         }
                     </p>
@@ -490,13 +490,13 @@
             @if (canAdd)
             {
                 <h3>Invite teammates</h3>
-                <p>Copy the sample e-mail below and send it to teammates to give them a direct link to join this team. The link in the mail has a special code that will auto-approve them for your team.</p>
+                <p>Copy the sample email below and send it to teammates. Your link includes a special code that auto-approves them to join your team!</p>
 
                 @if (!Model.Team.AutoTeamType.HasValue)
                 {
                     @if (Model.Team.IsLookingForTeammates)
                     {
-                        <p>Note: Your team is currently marked as looking for unsolicited teammates. You may get applications from people who you did not send the link to, and you can approve or ignore those requests by visiting this page. To change this, edit your team details <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID"> here</a>.</p>
+                        <p>Note: Your team is currently open to unsolicited requests. You may receive join requests from people you didn't invite; review or ignore them on this page. To change this setting, edit your team details <a asp-page="./Edit" asp-route-teamId="@Model.Team.ID"> here</a>.</p>
 
                     }
                     else
@@ -506,12 +506,12 @@
                 }
 
                 <p id="emailContent">
-                    ------------------
+                    <span aria-hidden="true">------------------</span>
                     <br /><br />Hello,
                     <br /><br />I've created a team to participate in @Model.Event.Name! Click <a asp-page="./Apply" asp-route-eventRole="play" asp-route-teamId="@Model.Team.ID" asp-route-password="@Model.Team.Password">HERE</a> to join my team.
                     <br /><br />Thanks,
                     <br />@Model.LoggedInUser.Name
-                    <br /><br />------------------
+                    <br /><br /><span aria-hidden="true">------------------</span>
                 </p>
                 <h3>Pending requests  (@Model.Users.Count)</h3>
                 <div>

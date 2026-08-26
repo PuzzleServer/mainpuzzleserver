@@ -48,6 +48,13 @@ namespace ServerCore.Pages.Teams
         /// </summary>
         public int EligibleForLunch { get; set; }
 
+        /// <summary>
+        /// Number of additional in-person players needed to earn the next lunch item
+        /// </summary>
+        public int PlayersNeededForNextLunch => EligibleForLunch == 0
+            ? PlayersPerLunch
+            : PlayersPerLunch - ((EligibleForLunch - 1) % PlayersPerLunch);
+
         public string TeamRoom { get; set; }
         public IList<TeamLunch> Lunches { get; set; }
         public string[] NewLunch { get; set; }
