@@ -38,6 +38,18 @@ namespace ServerCore.Pages.Events
             await LiveEventHelper.GenerateScheduleForLiveEvents(PuzzleServerContext, Event, bigTeamsFirst: false);
         }
 
+        private async Task RegenerateScheduleWithRotationAsync(MouseEventArgs _)
+        {
+            await LiveEventHelper.DeleteLiveEventSchedule(PuzzleServerContext, EventId);
+            await LiveEventHelper.GenerateScheduleForLiveEvents(PuzzleServerContext, Event, bigTeamsFirst: true, rotateTeams: true);
+        }
+
+        private async Task RegenerateScheduleRandomlyWithRotationAsync(MouseEventArgs _)
+        {
+            await LiveEventHelper.DeleteLiveEventSchedule(PuzzleServerContext, EventId);
+            await LiveEventHelper.GenerateScheduleForLiveEvents(PuzzleServerContext, Event, bigTeamsFirst: false, rotateTeams: true);
+        }
+
         private async Task DisplayScheduleCSV(MouseEventArgs _)
         {
             ScheduleCSV = await LiveEventHelper.ExportLiveEventScheduleToCsv(PuzzleServerContext, Event);
