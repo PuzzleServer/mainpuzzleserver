@@ -39,7 +39,7 @@ namespace ServerCore.Pages.Puzzles
         public async Task<IActionResult> OnGetAsync(int puzzleId)
         {
             this.ErrorMessage = null;
-            if (!await IsRegisteredUser())
+            if (this.EventRole != EventRole.archive && !await IsRegisteredUser())
             {
                 this.ErrorMessage = "You need to register for the event to see hints!";
             }
@@ -95,33 +95,37 @@ namespace ServerCore.Pages.Puzzles
                            where hint.Puzzle.ID == puzzleID
                            join SinglePlayerPuzzleHintStatePerPlayer state in _context.SinglePlayerPuzzleHintStatePerPlayer on hint.Id equals state.HintID into leftJoinedTable
                            from nullableHintStatePerPlayer in leftJoinedTable.DefaultIfEmpty()
-                           where nullableHintStatePerPlayer == null || nullableHintStatePerPlayer.PlayerID == LoggedInUser.ID
+                           where LoggedInUser == null || nullableHintStatePerPlayer == null || nullableHintStatePerPlayer.PlayerID == LoggedInUser.ID
                            orderby hint.DisplayOrder, hint.Description
                            select new HintWithNullableState(hint, nullableHintStatePerPlayer)).ToListAsync();
 
-            // Fill in any hint states we are missing.
-            foreach (HintWithNullableState missingState in hintsWithNullableStates.Where(state => state.NullableState == null))
+            if (this.EventRole != EventRole.archive)
             {
-                var newState = new SinglePlayerPuzzleHintStatePerPlayer()
+                // Fill in any hint states we are missing.
+                foreach (HintWithNullableState missingState in hintsWithNullableStates.Where(state => state.NullableState == null))
                 {
-                    Hint = missingState.Hint,
-                    PlayerID = LoggedInUser.ID
-                };
+                    var newState = new SinglePlayerPuzzleHintStatePerPlayer()
+                    {
+                        Hint = missingState.Hint,
+                        PlayerID = LoggedInUser.ID
+                    };
 
-                _context.SinglePlayerPuzzleHintStatePerPlayer.Add(newState);
-                missingState.NullableState = newState;
+                    _context.SinglePlayerPuzzleHintStatePerPlayer.Add(newState);
+                    missingState.NullableState = newState;
+                }
+
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             Hints = hintsWithNullableStates
                 .Select(item => new HintWithState()
                 { 
                     Hint = item.Hint,
-                    IsUnlocked = item.NullableState.IsUnlocked 
+                    IsUnlocked = this.EventRole == EventRole.archive || item.NullableState.IsUnlocked 
                 })
                 .ToList();
 
-            bool isSolved = SinglePlayerPuzzleStateHelper.GetFullReadOnlyQuery(_context, Event, puzzleID, LoggedInUser.ID)
+            bool isSolved = this.EventRole == EventRole.archive || SinglePlayerPuzzleStateHelper.GetFullReadOnlyQuery(_context, Event, puzzleID, LoggedInUser.ID)
                 .Any(puzzleState => puzzleState.SolvedTime.HasValue);
 
             if (Hints.Count > 0)
@@ -157,9 +161,14 @@ namespace ServerCore.Pages.Puzzles
             return Hints;
         }
 
-        private Task<PlayerInEvent> GetPlayer()
+        private async Task<PlayerInEvent> GetPlayer()
         {
-            return (from PlayerInEvent player in _context.PlayerInEvent
+            if (this.EventRole == EventRole.archive)
+            {
+                return new PlayerInEvent() { HintCoinCount = 1000, HintCoinsUsed = 0 };
+            }
+
+            return await (from PlayerInEvent player in _context.PlayerInEvent
                    where player.EventId == Event.ID && player.PlayerId == LoggedInUser.ID
                    select player).FirstOrDefaultAsync();
         }

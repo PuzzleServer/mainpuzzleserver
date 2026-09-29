@@ -241,7 +241,7 @@ namespace ServerCore.Pages.Events
                                          PuzzleID = puzzleGroup.Key,
                                          PuzzleName = puzzleGroup.First().PuzzleName,
                                          SolveCount = puzzleGroup.Where(puzzle => puzzle.SolveTime.HasValue).Count(),
-                                         CurrentUserInfo = puzzleGroup.FirstOrDefault(grouping => grouping.PuzzleUserId == this.LoggedInUser.ID)
+                                         CurrentUserInfo = this.LoggedInUser == null ? null : puzzleGroup.FirstOrDefault(grouping => grouping.PuzzleUserId == this.LoggedInUser.ID)
                                      })
                                      .ToListAsync();
 

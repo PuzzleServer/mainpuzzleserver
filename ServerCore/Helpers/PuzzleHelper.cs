@@ -56,17 +56,17 @@ namespace ServerCore.Helpers
             await context.SaveChangesAsync();
         }
 
-        public static string GetFormattedUrl(Puzzle puzzle, int eventId, int userId, string teamPassword = null, string playerClass = null)
+        public static string GetFormattedUrl(Puzzle puzzle, int eventId, int? userId, string teamPassword = null, string playerClass = null)
         {
             return GetFormattedUrl(puzzle.CustomURL, puzzle.ID, eventId, userId, teamPassword, playerClass);
         }
 
-        public static string GetFormattedSolutionUrl(Puzzle puzzle, int eventId, int userId)
+        public static string GetFormattedSolutionUrl(Puzzle puzzle, int eventId, int? userId)
         {
             return GetFormattedUrl(puzzle.CustomSolutionURL, puzzle.ID, eventId, userId, null, null);
         }
 
-        public static string GetFormattedUrl(string customUrl, int puzzleId, int eventId, int userId, string teamPassword, string playerClass)
+        public static string GetFormattedUrl(string customUrl, int puzzleId, int eventId, int? userId, string teamPassword, string playerClass)
         {
             if (customUrl == null)
             {
