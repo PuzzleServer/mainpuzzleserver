@@ -85,6 +85,10 @@ namespace ServerCore.Pages.Teams
 
             // Avoid letting the team tamper with their hint coin count
             Team.HintCoinCount = existingTeam.HintCoinCount;
+
+            // Avoid letting the team undisqualify itself
+            Team.IsDisqualified = existingTeam.IsDisqualified;
+
             _context.Entry(existingTeam).State = EntityState.Detached;
             _context.Attach(Team).State = EntityState.Modified;
 
