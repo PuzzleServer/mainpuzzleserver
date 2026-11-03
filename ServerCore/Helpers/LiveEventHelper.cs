@@ -141,9 +141,12 @@ namespace ServerCore.Helpers
         /// Create LiveEventSchedule rows for each team and each scheduled live event
         /// This does not currently handle regeneration, in order to regenerate the schedule use the delete method, then run this again
         /// </summary>
-        public static async Task GenerateScheduleForLiveEvents(PuzzleServerContext context, Event e, bool bigTeamsFirst = false)
+        public static async Task GenerateScheduleForLiveEvents(PuzzleServerContext context, Event e, bool bigTeamsFirst = false, bool rotateTeams = false)
         {
             List<Team> teamList = await ShuffleTeams(context, e, bigTeamsFirst);
+            int numScheduledEvents = await context.LiveEvents.Where(l => l.EventIsScheduled).CountAsync();
+            int baseRotation = teamList.Count / numScheduledEvents;
+            int rotation = baseRotation;
 
             // Get all of the scheduled live events for the current event
             var liveEvents = await GetLiveEventsForEvent(context, e, true, false);
@@ -152,6 +155,24 @@ namespace ServerCore.Helpers
             {
                 DateTime currentSlot = liveEvent.EventStartTimeUtc;
                 Queue<Team> teamQueue = new Queue<Team>(teamList);
+
+                // If the plan is to rotate the team list to reduce double scheduling then do that here
+                // The number of rotations is dependent on the number of scheduled live events
+                if (rotateTeams)
+                {
+                    for (int i = 0; i <= rotation; i++)
+                    {
+                        Team current = teamQueue.Dequeue();
+                        teamQueue.Enqueue(current);
+                    }
+
+                    rotation += baseRotation;
+                }
+                else
+                {
+                    // Reshuffle the team list for the next event - doesn't guarantee fairness or that events won't overlap but it's easy
+                    teamList = await ShuffleTeams(context, e, bigTeamsFirst);
+                }
 
                 while (teamQueue.Count > 0)
                 {
@@ -173,9 +194,6 @@ namespace ServerCore.Helpers
 
                     currentSlot += liveEvent.TimePerSlot;
                 }
-
-                // Reshuffle the team list for the next event - doesn't guarantee fairness or that events won't overlap but it's easy
-                teamList = await ShuffleTeams(context, e, bigTeamsFirst);
             }
 
             await context.SaveChangesAsync();
@@ -281,7 +299,7 @@ namespace ServerCore.Helpers
             // Get the set of scheduled times for the event
             List<LiveEvent> scheduledEvents = await GetLiveEventsForEvent(context, e, true, false);
 
-            if(scheduledEvents.Count == 0)
+            if (scheduledEvents.Count == 0)
             {
                 return "";
             }
@@ -294,9 +312,9 @@ namespace ServerCore.Helpers
             foreach (LiveEvent liveEvent in scheduledEvents)
             {
                 List<LiveEventSchedule> scheduledTimes = await (from eventSlot in context.LiveEventsSchedule
-                                                               where eventSlot.LiveEventId == liveEvent.ID
-                                                               orderby eventSlot.StartTimeUtc
-                                                               select eventSlot).ToListAsync();
+                                                                where eventSlot.LiveEventId == liveEvent.ID
+                                                                orderby eventSlot.StartTimeUtc
+                                                                select eventSlot).ToListAsync();
 
                 // Add to the checkin list
                 byEventThenTime.AppendLine(liveEvent.Name);
@@ -313,7 +331,7 @@ namespace ServerCore.Helpers
             combinedSchedule = combinedSchedule.OrderBy((slot) => (slot.TeamId)).ThenBy((slot) => (slot.LiveEventId)).ToList();
 
             // Set up the header line - the events are ordered by id above so the order is consistent here
-            byTeam.Append("Team Name");
+            byTeam.Append("Team Name,");
 
             foreach (LiveEvent liveEvent in scheduledEvents)
             {
