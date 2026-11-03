@@ -87,15 +87,6 @@
         column-gap: 20px;
         row-gap: 10px;
     }
-    .marginright {
-        margin-right: 6px;
-    }
-    .margintop {
-        margin-top: 6px;
-    }
-    input.checkboxfix {
-        margin-top: 0px;
-    }
     .hideablepanel {
         padding-left: 5px;
         text-align: left;
@@ -229,10 +220,6 @@
         flex-basis: 100%;
     }
 
-    #initialMessage > div:first-child {
-        margin-top: 1em;
-    }
-
     @@media (max-width: 750px) {
         .title-block { grid-template-columns: 1fr; }
         .title-block .flexwrapper { flex-wrap: wrap; }
@@ -347,21 +334,24 @@
                 }
                 else
                 {
-                    <div class="flexwrapper">
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                        <label for="rawSubmission" class="marginright margintop answer-label-customizable">Answer:</label>
-                        <input name="rawSubmission" maxlength="1000" id="rawSubmission" class="form-control marginright" data-val="true" data-val-required="Your answer cannot be empty" />
-                        <input type="submit" id="submitButton" value="Submit" class="btn btn-default marginright" title="Submitted answers will automatically be capitalized and stripped of non-alphanumeric characters" />
-                        @Html.ValidationSummary(true)
-                        <span class="text-danger"><span class="field-validation-valid" data-valmsg-for="rawSubmission" data-valmsg-replace="true"></span></span>
-                    </div>
-                    @if (Model.Puzzle.IsFreeform)
-                    {
-                        <label for="allowFreeformSharing" class="marginright margintop">
-                            <input class="checkboxfix" type="checkbox" name="allowFreeformSharing" asp-for="AllowFreeformSharing" title="Allow other players to see this after the event" />
-                            Allow other players to see this after the event
-                        </label>
-                    }
+                    <form id="submissionForm" class="mb-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <label for="rawSubmission" class="me-2 answer-label-customizable">Answer:</label>
+                            <input name="rawSubmission" maxlength="1000" id="rawSubmission" class="form-control me-2" data-val="true" data-val-required="Your answer cannot be empty" />
+                            <input type="submit" id="submitButton" value="Submit" class="btn btn-default me-2 align-self-stretch" title="Submitted answers will automatically be capitalized and stripped of non-alphanumeric characters" />
+                            @Html.ValidationSummary(true)
+                            <span class="text-danger"><span class="field-validation-valid" data-valmsg-for="rawSubmission" data-valmsg-replace="true"></span></span>
+                        </div>
+
+                        @if (Model.Puzzle.IsFreeform)
+                        {
+                            <div class="d-flex align-items-center">
+                                <input type="checkbox" name="allowFreeformSharing" id="allowFreeformSharing" class="me-2" />
+                                <label for="allowFreeformSharing">Allow other players to see this after the event</label>
+                            </div>
+                        }
+                    </form>
                 }
             </div>
             <div class="inlinewrapper quick-actions">
@@ -658,21 +648,19 @@
                 });
             }
 
-            // Add the Submit button click handler
             // Submission conversion mirrors what takes place in DataModel\Response::FormatSubmission
             // For local testing, set host to http://localhost:44319
-            const submit = document.querySelector("#submitButton");
             async function submitClickHandler (e) {
                 const rawText = document.querySelector("#rawSubmission").value;
                 const cleanedText = rawText.normalize("NFKD").replace(/[^a-zA-Z\d]/gi, "").toUpperCase();
                 const submissionText = @Model.Puzzle.IsFreeform.ToString().ToLower() ? rawText : cleanedText;
 
-                const freeformBoxes = document.getElementsByName("allowFreeformSharing");
+                const freeformBox = document.getElementById("allowFreeformSharing");
                 let allowFreeformSharing = false;
-                if (freeformBoxes.length > 0) {
+                if (freeformBox !== null) {
                     // If the puzzle is freeform, check the box to allow sharing
                     // Otherwise, default to false
-                    allowFreeformSharing = freeformBoxes[0].checked;
+                    allowFreeformSharing = freeformBox.checked;
                 }
 
                 let submission = {SubmissionText: submissionText, AllowFreeformSharing: allowFreeformSharing};
@@ -780,17 +768,15 @@
                 }
                 document.querySelector("#rawSubmission").value = "";
             }
-            @if (Model.EventRole != ModelBases.EventRole.archive)
-            {
-                <text>submit.addEventListener("click", submitClickHandler);</text>
-            }
 
-            // Make hitting enter in the answer box trigger a submission
-            const rawSubmission = document.querySelector("#rawSubmission");
-            rawSubmission.addEventListener("keydown", (e) => {
-                if (e.key === "Enter") {
-                    e.preventDefault();
-                    document.querySelector("#submitButton").click();
+            const form = document.querySelector("#submissionForm");
+            form.addEventListener("submit", (e) => {
+                // Override default form submission behavior so we don't trigger a page reload.
+                e.preventDefault();
+
+                @if (Model.EventRole != ModelBases.EventRole.archive)
+                {
+                    <text>submitClickHandler(e);</text>
                 }
             });
         });
