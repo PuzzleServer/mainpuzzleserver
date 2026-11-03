@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 using ServerCore.Helpers;
@@ -15,7 +16,7 @@ namespace ServerCore.Pages.Puzzles
     /// <summary>
     /// Model for the player's "Puzzles" page. Shows a list of the all the player puzzles (both team puzzles and single player puzzles).
     /// </summary>
-    [Authorize()]
+    [AllowAnonymous]
     public class PlayModel : EventSpecificPageModel
     {
         // see https://docs.microsoft.com/en-us/aspnet/core/data/ef-rp/sort-filter-page?view=aspnetcore-2.1 to make this sortable!
@@ -49,11 +50,22 @@ namespace ServerCore.Pages.Puzzles
 
         public string LoggedInPlayerClass { get; set; }
 
-        public async Task OnGetAsync(
+        public async Task<IActionResult> OnGetAsync(
             SortOrder? teamPuzzleSort,
             SortOrder? singlePlayerPuzzleSort,
             PuzzleStateFilter? stateFilter)
         {
+            if (EventRole != EventRole.archive && LoggedInUser == null)
+            {
+                return Challenge();
+            }
+
+            // probably unnecessary given EventSpecificPageModel.OnPageHandlerExecutionAsync but let's be safe
+            if (EventRole == EventRole.archive && !Event.CanArchive)
+            {
+                return Forbid();
+            }
+
             TeamPuzzleSort = teamPuzzleSort;
             SinglePlayerPuzzleSort = singlePlayerPuzzleSort;
             StateFilter = stateFilter;
@@ -108,7 +120,7 @@ namespace ServerCore.Pages.Puzzles
                 }
             }
 
-            if (Event.IsAlphaTestingEvent)
+            if (Event.IsAlphaTestingEvent && Team != null)
             {
                 HashSet<int> visibleIDs = new HashSet<int>();
                 List<AlphaPuzzleView> notYetVisibleUnclaimedViews = new List<AlphaPuzzleView>();
@@ -131,6 +143,8 @@ namespace ServerCore.Pages.Puzzles
 
                 UnclaimedAlphaPuzzleViews = notYetVisibleUnclaimedViews;
             }
+
+            return Page();
         }
 
         public SortOrder? SortForColumnLink(SortOrder? currentSort, SortOrder ascendingSort, SortOrder descendingSort)

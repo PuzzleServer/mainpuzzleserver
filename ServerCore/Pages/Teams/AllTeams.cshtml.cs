@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
+using ServerCore.ModelBases;
 
 namespace ServerCore.Pages.Teams
 {
@@ -22,7 +23,7 @@ namespace ServerCore.Pages.Teams
 
         public async Task<IActionResult> OnGetAsync()
         {
-            if (LoggedInUser == null)
+            if (EventRole != EventRole.archive && LoggedInUser == null)
             {
                 return Challenge();
             }

@@ -18,7 +18,7 @@
     int embedType = 0; // Nothing
     if (Model.Puzzle.CustomURL != null)
     {
-        puzzleFilePath = @PuzzleHelper.GetFormattedUrl(Model.Puzzle, Model.Event.ID, Model.LoggedInUser.ID, Model.Team?.Password, Model.ActivePlayerClass);
+        puzzleFilePath = @PuzzleHelper.GetFormattedUrl(Model.Puzzle, Model.Event.ID, Model.LoggedInUser?.ID, Model.Team?.Password, Model.ActivePlayerClass);
     }
     else if (Model.Puzzle.PuzzleFile != null)
     {
@@ -384,7 +384,7 @@
                     }
                     else if (Model.EventRole != ModelBases.EventRole.archive && !Model.PuzzleState.IsEmailOnlyMode)
                     {
-                        <div><a asp-Page="/Threads/PuzzleThread" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-teamId="@Model.Team?.ID" asp-route-playerId="@Model.LoggedInUser.ID" class="btn quick-action" role="button"><span class="quick-action-icon">&#x1F4AC;</span> Get Help</a></div>
+                        <div><a asp-Page="/Threads/PuzzleThread" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-teamId="@Model.Team?.ID" asp-route-playerId="@Model.LoggedInUser?.ID" class="btn quick-action" role="button"><span class="quick-action-icon">&#x1F4AC;</span> Get Help</a></div>
                     }
 
                     @if (Model.EventRole != ModelBases.EventRole.archive && Model.Event.AllowFeedback)
@@ -456,7 +456,7 @@
     {
         <div class="alert alert-danger" role="alert">
             <h4>Answer Submission Locked Indefinitely</h4>
-            <span>You've submitted too many wrong responses. Please <a asp-Page="/Threads/PuzzleThread" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-teamId="@Model.Team?.ID" asp-route-playerId="@Model.LoggedInUser.ID">use this link to message us your answer or ask for help</a>.</span>
+            <span>You've submitted too many wrong responses. Please <a asp-Page="/Threads/PuzzleThread" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-teamId="@Model.Team?.ID" asp-route-playerId="@Model.LoggedInUser?.ID">use this link to message us your answer or ask for help</a>.</span>
         </div>
     }
     else if (Model.PuzzleState.IsLockedOut)
@@ -493,7 +493,7 @@
         {
             <div class="alert alert-danger" role="alert">
                 <h4>Answer Submission Locked</h4>
-                <span>This puzzle is currently locked! Please <a asp-Page="/Threads/PuzzleThread" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-teamId="@Model.Team?.ID" asp-route-playerId="@Model.LoggedInUser.ID">use this link to message us if you think this is a mistake</a>.</span>
+                <span>This puzzle is currently locked! Please <a asp-Page="/Threads/PuzzleThread" asp-route-puzzleid="@Model.Puzzle.ID" asp-route-teamId="@Model.Team?.ID" asp-route-playerId="@Model.LoggedInUser?.ID">use this link to message us if you think this is a mistake</a>.</span>
             </div>
         }
     }
@@ -726,7 +726,7 @@
                         updateVal = `<div class="alert alert-danger" role="alert">This puzzle can't be found in the system, so your answer has not been recorded.</div>`;
                         break;
                     case 6: // Puzzle Locked
-                        updateVal = `<div class="alert alert-danger" role="alert"><h4>Answer Submission Locked</h4><span>This puzzle is currently locked! Please <a href="/@(Model.Event.UrlString)/@(Model.EventRole)/Threads/PuzzleThread/@(Model.Puzzle.ID)?teamId=@(Model.Team?.ID)&playerId=@(Model.LoggedInUser.ID)">use this link to message us if you think this is a mistake</a>.</span></div>`;
+                        updateVal = `<div class="alert alert-danger" role="alert"><h4>Answer Submission Locked</h4><span>This puzzle is currently locked! Please <a href="/@(Model.Event.UrlString)/@(Model.EventRole)/Threads/PuzzleThread/@(Model.Puzzle.ID)?teamId=@(Model.Team?.ID)&playerId=@(Model.LoggedInUser?.ID)">use this link to message us if you think this is a mistake</a>.</span></div>`;
                         break;
                     case 7: // Empty
                         updateVal = `<div class="alert alert-danger" role="alert">No valid characters were found in this submission. Please try something else.</div>`;
@@ -758,7 +758,7 @@
                     wrapper.appendChild(time);
                     const name = document.createElement("div");
                     name.classList.add("panelitem");
-                    name.innerHTML = "@Model.LoggedInUser.Name";
+                    name.innerHTML = "@Model.LoggedInUser?.Name";
                     wrapper.appendChild(name);
                     const text = document.createElement("div");
                     text.classList.add("panelitem");
