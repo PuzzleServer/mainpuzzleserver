@@ -21,13 +21,12 @@ namespace ServerCore.Pages.Submissions
     public class IndexModel : EventSpecificPageModel
     {
         public const string IncorrectResponseText = "Incorrect";
-        private readonly PuzzleServerContext context;
+        public PuzzleServerContext Context => _context;
 
         private IHubContext<ServerMessageHub> messageHub;
 
         public IndexModel(PuzzleServerContext serverContext, UserManager<IdentityUser> userManager, IHubContext<ServerMessageHub> messageHub) : base(serverContext, userManager)
         {
-            context = serverContext;
             this.messageHub = messageHub;
         }
         public bool IsPuzzleForSinglePlayer { get; set; }
@@ -480,7 +479,7 @@ namespace ServerCore.Pages.Submissions
             {
                 if (Puzzle.CustomCSSFile.StartsWith("$"))
                 {
-                    ContentFile content = await (from contentFile in context.ContentFiles
+                    ContentFile content = await (from contentFile in _context.ContentFiles
                                                  where contentFile.Event == Event &&
                                                  contentFile.ShortName == Puzzle.CustomCSSFile.Substring(1)
                                                  select contentFile).SingleOrDefaultAsync();
