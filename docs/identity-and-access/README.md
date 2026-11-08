@@ -1,97 +1,61 @@
 # Identity and Access
 
-This section explains how people sign in, how PuzzleServer decides what they
-can do, and where to look when changing or troubleshooting that behavior.
+Start here when protecting a page or changing auth. The linked references are
+for the task at hand, not an onboarding reading assignment.
 
-**Authentication asks "Who are you?" Authorization asks "Are you allowed to do
-this?"** Signing in does not automatically register someone for an event, put
-them on a team, or make them an author or administrator.
+## We use ASP.NET Core auth, not a home-grown replacement
 
-## Where to start
+ASP.NET Core Identity handles accounts and cookies; the Microsoft Account
+provider handles sign-in. We use the framework's authorization attributes,
+policies, requirements, and handlers. Our custom part is deciding access from
+event membership, team membership, and puzzle state.
 
-| Guide | What you'll find |
-| --- | --- |
-| [Sign-in and Account Lifecycle](sign-in-and-account-lifecycle.md) | The login flow, account/profile records, framework defaults, and which account features are complete. |
-| [Authorization and Permissions](authorization-and-permissions.md) | The permission rules, URL roles, puzzle access, and checks outside named policies. |
-| [Development and Troubleshooting](development-and-troubleshooting.md) | Configuration settings, change recipes, common failures, and testing limitations. |
+**The book:** Microsoft's [policy-based authorization guide](https://learn.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-10.0).
+For a walkthrough, watch [Advanced ASP.NET Core Authorization with Barry Dorrans](https://learn.microsoft.com/en-us/shows/seth-juarez/advanced-aspnet-core-authorization-barry-dorrans).
+For runnable code, use the official [AuthorizationPoliciesSample](https://github.com/dotnet/AspNetCore.Docs.Samples/tree/main/security/authorization/policies/6.0/AuthorizationPoliciesSample),
+especially `MinimumAgeRequirement`, `MinimumAgeHandler`, and policy registration.
+The video and sample explain the pattern; they predate our `net10.0` app.
+Use current docs for APIs, and our scoped registrations for database-backed handlers.
 
-For general environment setup, use the existing
-[First time Setup wiki page](https://github.com/PuzzleServer/mainpuzzleserver/wiki/First-time-set-up).
+This continues the existing wiki's [Authentication Resources](https://github.com/PuzzleServer/mainpuzzleserver/wiki/Authentication-Resources)
+and [Roles](https://github.com/PuzzleServer/mainpuzzleserver/wiki/Roles).
+For Microsoft provider setup, use [Microsoft Account authentication](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/social/microsoft-logins?view=aspnetcore-10.0)
+alongside our [External Authentication Setup](https://github.com/PuzzleServer/mainpuzzleserver/wiki/External-Authentication-Setup).
+The wiki's older framework examples are background, not current copy/paste templates.
 
-## What to learn first
+## Which attribute should I use?
 
-These are **reading priorities based on the code**, not measured usage rankings.
-We have not analyzed production traffic. A feature can be used rarely and still
-be important, especially when it controls privileged operations.
-
-| Priority | Topics | Why this grouping |
+| Attribute | Use it for | Watch out for |
 | --- | --- | --- |
-| **Core** | [Microsoft login and profile lookup](sign-in-and-account-lifecycle.md#follow-a-login); [event/team/puzzle permissions](authorization-and-permissions.md#policy-reference) | These support normal authenticated use. Learn them before changing player-facing behavior. |
-| **Staff-specific** | Global/event administration, authorship, and [team impersonation](authorization-and-permissions.md#puzzle-access-and-impersonation) | These serve particular roles, rather than every player. They are critical when working on staff tools. |
-| **Occasional / supporting** | [Profile edits and external-login management](sign-in-and-account-lifecycle.md#account-management-available-versus-unfinished); [provider-key recovery](sign-in-and-account-lifecycle.md#returning-users) | These are user-initiated or condition-triggered flows. Their actual frequency is unknown. |
-| **Incomplete / not exposed in navigation** | Password/two-factor navigation, email verification, and personal-data export/deletion | See the [account-feature status](sign-in-and-account-lifecycle.md#account-management-available-versus-unfinished). Hidden controls do not prove that backing endpoints are unreachable or unused. |
+| `[AllowAnonymous]` | Intentionally public pages, login, or public archive access. | It bypasses attribute-based authorization, including inherited `[Authorize]` policies. Do not combine them expecting the policy to protect part of the page. Check non-public operations explicitly. |
+| `[Authorize]` | An operation requiring sign-in but no additional permission at the attribute layer. | Sign-in does **not** establish a profile, event registration, team membership, ownership, or staff access. Check those separately where needed. |
+| `[Authorize(Policy = "...")]` | An operation requiring a specific application permission. | Reuse a [named policy](authorization-and-permissions.md), supply its route context, and validate the requested resource. Multiple policy attributes mean **AND**, not OR. |
 
-### How to establish actual usage
+Put attributes on the **PageModel class**, not `OnGet`/`OnPost` methods.
+For different handler permissions, use separate pages or explicit server-side
+checks; see [Razor Pages attribute guidance](https://learn.microsoft.com/en-us/aspnet/core/razor-pages/security/authorization/simple?view=aspnetcore-10.0).
+MVC controllers can apply attributes to the controller or individual actions.
+Hidden links and buttons are not access control; protect POSTs, APIs, files,
+and service operations as well as the page.
 
-Code inspection can show available navigation, callers, and endpoint checks.
-It cannot tell us how many people use a feature. To measure that, use existing
-aggregate request telemetry and login events over a representative event period,
-including registration, live play, and post-event access.
+**Local examples:** [Login](../../ServerCore/Areas/Identity/Pages/Account/Login.cshtml.cs)
+is anonymous; [Player/Details](../../ServerCore/Pages/Player/Details.cshtml.cs)
+uses plain authorization; [Events/Details](../../ServerCore/Pages/Events/Details.cshtml.cs)
+uses `IsEventAdmin`.
 
-Count both page visits and operations: opening login is not a successful
-sign-in, and opening a profile is not saving it. Permission checks often run
-within page/API requests, so endpoint counts alone do not count policy
-evaluations. Recovery needs an explicit outcome event if existing logs do not
-distinguish it from ordinary login.
+**Archive exception:** [Puzzles/Play](../../ServerCore/Pages/Puzzles/Play.cshtml.cs)
+is anonymous so an archive crawler needs no account. Its handler challenges
+non-archive callers without a profile and forbids archiving before `CanArchive`.
+It also filters visible puzzles. Copy the complete access checks, not just the
+attribute, and check every handler you add.
 
-Record the observation period and telemetry coverage with any usage ranking.
-Exclude automated traffic where identifiable and account for sampling or missing
-logs. Use aggregate data; do not collect credentials, tokens, cookies, or personal
-profile values. There is no new telemetry implementation in these guides.
+## Where do I go next?
 
-## How to read these guides
+- [Policy reference](authorization-and-permissions.md): choose an existing rule and understand our route/membership conventions.
+- [Adding policies and debugging](development-and-troubleshooting.md): implementation steps and lessons from actual fixes.
+- [Sign-in reference](sign-in-and-account-lifecycle.md): account linkage and the two login callbacks, only when working on accounts.
 
-We distinguish three kinds of behavior:
-
-| Label | Meaning |
-| --- | --- |
-| **Framework** | Behavior provided by ASP.NET Core unless the application overrides it. |
-| **PuzzleServer** | Our application code and explicit overrides. |
-| **Team choice** | Something we can change through configuration, administrative data, or code. The guides say which kind of change is needed. |
-
-The app targets `net10.0`; Identity UI and Microsoft Account packages are pinned
-to `10.0.5` in [ServerCore.csproj](../../ServerCore/ServerCore.csproj). Framework
-source links use that release. A deployment's shared-framework patch can differ,
-so recheck defaults when upgrading.
-
-## Code map
-
-| Code | Responsibility |
-| --- | --- |
-| [Program.cs](../../ServerCore/Program.cs), [Startup.cs](../../ServerCore/Startup.cs) | Start the app; register Microsoft login, policies, options, and middleware. |
-| [IdentityHostingStartup.cs](../../ServerCore/Areas/Identity/IdentityHostingStartup.cs) | Register Identity services and database-backed account storage. |
-| [Account pages](../../ServerCore/Areas/Identity/Pages/Account) | Login, account creation, logout, and account management. |
-| [PuzzleUser.cs](../../Data/DataModel/PuzzleUser.cs), [PuzzleServerContext.cs](../../Data/PuzzleServerContext.cs) | Application profiles and the database containing both account and puzzle data. |
-| [UserAuthorizationPolicy](../../ServerCore/Areas/Identity/UserAuthorizationPolicy) | Named permission requirements, handlers, and `AuthorizationHelper`. |
-| [EventRole.cs](../../ServerCore/ModelBases/EventRole.cs), [EventSpecificPageModel.cs](../../ServerCore/ModelBases/EventSpecificPageModel.cs) | URL operating modes, event binding, and shared page checks. |
-| [UserEventHelper.cs](../../ServerCore/Helpers/UserEventHelper.cs) | Team lookup and puzzle-author/admin relationships. |
-
-**Edit models in `Data/`, not `ServerCore/DataModel/`.** The app excludes the
-older `ServerCore/Data/` and `ServerCore/DataModel/` files from compilation and
-references the separate `Data` project.
-
-## Publishing to the wiki
-
-These files are reviewed in the main repository. GitHub wikis do not support
-native pull requests, and merging this documentation does not update the wiki.
-
-| File in this directory | Wiki page title |
-| --- | --- |
-| `README.md` | Identity and Access |
-| `sign-in-and-account-lifecycle.md` | Identity and Access - Sign-in and Account Lifecycle |
-| `authorization-and-permissions.md` | Identity and Access - Authorization and Permissions |
-| `development-and-troubleshooting.md` | Identity and Access - Development and Troubleshooting |
-
-When publishing, add an **Identity and Access** section to the wiki home page.
-Convert relative guide links to wiki links and source links to main-repository
-URLs. Preserve existing setup and technology links.
+These files are the reviewable source. Merging them does not publish the wiki.
+When publishing, use an **Identity and Access** landing page with the three
+reference pages above, convert relative links to wiki/source URLs, and preserve
+the existing setup links.
