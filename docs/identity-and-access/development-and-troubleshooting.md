@@ -1,13 +1,18 @@
-# Adding policies and debugging auth
+# Changing and debugging auth
 
-[Start here](README.md) | [Policy reference](authorization-and-permissions.md) |
+[Start here](README.md) | [Authorization approaches](authorization-and-permissions.md) |
 [Sign-in reference](sign-in-and-account-lifecycle.md)
 
-## Add a policy
+## Place the check before adding a policy
 
-First check whether an [existing policy](authorization-and-permissions.md)
-expresses the rule. For an event-admin page, use `IsEventAdmin`; don't add a
-second policy with the same meaning.
+Choose the [authorization approach](README.md#which-authorization-approach-do-i-need)
+first. A new page doesn't necessarily need a new policy: reuse an
+[existing policy](authorization-and-permissions.md#local-policy-lookup) or helper
+when it already expresses the permission.
+For a check shared by several operations, put it in their shared helper/service
+rather than copying conditionals into each page.
+
+## Add a policy
 
 For a genuinely new rule:
 
@@ -32,32 +37,15 @@ For a genuinely new rule:
    database services; don't copy the official sample's singleton lifetime.
    Add `RequireAuthenticatedUser()` to a new policy if it must always require
    sign-in rather than relying on a profile lookup or a default policy.
-5. Apply `[Authorize(Policy = "YourPolicy")]` to the PageModel or controller/action.
-   Include required IDs/mode in the route; validate that records exist and
-   belong to the intended event. Protect all entry points, including mutations
-   reached through APIs or component services. Update the policy reference.
+5. Enforce the policy with an attribute or an explicit `AuthorizeAsync` call,
+   depending on the approach chosen above. For loaded-resource authorization,
+   use a resource-aware handler rather than a URL-dependent helper.
+   For URL-dependent policies, include the required IDs/mode in the route.
+   Validate that records exist and belong to the intended event. Protect all
+   entry points, including mutations reached through APIs or component services.
+   Update the policy reference.
 
-The existing event-admin wiring shows the three pieces that must agree:
-
-```csharp
-// Inside Startup's AddAuthorization block:
-options.AddPolicy("IsEventAdmin",
-    policy => policy.Requirements.Add(new IsAdminInEventRequirement()));
-
-// Handler registration in ConfigureServices:
-services.AddScoped<IAuthorizationHandler, IsAdminInEventHandler>();
-
-// On the PageModel class:
-[Authorize(Policy = "IsEventAdmin")]
-```
-
-[Events/Details.cshtml](../../ServerCore/Pages/Events/Details.cshtml) supplies
-`/{eventId}/{eventRole}/Events/Details`; its
-[PageModel](../../ServerCore/Pages/Events/Details.cshtml.cs) supplies the attribute.
-Use `admin` mode to exercise the rule. A query/body `eventId` isn't a replacement
-for the route context these helpers read.
-
-### Check the change
+## Check the change
 
 Build application changes with `dotnet build ServerCore/ServerCore.csproj`.
 Exercise allowed and denied callers in isolated development data: signed out,
@@ -81,10 +69,12 @@ failure time/timezone and error-page RequestID to Application Insights Search
 or Failures. Record the operation, route, and failing check. Do not paste
 credentials, tokens, cookies, or personal profile data into diagnostics.
 
-For a permission failure, put breakpoints in the named handler, its
-`AuthorizationHelper` check, and then `EventSpecificPageModel`/the operation's
-own checks. Inspect route values, profile linkage, memberships/staff flag, and
-unlock state. Identify where success stops rather than removing the attribute.
+For a permission failure, follow the checks the operation actually uses:
+attribute policy/handler if present, the shared page filter for event-aware
+pages, then the handler/service's own check. With `[AllowAnonymous]`, automatic
+policy enforcement is skipped but the latter checks still run. Put breakpoints
+at those boundaries and inspect route values, profile linkage, memberships/staff
+flag, and unlock state. Identify where success stops rather than removing a check.
 A sign-in challenge, a permission denial, and a missing record are different
 problems; redirects/status codes alone don't identify the cause.
 
