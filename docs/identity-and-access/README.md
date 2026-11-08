@@ -18,6 +18,37 @@ them on a team, or make them an author or administrator.
 For general environment setup, use the existing
 [First time Setup wiki page](https://github.com/PuzzleServer/mainpuzzleserver/wiki/First-time-set-up).
 
+## What to learn first
+
+These are **reading priorities based on the code**, not measured usage rankings.
+We have not analyzed production traffic. A feature can be used rarely and still
+be important, especially when it controls privileged operations.
+
+| Priority | Topics | Why this grouping |
+| --- | --- | --- |
+| **Core** | [Microsoft login and profile lookup](sign-in-and-account-lifecycle.md#follow-a-login); [event/team/puzzle permissions](authorization-and-permissions.md#policy-reference) | These support normal authenticated use. Learn them before changing player-facing behavior. |
+| **Staff-specific** | Global/event administration, authorship, and [team impersonation](authorization-and-permissions.md#puzzle-access-and-impersonation) | These serve particular roles, rather than every player. They are critical when working on staff tools. |
+| **Occasional / supporting** | [Profile edits and external-login management](sign-in-and-account-lifecycle.md#account-management-available-versus-unfinished); [provider-key recovery](sign-in-and-account-lifecycle.md#returning-users) | These are user-initiated or condition-triggered flows. Their actual frequency is unknown. |
+| **Incomplete / not exposed in navigation** | Password/two-factor navigation, email verification, and personal-data export/deletion | See the [account-feature status](sign-in-and-account-lifecycle.md#account-management-available-versus-unfinished). Hidden controls do not prove that backing endpoints are unreachable or unused. |
+
+### How to establish actual usage
+
+Code inspection can show available navigation, callers, and endpoint checks.
+It cannot tell us how many people use a feature. To measure that, use existing
+aggregate request telemetry and login events over a representative event period,
+including registration, live play, and post-event access.
+
+Count both page visits and operations: opening login is not a successful
+sign-in, and opening a profile is not saving it. Permission checks often run
+within page/API requests, so endpoint counts alone do not count policy
+evaluations. Recovery needs an explicit outcome event if existing logs do not
+distinguish it from ordinary login.
+
+Record the observation period and telemetry coverage with any usage ranking.
+Exclude automated traffic where identifiable and account for sampling or missing
+logs. Use aggregate data; do not collect credentials, tokens, cookies, or personal
+profile values. There is no new telemetry implementation in these guides.
+
 ## How to read these guides
 
 We distinguish three kinds of behavior:
