@@ -44,9 +44,17 @@ skips staff queries. Follow the [staff picker](../../ServerCore/Pages/Events/Add
 | `PlayerCanSeePuzzle` | Archive availability or applicable puzzle visibility; details below. |
 | `IsMicrosoftOrCommunity` | Identity email ends with `@microsoft.com` OR profile has `MayBeAdminOrAuthor`; not merely use of Microsoft login. |
 
-Named policies do not automatically include plain `[Authorize]`'s
-authenticated-user requirement. Some of ours deliberately allow an archive
-branch. Inspect all endpoint checks before changing anonymous access.
+Plain `[Authorize]` requires sign-in. `[Authorize(Policy = "PlayerCanSeePuzzle")]`
+instead requires that named policy to succeed; it does **not** automatically
+require sign-in too. Our `PlayerCanSeePuzzle` policy can succeed for a released
+archive without a signed-in user.
+
+To require both sign-in and the policy, add `RequireAuthenticatedUser()` to the
+policy or apply both plain `[Authorize]` and the named policy attribute.
+However, `[AllowAnonymous]` bypasses both attributes, so anonymous archive pages
+must explicitly check access in their handlers. Before changing these rules,
+check the policy and handler logic to avoid blocking public archives or exposing
+non-archive operations.
 
 ### Puzzle visibility and resource boundaries
 
