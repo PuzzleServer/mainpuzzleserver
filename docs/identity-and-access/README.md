@@ -1,119 +1,66 @@
 # Identity and Access
 
-This section helps new contributors trace sign-in and permission decisions,
-find the responsible code, and distinguish framework behavior from team choices.
-It describes the implementation, not a promise that every scaffolded feature is
-complete or exposed.
+This section explains how people sign in, how PuzzleServer decides what they
+can do, and where to look when changing or troubleshooting that behavior.
 
-## Reading order
+**Authentication asks "Who are you?" Authorization asks "Are you allowed to do
+this?"** Signing in does not automatically register someone for an event, put
+them on a team, or make them an author or administrator.
 
-| Guide | Use it to |
+## Where to start
+
+| Guide | What you'll find |
 | --- | --- |
-| [Sign-in and Account Lifecycle](sign-in-and-account-lifecycle.md) | Follow Microsoft login, understand the two user records, and find account-management behavior. |
-| [Authorization and Permissions](authorization-and-permissions.md) | Select a policy and understand event roles, membership checks, and puzzle visibility. |
-| [Development and Troubleshooting](development-and-troubleshooting.md) | Configure a development environment, make changes, and diagnose failures. |
+| [Sign-in and Account Lifecycle](sign-in-and-account-lifecycle.md) | The login flow, account/profile records, framework defaults, and which account features are complete. |
+| [Authorization and Permissions](authorization-and-permissions.md) | The permission rules, URL roles, puzzle access, and checks outside named policies. |
+| [Development and Troubleshooting](development-and-troubleshooting.md) | Configuration settings, change recipes, common failures, and testing limitations. |
 
-Start with the existing [First time Setup wiki page](https://github.com/PuzzleServer/mainpuzzleserver/wiki/First-time-set-up)
-for general environment setup. These guides cover the identity-specific details.
+For general environment setup, use the existing
+[First time Setup wiki page](https://github.com/PuzzleServer/mainpuzzleserver/wiki/First-time-set-up).
 
-## Three layers of behavior
+## How to read these guides
 
-Throughout this section, behavior is labeled as:
+We distinguish three kinds of behavior:
 
-| Layer | Meaning | Example |
-| --- | --- | --- |
-| **Framework** | ASP.NET Core behavior inherited unless overridden. Defaults are version-dependent. | Identity uses an application authentication cookie and a temporary external sign-in scheme. |
-| **PuzzleServer** | Application code, conventions, and explicit overrides. | `PuzzleUser` is separate from `IdentityUser`; permission policies query event/team/puzzle records. |
-| **Team choice** | An existing configuration knob, an administrative data change, or a possible code change. These are explicitly distinguished. | Microsoft credentials are configuration; adding a provider or changing policy semantics requires code. |
+| Label | Meaning |
+| --- | --- |
+| **Framework** | Behavior provided by ASP.NET Core unless the application overrides it. |
+| **PuzzleServer** | Our application code and explicit overrides. |
+| **Team choice** | Something we can change through configuration, administrative data, or code. The guides say which kind of change is needed. |
 
-The application targets `net10.0`; Identity UI and Microsoft Account packages are
-pinned to `10.0.5` in [ServerCore.csproj](../../ServerCore/ServerCore.csproj).
-Framework source references in these guides use that release. The installed
-shared-framework patch can differ; recheck effective options and defaults when
-upgrading or diagnosing a deployment.
-
-## Mental model
-
-```text
-Microsoft account
-    |
-    | external authentication
-    v
-IdentityUser + external-login association
-    |
-    | PuzzleUser.IdentityUserId = IdentityUser.Id
-    v
-PuzzleUser
-    |
-    +-- IsGlobalAdmin
-    +-- EventAdmins / EventAuthors / PuzzleAuthors
-    +-- PlayerInEvent (event registration)
-    +-- TeamMembers (team membership)
-    +-- puzzle unlock state (team or individual)
-```
-
-**Authentication** establishes the signed-in `IdentityUser`.
-**Authorization** decides whether that person may perform an operation on a
-particular resource. Successful login does not grant event registration, team
-membership, authorship, or administrative access.
-
-`eventRole` in a URL selects the requested operating mode; it is not an
-ASP.NET Identity role and does not grant permission. For example, requesting an
-`admin` URL still requires the relevant event-admin relationship.
+The app targets `net10.0`; Identity UI and Microsoft Account packages are pinned
+to `10.0.5` in [ServerCore.csproj](../../ServerCore/ServerCore.csproj). Framework
+source links use that release. A deployment's shared-framework patch can differ,
+so recheck defaults when upgrading.
 
 ## Code map
 
-| Entry point | Responsibility |
+| Code | Responsibility |
 | --- | --- |
-| [Program.cs](../../ServerCore/Program.cs) | Creates the host using `Startup`. |
-| [IdentityHostingStartup.cs](../../ServerCore/Areas/Identity/IdentityHostingStartup.cs) | Registers default Identity services and EF-backed stores. |
-| [Startup.cs](../../ServerCore/Startup.cs) | Registers Microsoft authentication, named policies, handlers, options, and middleware. |
-| [Account pages](../../ServerCore/Areas/Identity/Pages/Account) | Login, callback, registration confirmation, logout, and account management. |
-| [PuzzleUser.cs](../../Data/DataModel/PuzzleUser.cs) | Domain profile, Identity ID lookup, event participation, and staff checks. |
-| [PuzzleServerContext.cs](../../Data/PuzzleServerContext.cs) | Stores both Identity and puzzle-domain data. |
-| [AuthorizationHelper.cs](../../ServerCore/Areas/Identity/UserAuthorizationPolicy/AuthorizationHelper.cs) | Reads route context and evaluates most named requirements. |
-| [UserAuthorizationPolicy](../../ServerCore/Areas/Identity/UserAuthorizationPolicy) | Requirement types and their handlers. |
-| [EventSpecificPageModel.cs](../../ServerCore/ModelBases/EventSpecificPageModel.cs) | Binds event/role context and checks permitted page operating modes. |
-| [UserEventHelper.cs](../../ServerCore/Helpers/UserEventHelper.cs) | Resolves team membership and puzzle authorship/administration. |
+| [Program.cs](../../ServerCore/Program.cs), [Startup.cs](../../ServerCore/Startup.cs) | Start the app; register Microsoft login, policies, options, and middleware. |
+| [IdentityHostingStartup.cs](../../ServerCore/Areas/Identity/IdentityHostingStartup.cs) | Register Identity services and database-backed account storage. |
+| [Account pages](../../ServerCore/Areas/Identity/Pages/Account) | Login, account creation, logout, and account management. |
+| [PuzzleUser.cs](../../Data/DataModel/PuzzleUser.cs), [PuzzleServerContext.cs](../../Data/PuzzleServerContext.cs) | Application profiles and the database containing both account and puzzle data. |
+| [UserAuthorizationPolicy](../../ServerCore/Areas/Identity/UserAuthorizationPolicy) | Named permission requirements, handlers, and `AuthorizationHelper`. |
+| [EventRole.cs](../../ServerCore/ModelBases/EventRole.cs), [EventSpecificPageModel.cs](../../ServerCore/ModelBases/EventSpecificPageModel.cs) | URL operating modes, event binding, and shared page checks. |
+| [UserEventHelper.cs](../../ServerCore/Helpers/UserEventHelper.cs) | Team lookup and puzzle-author/admin relationships. |
 
-**Use `Data/` for active models.** `ServerCore.csproj` excludes
-`ServerCore/Data/**` and `ServerCore/DataModel/**` from compilation and references
-the separate `Data` project. The older similarly named files are not the active
-implementation.
+**Edit models in `Data/`, not `ServerCore/DataModel/`.** The app excludes the
+older `ServerCore/Data/` and `ServerCore/DataModel/` files from compilation and
+references the separate `Data` project.
 
-## Important boundaries
+## Publishing to the wiki
 
-Global admin is a domain-user flag, not an automatic override for every event
-policy. Event admin, event author, and puzzle author are distinct relationships.
-Registration and team membership are also separate.
+These files are reviewed in the main repository. GitHub wikis do not support
+native pull requests, and merging this documentation does not update the wiki.
 
-Named policies are not the only enforcement layer. Page-model filters,
-controller checks, and service methods also make permission decisions. Hiding a
-navigation item is not server-side authorization.
-
-The account UI primarily exposes external sign-in. Password and two-factor
-navigation items are commented out. Personal-data export/deletion is marked
-"Coming Soon"; its scaffolded handlers do not cover `PuzzleUser` data. See the
-[lifecycle guide](sign-in-and-account-lifecycle.md#account-management-and-incomplete-surfaces)
-before modifying or exposing those features.
-
-## Wiki publication
-
-The main repository is the reviewable source for this section. GitHub wikis do
-not support native pull requests; merging a documentation PR does not update
-the wiki automatically.
-
-When publishing, create these pages and rewrite relative document/source links
-for the wiki:
-
-| Repository file | Wiki page title |
+| File in this directory | Wiki page title |
 | --- | --- |
-| `README.md` in this directory | Identity and Access |
+| `README.md` | Identity and Access |
 | `sign-in-and-account-lifecycle.md` | Identity and Access - Sign-in and Account Lifecycle |
 | `authorization-and-permissions.md` | Identity and Access - Authorization and Permissions |
 | `development-and-troubleshooting.md` | Identity and Access - Development and Troubleshooting |
 
-Add an **Identity and Access** section to the wiki home page, linking to its
-landing page and the three guides. Preserve existing setup and technology links.
-Source links should point to the corresponding main-repository files, not to
-paths inside the wiki Git repository.
+When publishing, add an **Identity and Access** section to the wiki home page.
+Convert relative guide links to wiki links and source links to main-repository
+URLs. Preserve existing setup and technology links.

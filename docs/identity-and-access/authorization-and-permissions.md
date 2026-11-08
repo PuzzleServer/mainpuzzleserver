@@ -3,177 +3,135 @@
 [Section home](README.md) | [Account lifecycle](sign-in-and-account-lifecycle.md) |
 [Development](development-and-troubleshooting.md)
 
-## Start here
+## Where permissions come from
 
-Read policy/handler registration in [Startup.cs](../../ServerCore/Startup.cs),
-then [AuthorizationHelper.cs](../../ServerCore/Areas/Identity/UserAuthorizationPolicy/AuthorizationHelper.cs),
-[EventRole.cs](../../ServerCore/ModelBases/EventRole.cs), and
-[EventSpecificPageModel.cs](../../ServerCore/ModelBases/EventSpecificPageModel.cs).
-Do not infer a policy's behavior from its name or XML comment alone.
-
-## Framework mechanics versus application rules
-
-**Framework:** `[Authorize]` without a named policy uses the default policy,
-which requires an authenticated user. Named policies consist of requirements;
-every requirement in a policy must succeed. Multiple handlers for the same
-requirement can implement alternatives: any handler can mark that requirement
-successful. Explicit failure can prevent success, so it is not interchangeable
-with declining to call `Succeed`.
-
-See [policy-based authorization](https://learn.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-10.0).
-
-**PuzzleServer:** Named requirements generally delegate to `AuthorizationHelper`.
-Composite "or" policies register multiple handlers for one requirement, rather
-than adding two separate requirements. For example,
-[IsEventAdminOrEventAuthor.cs](../../ServerCore/Areas/Identity/UserAuthorizationPolicy/IsEventAdminOrEventAuthor.cs)
-has separate admin and author handlers.
-
-**Team choice:** Policy names, handler registration, route conventions, and
-membership rules are code-level decisions. Staff/team assignments and event
-settings are administrative data, not Identity role configuration.
-
-## Permission data
+**PuzzleServer** stores permissions in application records, not ASP.NET Identity
+roles. See [PuzzleUser](../../Data/DataModel/PuzzleUser.cs) and
+[UserEventHelper](../../ServerCore/Helpers/UserEventHelper.cs).
 
 | Record / flag | Meaning |
 | --- | --- |
-| `PuzzleUser.IsGlobalAdmin` | Satisfies the dedicated global-admin requirement. It is not automatically OR-ed into other policies. |
-| `EventAdmins` | Administrative relationship for a specific event. |
-| `EventAuthors` | Author relationship for a specific event. |
-| `PuzzleAuthors` | Author relationship for a particular puzzle; distinct from event authorship. |
-| `PlayerInEvent` | The person completed event registration. |
-| `TeamMembers` | The person belongs to a team; registration alone does not establish this. |
-| `PuzzleUser.MayBeAdminOrAuthor` | Fast-path flag used by event staff checks. `false` short-circuits those checks; `true` alone does not grant event staff membership. The community policy also uses it directly. |
-| Team / individual puzzle state | Determines puzzle access when normal unlock checks apply. |
+| `PuzzleUser.IsGlobalAdmin` | Global administration; not an automatic override for every event policy. |
+| `EventAdmins` / `EventAuthors` | Admin or author membership for one event. |
+| `PuzzleAuthors` | Authorship of one puzzle, distinct from event authorship. |
+| `PlayerInEvent` / `TeamMembers` | Event registration and team membership, respectively. One does not imply the other. |
+| `PuzzleUser.MayBeAdminOrAuthor` | A shortcut flag: `false` skips event staff membership queries; `true` alone does not grant that membership. The community policy uses the flag directly. |
+| Team / individual puzzle state | Unlock information used for player access. |
 
-The active implementations are [PuzzleUser](../../Data/DataModel/PuzzleUser.cs)
-and [UserEventHelper](../../ServerCore/Helpers/UserEventHelper.cs).
 The [staff picker](../../ServerCore/Pages/Events/AddAdminOrAuthorPicker.razor.cs)
-sets `MayBeAdminOrAuthor` when adding an event staff association.
-Do not introduce new assignment paths that omit this invariant.
+sets `MayBeAdminOrAuthor` when assigning staff. Any new assignment path must do
+the same. [Event creation](../../ServerCore/Pages/Events/Create.cshtml.cs) gives
+its creator explicit admin and author memberships; these are not inherited from
+global-admin status.
 
-## URL context and request trace
+**Team choice:** Staff assignments and event settings are administrative data.
+Changing the rules that interpret those records requires code.
 
-`AuthorizationHelper` gets context from `HttpContext.Request.RouteValues`:
+## URL roles select a mode, not a permission
 
-| Value | Resolution |
-| --- | --- |
-| `eventId` | Event lookup through `EventHelper.GetEventFromEventId`. |
-| `eventRole` | `EventRole.Parse`: `admin`, `author`, `play`, `archive`, or `impersonateteam-<id>`. Missing/unrecognized values fall back to `play`. |
-| `puzzleId` | Parsed as an integer and loaded from `Puzzles`. |
-| `teamId` | Parsed as an integer and loaded from `Teams`. |
+[AuthorizationHelper](../../ServerCore/Areas/Identity/UserAuthorizationPolicy/AuthorizationHelper.cs)
+reads `eventId`, `eventRole`, `puzzleId`, and `teamId` from URL route values.
+[EventRole.Parse](../../ServerCore/ModelBases/EventRole.cs) recognizes `admin`,
+`author`, `play`, `archive`, and `impersonateteam-<id>`; missing or unrecognized
+values fall back to `play`.
 
-These policies do not generally use the authorization `Resource` parameter to
-get this context. A policy added to a differently shaped route, a query-string
-only resource ID, or a background operation will not automatically see the
-same data. Some helper branches assume resolved entities are non-null; missing
-context can cause an exception rather than a clean denial.
-
-A representative protected page is
-[Events/Details](../../ServerCore/Pages/Events/Details.cshtml.cs):
+For example, an event author cannot use an `admin` URL just because they are
+staff. The requested mode must match a permission they actually hold.
 
 ```text
-/{eventId}/{eventRole}/Events/Details
-    -> [Authorize(Policy = "IsEventAdmin")]
+/{eventId}/admin/Events/Details
+    -> IsEventAdmin policy
     -> IsAdminInEventHandler
-    -> AuthorizationHelper.IsEventAdminCheck
-       -> requested mode must be admin
-       -> resolve signed-in PuzzleUser and event
-       -> check that user's event-admin relationship
-    -> EventSpecificPageModel binds event/role
-       -> rejects missing event or disallowed operating mode
-    -> page handler
+    -> AuthorizationHelper checks admin mode and event-admin membership
+    -> EventSpecificPageModel binds the event and checks the operating mode
+    -> page handler runs
 ```
 
-**PuzzleServer:** `EventSpecificPageModel.OnPageHandlerExecutionAsync` adds
-checks for admin, author, archive, and impersonation modes before executing
-handlers. It does not make every `play` page registered-only or team-only.
-Individual pages still need the appropriate policy or explicit checks.
+[EventSpecificPageModel](../../ServerCore/ModelBases/EventSpecificPageModel.cs)
+rejects missing events and disallowed admin, author, archive, or impersonation
+modes. It does not automatically require registration or team membership for
+every `play` page.
 
-## Named policy matrix
+**Route-context limitation:** These helpers generally read the URL, not an
+explicit resource passed to authorization. IDs supplied only in a query string
+or request body do not automatically become that context. Some branches assume
+records exist and can throw instead of cleanly denying an invalid request.
 
-All names below are registered in `Startup`. The requirement files are under
-[UserAuthorizationPolicy](../../ServerCore/Areas/Identity/UserAuthorizationPolicy).
-The matrix summarizes current helper branches, not a universal access hierarchy.
+Also, `IsPuzzleAdminCheck` and `IsPuzzleAuthorCheck` resolve both event and puzzle,
+but do not check that the puzzle belongs to the event named in the URL. For
+example, a request naming Event B and a puzzle from Event A may pass the puzzle
+permission check; other endpoint checks may still reject it. Callers must
+validate the relationship. This is a limitation of these helpers, not proof
+that every affected endpoint permits unauthorized access.
 
-| Policy | Actual condition / operating mode |
+## Policy reference
+
+**Framework:** Plain `[Authorize]` requires a signed-in user through the default
+policy. A named policy uses requirements, which are individual permission
+conditions. All requirements must succeed. Multiple handlers can satisfy the
+same requirement as alternatives; explicitly failing a requirement can block
+success.
+
+**PuzzleServer:** Policies and handlers are registered in
+[Startup](../../ServerCore/Startup.cs). Our "admin OR author" policies use one
+requirement with separate handlers. Two requirements would mean "admin AND
+author." See [framework policy documentation](https://learn.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-10.0).
+
+| Policy | What satisfies it |
 | --- | --- |
-| `IsGlobalAdmin` | Current `PuzzleUser.IsGlobalAdmin`; no event role dependency. |
-| `IsEventAdmin` | `admin` mode plus event-admin membership. |
-| `IsEventAuthor` | `author` mode plus event-author membership. |
-| `IsAuthorOfPuzzle` | `author` mode plus puzzle-author membership; helper also requires a resolved event. |
-| `IsEventAdminOrEventAuthor` | Admin check in `admin` mode OR event-author check in `author` mode. |
-| `IsEventAdminOrAuthorOfPuzzle` | In `admin` mode, administration of the event containing the puzzle; OR puzzle authorship in `author` mode. This uses `IsPuzzleAdminCheck`, not the general event-admin helper. |
-| `IsEventAdminOrPlayerOnTeam` | Event admin in `admin` mode OR the route-team membership check; the latter has a separate impersonation branch. |
-| `PlayerIsOnTeam` | In `play` mode, caller's team for the event must match route `teamId`. In impersonation mode, route team must belong to the event and caller must be its event admin. |
-| `IsRegisteredForEvent` | Admin, author, or registered player in the corresponding mode; `archive` succeeds when `Event.CanArchive`. Team membership is not required. |
-| `PlayerCanSeePuzzle` | Archive availability, released answers/alpha testing, or applicable team/individual unlock state; see details below. |
-| `IsMicrosoftOrCommunity` | `IdentityUser.Email` ends with `@microsoft.com`, OR the domain user's `MayBeAdminOrAuthor` is true. This is a custom eligibility rule, not provider authentication or a global-admin test. |
+| `IsGlobalAdmin` | Current profile has `IsGlobalAdmin`; no URL role dependency. |
+| `IsEventAdmin` | Event-admin membership in `admin` mode. |
+| `IsEventAuthor` | Event-author membership in `author` mode. |
+| `IsAuthorOfPuzzle` | Puzzle-author membership in `author` mode; the helper also requires an event to resolve. See the route-context limitation above. |
+| `IsEventAdminOrEventAuthor` | Either of the corresponding mode-specific event checks. |
+| `IsEventAdminOrAuthorOfPuzzle` | In `admin` mode, administration of the puzzle's own event; OR puzzle authorship in `author` mode. Uses the puzzle helpers described above. |
+| `PlayerIsOnTeam` | In `play`, caller's team for the event matches URL `teamId`. In impersonation, that team belongs to the event and caller is its event admin. |
+| `IsEventAdminOrPlayerOnTeam` | Event admin in `admin` mode OR the `PlayerIsOnTeam` check, including its impersonation branch. |
+| `IsRegisteredForEvent` | Admin, author, or registered player in the matching mode; archive mode succeeds when `CanArchive`. Does not require a team. |
+| `PlayerCanSeePuzzle` | Archive/answer availability, alpha testing, or an applicable unlock; details below. |
+| `IsMicrosoftOrCommunity` | Identity email ends with `@microsoft.com` OR profile has `MayBeAdminOrAuthor`. This is custom eligibility, not a Microsoft-login or global-admin check. |
 
-Selecting an `admin` URL does not let an author satisfy an author-mode branch;
-the requested mode matters even when the person has other memberships.
-Likewise, archive success in a custom requirement does not automatically erase
-authentication requirements imposed by other metadata on an endpoint.
+The matrix describes requirements, not the entire endpoint. Additional policies
+and handler checks may apply; archive success alone does not remove a separate
+authentication requirement.
 
-### Puzzle visibility
+### Puzzle access and impersonation
 
-`PlayerCanSeePuzzleCheck` branches in this order:
+`PlayerCanSeePuzzleCheck` evaluates these branches in order:
 
-1. In `archive` mode, succeed if `Event.CanArchive`, then return.
-2. Otherwise resolve a domain user, puzzle, and event. Answers currently available
-   or an alpha-testing event satisfy this requirement.
-3. For single-player puzzles, check a global unlock first, then the caller's
-   individual unlock state.
-4. For team puzzles, resolve the caller's team, or in impersonation mode a
-   selected team after an event-admin/puzzle-author check, then require an unlock.
+1. In archive mode, allow when `CanArchive`, then return.
+2. Otherwise require a profile, puzzle, and event. Released answers or an
+   alpha-testing event satisfy the requirement.
+3. For single-player puzzles, check a global unlock, then the caller's unlock.
+4. For team puzzles, require the caller's team unlock. Impersonation can select
+   a team after an event-admin or puzzle-author check.
 
-This requirement is not a team-membership or registration requirement by itself.
-Some operations combine it with additional metadata. For example,
-[Teams/Hints](../../ServerCore/Pages/Teams/Hints.cshtml.cs) also uses
-`PlayerIsOnTeam`; stacked policies must both succeed.
+This is not a registration/team-membership policy on its own.
+[Teams/Hints](../../ServerCore/Pages/Teams/Hints.cshtml.cs), for example, also
+requires `PlayerIsOnTeam`; both policies must succeed.
 
-**Team choice:** Unlock state and event settings affect access as data.
-`AreAnswersAvailableNow` in [Event.cs](../../Data/DataModel/Event.cs) becomes true
-strictly after `AnswersAvailableBegin`; `CanArchive` currently returns that same
-value. Inspect that timing before adjusting an event. Changing branch order or
-visibility semantics is a code change with effects on pages and API actions
-using this policy.
+In [Event.cs](../../Data/DataModel/Event.cs), `AreAnswersAvailableNow` becomes
+true strictly after `AnswersAvailableBegin`; `CanArchive` returns the same value.
+The team can adjust the event timing as data. Changing access branches is code.
 
-### Impersonation is a separate mode
+Impersonation means viewing a selected team, not signing in as another user.
+The shared page filter accepts event admins or event authors in that mode,
+but individual requirements can be stricter: the team policy requires an event
+admin, while puzzle visibility accepts an event admin or that puzzle's author.
 
-`impersonateteam-<id>` allows supported staff views to resolve a selected team.
-It is not signing in as another Identity user.
-The page-model filter permits event admins or event authors into this mode,
-but individual requirements can be stricter: `PlayerIsOnTeam` requires event
-admin membership, and puzzle visibility uses an event-admin/puzzle-author check.
-Do not assume every author can perform every impersonated operation.
+## Checks outside named policies
 
-## Enforcement beyond named policies
+Do not assume a policy attribute or hidden navigation link tells the whole story.
 
-| Surface | What to inspect |
+| Surface | Where to look |
 | --- | --- |
-| Razor Pages | `[Authorize]` / `[AllowAnonymous]`, the `.cshtml` route, inherited filters, and handler-specific checks. Attribute inspection alone is insufficient. |
-| Anonymous-capable pages | [Puzzles/Play](../../ServerCore/Pages/Puzzles/Play.cshtml.cs) permits anonymous metadata but challenges non-archive callers without a domain user; archive mode still checks availability. |
-| File access | [FilesController](../../ServerCore/Pages/FilesController.cs) uses `[Authorize]` plus its own file-type, staff, unlock, solve, alpha-testing, and answer-release logic. Its route lacks `eventRole`; it does not reuse the policy helper. |
-| Puzzle API | [PuzzleApiController](../../ServerCore/Pages/PuzzleApiController.cs) applies `PlayerCanSeePuzzle` to `PostSubmitAnswerAsync`; other actions use different checks. Do not assume the whole controller shares this policy. |
-| Thread components/services | [PuzzleThreadModel](../../ServerCore/Pages/Threads/PuzzleThread.cshtml.cs) performs explicit page checks; [PuzzleThreadService](../../ServerCore/Pages/Threads/PuzzleThreadService.cs) checks sender, team/individual ownership, and staff privileges for operations. Parent page authorization does not replace service-operation checks. |
-| Server-message hub | [ServerMessageHub](../../ServerCore/ServerMessages/ServerMessageHub.cs) is a server broadcast bridge, not a policy-protected player API. Extensions target the `servers` group; do not infer player authorization from a hub connection or broadcast to all clients. |
+| Pages | Check attributes, `.cshtml` routes, inherited filters, and handlers. [Puzzles/Play](../../ServerCore/Pages/Puzzles/Play.cshtml.cs) allows anonymous metadata but challenges non-archive callers without a profile. |
+| Files | [FilesController](../../ServerCore/Pages/FilesController.cs) requires authentication and separately checks file type, staff, unlock/solve state, alpha testing, and released answers. Its route has no `eventRole`. |
+| API | [PuzzleApiController](../../ServerCore/Pages/PuzzleApiController.cs) applies puzzle visibility to `PostSubmitAnswerAsync`; other actions have different checks. |
+| Threads | [PuzzleThreadModel](../../ServerCore/Pages/Threads/PuzzleThread.cshtml.cs) checks page access; [PuzzleThreadService](../../ServerCore/Pages/Threads/PuzzleThreadService.cs) checks sender, ownership, and staff privileges for operations. |
+| Server messages | [ServerMessageHub](../../ServerCore/ServerMessages/ServerMessageHub.cs) is a broadcast bridge, not a policy-protected player API. Extensions target the `servers` group, not all connected clients. |
 
-`Startup` also declares Razor Page folder conventions for `/Pages` and
-`/ModelBases`. Those literal convention paths should not be treated as proof
-that every page or controller is globally protected. Preserve and verify actual
-endpoint metadata and checks when extending the application.
-
-## Making a permission change
-
-Use an existing policy when its exact route and membership semantics match.
-Otherwise define the requirement, register the policy and every handler, and
-wire all relevant entry points. Keep alternative handlers attached to a single
-requirement for OR semantics. Validate resolved resources and their event
-relationships rather than treating caller-supplied IDs as authority.
-
-Review administrative assignment paths as well as enforcement paths. For
-example, global-admin-created events add their creator as both event admin and
-event author in [Events/Create](../../ServerCore/Pages/Events/Create.cshtml.cs);
-this is explicit application behavior, not inheritance from `IsGlobalAdmin`.
-
-See the [change recipes and validation checklist](development-and-troubleshooting.md#change-recipes).
+`Startup` declares folder conventions for `/Pages` and `/ModelBases`; those
+literal paths do not prove every page or controller is protected. Verify the
+actual endpoint and operation. For implementation steps, see
+[change recipes](development-and-troubleshooting.md#change-recipes).
