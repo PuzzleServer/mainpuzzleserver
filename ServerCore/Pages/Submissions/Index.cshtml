@@ -25,6 +25,11 @@
         puzzleFilePath = @Model.Puzzle.PuzzleFile.Url.AbsoluteUri;
     }
 
+    if (Model.EventRole == ModelBases.EventRole.archive)
+    {
+        puzzleFilePath = await ServerCore.Helpers.ArchiveHelper.UnobfuscateLink(Model.Context, Model.Event, puzzleFilePath);
+    }
+
     if (puzzleFilePath.Length > 0)
     {
         string lowerPath = puzzleFilePath.ToLowerInvariant();

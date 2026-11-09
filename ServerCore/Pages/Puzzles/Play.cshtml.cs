@@ -25,6 +25,7 @@ namespace ServerCore.Pages.Puzzles
         {
         }
 
+        public PuzzleServerContext Context => _context;
         public IEnumerable<PuzzleView> VisibleTeamPuzzleViews { get; set; }
 
         public IEnumerable<PuzzleView> VisibleSinglePlayerPuzzleViews { get; set; }

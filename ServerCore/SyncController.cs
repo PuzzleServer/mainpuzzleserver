@@ -204,7 +204,7 @@ namespace ServerCore.Pages
         ///   has solved.
         /// </summary>
         private async Task HandleSyncAspectsRequiringListOfSolvedPuzzles(DecodedSyncRequest request, SyncResponse response,
-                                                                         string puzzleGroup, string puzzlePieceMetaTagFilter, int teamId, int eventId, int puzzleId)
+                                                                         string puzzleGroup, string puzzlePieceMetaTagFilter, Team team, Event currentEvent, int puzzleId)
         {
             // If the requester isn't asking for pieces (by setting MinSolveCount to null), and isn't asking about
             // whether any puzzle IDs are solved, we can save time by not querying the list of solved puzzles.
@@ -226,11 +226,24 @@ namespace ServerCore.Pages
                 }
             }
 
-            // Get a list of all the puzzles this team has solved from this event.
+            List<Puzzle> solves;
 
-            List<Puzzle> solves = await (from state in context.PuzzleStatePerTeam
-                                         where state.TeamID == teamId && state.SolvedTime != null
-                                         select state.Puzzle).ToListAsync();
+            if (team == null)
+            {
+                // No team means we're getting an archive. Consider all puzzles to be solved, so long as the event is archivable.
+
+                solves = !currentEvent.CanArchive ? new List<Puzzle>() : await (from p in context.Puzzles
+                                                                                where p.EventID == currentEvent.ID
+                                                                                select p).ToListAsync();
+            }
+            else
+            {
+                // Get a list of all the puzzles this team has solved from this event.
+
+                solves = await (from state in context.PuzzleStatePerTeam
+                                where state.TeamID == team.ID && state.SolvedTime != null
+                                select state.Puzzle).ToListAsync();
+            }
 
             int maxSolveCount = 0;
             List<int> solvedPuzzles = new List<int>();
@@ -459,7 +472,7 @@ namespace ServerCore.Pages
             response.SetSyncTimeAndAnnotations(now, annotations);
         }
 
-        public async Task<Dictionary<string, object>> GetSyncResponse(int eventId, int teamId, int puzzleId, List<int> query_puzzle_ids,
+        public async Task<Dictionary<string, object>> GetSyncResponse(Event currentEvent, Team team, int puzzleId, List<int> query_puzzle_ids,
                                                                       int? min_solve_count, string annotations, string last_sync_time,
                                                                       bool queryAllInGroup)
         {
@@ -477,7 +490,7 @@ namespace ServerCore.Pages
             // That could be a security issue, allowing them to unlock pieces for a puzzle using the progress
             // they made in a whole different event!
 
-            if (thisPuzzle.Event.ID != eventId) {
+            if (thisPuzzle.Event.ID != currentEvent.ID) {
                 response.AddError("That puzzle doesn't belong to that event.");
                 return response.GetResult();
             }
@@ -495,15 +508,18 @@ namespace ServerCore.Pages
             // Do any processing that requires fetching the list of all puzzles this team has
             // solved.
 
-            await HandleSyncAspectsRequiringListOfSolvedPuzzles(request, response, thisPuzzle.Group, thisPuzzle.PieceMetaTagFilter, teamId, eventId, puzzleId);
+            await HandleSyncAspectsRequiringListOfSolvedPuzzles(request, response, thisPuzzle.Group, thisPuzzle.PieceMetaTagFilter, team, currentEvent, puzzleId);
 
-            // Store any annotations the requester provided
+            if (team != null)
+            {
+                // Store any annotations the requester provided
 
-            await StoreAnnotations(request, response, thisPuzzle.ID, teamId);
+                await StoreAnnotations(request, response, thisPuzzle.ID, team.ID);
 
-            // Fetch and return any annotations that the requester may not have yet
+                // Fetch and return any annotations that the requester may not have yet
 
-            await GetAnnotationsRequesterLacks(request, response, thisPuzzle.ID, teamId);
+                await GetAnnotationsRequesterLacks(request, response, thisPuzzle.ID, team.ID);
+            }
 
             return response.GetResult();
         }
@@ -531,12 +547,12 @@ namespace ServerCore.Pages
             Event currentEvent = await EventHelper.GetEventFromEventId(context, eventId);
             if (currentEvent == null) { return Unauthorized(); }
             PuzzleUser user = await PuzzleUser.GetPuzzleUserForCurrentUser(context, User, userManager);
-            if (user == null) { return Unauthorized(); }
+            if (user == null && !currentEvent.CanArchive) { return Unauthorized(); }
             Team team = await UserEventHelper.GetTeamForPlayer(context, currentEvent, user);
-            if (team == null) { return Unauthorized(); }
+            if (team == null && !currentEvent.CanArchive) { return Unauthorized(); }
 
             var helper = new SyncHelper(context);
-            var response = await helper.GetSyncResponse(currentEvent.ID, team.ID, puzzleId, query_puzzle_ids, min_solve_count,
+            var response = await helper.GetSyncResponse(currentEvent, team, puzzleId, query_puzzle_ids, min_solve_count,
                                                         annotations, last_sync_time, false);
             return Json(response);
         }
@@ -553,13 +569,13 @@ namespace ServerCore.Pages
             }
 
             PuzzleUser user = await PuzzleUser.GetPuzzleUserForCurrentUser(context, User, userManager);
-            if (user == null)
+            if (user == null && !currentEvent.CanArchive)
             {
                 return Content("ERROR:  You aren't logged in");
             }
 
-            Team team = string.IsNullOrWhiteSpace(teamPassword) ? await UserEventHelper.GetTeamForPlayer(context, currentEvent, user) :await context.Teams.Where(t => t.Password == teamPassword).FirstOrDefaultAsync();
-            if (team == null)
+            Team team = string.IsNullOrWhiteSpace(teamPassword) ? await UserEventHelper.GetTeamForPlayer(context, currentEvent, user) : await context.Teams.Where(t => t.Password == teamPassword).FirstOrDefaultAsync();
+            if (team == null && !currentEvent.CanArchive)
             {
                 return Content("ERROR:  You're not on a team");
             }
@@ -596,7 +612,7 @@ namespace ServerCore.Pages
             // Start doing a sync asynchronously while we download the file contents.
 
             var helper = new SyncHelper(context);
-            Task<Dictionary<string, object>> responseTask = helper.GetSyncResponse(currentEvent.ID, team.ID, puzzleId, null, 0, null, null, true);
+            Task<Dictionary<string, object>> responseTask = helper.GetSyncResponse(currentEvent, team, puzzleId, null, 0, null, null, true);
 
             // Download that material file.
 

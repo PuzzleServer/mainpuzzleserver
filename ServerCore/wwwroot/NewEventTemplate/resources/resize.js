@@ -13,7 +13,7 @@ async function submitAnswer(answer) {
 }
 
 window.addEventListener("message", (e) => {
-    if ((e.origin.includes("puzzlehunt.azurewebsites.net")) || (e.origin.includes("localhost"))) {
+    if ((e.origin.includes("puzzlehunt.azurewebsites.net")) || (e.origin.includes("windows.net")) || (e.origin.includes("localhost")) || (e.origin.includes("127.0.0.1"))) {
         parentWindow = e.source;
         parentOrigin = e.origin;
         e.source.postMessage({ width: document.body.scrollWidth, height: document.body.scrollHeight }, e.origin);

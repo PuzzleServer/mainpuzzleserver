@@ -266,13 +266,25 @@ else
                     @if (Model.ShowAnswers)
                     {
                         <td class="puzzle-list-answer-customizable">
-                            @if (item.CustomSolutionUrl != null)
-                            {
-                                <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.CustomSolutionUrl, item.ID, Model.Event.ID, Model.LoggedInUser.ID, Model.Team.Password, null)" target="_blank">View Answer</a>
-                            }
-                            else if (item.Answer != null)
-                            {
-                                @Html.ActionLink("View Answer", "Index", "Files", new { eventId = Model.Event.ID, filename = item.Answer.ShortName }, new { target = "_blank" })
+                            @{
+                                string solutionUrl = null;
+                                if (item.CustomSolutionUrl != null)
+                                {
+                                    solutionUrl = ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.CustomSolutionUrl, item.ID, Model.Event.ID, Model.LoggedInUser?.ID, Model.Team?.Password, null);
+                                }
+                                else if (item.Answer != null)
+                                {
+                                    solutionUrl = item.Answer.Url.AbsoluteUri;
+                                }
+
+                                if (solutionUrl != null)
+                                {
+                                    if (Model.EventRole == ModelBases.EventRole.archive)
+                                    {
+                                        solutionUrl = await ServerCore.Helpers.ArchiveHelper.UnobfuscateLink(Model.Context, Model.Event, solutionUrl);
+                                    }
+                                    <a href="@solutionUrl" target="_blank">View Answer</a>
+                                }
                             }
                         </td>
                     }
@@ -404,14 +416,26 @@ else
                         @if (Model.ShowAnswers)
                         {
                             <td class="puzzle-list-answer-customizable">
-                                @if (item.CustomSolutionUrl != null)
+                            @{
+                                string solutionUrl = null;
+                                if (item.CustomSolutionUrl != null)
                                 {
-                                    <a href="@ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.CustomSolutionUrl, item.ID, Model.Event.ID, Model.LoggedInUser.ID, teamPassword: null, playerClass: null)" target="_blank">View Answer</a>
+                                    solutionUrl = ServerCore.Helpers.PuzzleHelper.GetFormattedUrl(item.CustomSolutionUrl, item.ID, Model.Event.ID, Model.LoggedInUser?.ID, teamPassword: null, playerClass: null);
                                 }
                                 else if (item.Answer != null)
                                 {
-                                    @Html.ActionLink("View Answer", "Index", "Files", new { eventId = Model.Event.ID, filename = item.Answer.ShortName }, new { target = "_blank" })
+                                    solutionUrl = item.Answer.Url.AbsoluteUri;
                                 }
+
+                                if (solutionUrl != null)
+                                {
+                                    if (Model.EventRole == ModelBases.EventRole.archive)
+                                    {
+                                        solutionUrl = await ServerCore.Helpers.ArchiveHelper.UnobfuscateLink(Model.Context, Model.Event, solutionUrl);
+                                    }
+                                    <a href="@solutionUrl" target="_blank">View Answer</a>
+                                }
+                            }
                             </td>
                         }
                         <td class="puzzle-list-submit-customizable">
