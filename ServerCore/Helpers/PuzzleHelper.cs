@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using ServerCore.DataModel;
 using ServerCore.ModelBases;
@@ -83,6 +85,57 @@ namespace ServerCore.Helpers
             string formattedUrl = customUrl.Replace("{puzzleId}", $"{puzzleId}").Replace("{eventId}", $"{eventId}").Replace("{userId}", $"{userId}")
                 .Replace("{teamPass}", teamPassword).Replace("{playerClass}", playerClass);
             return formattedUrl;
+        }
+
+        /// <summary>
+        /// De-obfuscate a file link, since the redirect approach used by FilesController doesn't mesh well with website copiers.
+        /// </summary>
+        /// <param name="context">The PuzzleServerContext</param>
+        /// <param name="thisEvent">The current event</param>
+        /// <param name="url">The URL to unobfuscate</param>
+        /// <returns></returns>
+        public static async Task<String> UnobfuscatePuzzleUrl(PuzzleServerContext context, Event thisEvent, string url)
+        {
+            if (!thisEvent.CanArchive || string.IsNullOrWhiteSpace(url))
+            {
+                return url;
+            }
+
+            Uri uri = new Uri(url, UriKind.RelativeOrAbsolute);
+            string path = uri.AbsolutePath;
+            string possibleContentFilename = null;
+            string filenamePrefix;
+            int prefixIndex;
+
+            // see if the path contains an Event.ID-based route, and if so get the filename
+            filenamePrefix = $"/{thisEvent.ID}/Files/";
+            prefixIndex = path.IndexOf(filenamePrefix);
+            if (prefixIndex >= 0)
+            {
+                possibleContentFilename = path.Substring(prefixIndex + filenamePrefix.Length);
+            }
+
+            // see if the path contains an Event.UrlString-based route, and if so get the filename
+            filenamePrefix = $"/{thisEvent.UrlString}/Files/";
+            prefixIndex = path.IndexOf(filenamePrefix);
+            if (prefixIndex >= 0)
+            {
+                possibleContentFilename = path.Substring(prefixIndex + filenamePrefix.Length);
+            }
+
+            if (possibleContentFilename != null)
+            {
+                ContentFile content = await (from contentFile in context.ContentFiles
+                                             where contentFile.Event == thisEvent &&
+                                             contentFile.ShortName == possibleContentFilename
+                                             select contentFile).SingleOrDefaultAsync();
+                if (content != null)
+                {
+                    return String.IsNullOrEmpty(uri.Query) ? content.Url.OriginalString : $"{content.Url.OriginalString}?{uri.Query}";
+                }
+            }
+
+            return url;
         }
 
         public static async Task<List<Puzzle>> GetPuzzles(PuzzleServerContext context, Event Event, PuzzleUser user, EventRole role)
