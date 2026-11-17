@@ -274,14 +274,14 @@ else
                                 }
                                 else if (item.Answer != null)
                                 {
-                                    solutionUrl = item.Answer.Url.AbsoluteUri;
+                                    solutionUrl = $"{Model.HttpContext.Request.Scheme}://{Model.HttpContext.Request.Host}/{Model.Event.ID}/Files/{item.Answer.ShortName}";
                                 }
 
                                 if (solutionUrl != null)
                                 {
                                     if (Model.EventRole == ModelBases.EventRole.archive)
                                     {
-                                        solutionUrl = await ServerCore.Helpers.ArchiveHelper.UnobfuscateLink(Model.Context, Model.Event, solutionUrl);
+                                        solutionUrl = await ServerCore.Helpers.PuzzleHelper.UnobfuscatePuzzleUrl(Model.Context, Model.Event, solutionUrl);
                                     }
                                     <a href="@solutionUrl" target="_blank">View Answer</a>
                                 }
@@ -424,14 +424,14 @@ else
                                 }
                                 else if (item.Answer != null)
                                 {
-                                    solutionUrl = item.Answer.Url.AbsoluteUri;
+                                    solutionUrl = $"{Model.HttpContext.Request.Scheme}://{Model.HttpContext.Request.Host}/{Model.Event.ID}/Files/{item.Answer.ShortName}";
                                 }
 
                                 if (solutionUrl != null)
                                 {
                                     if (Model.EventRole == ModelBases.EventRole.archive)
                                     {
-                                        solutionUrl = await ServerCore.Helpers.ArchiveHelper.UnobfuscateLink(Model.Context, Model.Event, solutionUrl);
+                                        solutionUrl = await ServerCore.Helpers.PuzzleHelper.UnobfuscatePuzzleUrl(Model.Context, Model.Event, solutionUrl);
                                     }
                                     <a href="@solutionUrl" target="_blank">View Answer</a>
                                 }

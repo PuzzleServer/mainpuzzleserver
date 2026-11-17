@@ -22,12 +22,12 @@
     }
     else if (Model.Puzzle.PuzzleFile != null)
     {
-        puzzleFilePath = @Model.Puzzle.PuzzleFile.Url.AbsoluteUri;
+        puzzleFilePath = $"{Model.HttpContext.Request.Scheme}://{Model.HttpContext.Request.Host}/{Model.Event.ID}/Files/{Model.Puzzle.PuzzleFile.ShortName}";
     }
 
     if (Model.EventRole == ModelBases.EventRole.archive)
     {
-        puzzleFilePath = await ServerCore.Helpers.ArchiveHelper.UnobfuscateLink(Model.Context, Model.Event, puzzleFilePath);
+        puzzleFilePath = await ServerCore.Helpers.PuzzleHelper.UnobfuscatePuzzleUrl(Model.Context, Model.Event, puzzleFilePath);
     }
 
     if (puzzleFilePath.Length > 0)
