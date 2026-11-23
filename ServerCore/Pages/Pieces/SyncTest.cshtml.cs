@@ -50,7 +50,7 @@ namespace ServerCore.Pages.Pieces
             MetapuzzleId = syncTestMetapuzzle.ID;
 
             var helper = new SyncHelper(_context);
-            var response = await helper.GetSyncResponse(currentEvent.ID, team.ID, puzzleId, null, 0, null, null, true);
+            var response = await helper.GetSyncResponse(currentEvent, team, puzzleId, null, 0, null, null, true);
             var responseSerialized = JsonConvert.SerializeObject(response);
             InitialSyncString = HttpUtility.JavaScriptStringEncode(responseSerialized);
 
