@@ -134,6 +134,11 @@ namespace ServerCore.Areas.Identity.Pages.Account
                     {
                         Input.IdentityUserId = user.Id;
 
+                        // Protect against people leaking these values into form data and gaining unwanted access.
+                        // Thanks to faav for pointing out the vulnerability!
+                        Input.MayBeAdminOrAuthor = false;
+                        Input.IsGlobalAdmin = false;
+
                         if (ModelState.IsValid)
                         {
                             // If there are no GlobalAdmins make them the GlobalAdmin
